@@ -1,0 +1,38 @@
+/**
+ * Marcador de HP / Stress / Armor Slot.
+ *
+ * O quadrado pintado tem 27px como no protótipo, mas a ÁREA CLICÁVEL é 44px.
+ * Requisito de produto: tocado com pressa, no escuro, no meio de conversa.
+ * O caminho certo é estender o alvo, nunca encolher para 27px de toque.
+ */
+
+.pip {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--touch-target-min);
+  height: var(--touch-target-min);
+  min-height: var(--touch-target-min);
+  padding: 0;
+  background: none;
+  border: 0;
+}
+
+.mark {
+  display: block;
+  width: 27px;
+  height: 27px;
+  background: var(--color-bg-elevated);
+  border: var(--border-width) solid var(--color-border);
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.pip[aria-pressed='true'] .mark {
+  background: var(--pip-color, var(--color-chrome));
+  border-color: var(--pip-color, var(--color-chrome));
+}
+
+.pip:focus-visible {
+  outline: 2px solid var(--color-chrome-strong);
+  outline-offset: -4px;
+}

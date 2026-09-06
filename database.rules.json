@@ -1,0 +1,57 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "dhsw": {
+      "$env": {
+        "config": {
+          ".read": true,
+          ".write": false
+        },
+
+        "profiles": {
+          "$uid": {
+            ".read": "auth != null",
+            ".write": "auth != null && auth.uid === $uid",
+            ".validate": "newData.hasChildren(['userId', 'displayName']) && newData.child('userId').val() === $uid"
+          }
+        },
+
+        "sheets": {
+          "$sheetId": {
+            ".read": "auth != null && root.child('dhsw/' + $env + '/sheetAccess/' + $sheetId + '/' + auth.uid).exists()",
+            ".write": "auth != null && (root.child('dhsw/' + $env + '/sheetAccess/' + $sheetId + '/' + auth.uid + '/level').val() >= 20 || !data.exists())",
+            ".validate": "newData.hasChildren(['id', 'schema', 'name', 'level']) && newData.child('id').val() === $sheetId && newData.child('level').val() >= 1 && newData.child('level').val() <= 10 && newData.child('name').val().length <= 120"
+          }
+        },
+
+        "sheetAccess": {
+          "$sheetId": {
+            ".read": "auth != null && root.child('dhsw/' + $env + '/sheetAccess/' + $sheetId + '/' + auth.uid).exists()",
+            "$uid": {
+              ".write": "auth != null && (root.child('dhsw/' + $env + '/sheetAccess/' + $sheetId + '/' + auth.uid + '/level').val() === 30 || (!root.child('dhsw/' + $env + '/sheetAccess/' + $sheetId).exists() && auth.uid === $uid && newData.child('level').val() === 30))",
+              ".validate": "newData.hasChildren(['sheetId', 'userId', 'roleId', 'level']) && newData.child('sheetId').val() === $sheetId && newData.child('userId').val() === $uid && newData.child('level').isNumber() && newData.child('level').val() >= 10 && newData.child('level').val() <= 30"
+            }
+          }
+        },
+
+        "userSheets": {
+          "$uid": {
+            ".read": "auth != null && auth.uid === $uid",
+            "$sheetId": {
+              ".write": "auth != null && (auth.uid === $uid || root.child('dhsw/' + $env + '/sheetAccess/' + $sheetId + '/' + auth.uid + '/level').val() === 30)"
+            }
+          }
+        },
+
+        "settings": {
+          "$uid": {
+            ".read": "auth != null && auth.uid === $uid",
+            ".write": "auth != null && auth.uid === $uid"
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,438 @@
+// GERADO POR scripts/build-compendium.ts — NÃO EDITAR À MÃO.
+// Fonte: specs/dh-sw.html
+import type { Weapon } from '@/types'
+
+export const WEAPONS: readonly Weapon[] = [
+  {
+    "name": "Lightsaber",
+    "trait": "Forcewield",
+    "range": "Melee",
+    "damageDie": "d12",
+    "bonusByTier": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "damageType": "phy",
+    "burden": "Uma mão",
+    "feature": "**Iconic.** Ignora Armor Slots contra alvos sem `Lightblade Resistant`. Bonded soma seu Tier ao dano.",
+    "isIconic": true
+  },
+  {
+    "name": "Shoto Saber",
+    "trait": "Finesse",
+    "range": "Melee",
+    "damageDie": "d8",
+    "bonusByTier": [
+      1,
+      1,
+      1,
+      1
+    ],
+    "damageType": "phy",
+    "burden": "Uma mão",
+    "feature": "**Iconic.** +1 Evasion enquanto empunhada. Bonded soma seu Tier ao dano.",
+    "isIconic": true
+  },
+  {
+    "name": "Saberstaff",
+    "trait": "Agility",
+    "range": "Melee",
+    "damageDie": "d10",
+    "bonusByTier": [
+      3,
+      3,
+      3,
+      3
+    ],
+    "damageType": "phy",
+    "burden": "Duas mãos",
+    "feature": "**Iconic.** Ao acertar, marque um **Stress** para atingir um segundo alvo em *Melee*.",
+    "isIconic": true
+  },
+  {
+    "name": "Lightwhip",
+    "trait": "Finesse",
+    "range": "Very Close",
+    "damageDie": "d10",
+    "bonusByTier": [
+      2,
+      2,
+      2,
+      2
+    ],
+    "damageType": "phy",
+    "burden": "Uma mão",
+    "feature": "**Iconic.** Alcance maior que o de um sabre comum, e o alvo não pode reagir com *Deflection*.",
+    "isIconic": true
+  },
+  {
+    "name": "Vibroblade",
+    "trait": "Agility",
+    "range": "Melee",
+    "damageDie": "d8",
+    "bonusByTier": [
+      3,
+      5,
+      7,
+      10
+    ],
+    "damageType": "phy",
+    "burden": "Uma mão",
+    "feature": null,
+    "isIconic": false
+  },
+  {
+    "name": "Vibro-axe",
+    "trait": "Strength",
+    "range": "Melee",
+    "damageDie": "d10",
+    "bonusByTier": [
+      3,
+      6,
+      9,
+      12
+    ],
+    "damageType": "phy",
+    "burden": "Duas mãos",
+    "feature": null,
+    "isIconic": false
+  },
+  {
+    "name": "Force Pike",
+    "trait": "Finesse",
+    "range": "Very Close",
+    "damageDie": "d10",
+    "bonusByTier": [
+      2,
+      5,
+      8,
+      11
+    ],
+    "damageType": "phy",
+    "burden": "Duas mãos",
+    "feature": "Alcance a mais que uma arma de *Melee*.",
+    "isIconic": false
+  },
+  {
+    "name": "Shock Baton",
+    "trait": "Finesse",
+    "range": "Melee",
+    "damageDie": "d6",
+    "bonusByTier": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "damageType": "tech",
+    "burden": "Uma mão",
+    "feature": "Ao acertar, marque um **Stress** para deixar o alvo *Vulnerable* até o fim do próximo turno dele.",
+    "isIconic": false
+  },
+  {
+    "name": "Combat Staff",
+    "trait": "Instinct",
+    "range": "Melee",
+    "damageDie": "d8",
+    "bonusByTier": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "damageType": "phy",
+    "burden": "Duas mãos",
+    "feature": "+1 Evasion enquanto empunhado.",
+    "isIconic": false
+  },
+  {
+    "name": "Beskad",
+    "trait": "Strength",
+    "range": "Melee",
+    "damageDie": "d12",
+    "bonusByTier": [
+      3,
+      6,
+      9,
+      12
+    ],
+    "damageType": "phy",
+    "burden": "Duas mãos",
+    "feature": "`Lightblade Resistant`. Não sofre dano de sabres.",
+    "isIconic": false
+  },
+  {
+    "name": "Hold-out Blaster",
+    "trait": "Finesse",
+    "range": "Close",
+    "damageDie": "d6",
+    "bonusByTier": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "damageType": "tech",
+    "burden": "Uma mão",
+    "feature": "Cabe em qualquer lugar. Revistas casuais não encontram.",
+    "isIconic": false
+  },
+  {
+    "name": "Blaster Pistol",
+    "trait": "Finesse",
+    "range": "Far",
+    "damageDie": "d6",
+    "bonusByTier": [
+      3,
+      5,
+      7,
+      10
+    ],
+    "damageType": "tech",
+    "burden": "Uma mão",
+    "feature": null,
+    "isIconic": false
+  },
+  {
+    "name": "Heavy Blaster Pistol",
+    "trait": "Finesse",
+    "range": "Far",
+    "damageDie": "d8",
+    "bonusByTier": [
+      2,
+      4,
+      6,
+      9
+    ],
+    "damageType": "tech",
+    "burden": "Uma mão",
+    "feature": null,
+    "isIconic": false
+  },
+  {
+    "name": "Blaster Carbine",
+    "trait": "Agility",
+    "range": "Far",
+    "damageDie": "d8",
+    "bonusByTier": [
+      3,
+      5,
+      7,
+      10
+    ],
+    "damageType": "tech",
+    "burden": "Duas mãos",
+    "feature": null,
+    "isIconic": false
+  },
+  {
+    "name": "Blaster Rifle",
+    "trait": "Finesse",
+    "range": "Very Far",
+    "damageDie": "d10",
+    "bonusByTier": [
+      3,
+      6,
+      9,
+      12
+    ],
+    "damageType": "tech",
+    "burden": "Duas mãos",
+    "feature": null,
+    "isIconic": false
+  },
+  {
+    "name": "Sporting Blaster",
+    "trait": "Instinct",
+    "range": "Far",
+    "damageDie": "d6",
+    "bonusByTier": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "damageType": "tech",
+    "burden": "Uma mão",
+    "feature": "Baixa assinatura: não dispara alarmes de energia.",
+    "isIconic": false
+  },
+  {
+    "name": "Slugthrower",
+    "trait": "Finesse",
+    "range": "Far",
+    "damageDie": "d8",
+    "bonusByTier": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "damageType": "phy",
+    "burden": "Duas mãos",
+    "feature": "Dano `phy`. Passa por defletores e escudos de energia.",
+    "isIconic": false
+  },
+  {
+    "name": "Bowcaster",
+    "trait": "Strength",
+    "range": "Far",
+    "damageDie": "d12",
+    "bonusByTier": [
+      3,
+      6,
+      9,
+      12
+    ],
+    "damageType": "phy",
+    "burden": "Duas mãos",
+    "feature": "Requer **Strength** +1 para recarregar sem marcar **Stress**.",
+    "isIconic": false
+  },
+  {
+    "name": "Disruptor Pistol",
+    "trait": "Finesse",
+    "range": "Close",
+    "damageDie": "d10",
+    "bonusByTier": [
+      2,
+      5,
+      8,
+      11
+    ],
+    "damageType": "tech",
+    "burden": "Uma mão",
+    "feature": "Dano direto: não pode ser reduzido com Armor Slots. Ilegal em quase toda jurisdição.",
+    "isIconic": false
+  },
+  {
+    "name": "Repeating Blaster",
+    "trait": "Strength",
+    "range": "Far",
+    "damageDie": "d10",
+    "bonusByTier": [
+      2,
+      5,
+      8,
+      11
+    ],
+    "damageType": "tech",
+    "burden": "Duas mãos",
+    "feature": "Marque um **Stress** para atingir todos os alvos em um grupo dentro do alcance.",
+    "isIconic": false
+  },
+  {
+    "name": "Sniper Rifle",
+    "trait": "Finesse",
+    "range": "Very Far",
+    "damageDie": "d8",
+    "bonusByTier": [
+      3,
+      6,
+      9,
+      12
+    ],
+    "damageType": "tech",
+    "burden": "Duas mãos",
+    "feature": "Se você não se moveu neste turno, role o dano duas vezes e fique com o melhor.",
+    "isIconic": false
+  },
+  {
+    "name": "Ion Blaster",
+    "trait": "Finesse",
+    "range": "Close",
+    "damageDie": "d8",
+    "bonusByTier": [
+      2,
+      4,
+      6,
+      9
+    ],
+    "damageType": "tech",
+    "burden": "Uma mão",
+    "feature": "Contra droides e veículos: +3 no dano e ignora Armor Slots.",
+    "isIconic": false
+  },
+  {
+    "name": "Vibroknife",
+    "trait": "Finesse",
+    "range": "Melee",
+    "damageDie": "d8",
+    "bonusByTier": [
+      0,
+      2,
+      4,
+      6
+    ],
+    "damageType": "phy",
+    "burden": "Secundária",
+    "feature": null,
+    "isIconic": false
+  },
+  {
+    "name": "Wrist Launcher",
+    "trait": "Agility",
+    "range": "Close",
+    "damageDie": "d6",
+    "bonusByTier": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "damageType": "tech",
+    "burden": "Secundária",
+    "feature": "Um disparo por cena, depois precisa recarregar em downtime.",
+    "isIconic": false
+  },
+  {
+    "name": "Riot Shield",
+    "trait": "Strength",
+    "range": "Melee",
+    "damageDie": "d4",
+    "bonusByTier": [
+      0,
+      2,
+      4,
+      6
+    ],
+    "damageType": "phy",
+    "burden": "Secundária",
+    "feature": "+1 Armor Score enquanto equipado.",
+    "isIconic": false
+  },
+  {
+    "name": "Grappling Spike",
+    "trait": "Agility",
+    "range": "Close",
+    "damageDie": "d4",
+    "bonusByTier": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "damageType": "phy",
+    "burden": "Secundária",
+    "feature": "Ao acertar, puxe o alvo para *Melee* ou puxe a si mesmo até ele.",
+    "isIconic": false
+  },
+  {
+    "name": "Whistling Birds",
+    "trait": "Instinct",
+    "range": "Close",
+    "damageDie": "d6",
+    "bonusByTier": [
+      0,
+      2,
+      4,
+      6
+    ],
+    "damageType": "tech",
+    "burden": "Secundária",
+    "feature": "Ignora cobertura. Uso limitado por munição rara.",
+    "isIconic": false
+  }
+] as const

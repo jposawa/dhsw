@@ -1,0 +1,30 @@
+// GERADO POR scripts/build-compendium.ts — NÃO EDITAR À MÃO.
+// Fonte: specs/dh-sw.html
+import type { DomainDefinition } from '@/types'
+
+export const DOMAIN_DEFINITIONS: readonly DomainDefinition[] = [
+  {
+    "name": "Aegis",
+    "description": "Focus summary: Tactics and Safe actions Summary: Those who excel in shielding themselves and others from harm through physical means and tactical planning --- Level 1"
+  },
+  {
+    "name": "Allure",
+    "description": "Focus summary: Power of influence, charm and persuasion Untitled"
+  },
+  {
+    "name": "Edge",
+    "description": "Focus summary: Space travel and Technology (Combining Astro + Forge) Untitled"
+  },
+  {
+    "name": "Essence",
+    "description": "Focus summary: This embodies the innate connection to the Force Untitled"
+  },
+  {
+    "name": "Havoc",
+    "description": "Focus summary: Direct and agressive approach Summary: This domain embodies offensive power, for characters who thrive in battle using unconventional tactics Untitled"
+  },
+  {
+    "name": "Veil",
+    "description": "Focus summary: Stealth and Secrecy Untitled"
+  }
+] as const

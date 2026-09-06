@@ -1,0 +1,32 @@
+/* Corpo de carta em serifada: e o que faz o texto parecer texto de livro
+   em vez de linha de app. Intencional — STYLING.md. */
+.body {
+  font-family: var(--font-serif);
+  font-size: var(--text-base);
+  line-height: 1.58;
+  color: var(--color-ink-reading);
+}
+
+.body p {
+  margin: 0 0 var(--space-2);
+}
+
+.body p:last-child {
+  margin: 0;
+}
+
+.body ul {
+  margin: 0 0 var(--space-2);
+  padding-left: var(--space-4);
+}
+
+.strong {
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+/* Enfase e termo de alcance (*Close*, *Vulnerable*): cromo, nao italico. */
+.emphasis {
+  font-style: normal;
+  color: var(--color-chrome-strong);
+}

@@ -1,0 +1,173 @@
+.page {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-4) var(--space-6);
+}
+
+.tabs {
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin: 0 calc(var(--space-4) * -1) var(--space-4);
+  padding: 0 var(--space-4);
+  border-bottom: var(--border-width) solid var(--color-border-subtle);
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.tab {
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wide);
+  white-space: nowrap;
+  color: var(--color-text-dim);
+  border-bottom: 2px solid transparent;
+}
+
+.tab[aria-current='true'] {
+  color: var(--color-chrome-strong);
+  border-bottom-color: var(--color-chrome);
+}
+
+.identity {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.fieldWide {
+  grid-column: 1 / -1;
+}
+
+.field label {
+  display: block;
+  margin-bottom: var(--space-1);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-chrome-dim);
+}
+
+.field input,
+.field select {
+  width: 100%;
+  min-height: var(--touch-target-min);
+  padding: var(--space-3);
+  font-size: var(--text-base);
+  color: var(--color-ink);
+  background: var(--color-bg-elevated);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  transition: border-color 0.15s ease;
+}
+
+.field input:focus,
+.field select:focus {
+  outline: none;
+  border-color: var(--color-chrome);
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-1);
+  margin-top: var(--space-4);
+}
+
+.thresholds {
+  display: flex;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
+}
+
+.thresholdCell {
+  flex-grow: 1;
+  padding: var(--space-3) var(--space-1);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wider);
+  text-align: center;
+  color: var(--color-text-dim);
+  background: var(--color-bg-elevated);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+.thresholdValue {
+  display: block;
+  margin-bottom: var(--space-1);
+  font-size: var(--text-lg);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  color: var(--color-ink);
+}
+
+.armorCell {
+  flex-grow: 1.6;
+}
+
+.traits {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-1);
+}
+
+.trait {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  background: var(--color-bg-elevated);
+}
+
+.traitName {
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wide);
+}
+
+.traitTotal {
+  font-size: var(--text-xs);
+  color: var(--color-text-dim);
+}
+
+.note {
+  margin-top: var(--space-2);
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  color: var(--color-text-dim);
+}
+
+.action {
+  width: 100%;
+  margin-top: var(--space-2);
+  padding: var(--space-3);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-chrome-strong);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+}
+
+@media (min-width: 900px) {
+  .traits {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.levelRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-chrome-strong);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+}

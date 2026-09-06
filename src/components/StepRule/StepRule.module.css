@@ -1,0 +1,34 @@
+/* Regua escalonada: a marca de secao, tres barras descendentes. */
+.rule {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-1);
+  height: 9px;
+  margin-bottom: var(--space-2);
+}
+
+.bar {
+  display: block;
+  width: 15px;
+  height: 9px;
+  background: var(--color-chrome);
+}
+
+.bar:nth-child(2) {
+  width: 11px;
+  height: 6px;
+  opacity: 0.72;
+}
+
+.bar:nth-child(3) {
+  width: 7px;
+  height: 3px;
+  opacity: 0.45;
+}
+
+.line {
+  flex-grow: 1;
+  height: 1px;
+  margin-bottom: 1px;
+  background: var(--color-border);
+}

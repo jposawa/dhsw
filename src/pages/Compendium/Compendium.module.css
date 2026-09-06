@@ -1,0 +1,104 @@
+.page {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-4) var(--space-6);
+}
+
+.search {
+  width: 100%;
+  min-height: var(--touch-target-min);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-base);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-ink);
+  background: var(--color-bg-elevated);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  transition: border-color 0.15s ease;
+}
+
+.search::placeholder {
+  color: var(--color-text-dim);
+}
+
+.search:focus {
+  outline: none;
+  border-color: var(--color-chrome);
+}
+
+.chips {
+  display: flex;
+  gap: var(--space-1);
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin: var(--space-2) calc(var(--space-4) * -1) 0;
+  padding: 0 var(--space-4);
+}
+
+.chips::-webkit-scrollbar {
+  display: none;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Faixa de dominio a esquerda: a cor identifica a carta. */
+.row {
+  background: var(--color-bg-elevated);
+  border-left: var(--domain-stripe-width) solid var(--domain-color, var(--color-chrome));
+}
+
+.rowButton {
+  display: block;
+  width: 100%;
+  padding: var(--space-3);
+  text-align: left;
+}
+
+.rowTop {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.rowName {
+  flex-grow: 1;
+  font-size: var(--text-md);
+  font-weight: 500;
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-ink);
+}
+
+.rowLevel {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  font-variant-numeric: tabular-nums;
+  color: var(--domain-color, var(--color-chrome));
+}
+
+.rowRecall {
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-dim);
+}
+
+.rowBody {
+  display: block;
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+.empty {
+  padding: var(--space-6) var(--space-4);
+  font-family: var(--font-serif);
+  font-size: var(--text-base);
+  text-align: center;
+  color: var(--color-text-dim);
+}

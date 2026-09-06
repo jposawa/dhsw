@@ -1,0 +1,70 @@
+// GERADO POR scripts/build-compendium.ts — NÃO EDITAR À MÃO.
+// Fonte: specs/dh-sw.html
+import type { Ancestry } from '@/types'
+
+export const ANCESTRIES: readonly Ancestry[] = [
+  {
+    "name": "Human",
+    "description": "Espalhados por toda parte, adaptáveis a quase tudo, e por isso mesmo raramente notados como espécie.",
+    "features": [
+      "**High Stamina** — Ganhe um slot de **Stress** adicional na criação.",
+      "**Adaptability** — Ao falhar numa rolagem que usou uma de suas **Experiences**, marque um **Stress** para rerrolar."
+    ]
+  },
+  {
+    "name": "Twi'lek",
+    "description": "Ryloth gira travado: um lado queimando, outro congelado, a faixa habitável no meio. Os lekku carregam tecido nervoso e leem o ar da sala antes de qualquer palavra. A linguagem de sinais por lekku é um idioma como outro qualquer — quem cresce entre Twi'leks aprende, e isso não ocupa espaço de feature.",
+    "features": [
+      "**Sense of Presence** — Seus lekku leem calor, pulso e microtensão. Marque um **Stress** para fazer ao Mestre uma pergunta sobre uma criatura que você veja dentro do alcance *Close*: ela está mentindo, está com medo, ou está prestes a atacar? Escolha uma. A resposta é sim ou não.",
+      "**Lekku Poise** — Gaste uma **Hope** para ganhar vantagem numa rolagem de **Presence** contra alguém que consiga ver você."
+    ]
+  },
+  {
+    "name": "Mirialan",
+    "description": "A pele guarda o registro. Cada tatuagem geométrica marca um feito cumprido, e mostrar o braço nu é admitir que não se fez nada digno de tinta.",
+    "features": [
+      "**Marks of Deed** — Suas tatuagens registram feitos cumpridos. Segure fichas até o número do seu **Tier**. Antes de uma rolagem em que você invoque um feito passado e diga qual marca o registra, gaste quantas quiser para +1 cada. Recupera no long rest.",
+      "**Composure** — Quando você marcaria **Stress** por algo que viu chegar, gaste uma **Hope** para marcar um a menos."
+    ]
+  },
+  {
+    "name": "Rodian",
+    "description": "Olhos compostos, antenas que leem trilha, e uma cultura que trata a caçada como forma de arte e de currículo.",
+    "features": [
+      "**Compound Eyes** — Você não sofre *disadvantage* por escuridão, fumaça ou camuflagem visual.",
+      "**Tracking Antennae** — Marque um **Stress** para saber a direção e a distância aproximada de uma criatura cujo cheiro ou trilha você tenha encontrado nesta cena."
+    ]
+  },
+  {
+    "name": "Zabrak",
+    "description": "Chifres que rompem a pele na adolescência, e um limiar de dor que os outros povos confundem com indiferença.",
+    "features": [
+      "**Pain Threshold** — Quando você marca **Hit Points**, marque um **Stress** para marcar um Hit Point a menos.",
+      "**Crown of Horns** — Faça uma **Strength Roll** para golpear com os chifres um alvo em alcance *Melee*. Num sucesso, ele fica temporariamente *Vulnerable*."
+    ]
+  },
+  {
+    "name": "Duros",
+    "description": "Foram dos primeiros a sair do próprio poço de gravidade. Não se perdem, e não dormem como os outros.",
+    "features": [
+      "**Void Sense** — Você sempre sabe sua orientação, profundidade e direção, mesmo sem referência visual ou gravidade. Não é possível te deixar perdido.",
+      "**Unblinking** — Duros não dormem como as outras espécies. Ao terminar um long rest, você pode ter ficado de guarda a noite toda sem abrir mão de nenhum benefício do descanso."
+    ]
+  },
+  {
+    "name": "Pantoran",
+    "description": "De uma lua onde o inverno é o clima e não a estação. Circulação teimosa, temperamento igual.",
+    "features": [
+      "**Frostborn** — Frio extremo e ar rarefeito não te afetam. Você sobrevive exposto onde outros não sobreviveriam.",
+      "**Steady Pulse** — Sua circulação resiste a choque. Uma vez por cena, quando um efeito te deixaria *Vulnerable*, marque um **Stress** para não ficar."
+    ]
+  },
+  {
+    "name": "Kel Dor",
+    "description": "A atmosfera de Dorin não se parece com nada que você respira. Fora de casa, todo Kel Dor vive atrás de uma máscara e enxerga o que ninguém enxerga.",
+    "features": [
+      "**Dorin Sight** — Você enxerga em escuridão total e percebe calor e movimento onde os outros não veem nada.",
+      "**Antiox Discipline** — Sua máscara filtra tudo: você é imune a gás, esporo e toxina inalada. Sem ela, você não respira em atmosfera de oxigênio."
+    ]
+  }
+] as const

@@ -1,0 +1,269 @@
+/**
+ * Tokens globais. Fonte única — módulos CSS consomem, nunca redefinem.
+ * Valores herdados de specs/dh-sw.html, nomes conforme specs/STYLING.md.
+ */
+
+/* ── @property: registra antes de :root ──────────────────────────────
+   Sem isto o navegador trata a custom property como string opaca e não
+   interpola na troca de tema. initial-value é o valor do tema escuro,
+   porque escuro é o padrão. */
+
+@property --color-bg {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #0c1219;
+}
+@property --color-bg-elevated {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #131c26;
+}
+@property --color-surface {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #1a2431;
+}
+@property --color-border {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #26333f;
+}
+@property --color-border-subtle {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #1b262f;
+}
+@property --color-chrome {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #b9c4d0;
+}
+@property --color-chrome-strong {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #dce4ec;
+}
+@property --color-chrome-dim {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #5e6b78;
+}
+@property --color-ink {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #eae4d6;
+}
+@property --color-ink-reading {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #d5d0c4;
+}
+@property --color-text-muted {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #8d93a0;
+}
+@property --color-text-dim {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #7c8794;
+}
+@property --domain-color {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #b9c4d0;
+}
+
+/* ── tokens não-temáticos ────────────────────────────────────────────── */
+
+:root {
+  /* tipografia */
+  --font-deco: Futura, 'Century Gothic', 'Avenir Next', 'Trebuchet MS', system-ui, sans-serif;
+  --font-serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
+  --font-mono: ui-monospace, Menlo, Consolas, monospace;
+
+  --text-xs: 0.625rem;
+  --text-sm: 0.75rem;
+  --text-md: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.75rem;
+
+  /* entreletra: a assinatura deco */
+  --tracking-tight: 0.015em;
+  --tracking-wide: 0.09em;
+  --tracking-wider: 0.13em;
+  --tracking-widest: 0.34em;
+
+  /* espaçamento, base 4px */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+
+  /* borda e raio — máximo 2px. Arredondar mata a identidade */
+  --border-width: 1px;
+  --border-radius-sm: 2px;
+  --border-radius-none: 0;
+  --domain-stripe-width: 3px;
+
+  /* limites físicos */
+  --touch-target-min: 44px;
+  --bottom-bar-height: calc(58px + env(safe-area-inset-bottom));
+  --content-max-width: 640px;
+
+  /* z-index */
+  --z-header: 20;
+  --z-nav: 30;
+  --z-toast: 50;
+}
+
+/* ── tema escuro — o padrão ──────────────────────────────────────────── */
+
+.theme-dark {
+  color-scheme: dark;
+
+  --color-bg: #0c1219;
+  --color-bg-elevated: #131c26;
+  --color-surface: #1a2431;
+
+  --color-border: #26333f;
+  --color-border-subtle: #1b262f;
+
+  /* chrome: a interface. Frio */
+  --color-chrome: #b9c4d0;
+  --color-chrome-strong: #dce4ec;
+  --color-chrome-dim: #5e6b78;
+
+  /* ink: o conteúdo. Quente */
+  --color-ink: #eae4d6;
+  --color-ink-reading: #d5d0c4;
+
+  --color-text-muted: #8d93a0;
+  /* Clareado de #67707c: aquele dava 3,43:1 sobre --color-bg-elevated,
+     abaixo de AA. Ver STYLING.md. */
+  --color-text-dim: #7c8794;
+
+  /* domínios: informação, não decoração */
+  --color-domain-aegis: #d9a441;
+  --color-domain-allure: #c96b96;
+  --color-domain-edge: #3fae9b;
+  --color-domain-essence: #8e7bd8;
+  --color-domain-havoc: #d25a47;
+  /* Clareado de #6673c4: 4,31:1 sobre --color-bg, abaixo de AA. */
+  --color-domain-veil: #7d8ad6;
+
+  --color-on-chrome: #0c1219;
+  --color-overlay: rgba(12, 18, 25, 0.72);
+  --color-nav-bg: rgba(12, 18, 25, 0.96);
+
+  background: var(--color-bg);
+  color: var(--color-ink);
+}
+
+/* ── tema claro — secundário ─────────────────────────────────────────
+   Estrutura pronta, mesmos nomes de token. As cores de domínio ficam
+   nos valores escuros DE PROPÓSITO: nenhuma passa 4,5:1 em fundo claro
+   (Aegis dá 2,25). Aqui elas nunca são texto — só faixa, borda e
+   preenchimento, onde não há requisito de contraste. Decisão pendente
+   em STYLING.md. */
+
+.theme-light {
+  color-scheme: light;
+
+  --color-bg: #f4f3ec;
+  --color-bg-elevated: #ffffff;
+  --color-surface: #e8e6dc;
+
+  --color-border: #d3d0c4;
+  --color-border-subtle: #e2e0d6;
+
+  --color-chrome: #46545f;
+  --color-chrome-strong: #1d262e;
+  --color-chrome-dim: #78838d;
+
+  --color-ink: #14181d;
+  --color-ink-reading: #2c3138;
+
+  --color-text-muted: #5a636d;
+  --color-text-dim: #6b7480;
+
+  --color-domain-aegis: #d9a441;
+  --color-domain-allure: #c96b96;
+  --color-domain-edge: #3fae9b;
+  --color-domain-essence: #8e7bd8;
+  --color-domain-havoc: #d25a47;
+  --color-domain-veil: #6673c4;
+
+  --color-on-chrome: #ffffff;
+  --color-overlay: rgba(20, 24, 29, 0.4);
+  --color-nav-bg: rgba(244, 243, 236, 0.96);
+
+  background: var(--color-bg);
+  color: var(--color-ink);
+}
+
+/* ── reset ───────────────────────────────────────────────────────────── */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  margin: 0;
+  font-family: var(--font-deco);
+  font-size: var(--text-base);
+  line-height: 1.45;
+  overscroll-behavior-y: none;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-weight: 500;
+  letter-spacing: var(--tracking-tight);
+}
+
+/* Alvo de toque de 44px é requisito de produto: pips tocados com pressa,
+   no escuro. STYLING.md. */
+button,
+[role='button'] {
+  min-height: var(--touch-target-min);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-chrome-strong);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}

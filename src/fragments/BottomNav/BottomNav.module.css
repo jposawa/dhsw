@@ -1,0 +1,36 @@
+.nav {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: var(--z-nav);
+  display: flex;
+  padding-bottom: env(safe-area-inset-bottom);
+  background: var(--color-nav-bg);
+  backdrop-filter: blur(14px);
+  border-top: var(--border-width) solid var(--color-chrome-dim);
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  flex-grow: 1;
+  padding: var(--space-2) 0 var(--space-3);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-text-dim);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.item[aria-current='page'] {
+  color: var(--color-chrome-strong);
+}
+
+.icon {
+  font-size: var(--text-md);
+  font-style: normal;
+  letter-spacing: 0;
+}

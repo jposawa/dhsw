@@ -1,0 +1,10 @@
+.tag {
+  display: inline-block;
+  margin: 0 var(--space-1) var(--space-1) 0;
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  color: var(--tag-color, var(--color-text-muted));
+  border: var(--border-width) solid var(--tag-color, var(--color-border));
+  border-radius: var(--border-radius-sm);
+}

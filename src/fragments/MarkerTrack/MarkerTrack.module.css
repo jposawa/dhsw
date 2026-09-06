@@ -1,0 +1,10 @@
+.track {
+  display: flex;
+  flex-direction: column;
+}
+
+.pips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}

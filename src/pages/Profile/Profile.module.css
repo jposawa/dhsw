@@ -1,0 +1,123 @@
+.page {
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-4) var(--space-6);
+}
+
+.identity {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--color-bg-elevated);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+.identityText {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.name {
+  overflow: hidden;
+  font-size: var(--text-md);
+  font-weight: 500;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--color-ink);
+}
+
+.email {
+  overflow: hidden;
+  font-size: var(--text-sm);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--color-text-dim);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.label {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-chrome-dim);
+}
+
+.input {
+  width: 100%;
+  min-height: var(--touch-target-min);
+  padding: var(--space-3);
+  font-size: var(--text-base);
+  color: var(--color-ink);
+  background: var(--color-bg-elevated);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  transition: border-color 0.15s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-chrome);
+}
+
+.rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: var(--touch-target-min);
+  padding: 0 var(--space-3);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wide);
+  background: var(--color-bg-elevated);
+}
+
+.rowValue {
+  font-variant-numeric: tabular-nums;
+  color: var(--color-ink);
+}
+
+.rowValueWarn {
+  color: var(--color-domain-havoc);
+}
+
+.action {
+  width: 100%;
+  min-height: var(--touch-target-min);
+  margin-top: var(--space-2);
+  padding: var(--space-3);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-chrome-strong);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+}
+
+.action:disabled {
+  color: var(--color-text-dim);
+  opacity: 0.5;
+}
+
+.danger {
+  color: var(--color-domain-havoc);
+}
+
+.note {
+  margin: var(--space-2) 0 0;
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  color: var(--color-text-dim);
+}

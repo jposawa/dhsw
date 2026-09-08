@@ -72,7 +72,7 @@
 
 /* ── tokens não-temáticos ─────────────────────────────────────────────────
  * A escala de espaçamento e a de tipografia vêm da biblioteca sem alteração.
- * O que muda aqui é o que carrega identidade: entreletra, raio e a fonte.
+ * O que muda aqui é o que carrega identidade: cor, entreletra e a fonte.
  * ───────────────────────────────────────────────────────────────────────── */
 
 :root {
@@ -91,13 +91,17 @@
   --tracking-wider: 0.13em;
   --tracking-widest: 0.34em;
 
-  /* Geometria reta. Nada neste desenho é arredondado, então os quatro raios
-     colapsam em 2px — inclusive `pill`, que é o que mantém o Avatar quadrado
-     como o resto. STYLING.md. */
-  --border-radius-sm: 2px;
-  --border-radius-md: 2px;
-  --border-radius-lg: 2px;
-  --border-radius-pill: 2px;
+  /* Os raios da biblioteca ficam como ela os definiu (4 / 8 / 16 / pill).
+     O protótipo é de geometria reta e usaria 2px em tudo, mas isso é decisão
+     de desenho de @jposawa, não consequência técnica da integração — e mexer
+     nos quatro mudaria a forma dos componentes dela, inclusive arredondar o
+     Avatar, que ela documenta como marca circular.
+
+     Para adotar a geometria do protótipo, basta descomentar: */
+  /* --border-radius-sm: 2px; */
+  /* --border-radius-md: 2px; */
+  /* --border-radius-lg: 2px; */
+  /* --border-radius-pill: 2px; */
 
   --domain-stripe-width: 3px;
 

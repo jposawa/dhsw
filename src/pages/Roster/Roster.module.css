@@ -41,7 +41,7 @@
 
 .name {
   display: block;
-  font-size: var(--text-md);
+  font-size: var(--text-sm);
   font-weight: 500;
   color: var(--color-ink);
 }
@@ -49,15 +49,15 @@
 .summary {
   display: block;
   margin-top: 2px;
-  font-size: var(--text-sm);
-  letter-spacing: var(--tracking-tight);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-normal);
   color: var(--color-text-dim);
 }
 
 .action {
   flex-shrink: 0;
-  width: var(--touch-target-min);
-  height: var(--touch-target-min);
+  width: var(--size-touch-target);
+  height: var(--size-touch-target);
   color: var(--color-chrome);
   background: var(--color-surface);
 }
@@ -65,7 +65,7 @@
 .empty {
   padding: var(--space-6) var(--space-4);
   font-family: var(--font-serif);
-  font-size: var(--text-base);
+  font-size: var(--text-md);
   text-align: center;
   color: var(--color-text-dim);
 }
@@ -74,7 +74,7 @@
   width: 100%;
   margin-top: var(--space-3);
   padding: var(--space-3);
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
   letter-spacing: var(--tracking-wide);
   color: var(--color-chrome-strong);
   background: var(--color-surface);

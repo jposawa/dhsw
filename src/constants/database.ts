@@ -56,4 +56,15 @@ export const DB_PATHS = {
   userSheet: (userId: string, sheetId: string) => `userSheets/${userId}/${sheetId}`,
 
   houseRules: (userId: string) => `settings/${userId}/houseRules`,
+
+  /* ── party ── */
+  party: (partyId: string) => `parties/${partyId}`,
+  partyMembersAll: (partyId: string) => `partyMembers/${partyId}`,
+  partyMember: (partyId: string, userId: string) => `partyMembers/${partyId}/${userId}`,
+  /** Indice invertido: quais parties este jogador alcanca, com o papel. */
+  userParties: (userId: string) => `userParties/${userId}`,
+  userParty: (userId: string, partyId: string) => `userParties/${userId}/${partyId}`,
+  /** Quais fichas estao na party. O RTDB nao consulta `sheets` por `partyId`. */
+  partySheetsAll: (partyId: string) => `partySheets/${partyId}`,
+  partySheet: (partyId: string, sheetId: string) => `partySheets/${partyId}/${sheetId}`,
 } as const

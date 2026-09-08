@@ -38,13 +38,22 @@ export const NAV_ITEMS: readonly NavItem[] = [
     order: 1,
   },
   {
+    key: 'parties',
+    label: 'GRUPOS',
+    icon: '◎',
+    path: ROUTES.parties,
+    needAuth: true,
+    active: true,
+    order: 2,
+  },
+  {
     key: 'houseRules',
     label: 'REGRAS',
     icon: '⚙',
     path: ROUTES.houseRules,
     needAuth: false,
     active: true,
-    order: 2,
+    order: 3,
   },
 ]
 

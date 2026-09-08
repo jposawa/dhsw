@@ -72,7 +72,7 @@ export const App = () => {
   }, [toast, setToast])
 
   return (
-    <div className={`theme-${theme} ${styles.shell}`}>
+    <div className={`theme-${theme} ${styles.shell}`} data-ronin-theme={theme}>
       <header className={styles.top}>
         <Crest subtitle={subtitleFor(location.pathname)} />
       </header>

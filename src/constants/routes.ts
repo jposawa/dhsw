@@ -20,6 +20,8 @@ export const ROUTES = {
   houseRules: '/regras',
   /** Alcancado pelo menu da conta, nao pela barra — fora do catalogo de `appNav`. */
   profile: '/perfil',
+  parties: '/grupos',
+  party: (partyId = ':partyId') => `/grupo/${partyId}`,
   data: '/dados',
   /**
    * Importacao sempre cria ficha nova — nunca sobrescreve.

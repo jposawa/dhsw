@@ -105,14 +105,14 @@ export const UserMenu = () => {
         aria-label={`Conta de ${user.displayName}`}
         onClick={() => setIsOpen((open) => !open)}
       >
-        <Avatar src={user.photoUrl} name={user.displayName} />
+        <Avatar imageUrl={user.photoUrl ?? undefined} name={user.displayName} />
         CONTA
       </button>
 
       {isOpen ? (
         <section className={styles.panel} aria-label="Conta">
           <header className={styles.identity}>
-            <Avatar src={user.photoUrl} name={user.displayName} size="md" />
+            <Avatar imageUrl={user.photoUrl ?? undefined} name={user.displayName} size="md" />
             <span className={styles.identityText}>
               <strong className={styles.identityName}>{user.displayName}</strong>
               <span className={styles.identityEmail}>{user.email}</span>

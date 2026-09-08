@@ -1,72 +1,68 @@
 /**
- * Tokens globais. Fonte única — módulos CSS consomem, nunca redefinem.
- * Valores herdados de specs/dh-sw.html, nomes conforme specs/STYLING.md.
+ * Tokens do DH-SW.
+ *
+ * A `@jposawa/ronin-ui` define os NOMES e valores padrão; este arquivo define
+ * os VALORES do DH-SW. Ele é carregado depois e **sem `@layer`** — CSS fora de
+ * camada vence CSS em camada qualquer que seja a ordem de import, e é assim
+ * que a própria biblioteca manda sobrescrever.
+ *
+ * Consequência: os componentes da biblioteca herdam a identidade Art Deco em
+ * vez de trazerem a paleta "Celestial Night" deles.
+ *
+ * Só é registrado com `@property` o que é do DH-SW. Os tokens compartilhados
+ * já estão registrados pela biblioteca — registrar de novo só criaria duas
+ * declarações da mesma coisa.
  */
 
-/* ── @property: registra antes de :root ──────────────────────────────
-   Sem isto o navegador trata a custom property como string opaca e não
-   interpola na troca de tema. initial-value é o valor do tema escuro,
-   porque escuro é o padrão. */
-
-@property --color-bg {
-  syntax: '<color>';
-  inherits: true;
-  initial-value: #0c1219;
-}
-@property --color-bg-elevated {
-  syntax: '<color>';
-  inherits: true;
-  initial-value: #131c26;
-}
-@property --color-surface {
-  syntax: '<color>';
-  inherits: true;
-  initial-value: #1a2431;
-}
-@property --color-border {
-  syntax: '<color>';
-  inherits: true;
-  initial-value: #26333f;
-}
-@property --color-border-subtle {
-  syntax: '<color>';
-  inherits: true;
-  initial-value: #1b262f;
-}
 @property --color-chrome {
   syntax: '<color>';
   inherits: true;
   initial-value: #b9c4d0;
-}
-@property --color-chrome-strong {
-  syntax: '<color>';
-  inherits: true;
-  initial-value: #dce4ec;
 }
 @property --color-chrome-dim {
   syntax: '<color>';
   inherits: true;
   initial-value: #5e6b78;
 }
-@property --color-ink {
-  syntax: '<color>';
-  inherits: true;
-  initial-value: #eae4d6;
-}
 @property --color-ink-reading {
   syntax: '<color>';
   inherits: true;
   initial-value: #d5d0c4;
 }
-@property --color-text-muted {
-  syntax: '<color>';
-  inherits: true;
-  initial-value: #8d93a0;
-}
 @property --color-text-dim {
   syntax: '<color>';
   inherits: true;
   initial-value: #7c8794;
+}
+@property --color-domain-aegis {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #d9a441;
+}
+@property --color-domain-allure {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #c96b96;
+}
+@property --color-domain-edge {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #3fae9b;
+}
+@property --color-domain-essence {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #8e7bd8;
+}
+@property --color-domain-havoc {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #d25a47;
+}
+@property --color-domain-veil {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #7d8ad6;
 }
 @property --domain-color {
   syntax: '<color>';
@@ -74,53 +70,53 @@
   initial-value: #b9c4d0;
 }
 
-/* ── tokens não-temáticos ────────────────────────────────────────────── */
+/* ── tokens não-temáticos ─────────────────────────────────────────────────
+ * A escala de espaçamento e a de tipografia vêm da biblioteca sem alteração.
+ * O que muda aqui é o que carrega identidade: entreletra, raio e a fonte.
+ * ───────────────────────────────────────────────────────────────────────── */
 
 :root {
-  /* tipografia */
-  --font-deco: Futura, 'Century Gothic', 'Avenir Next', 'Trebuchet MS', system-ui, sans-serif;
+  /* A biblioteca chama a família de `--font-sans`; a Deco entra por ela, e
+     assim os componentes dela também vêm em Futura. */
+  --font-sans: Futura, 'Century Gothic', 'Avenir Next', 'Trebuchet MS', system-ui, sans-serif;
+  --font-deco: var(--font-sans);
   --font-serif: 'Iowan Old Style', 'Palatino Linotype', Palatino, 'Book Antiqua', Georgia, serif;
-  --font-mono: ui-monospace, Menlo, Consolas, monospace;
 
-  --text-xs: 0.625rem;
-  --text-sm: 0.75rem;
-  --text-md: 0.875rem;
-  --text-base: 1rem;
-  --text-lg: 1.25rem;
-  --text-xl: 1.75rem;
+  /* Um degrau abaixo do `--text-xs` da biblioteca, para os micro-rótulos
+     muito espaçados do protótipo. Token só do DH-SW: não conflita. */
+  --text-2xs: 0.625rem;
 
-  /* entreletra: a assinatura deco */
-  --tracking-tight: 0.015em;
+  /* Entreletra: a assinatura deco. Bem mais larga que o padrão da biblioteca. */
   --tracking-wide: 0.09em;
   --tracking-wider: 0.13em;
   --tracking-widest: 0.34em;
 
-  /* espaçamento, base 4px */
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-5: 1.5rem;
-  --space-6: 2rem;
-
-  /* borda e raio — máximo 2px. Arredondar mata a identidade */
-  --border-width: 1px;
+  /* Geometria reta. Nada neste desenho é arredondado, então os quatro raios
+     colapsam em 2px — inclusive `pill`, que é o que mantém o Avatar quadrado
+     como o resto. STYLING.md. */
   --border-radius-sm: 2px;
-  --border-radius-none: 0;
+  --border-radius-md: 2px;
+  --border-radius-lg: 2px;
+  --border-radius-pill: 2px;
+
   --domain-stripe-width: 3px;
 
-  /* limites físicos */
-  --touch-target-min: 44px;
-  --bottom-bar-height: calc(58px + env(safe-area-inset-bottom));
-  --content-max-width: 640px;
-
-  /* z-index */
+  /* Abaixo do `--z-dropdown: 100` da biblioteca, de propósito: modal e
+     tooltip dela precisam passar por cima do shell. */
   --z-header: 20;
   --z-nav: 30;
-  --z-toast: 50;
+
+  --bottom-bar-height: calc(58px + env(safe-area-inset-bottom));
+  --content-max-width: 640px;
 }
 
-/* ── tema escuro — o padrão ──────────────────────────────────────────── */
+/* ── tema escuro — o padrão ───────────────────────────────────────────────
+ * Os nomes vêm da biblioteca; os valores, do protótipo `dh-sw.html`.
+ *
+ * Dois eixos que a biblioteca não tem e que são a direção de arte daqui:
+ * **chrome** (frio, a interface) e **ink** (quente, o conteúdo). O `--color-text`
+ * da biblioteca recebe o ink; o `--color-primary` recebe o chrome.
+ * ───────────────────────────────────────────────────────────────────────── */
 
 .theme-dark {
   color-scheme: dark;
@@ -128,47 +124,60 @@
   --color-bg: #0c1219;
   --color-bg-elevated: #131c26;
   --color-surface: #1a2431;
-
   --color-border: #26333f;
   --color-border-subtle: #1b262f;
 
-  /* chrome: a interface. Frio */
+  /* ink: o conteúdo, quente */
+  --color-text: #eae4d6;
+  --color-ink: var(--color-text);
+  --color-ink-reading: #d5d0c4;
+
+  /* chrome: a interface, frio */
   --color-chrome: #b9c4d0;
   --color-chrome-strong: #dce4ec;
   --color-chrome-dim: #5e6b78;
-
-  /* ink: o conteúdo. Quente */
-  --color-ink: #eae4d6;
-  --color-ink-reading: #d5d0c4;
+  --color-text-strong: var(--color-chrome-strong);
 
   --color-text-muted: #8d93a0;
-  /* Clareado de #67707c: aquele dava 3,43:1 sobre --color-bg-elevated,
-     abaixo de AA. Ver STYLING.md. */
+  /* Clareado de #67707c: aquele dava 3,43:1 sobre `--color-bg-elevated`. */
   --color-text-dim: #7c8794;
+  --color-text-disabled: #4c5878;
 
-  /* domínios: informação, não decoração */
+  /* Intents da biblioteca. `primary` é o cromo — é a cor da interface aqui.
+     Os semânticos vêm da paleta escura da própria biblioteca, que já passou
+     pela verificação de contraste dela. */
+  --color-primary: #b9c4d0;
+  --color-secondary: #5e6b78;
+  --color-success: #5cc08a;
+  --color-warning: #e8934a;
+  --color-danger: #ff5f63;
+  --color-info: #45c3de;
+  --color-neutral: #8a99b5;
+
+  /* Domínios: informação, não decoração. Nenhum outro elemento usa estas seis
+     cores — inclusive `--color-danger` acima, que de propósito NÃO é o Havoc. */
   --color-domain-aegis: #d9a441;
   --color-domain-allure: #c96b96;
   --color-domain-edge: #3fae9b;
   --color-domain-essence: #8e7bd8;
   --color-domain-havoc: #d25a47;
-  /* Clareado de #6673c4: 4,31:1 sobre --color-bg, abaixo de AA. */
+  /* Clareado de #6673c4: 4,31:1 sobre `--color-bg`, abaixo de AA. */
   --color-domain-veil: #7d8ad6;
 
-  --color-on-chrome: #0c1219;
+  --color-on-accent: #0c1219;
+  --color-on-chrome: var(--color-on-accent);
   --color-overlay: rgba(12, 18, 25, 0.72);
   --color-nav-bg: rgba(12, 18, 25, 0.96);
 
   background: var(--color-bg);
-  color: var(--color-ink);
+  color: var(--color-text);
 }
 
-/* ── tema claro — secundário ─────────────────────────────────────────
-   Estrutura pronta, mesmos nomes de token. As cores de domínio ficam
-   nos valores escuros DE PROPÓSITO: nenhuma passa 4,5:1 em fundo claro
-   (Aegis dá 2,25). Aqui elas nunca são texto — só faixa, borda e
-   preenchimento, onde não há requisito de contraste. Decisão pendente
-   em STYLING.md. */
+/* ── tema claro — secundário ──────────────────────────────────────────────
+ * As cores de domínio ficam nos valores escuros DE PROPÓSITO: nenhuma passa
+ * 4,5:1 em fundo claro (Aegis dá 2,25). Aqui elas nunca são texto — só faixa,
+ * borda e preenchimento. Decisão em aberto em STYLING.md.
+ * ───────────────────────────────────────────────────────────────────────── */
 
 .theme-light {
   color-scheme: light;
@@ -176,19 +185,29 @@
   --color-bg: #f4f3ec;
   --color-bg-elevated: #ffffff;
   --color-surface: #e8e6dc;
-
   --color-border: #d3d0c4;
   --color-border-subtle: #e2e0d6;
+
+  --color-text: #14181d;
+  --color-ink: var(--color-text);
+  --color-ink-reading: #2c3138;
 
   --color-chrome: #46545f;
   --color-chrome-strong: #1d262e;
   --color-chrome-dim: #78838d;
-
-  --color-ink: #14181d;
-  --color-ink-reading: #2c3138;
+  --color-text-strong: var(--color-chrome-strong);
 
   --color-text-muted: #5a636d;
   --color-text-dim: #6b7480;
+  --color-text-disabled: #a7aec0;
+
+  --color-primary: #46545f;
+  --color-secondary: #78838d;
+  --color-success: #1f7a4d;
+  --color-warning: #8a4b12;
+  --color-danger: #b3261e;
+  --color-info: #1a5f8a;
+  --color-neutral: #5a636d;
 
   --color-domain-aegis: #d9a441;
   --color-domain-allure: #c96b96;
@@ -197,15 +216,16 @@
   --color-domain-havoc: #d25a47;
   --color-domain-veil: #6673c4;
 
-  --color-on-chrome: #ffffff;
+  --color-on-accent: #ffffff;
+  --color-on-chrome: var(--color-on-accent);
   --color-overlay: rgba(20, 24, 29, 0.4);
   --color-nav-bg: rgba(244, 243, 236, 0.96);
 
   background: var(--color-bg);
-  color: var(--color-ink);
+  color: var(--color-text);
 }
 
-/* ── reset ───────────────────────────────────────────────────────────── */
+/* ── reset ───────────────────────────────────────────────────────────────── */
 
 *,
 *::before,
@@ -217,15 +237,15 @@
 html,
 body {
   margin: 0;
-  font-family: var(--font-deco);
-  font-size: var(--text-base);
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
   line-height: 1.45;
   overscroll-behavior-y: none;
 }
 
 body {
   background: var(--color-bg);
-  color: var(--color-ink);
+  color: var(--color-text);
 }
 
 button,
@@ -236,25 +256,19 @@ textarea {
   color: inherit;
 }
 
-button {
-  background: none;
-  border: 0;
-  cursor: pointer;
-}
-
 h1,
 h2,
 h3 {
   margin: 0;
   font-weight: 500;
-  letter-spacing: var(--tracking-tight);
+  letter-spacing: var(--tracking-normal);
 }
 
-/* Alvo de toque de 44px é requisito de produto: pips tocados com pressa,
-   no escuro. STYLING.md. */
+/* Alvo de toque de 44px é requisito de produto: pips tocados com pressa, no
+   escuro. A biblioteca já respeita `--size-touch-target` nos componentes dela. */
 button,
 [role='button'] {
-  min-height: var(--touch-target-min);
+  min-height: var(--size-touch-target);
 }
 
 :focus-visible {

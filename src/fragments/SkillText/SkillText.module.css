@@ -2,7 +2,7 @@
    em vez de linha de app. Intencional — STYLING.md. */
 .body {
   font-family: var(--font-serif);
-  font-size: var(--text-base);
+  font-size: var(--text-md);
   line-height: 1.58;
   color: var(--color-ink-reading);
 }

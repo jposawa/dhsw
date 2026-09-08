@@ -2,3 +2,5 @@ allowBuilds:
   '@firebase/util': false
   pnpm: false
   protobufjs: false
+minimumReleaseAgeExclude:
+  - '@jposawa/ronin-ui@0.1.0'

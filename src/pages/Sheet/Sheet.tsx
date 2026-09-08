@@ -221,6 +221,8 @@ export const Sheet = () => {
                   </span>
                   <Stepper
                     label={trait}
+                    decreaseLabel={`Diminuir ${trait}`}
+                    increaseLabel={`Aumentar ${trait}`}
                     value={formatSigned(stat.base)}
                     onDecrease={() =>
                       update((current) => ({
@@ -294,6 +296,8 @@ export const Sheet = () => {
             <span>NÍVEL</span>
             <Stepper
               label="nível"
+              decreaseLabel="Diminuir nível"
+              increaseLabel="Aumentar nível"
               value={String(derived.level)}
               canDecrease={derived.level > MIN_LEVEL}
               canIncrease={derived.level < MAX_LEVEL}

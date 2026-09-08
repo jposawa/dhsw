@@ -113,7 +113,7 @@ export const fetchSheetsForUser = async (userId: string): Promise<SheetWithRole[
   return sheets.filter((sheet): sheet is SheetWithRole => sheet !== null)
 }
 
-/** Compartilhar: `reader` ou `co_author`. `author` é transferência, não concessão. */
+/** Compartilhar: `reader` ou `coAuthor`. `author` é transferência, não concessão. */
 export const grantAccess = async (
   sheetId: string,
   targetUserId: string,

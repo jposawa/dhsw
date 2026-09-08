@@ -1,7 +1,7 @@
 import { useAtomValue } from 'jotai'
 import { Link, Outlet } from 'react-router-dom'
 
-import { StepRule } from '@/components'
+import { Button, StepRule } from '@/components'
 import { ROUTES } from '@/constants'
 import { useAuth } from '@/hooks'
 import { authAtom } from '@/states'
@@ -40,9 +40,9 @@ export const AuthGate = () => {
             A ficha é sua e fica na sua conta — é o que permite abrir o mesmo
             personagem no celular e no computador, e compartilhar com a mesa depois.
           </p>
-          <button type="button" className={styles.signIn} onClick={() => void signIn()}>
+          <Button isFullWidth onClick={() => void signIn()}>
             ENTRAR COM GOOGLE
-          </button>
+          </Button>
           <p className={styles.note}>
             O compêndio não exige conta: as 126 cartas, classes, espécies e
             equipamento estão abertos e funcionam sem internet.

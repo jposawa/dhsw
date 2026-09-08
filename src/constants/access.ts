@@ -9,12 +9,12 @@ import type { SheetRole, SheetRoleId, SheetRoleLevel } from '@/types'
 
 export const SHEET_ROLE_LEVEL: Readonly<Record<SheetRoleId, SheetRoleLevel>> = {
   reader: 10,
-  co_author: 20,
+  coAuthor: 20,
   author: 30,
 }
 
 export const SHEET_ROLES: readonly SheetRole[] = [
   { id: 'reader', level: 10, label: 'Leitor' },
-  { id: 'co_author', level: 20, label: 'Co-autor' },
+  { id: 'coAuthor', level: 20, label: 'Co-autor' },
   { id: 'author', level: 30, label: 'Autor' },
 ]

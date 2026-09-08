@@ -34,3 +34,22 @@ export const describeModifierSource = ({ source }: Modifier): string => {
       return source.label
   }
 }
+
+/**
+ * Mensagem legível de um erro qualquer.
+ *
+ * O SDK do Firebase joga `Error` com texto útil (`PERMISSION_DENIED: ...`), e
+ * é exatamente esse texto que separa "a regra recusou" de "a rede caiu". Sem
+ * ele, os dois viram a mesma tela e você conserta o lado errado.
+ */
+export const describeError = (error: unknown): string => {
+  if (error instanceof Error) {
+    return error.message
+  }
+
+  if (typeof error === 'string') {
+    return error
+  }
+
+  return 'Erro desconhecido'
+}

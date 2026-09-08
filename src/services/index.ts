@@ -1,5 +1,6 @@
 export * from './authService'
 export * from './configService'
+export * from './partyService'
 export * from './profileService'
 export * from './sheetService'
 export * from './storageService'

@@ -1,0 +1,1 @@
+export { PartyDetail } from './PartyDetail'

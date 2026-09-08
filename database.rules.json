@@ -20,8 +20,8 @@
 
         "sheets": {
           "$sheetId": {
-            ".read": "auth != null && root.child('dhsw/' + $env + '/sheetAccess/' + $sheetId + '/' + auth.uid).exists()",
-            ".write": "auth != null && (root.child('dhsw/' + $env + '/sheetAccess/' + $sheetId + '/' + auth.uid + '/level').val() >= 20 || !data.exists())",
+            ".read": "auth != null && (root.child('dhsw/' + $env + '/sheetAccess/' + $sheetId + '/' + auth.uid).exists() || (data.child('partyId').isString() && root.child('dhsw/' + $env + '/partyMembers').child(data.child('partyId').val()).child(auth.uid).exists()))",
+            ".write": "auth != null && (root.child('dhsw/' + $env + '/sheetAccess/' + $sheetId + '/' + auth.uid + '/level').val() >= 20 || (data.child('partyId').isString() && root.child('dhsw/' + $env + '/partyMembers').child(data.child('partyId').val()).child(auth.uid).child('level').val() >= 20) || !data.exists())",
             ".validate": "newData.hasChildren(['id', 'schema', 'name', 'level']) && newData.child('id').val() === $sheetId && newData.child('level').val() >= 1 && newData.child('level').val() <= 10 && newData.child('name').val().length <= 120"
           }
         },
@@ -41,6 +41,42 @@
             ".read": "auth != null && auth.uid === $uid",
             "$sheetId": {
               ".write": "auth != null && (auth.uid === $uid || root.child('dhsw/' + $env + '/sheetAccess/' + $sheetId + '/' + auth.uid + '/level').val() === 30)"
+            }
+          }
+        },
+
+        "parties": {
+          "$partyId": {
+            ".read": "auth != null && root.child('dhsw/' + $env + '/partyMembers/' + $partyId + '/' + auth.uid).exists()",
+            ".write": "auth != null && (root.child('dhsw/' + $env + '/partyMembers/' + $partyId + '/' + auth.uid + '/level').val() >= 20 || !data.exists())",
+            ".validate": "newData.hasChildren(['id', 'name', 'createdBy']) && newData.child('id').val() === $partyId && newData.child('name').val().length <= 60"
+          }
+        },
+
+        "partyMembers": {
+          "$partyId": {
+            ".read": "auth != null && root.child('dhsw/' + $env + '/partyMembers/' + $partyId + '/' + auth.uid).exists()",
+            "$uid": {
+              ".write": "auth != null && (root.child('dhsw/' + $env + '/partyMembers/' + $partyId + '/' + auth.uid + '/level').val() >= 20 || (auth.uid === $uid && (!data.exists() || !newData.exists())))",
+              ".validate": "newData.hasChildren(['partyId', 'userId', 'roleId', 'level']) && newData.child('partyId').val() === $partyId && newData.child('userId').val() === $uid && newData.child('level').isNumber() && newData.child('level').val() >= 10 && newData.child('level').val() <= 20 && (newData.child('level').val() === 10 || root.child('dhsw/' + $env + '/partyMembers/' + $partyId + '/' + auth.uid + '/level').val() >= 20 || !root.child('dhsw/' + $env + '/partyMembers/' + $partyId).exists())"
+            }
+          }
+        },
+
+        "userParties": {
+          "$uid": {
+            ".read": "auth != null && auth.uid === $uid",
+            "$partyId": {
+              ".write": "auth != null && (auth.uid === $uid || root.child('dhsw/' + $env + '/partyMembers/' + $partyId + '/' + auth.uid + '/level').val() >= 20)"
+            }
+          }
+        },
+
+        "partySheets": {
+          "$partyId": {
+            ".read": "auth != null && root.child('dhsw/' + $env + '/partyMembers/' + $partyId + '/' + auth.uid).exists()",
+            "$sheetId": {
+              ".write": "auth != null && (root.child('dhsw/' + $env + '/sheetAccess/' + $sheetId + '/' + auth.uid + '/level').val() >= 20 || root.child('dhsw/' + $env + '/partyMembers/' + $partyId + '/' + auth.uid + '/level').val() >= 20)"
             }
           }
         },

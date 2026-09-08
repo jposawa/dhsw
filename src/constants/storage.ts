@@ -8,9 +8,10 @@ export const STORAGE_KEYS = {
 
 /** Versao do formato de cada chave. Sobe junto com a migracao correspondente. */
 export const STORAGE_VERSIONS = {
-  roster: 1,
+  /** v2: `Character.partyId`. */
+  roster: 2,
   houseRules: 1,
 } as const
 
 /** Versao do formato de uma ficha. Toda escrita — local ou remota — carrega isto. */
-export const CHARACTER_SCHEMA_VERSION = 1
+export const CHARACTER_SCHEMA_VERSION = 2

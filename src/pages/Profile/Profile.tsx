@@ -1,10 +1,16 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import React from 'react'
 
-import { Avatar, SectionLabel, StepRule } from '@/components'
+import { Avatar, Button, Input, SectionLabel, StepRule } from '@/components'
 import { databaseEnvironment } from '@/lib/firebase'
 import { fetchProfile, updateDisplayName } from '@/services'
-import { charactersAtom, syncStatusAtom, themeAtom, toastAtom } from '@/states'
+import {
+  charactersAtom,
+  syncErrorAtom,
+  syncStatusAtom,
+  themeAtom,
+  toastAtom,
+} from '@/states'
 import { useAuth } from '@/hooks'
 
 import styles from './Profile.module.css'
@@ -28,6 +34,7 @@ export const Profile = () => {
   const { user, signOut } = useAuth()
   const [theme, setTheme] = useAtom(themeAtom)
   const syncStatus = useAtomValue(syncStatusAtom)
+  const syncError = useAtomValue(syncErrorAtom)
   const characters = useAtomValue(charactersAtom)
   const setToast = useSetAtom(toastAtom)
 
@@ -92,7 +99,7 @@ export const Profile = () => {
       <StepRule />
 
       <div className={styles.identity}>
-        <Avatar src={user.photoUrl} name={savedName || user.displayName} size="md" />
+        <Avatar imageUrl={user.photoUrl ?? undefined} name={savedName || user.displayName} size="md" />
         <span className={styles.identityText}>
           <strong className={styles.name}>{savedName || user.displayName}</strong>
           <span className={styles.email}>{user.email}</span>
@@ -101,24 +108,15 @@ export const Profile = () => {
 
       <SectionLabel>NOME NA MESA</SectionLabel>
       <div className={styles.form}>
-        <label className={styles.label} htmlFor="profile-display-name">
-          COMO VOCÊ APARECE PARA QUEM COMPARTILHA FICHA
-        </label>
-        <input
-          id="profile-display-name"
-          className={styles.input}
+        <Input
+          label="COMO VOCÊ APARECE PARA QUEM COMPARTILHA FICHA"
           value={displayName}
           maxLength={60}
-          onChange={(event) => setDisplayName(event.target.value)}
+          onValueChange={setDisplayName}
         />
-        <button
-          type="button"
-          className={styles.action}
-          disabled={!canSave}
-          onClick={() => void handleSave()}
-        >
+        <Button isFullWidth disabled={!canSave} onClick={() => void handleSave()}>
           {isSaving ? 'SALVANDO…' : 'SALVAR NOME'}
-        </button>
+        </Button>
       </div>
 
       <SectionLabel>CONTA</SectionLabel>
@@ -150,28 +148,39 @@ export const Profile = () => {
         </div>
       </div>
 
+      {syncError ? (
+        <p className={styles.diagnostic}>
+          <b>Última falha</b>
+          <br />
+          {syncError}
+        </p>
+      ) : null}
+
       <p className={styles.note}>
         E-mail e foto vêm do Google e não são editáveis aqui — deixá-los mudáveis
         faria deles alegação, não espelho da conta.
       </p>
 
       <SectionLabel>PREFERÊNCIAS</SectionLabel>
-      <button
-        type="button"
-        className={styles.action}
+      <Button
+        isFullWidth
+        variant="outline"
         aria-pressed={isDark}
+        className={styles.action}
         onClick={() => setTheme(isDark ? 'light' : 'dark')}
       >
         TEMA — {isDark ? 'ESCURO' : 'CLARO'}
-      </button>
+      </Button>
 
-      <button
-        type="button"
-        className={[styles.action, styles.danger].join(' ')}
+      <Button
+        isFullWidth
+        variant="outline"
+        intent="danger"
+        className={styles.action}
         onClick={() => void signOut()}
       >
         SAIR DA CONTA
-      </button>
+      </Button>
 
       <p className={styles.note}>
         Sair não apaga as fichas deste aparelho — perder o trabalho de quem só

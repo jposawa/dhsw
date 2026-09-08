@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Chip, SectionLabel, StepRule } from '@/components'
+import { Chip, Input, SectionLabel, StepRule } from '@/components'
 import { DOMAIN_LIST } from '@/constants'
 import { SkillText } from '@/fragments'
 import { domainColorToken } from '@/helpers'
@@ -49,14 +49,13 @@ export const Compendium = () => {
     <main className={styles.page}>
       <StepRule />
 
-      <input
-        className={styles.search}
+      <Input
         type="search"
         value={query}
         placeholder="Buscar carta ou efeito"
         aria-label="Buscar carta ou efeito"
         autoComplete="off"
-        onChange={(event) => setQuery(event.target.value)}
+        onValueChange={setQuery}
       />
 
       <div className={styles.chips}>

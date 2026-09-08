@@ -15,14 +15,14 @@
 }
 
 .title {
-  font-size: var(--text-md);
-  letter-spacing: var(--tracking-tight);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-normal);
   color: var(--color-ink);
 }
 
 .note {
   margin: var(--space-1) 0 0;
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
   line-height: 1.55;
   color: var(--color-text-dim);
 }

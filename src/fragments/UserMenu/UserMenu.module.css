@@ -19,7 +19,7 @@
   gap: var(--space-1);
   flex-grow: 1;
   padding: var(--space-2) 0 var(--space-3);
-  font-size: var(--text-xs);
+  font-size: var(--text-2xs);
   letter-spacing: var(--tracking-wider);
   color: var(--color-text-dim);
   transition: color 0.15s ease;
@@ -31,7 +31,7 @@
 }
 
 .triggerIcon {
-  font-size: var(--text-md);
+  font-size: var(--text-sm);
   font-style: normal;
   letter-spacing: 0;
 }
@@ -72,7 +72,7 @@
 
 .identityName {
   overflow: hidden;
-  font-size: var(--text-md);
+  font-size: var(--text-sm);
   font-weight: 500;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -81,7 +81,7 @@
 
 .identityEmail {
   overflow: hidden;
-  font-size: var(--text-xs);
+  font-size: var(--text-2xs);
   white-space: nowrap;
   text-overflow: ellipsis;
   color: var(--color-text-dim);
@@ -101,8 +101,8 @@
   align-items: baseline;
   justify-content: space-between;
   gap: var(--space-3);
-  font-size: var(--text-xs);
-  letter-spacing: var(--tracking-tight);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-normal);
   color: var(--color-text-dim);
 }
 
@@ -112,7 +112,7 @@
 }
 
 .previewValueWarn {
-  color: var(--color-domain-havoc);
+  color: var(--color-danger);
 }
 
 .menu {
@@ -129,9 +129,9 @@
   justify-content: space-between;
   gap: var(--space-3);
   width: 100%;
-  min-height: var(--touch-target-min);
+  min-height: var(--size-touch-target);
   padding: 0 var(--space-3);
-  font-size: var(--text-sm);
+  font-size: var(--text-xs);
   letter-spacing: var(--tracking-wide);
   text-align: left;
   text-decoration: none;
@@ -149,11 +149,13 @@
 }
 
 .itemValue {
-  font-size: var(--text-xs);
+  font-size: var(--text-2xs);
   color: var(--color-text-dim);
 }
 
+/* Destrutivo usa `--color-danger`, nunca a cor de um dominio: as seis sao
+   informacao e nao se gastam em estado semantico. STYLING.md. */
 .signOut {
   border-top: var(--border-width) solid var(--color-border);
-  color: var(--color-domain-havoc);
+  color: var(--color-danger);
 }

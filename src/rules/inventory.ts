@@ -36,13 +36,13 @@ export const equip = (
   const entry = character.inventory.find((candidate) => candidate.id === entryId)
 
   if (!entry) {
-    return fail('entry_not_found', entryId)
+    return fail('entryNotFound', entryId)
   }
 
   const slot = slotForEntry(entry, requestedSlot)
 
   if (!slot) {
-    return fail('entry_not_found', 'Item não é equipável')
+    return fail('entryNotFound', 'Item não é equipável')
   }
 
   const occupant = character.inventory.find(
@@ -50,7 +50,7 @@ export const equip = (
   )
 
   if (occupant) {
-    return fail(slot === 'armor' ? 'armor_slot_taken' : 'weapon_slot_taken', occupant.name)
+    return fail(slot === 'armor' ? 'armorSlotTaken' : 'weaponSlotTaken', occupant.name)
   }
 
   return ok({
@@ -67,7 +67,7 @@ export const unequip = (character: Character, entryId: string): Result<Character
   const entry = character.inventory.find((candidate) => candidate.id === entryId)
 
   if (!entry) {
-    return fail('entry_not_found', entryId)
+    return fail('entryNotFound', entryId)
   }
 
   return ok({
@@ -101,7 +101,7 @@ export const consume = (character: Character, entryId: string): Result<Character
   const entry = character.inventory.find((candidate) => candidate.id === entryId)
 
   if (!entry || entry.kind !== 'consumable') {
-    return fail('entry_not_found', entryId)
+    return fail('entryNotFound', entryId)
   }
 
   const remaining = entry.quantity - 1

@@ -72,6 +72,12 @@ export type Character = {
   inventory: readonly InventoryEntry[]
 
   /** Histórico, não resumo: dá para mostrar a progressão e desfazer o último nível. */
+  /**
+   * A party a que a ficha pertence, ou `null`. Campo, e nao entidade a parte,
+   * porque a relacao e 1:N de verdade — ver `types/party.ts`.
+   */
+  partyId: string | null
+
   advancements: readonly Advancement[]
   experiences: readonly Experience[]
   notes: string

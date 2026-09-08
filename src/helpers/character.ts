@@ -20,6 +20,7 @@ export const createCharacter = (name = ''): Character => {
       (traits, trait) => ({ ...traits, [trait]: 0 }),
       {} as Record<Trait, number>,
     ),
+    partyId: null,
     marks: { hp: 0, stress: 0, armor: 0, hope: 0 },
     loadout: [],
     vault: [],

@@ -6,11 +6,18 @@ import { ROUTES } from '@/constants'
 import { AuthGate, HomeRoute } from '@/fragments'
 import { Compendium } from '@/pages/Compendium'
 import { HouseRules } from '@/pages/HouseRules'
+import { Parties } from '@/pages/Parties'
+import { PartyDetail } from '@/pages/PartyDetail'
 import { Profile } from '@/pages/Profile'
 import { Roster } from '@/pages/Roster'
 import { Sheet } from '@/pages/Sheet'
 
+import '@jposawa/ronin-ui/tokens.css'
+import '@jposawa/ronin-ui/styles.css'
+
 import { App } from './App'
+// Depois da biblioteca e fora de `@layer`: e o que faz os valores do DH-SW
+// vencerem os padroes dela. Ver styles/tokens.css.
 import './styles/tokens.css'
 
 /**
@@ -34,6 +41,7 @@ import './styles/tokens.css'
  *   público    /compendio, /regras  — o compêndio não toca o Firebase, e as
  *                                     regras da casa são preferência local
  *   com conta  /fichas, /ficha/:id  — a ficha vive na conta
+ *              /grupos, /grupo/:id  — e o grupo tambem
  *   decide     /                    — com sessão vai para fichas, sem sessão
  *                                     vai para o compêndio
  */
@@ -50,6 +58,8 @@ const router = createBrowserRouter([
           { path: ROUTES.roster, element: <Roster /> },
           { path: ROUTES.sheet(), element: <Sheet /> },
           { path: ROUTES.profile, element: <Profile /> },
+          { path: ROUTES.parties, element: <Parties /> },
+          { path: ROUTES.party(), element: <PartyDetail /> },
         ],
       },
     ],

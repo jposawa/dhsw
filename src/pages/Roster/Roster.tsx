@@ -2,7 +2,7 @@ import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { Link } from 'react-router-dom'
 
 import { CLASSES_BY_NAME } from '@/compendium'
-import { SectionLabel, StepRule } from '@/components'
+import { Button, SectionLabel, StepRule } from '@/components'
 import { ROUTES } from '@/constants'
 import { createCharacter, domainColorToken, duplicateCharacter } from '@/helpers'
 import { deleteSheet, leaveSheet } from '@/services'
@@ -113,16 +113,17 @@ export const Roster = () => {
                     <span className={styles.summary}>{summaryOf(character)}</span>
                   </span>
                 </Link>
-                <button
-                  type="button"
+                <Button
+                  variant="text"
                   className={styles.action}
                   aria-label={`Duplicar ${character.name || 'ficha sem nome'}`}
                   onClick={() => handleDuplicate(character)}
                 >
                   ⧉
-                </button>
-                <button
-                  type="button"
+                </Button>
+                <Button
+                  variant="text"
+                  intent={isAuthor ? 'danger' : 'neutral'}
                   className={styles.action}
                   aria-label={
                     isAuthor
@@ -132,16 +133,16 @@ export const Roster = () => {
                   onClick={() => handleRemove(character)}
                 >
                   ×
-                </button>
+                </Button>
               </li>
             )
           })}
         </ul>
       )}
 
-      <button type="button" className={styles.primary} onClick={handleCreate}>
+      <Button isFullWidth className={styles.primary} onClick={handleCreate}>
         + &nbsp;NOVA FICHA
-      </button>
+      </Button>
     </main>
   )
 }

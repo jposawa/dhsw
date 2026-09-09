@@ -58,7 +58,7 @@
             ".read": "auth != null && root.child('dhsw/' + $env + '/partyMembers/' + $partyId + '/' + auth.uid).exists()",
             "$uid": {
               ".write": "auth != null && (root.child('dhsw/' + $env + '/partyMembers/' + $partyId + '/' + auth.uid + '/level').val() >= 20 || (auth.uid === $uid && (!data.exists() || !newData.exists())))",
-              ".validate": "newData.hasChildren(['partyId', 'userId', 'roleId', 'level']) && newData.child('partyId').val() === $partyId && newData.child('userId').val() === $uid && newData.child('level').isNumber() && newData.child('level').val() >= 10 && newData.child('level').val() <= 20 && (newData.child('level').val() === 10 || root.child('dhsw/' + $env + '/partyMembers/' + $partyId + '/' + auth.uid + '/level').val() >= 20 || !root.child('dhsw/' + $env + '/partyMembers/' + $partyId).exists())"
+              ".validate": "newData.hasChildren(['partyId', 'userId', 'roleId', 'level']) && newData.child('partyId').val() === $partyId && newData.child('userId').val() === $uid && newData.child('level').isNumber() && newData.child('level').val() >= 10 && newData.child('level').val() <= 20 && (newData.child('level').val() === 10 || root.child('dhsw/' + $env + '/partyMembers/' + $partyId + '/' + auth.uid + '/level').val() >= 20 || !root.child('dhsw/' + $env + '/partyMembers/' + $partyId).exists()) && (newData.child('level').val() === 20 || root.child('dhsw/' + $env + '/parties/' + $partyId).exists())"
             }
           }
         },

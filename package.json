@@ -15,7 +15,7 @@
     "typecheck": "tsc -b"
   },
   "dependencies": {
-    "@jposawa/ronin-ui": "^0.1.0",
+    "@jposawa/ronin-ui": "^0.1.1",
     "firebase": "^12.18.0",
     "jotai": "^2.20.3",
     "react": "^19.2.8",

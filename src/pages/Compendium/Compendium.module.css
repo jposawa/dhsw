@@ -4,28 +4,6 @@
   padding: var(--space-4) var(--space-4) var(--space-6);
 }
 
-.search {
-  width: 100%;
-  min-height: var(--size-touch-target);
-  padding: var(--space-3) var(--space-4);
-  font-size: var(--text-md);
-  letter-spacing: var(--tracking-normal);
-  color: var(--color-ink);
-  background: var(--color-bg-elevated);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--border-radius-sm);
-  transition: border-color 0.15s ease;
-}
-
-.search::placeholder {
-  color: var(--color-text-dim);
-}
-
-.search:focus {
-  outline: none;
-  border-color: var(--color-chrome);
-}
-
 .chips {
   display: flex;
   gap: var(--space-1);
@@ -54,21 +32,28 @@
   border-left: var(--domain-stripe-width) solid var(--domain-color, var(--color-chrome));
 }
 
-.rowButton {
-  display: block;
-  width: 100%;
-  padding: var(--space-3);
-  text-align: left;
+/*
+ * O Collapse da ronin-ui chega com moldura e canto arredondado próprios. Aqui
+ * a identidade da carta é a faixa de domínio da `.row`, e as duas juntas viram
+ * caixa dentro de caixa — então o cartão fica transparente e sem borda.
+ *
+ * Descendente direto de propósito: `.card` sozinho empata em especificidade
+ * com a classe da biblioteca, e quem venceria passaria a depender da ordem em
+ * que o bundler junta os CSS. `.row > .card` ganha sempre.
+ */
+.row > .card {
+  background: transparent;
+  border: none;
+  border-radius: 0;
 }
 
-.rowTop {
+.rowMeta {
   display: flex;
   align-items: baseline;
   gap: var(--space-2);
 }
 
 .rowName {
-  flex-grow: 1;
   font-size: var(--text-sm);
   font-weight: 500;
   letter-spacing: var(--tracking-normal);
@@ -86,13 +71,6 @@
   font-size: var(--text-2xs);
   font-variant-numeric: tabular-nums;
   color: var(--color-text-dim);
-}
-
-.rowBody {
-  display: block;
-  margin-top: var(--space-3);
-  padding-top: var(--space-3);
-  border-top: var(--border-width) solid var(--color-border);
 }
 
 .empty {

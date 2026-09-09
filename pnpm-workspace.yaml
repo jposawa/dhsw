@@ -3,4 +3,4 @@ allowBuilds:
   pnpm: false
   protobufjs: false
 minimumReleaseAgeExclude:
-  - '@jposawa/ronin-ui@0.1.0'
+  - '@jposawa/ronin-ui@0.1.0 || 0.1.1'

@@ -45,7 +45,14 @@ export type PartyMember = {
    */
   level: PartyRoleLevel
   joinedAt: number
-  invitedBy: string
+  /**
+   * Quem convidou nominalmente — ausente quando a entrada veio pelo código,
+   * que é o caso de todas hoje. O `partyId` **é** o convite, então não existe
+   * convidante para registrar, e preencher com o criador ou com o próprio
+   * jogador seria inventar procedência. Fica para quando houver convite de
+   * verdade; ver `joinParty`.
+   */
+  invitedBy?: string
 }
 
 /** O que fica em `userParties/<uid>/<partyId>` — índice invertido com o papel. */

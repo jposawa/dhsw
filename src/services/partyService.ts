@@ -46,14 +46,12 @@ const memberRow = (
   partyId: string,
   userId: string,
   roleId: PartyRoleId,
-  invitedBy: string,
 ): PartyMember => ({
   partyId,
   userId,
   roleId,
   level: PARTY_ROLE_LEVEL[roleId],
   joinedAt: Date.now(),
-  invitedBy,
 })
 
 const indexEntry = (member: PartyMember): PartyIndexEntry => ({
@@ -79,7 +77,7 @@ export const createParty = async (name: string, userId: string): Promise<Party> 
     notes: '',
   }
 
-  const member = memberRow(party.id, userId, 'gm', userId)
+  const member = memberRow(party.id, userId, 'gm')
 
   await update(dhswRootRef(), {
     [dhswPath(DB_PATHS.party(party.id))]: sanitize(party),
@@ -133,24 +131,49 @@ export const fetchPartyMembers = async (partyId: string): Promise<PartyMember[]>
  * mesmo do código de compartilhamento de ficha — quem tem o endereço entra.
  * Simples e suficiente para uma mesa de amigos.
  *
- * O que isso custa: o convite não expira e não dá para revogar sem trocar a
- * party de lugar. Um código rotativo é a evolução natural, e ela cabe sem
- * mexer no resto — o `partyId` continua sendo a chave, o código vira só um
- * apontador para ele.
+ * **A associação é escrita antes da party ser lida, e a ordem é o ponto.** Ler
+ * primeiro para conferir se o grupo existe era o que esta função fazia, e não
+ * podia funcionar: a regra de `parties/$partyId` só libera leitura para quem já
+ * é membro, então a conferência prévia era negada justamente para quem ainda
+ * não entrou — todo código válido caía como "não encontrado".
+ *
+ * Quem garante que o grupo existe passou a ser a regra de `partyMembers`, que
+ * exige `parties/$partyId` presente para entrada de jogador. Código inválido
+ * falha na escrita, e é isso que o chamador traduz. A checagem não tinha como
+ * ficar no cliente: qualquer teste local seria uma leitura que a regra recusa.
+ *
+ * O custo é a associação fantasma na corrida em que o grupo some entre a
+ * escrita e a leitura — desfeita abaixo, senão o índice do jogador acumularia
+ * entradas que não resolvem para nada.
+ *
+ * O que o modelo custa, e continua custando: o convite não expira e não dá para
+ * revogar sem trocar a party de lugar. Um código rotativo é a evolução natural,
+ * e ela cabe sem mexer no resto — o `partyId` continua sendo a chave, o código
+ * vira só um apontador para ele.
  */
 export const joinParty = async (partyId: string, userId: string): Promise<Party> => {
+  // Reentrar com o mesmo código não é erro, e precisa ser detectado antes da
+  // escrita: a regra recusa reescrever a própria associação já existente, e
+  // sem isto quem já é do grupo veria "código não encontrado". O índice do
+  // próprio jogador é o único lugar legível por ele antes de pertencer.
+  const indexSnapshot = await get(dhswRef(DB_PATHS.userParty(userId, partyId)))
+
+  if (!indexSnapshot.exists()) {
+    const member = memberRow(partyId, userId, 'player')
+
+    await update(dhswRootRef(), {
+      [dhswPath(DB_PATHS.partyMember(partyId, userId))]: sanitize(member),
+      [dhswPath(DB_PATHS.userParty(userId, partyId))]: indexEntry(member),
+    })
+  }
+
   const party = await fetchParty(partyId)
 
   if (!party) {
+    await leaveParty(partyId, userId)
+
     throw new Error('Grupo não encontrado')
   }
-
-  const member = memberRow(partyId, userId, 'player', party.createdBy)
-
-  await update(dhswRootRef(), {
-    [dhswPath(DB_PATHS.partyMember(partyId, userId))]: sanitize(member),
-    [dhswPath(DB_PATHS.userParty(userId, partyId))]: indexEntry(member),
-  })
 
   return party
 }

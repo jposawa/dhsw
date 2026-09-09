@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Chip, Input, SectionLabel, StepRule } from '@/components'
+import { Chip, Collapse, Input, SectionLabel, StepRule } from '@/components'
 import { DOMAIN_LIST } from '@/constants'
 import { SkillText } from '@/fragments'
 import { domainColorToken } from '@/helpers'
@@ -76,35 +76,37 @@ export const Compendium = () => {
         <p className={styles.empty}>Nada encontrado para “{query}”.</p>
       ) : (
         <ul className={styles.list}>
-          {skills.map((skill) => {
-            const isOpen = openSkills.has(skill.name)
-
-            return (
-              <li
-                key={skill.name}
-                className={styles.row}
-                style={
-                  { '--domain-color': domainColorToken(skill.domain) } as React.CSSProperties
-                }
-              >
-                <button
-                  type="button"
-                  className={styles.rowButton}
-                  aria-expanded={isOpen}
-                  onClick={() => toggleSkill(skill.name)}
-                >
-                  <span className={styles.rowTop}>
-                    <b className={styles.rowName}>{skill.name}</b>
+          {skills.map((skill) => (
+            <li
+              key={skill.name}
+              className={styles.row}
+              style={
+                { '--domain-color': domainColorToken(skill.domain) } as React.CSSProperties
+              }
+            >
+              {/* Collapse, e não um <button> com o corpo dentro: o texto da
+                  carta vira <p> e <ul>, que um botão não pode conter — o
+                  markup era inválido e a carta inteira virava nome acessível
+                  do controle. Aqui o corpo é irmão do gatilho, numa região
+                  ligada por aria-controls. */}
+              <Collapse
+                className={styles.card}
+                isOpen={openSkills.has(skill.name)}
+                onToggle={() => toggleSkill(skill.name)}
+                title={<span className={styles.rowName}>{skill.name}</span>}
+                detail={
+                  <span className={styles.rowMeta}>
                     <span className={styles.rowLevel}>
                       {skill.domain.toUpperCase()} {skill.level}
                     </span>
                     <span className={styles.rowRecall}>◦{skill.recallCost}</span>
                   </span>
-                  {isOpen ? <SkillText className={styles.rowBody} text={skill.text} /> : null}
-                </button>
-              </li>
-            )
-          })}
+                }
+              >
+                <SkillText text={skill.text} />
+              </Collapse>
+            </li>
+          ))}
         </ul>
       )}
     </main>

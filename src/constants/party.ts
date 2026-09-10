@@ -7,7 +7,7 @@ export const PARTY_ROLE_LEVEL: Readonly<Record<PartyRoleId, PartyRoleLevel>> = {
 
 export const PARTY_ROLES: readonly PartyRole[] = [
   { id: 'player', level: 10, label: 'Jogador' },
-  { id: 'gm', level: 20, label: 'Mestre' },
+  { id: 'gm', level: 20, label: 'Narrador' },
 ]
 
 /** Nome de party vazio não ajuda ninguém a reconhecer a mesa na lista. */

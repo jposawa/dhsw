@@ -109,7 +109,7 @@ export const Parties = () => {
       <div className={styles.form}>
         <Input
           label="CÓDIGO DO GRUPO"
-          hint="O mestre encontra o código na tela do grupo."
+          hint="O Narrador encontra o código na tela do grupo."
           value={joinCode}
           onValueChange={setJoinCode}
         />

@@ -29,8 +29,140 @@
   color: var(--color-chrome-strong);
 }
 
+.label {
+  /* Some ao recolher o trilho; no celular está sempre visível. */
+  display: inline;
+}
+
 .icon {
-  font-size: var(--text-sm);
+  font-size: var(--text-md);
   font-style: normal;
   letter-spacing: 0;
+}
+
+/*
+ * Só existe no trilho lateral. Na barra inferior não há o que recolher.
+ *
+ * Zera fundo e borda aqui, e não num `button` global: a ronin-ui declara os
+ * componentes dela dentro de `@layer`, e **regra sem layer vence qualquer
+ * layer**, por especificidade nenhuma. Um reset global de `button` apagaria a
+ * borda do Chip, do Button e do Stepper junto — foi o que aconteceu quando
+ * tentei pelo atalho.
+ */
+.collapseToggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/*
+ * Desktop: a barra vira trilho vertical à esquerda.
+ *
+ * Mesmo 900px em que o conteúdo passa a ser centralizado — abaixo disso a
+ * coluna ocuparia a largura que o conteúdo precisa. Embaixo, a barra estava na
+ * zona do polegar; no desktop não há polegar, e ela ficava a uma tela de
+ * distância do olho, atravessada sob um conteúdo de 640px.
+ *
+ * Só o eixo muda. Os destinos, a ordem e o que cada um faz continuam vindo de
+ * `useNavItems`, e não existe segunda árvore de navegação para o desktop —
+ * duas listas divergem, e a barra some do rodapé em vez de duplicar.
+ */
+@media (min-width: 900px) {
+  .nav {
+    right: auto;
+    top: 0;
+    width: var(--side-nav-width);
+    flex-direction: column;
+    padding-bottom: 0;
+    border-top: none;
+    border-right: var(--border-width) solid var(--color-chrome-dim);
+    transition: width 0.15s ease;
+  }
+
+  /*
+   * O topo do trilho é uma faixa da altura do brasão, com a mesma linha
+   * embaixo: as duas se encontram na borda e a régua horizontal atravessa a
+   * tela inteira. Sem isso o canto superior esquerdo vira um retângulo solto,
+   * sem relação com o cabeçalho ao lado.
+   */
+  .collapseToggle {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    height: var(--header-height);
+    padding-inline: var(--space-3);
+    color: var(--color-chrome-dim);
+    border-bottom: var(--border-width) solid var(--color-chrome-dim);
+    transition: color 0.15s ease;
+  }
+
+  .collapseToggle:hover {
+    color: var(--color-chrome-strong);
+  }
+
+  .collapseIcon {
+    font-size: var(--text-md);
+    font-style: normal;
+    line-height: 1;
+  }
+
+  .item {
+    /* Sem `flex-grow`: em coluna ele repartiria a altura da tela entre os
+       itens, e cada destino viraria uma faixa gigante. */
+    flex-grow: 0;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-3);
+    /* O alvo de 44px é regra de toque. Com mouse ele só afasta os destinos e
+       espalha quatro palavras por meia tela — aqui a altura vem do conteúdo. */
+    min-height: 0;
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-xs);
+  }
+
+  .item:first-of-type {
+    margin-top: var(--space-2);
+  }
+
+  .item:hover {
+    color: var(--color-chrome-strong);
+  }
+
+  .item[aria-current='page'] {
+    /* No rodapé a página atual se distingue só pela cor. Aqui há margem para
+       a barra à esquerda, que é o que marca posição numa lista vertical. */
+    box-shadow: inset 2px 0 0 var(--color-chrome);
+  }
+
+  .icon {
+    /* Maior que no rodapé: recolhido, o ícone é a única coisa que resta, e
+       precisa ser reconhecível sozinho. `line-height: 1` porque a entrelinha
+       do glifo é o que inflava o item — o respiro é o padding, que se enxerga
+       e se ajusta. */
+    font-size: var(--text-lg);
+    line-height: 1;
+    width: 1.5rem;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  /*
+   * Recolhido: sobra a coluna de ícones. A largura efetiva vem do shell, que
+   * reescreve `--side-nav-width` — o padding do conteúdo e o toast leem a mesma
+   * variável e acompanham sozinhos.
+   *
+   * O recuo dos itens **não** muda, e é isso que faz o ícone ficar exatamente
+   * onde estava: 16px de recuo + metade de 24px de ícone dão 28px, que é o
+   * centro do trilho de 56px. Recolher passa a revelar e esconder texto, em vez
+   * de embaralhar a coluna toda.
+   */
+  .nav[data-collapsed='true'] .label {
+    display: none;
+  }
+
+  .nav[data-collapsed='true'] .collapseToggle {
+    justify-content: center;
+    padding-inline: 0;
+  }
 }

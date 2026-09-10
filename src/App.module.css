@@ -25,7 +25,7 @@
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  height: 62px;
+  height: var(--header-height);
   overflow: hidden;
 }
 
@@ -105,5 +105,20 @@
   .crest {
     max-width: var(--content-max-width);
     margin: 0 auto;
+  }
+
+  /* A barra saiu do rodapé e virou trilho à esquerda: o espaço reservado
+     acompanha, senão o conteúdo passa por baixo dela. `--side-nav-width` é
+     reescrito pelo shell ao recolher. Ver `BottomNav`. */
+  .shell {
+    padding-bottom: 0;
+    padding-left: var(--side-nav-width);
+  }
+
+  /* `position: fixed` mede a viewport, não o conteúdo — sem compensar o
+     trilho, o toast apareceria à esquerda do centro que ele deveria marcar. */
+  .toast {
+    bottom: var(--space-4);
+    left: calc(50% + var(--side-nav-width) / 2);
   }
 }

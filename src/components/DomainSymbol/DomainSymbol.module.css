@@ -1,0 +1,11 @@
+/*
+ * Acompanha o texto ao lado: `1em` de lado e alinhamento pela base da linha,
+ * para o emblema não flutuar acima nem empurrar a entrelinha.
+ */
+.symbol {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.135em;
+  flex-shrink: 0;
+}

@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Chip, Collapse, Input, SectionLabel, StepRule } from '@/components'
+import { Chip, Collapse, DomainSymbol, Input, SectionLabel, StepRule } from '@/components'
 import { DOMAIN_LIST } from '@/constants'
 import { SkillText } from '@/fragments'
 import { domainColorToken } from '@/helpers'
@@ -97,6 +97,7 @@ export const Compendium = () => {
                 detail={
                   <span className={styles.rowMeta}>
                     <span className={styles.rowLevel}>
+                      <DomainSymbol domain={skill.domain} />
                       {skill.domain.toUpperCase()} {skill.level}
                     </span>
                     <span className={styles.rowRecall}>◦{skill.recallCost}</span>

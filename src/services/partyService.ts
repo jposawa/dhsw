@@ -186,6 +186,89 @@ export const leaveParty = async (partyId: string, userId: string): Promise<void>
 }
 
 /**
+ * Promover um membro a Narrador. **Não rebaixa ninguém.**
+ *
+ * Narrador é papel, e a mesa pode ter vários — promover não tira nada de quem
+ * já é. Era o contrário antes, e obrigava quem quisesse sair a abrir mão do
+ * papel para outro assumir; com vários Narradores, `canLeaveParty` libera a
+ * saída assim que existe um segundo.
+ *
+ * Recebe o membro inteiro em vez do id porque `joinedAt` e `invitedBy` são
+ * dele: remontar a linha do zero reescreveria quando a pessoa entrou.
+ */
+export const promoteToNarrator = async (member: PartyMember): Promise<PartyMember> => {
+  const promoted: PartyMember = { ...member, roleId: 'gm', level: PARTY_ROLE_LEVEL.gm }
+
+  await update(dhswRootRef(), {
+    [dhswPath(DB_PATHS.partyMember(member.partyId, member.userId))]: sanitize(promoted),
+    [dhswPath(DB_PATHS.userParty(member.userId, member.partyId))]: indexEntry(promoted),
+  })
+
+  return promoted
+}
+
+/**
+ * Entregar o grupo a outro Narrador **e sair, na mesma operação**.
+ *
+ * Posse e saída não podem se separar, e a ordem do estrago mostra por quê: se a
+ * saída passasse e a entrega falhasse, o grupo ficaria sem Dono e sem quem
+ * pudesse virar um — exatamente o órfão que todo o resto do arquivo evita. Numa
+ * escrita só, ou as duas valem ou nenhuma vale.
+ *
+ * A regra avalia `root` **antes** da escrita, então quem entrega ainda é
+ * Narrador no instante em que ela é checada — é isso que autoriza mexer no nó
+ * do grupo e apagar a própria linha de membro de uma vez.
+ */
+export const handOverParty = async (
+  partyId: string,
+  fromUserId: string,
+  toUserId: string,
+): Promise<void> => {
+  await update(dhswRootRef(), {
+    [dhswPath(`${DB_PATHS.party(partyId)}/createdBy`)]: toUserId,
+    [dhswPath(`${DB_PATHS.party(partyId)}/updatedAt`)]: Date.now(),
+    [dhswPath(DB_PATHS.partyMember(partyId, fromUserId))]: null,
+    [dhswPath(DB_PATHS.userParty(fromUserId, partyId))]: null,
+  })
+}
+
+/**
+ * Apagar o grupo inteiro. Só Narrador alcança isto.
+ *
+ * **As fichas não são apagadas — só soltas.** Elas pertencem a quem as
+ * escreveu, não à mesa; apagar junto destruiria trabalho alheio por uma decisão
+ * que não é de quem o fez. Some o `partyId` delas e o índice da party, e cada
+ * ficha volta a ser exatamente o que era antes de entrar.
+ *
+ * Cada nó é removido individualmente em vez de cortar a subárvore de uma vez:
+ * as regras de `partyMembers` e `partySheets` são declaradas no nível do filho,
+ * então escrever `null` no pai não tem regra que o autorize e seria recusado.
+ * Por isso a função precisa receber quem estava dentro — ela não adivinha, e
+ * chamar sem a lista completa deixaria restos inalcançáveis.
+ */
+export const deleteParty = async (
+  partyId: string,
+  memberIds: readonly string[],
+  sheetIds: readonly string[],
+): Promise<void> => {
+  const updates: Record<string, unknown> = {
+    [dhswPath(DB_PATHS.party(partyId))]: null,
+  }
+
+  for (const memberId of memberIds) {
+    updates[dhswPath(DB_PATHS.partyMember(partyId, memberId))] = null
+    updates[dhswPath(DB_PATHS.userParty(memberId, partyId))] = null
+  }
+
+  for (const sheetId of sheetIds) {
+    updates[dhswPath(DB_PATHS.partySheet(partyId, sheetId))] = null
+    updates[dhswPath(`${DB_PATHS.sheet(sheetId)}/partyId`)] = null
+  }
+
+  await update(dhswRootRef(), updates)
+}
+
+/**
  * Pôr uma ficha na party, ou tirá-la.
  *
  * Duas escritas que têm que cair juntas: o campo na ficha (que é o que a regra

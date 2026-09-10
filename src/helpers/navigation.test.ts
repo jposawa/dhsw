@@ -8,7 +8,7 @@ const CATALOGUE: readonly NavItem[] = [
   {
     key: 'compendium',
     label: 'COMPÊNDIO',
-    icon: '◈',
+    icon: 'compendium',
     path: '/compendio',
     needAuth: false,
     active: true,
@@ -17,7 +17,7 @@ const CATALOGUE: readonly NavItem[] = [
   {
     key: 'roster',
     label: 'FICHAS',
-    icon: '◐',
+    icon: 'roster',
     path: '/fichas',
     needAuth: true,
     active: true,
@@ -26,7 +26,7 @@ const CATALOGUE: readonly NavItem[] = [
   {
     key: 'houseRules',
     label: 'REGRAS',
-    icon: '⚙',
+    icon: 'houseRules',
     path: '/regras',
     needAuth: false,
     active: true,

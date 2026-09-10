@@ -2,7 +2,7 @@ import { useAtom, useAtomValue } from 'jotai'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import { Avatar } from '@/components'
+import { Avatar, NavIcon } from '@/components'
 import { ROUTES } from '@/constants'
 import { useAuth } from '@/hooks'
 import { charactersAtom, syncStatusAtom, themeAtom } from '@/states'
@@ -23,7 +23,7 @@ const SYNC_LABELS: Record<string, string> = {
  * só economia de toque: `signInWithPopup` precisa sair de um clique direto,
  * senão o navegador bloqueia o pop-up (`services/authService.ts`).
  */
-export const UserMenu = () => {
+export const UserMenu = ({ isNavCollapsed = false }: { isNavCollapsed?: boolean }) => {
   const { status, user, signIn, signOut } = useAuth()
   const [theme, setTheme] = useAtom(themeAtom)
   const syncStatus = useAtomValue(syncStatusAtom)
@@ -70,10 +70,10 @@ export const UserMenu = () => {
     return (
       <div className={styles.wrapper}>
         <span className={[styles.trigger, styles.placeholder].join(' ')}>
-          <i className={styles.triggerIcon} aria-hidden="true">
-            ◍
+          <i className={[styles.triggerSlot, styles.triggerIcon].join(' ')} aria-hidden="true">
+            <NavIcon name="account" />
           </i>
-          CONTA
+          <span className={styles.triggerLabel}>CONTA</span>
         </span>
       </div>
     )
@@ -82,11 +82,17 @@ export const UserMenu = () => {
   if (status === 'signed-out' || !user) {
     return (
       <div className={styles.wrapper}>
-        <button type="button" className={styles.trigger} onClick={() => void signIn()}>
-          <i className={styles.triggerIcon} aria-hidden="true">
-            ◍
+        <button
+          type="button"
+          className={styles.trigger}
+          title={isNavCollapsed ? 'Entrar' : undefined}
+          aria-label={isNavCollapsed ? 'Entrar' : undefined}
+          onClick={() => void signIn()}
+        >
+          <i className={[styles.triggerSlot, styles.triggerIcon].join(' ')} aria-hidden="true">
+            <NavIcon name="account" />
           </i>
-          ENTRAR
+          <span className={styles.triggerLabel}>ENTRAR</span>
         </button>
       </div>
     )
@@ -95,7 +101,7 @@ export const UserMenu = () => {
   const isDark = theme === 'dark'
 
   return (
-    <div className={styles.wrapper} ref={wrapperRef}>
+    <div className={styles.wrapper} ref={wrapperRef} data-collapsed={isNavCollapsed}>
       <button
         type="button"
         ref={triggerRef}
@@ -105,8 +111,10 @@ export const UserMenu = () => {
         aria-label={`Conta de ${user.displayName}`}
         onClick={() => setIsOpen((open) => !open)}
       >
-        <Avatar imageUrl={user.photoUrl ?? undefined} name={user.displayName} />
-        CONTA
+        <span className={styles.triggerSlot}>
+          <Avatar imageUrl={user.photoUrl ?? undefined} name={user.displayName} size="sm" />
+        </span>
+        <span className={styles.triggerLabel}>CONTA</span>
       </button>
 
       {isOpen ? (

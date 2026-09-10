@@ -3,19 +3,30 @@ import React from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom'
 
 import { CLASSES_BY_NAME } from '@/compendium'
-import { Avatar, Button, SectionLabel, StepRule } from '@/components'
+import { Avatar, Button, Modal, SectionLabel, StepRule } from '@/components'
 import { PARTY_ROLES, ROUTES } from '@/constants'
-import { domainColorToken, touchCharacter } from '@/helpers'
 import {
+  canLeaveParty,
+  domainColorToken,
+  isPartyOwner,
+  mustHandOverParty,
+  promotableMembers,
+  successorCandidates,
+  touchCharacter,
+} from '@/helpers'
+import {
+  deleteParty,
   fetchParty,
   fetchPartyMembers,
   fetchPartySheets,
   fetchProfile,
+  handOverParty,
   leaveParty,
+  promoteToNarrator,
   setSheetParty,
 } from '@/services'
 import { authAtom, charactersAtom, rosterAtom, toastAtom } from '@/states'
-import type { Character, Party, PartyMemberView } from '@/types'
+import type { Character, Party, PartyMember, PartyMemberView } from '@/types'
 
 import styles from './PartyDetail.module.css'
 
@@ -41,6 +52,9 @@ export const PartyDetail = () => {
   const [members, setMembers] = React.useState<PartyMemberView[]>([])
   const [sheets, setSheets] = React.useState<Character[]>([])
   const [isLoading, setIsLoading] = React.useState(true)
+  const [isConfirmingDelete, setIsConfirmingDelete] = React.useState(false)
+  const [isHandingOver, setIsHandingOver] = React.useState(false)
+  const [isWorking, setIsWorking] = React.useState(false)
 
   React.useEffect(() => {
     if (!partyId) {
@@ -97,7 +111,25 @@ export const PartyDetail = () => {
     return <Navigate to={ROUTES.parties} replace />
   }
 
-  const myRole = members.find((view) => view.member.userId === user.userId)?.member
+  const memberRows = members.map((view) => view.member)
+  const myRole = memberRows.find((member) => member.userId === user.userId)
+
+  /**
+   * As três perguntas vêm de `helpers/party.ts`, que é onde a regra mora e onde
+   * ela é testada — a mesma que a `database.rules.json` impõe. Reescrevê-las
+   * aqui seria a versão da tela discordando da do servidor no dia em que uma
+   * das duas mudasse.
+   */
+  const canLeave = canLeaveParty(memberRows, user.userId)
+  const isOwner = isPartyOwner(party, user.userId)
+  const needsHandOver = mustHandOverParty(party, memberRows, user.userId)
+  const isLastNarrator = Boolean(myRole) && !canLeave
+  const promotable = promotableMembers(memberRows)
+  const successors = successorCandidates(memberRows, user.userId)
+
+  const nameOf = (userId: string): string =>
+    members.find((view) => view.member.userId === userId)?.displayName ?? 'Jogador'
+
   const sheetsInParty = new Set(sheets.map((sheet) => sheet.id))
   const addableSheets = myCharacters.filter((character) => !sheetsInParty.has(character.id))
 
@@ -122,12 +154,88 @@ export const PartyDetail = () => {
   }
 
   const handleLeave = async () => {
+    // O Dono não sai direto: primeiro decide para quem o grupo fica.
+    if (needsHandOver) {
+      setIsHandingOver(true)
+
+      return
+    }
+
+    setIsWorking(true)
+
     try {
       await leaveParty(partyId, user.userId)
       setToast('Você saiu do grupo')
       void navigate(ROUTES.parties)
     } catch {
       setToast('Não foi possível sair do grupo.')
+    } finally {
+      setIsWorking(false)
+    }
+  }
+
+  const handlePromote = async (member: PartyMember) => {
+    setIsWorking(true)
+
+    try {
+      const promoted = await promoteToNarrator(member)
+      setToast(`${nameOf(member.userId)} agora é Narrador`)
+      // Recarregar seria ir ao servidor perguntar o que acabamos de mandar: a
+      // promoção é determinística e já foi confirmada.
+      setMembers((current) =>
+        current.map((view) =>
+          view.member.userId === member.userId ? { ...view, member: promoted } : view,
+        ),
+      )
+    } catch {
+      setToast('Não foi possível promover.')
+    } finally {
+      setIsWorking(false)
+    }
+  }
+
+  const handleHandOver = async (toUserId: string) => {
+    setIsWorking(true)
+
+    try {
+      await handOverParty(partyId, user.userId, toUserId)
+      setToast(`O grupo agora é de ${nameOf(toUserId)}`)
+      void navigate(ROUTES.parties)
+    } catch {
+      setToast('Não foi possível entregar o grupo.')
+    } finally {
+      setIsWorking(false)
+      setIsHandingOver(false)
+    }
+  }
+
+  const handleDelete = async () => {
+    setIsWorking(true)
+
+    try {
+      await deleteParty(
+        partyId,
+        members.map((view) => view.member.userId),
+        sheets.map((sheet) => sheet.id),
+      )
+
+      // As fichas continuam existindo, então o roster local precisa perder o
+      // vínculo junto — senão a ficha mostraria um grupo que não existe mais.
+      const released = Object.fromEntries(
+        Object.entries(roster.characters).map(([id, character]) => [
+          id,
+          character.partyId === partyId ? touchCharacter({ ...character, partyId: null }) : character,
+        ]),
+      )
+
+      setRoster({ ...roster, characters: released })
+      setToast('Grupo apagado')
+      void navigate(ROUTES.parties)
+    } catch {
+      setToast('Não foi possível apagar o grupo.')
+    } finally {
+      setIsWorking(false)
+      setIsConfirmingDelete(false)
     }
   }
 
@@ -144,7 +252,10 @@ export const PartyDetail = () => {
             <Avatar imageUrl={photoUrl ?? undefined} name={displayName} />
             <span className={styles.rowText}>
               <b className={styles.rowName}>{displayName}</b>
-              <span className={styles.rowMeta}>{labelForRole(member.roleId)}</span>
+              <span className={styles.rowMeta}>
+                {labelForRole(member.roleId)}
+                {isPartyOwner(party, member.userId) ? ' · dono' : ''}
+              </span>
             </span>
           </li>
         ))}
@@ -211,17 +322,160 @@ export const PartyDetail = () => {
         expira e não dá para revogar — trate como o link de uma ficha.
       </p>
 
+      {/* Promover é ação de Narrador, e não só a saída de emergência de quem
+          está preso: uma mesa grande quer um segundo Narrador de qualquer
+          jeito. Por isso a seção não depende de `isLastNarrator`. */}
+      {myRole?.roleId === 'gm' && promotable.length > 0 ? (
+        <>
+          <SectionLabel>ADICIONAR NARRADOR</SectionLabel>
+          <div className={styles.actions}>
+            {promotable.map((member) => (
+              <Button
+                key={member.userId}
+                isFullWidth
+                variant="outline"
+                disabled={isWorking}
+                onClick={() => void handlePromote(member)}
+              >
+                + &nbsp;{nameOf(member.userId).toUpperCase()}
+              </Button>
+            ))}
+          </div>
+          <p className={styles.note}>
+            Narrador administra o grupo junto com você — ninguém é rebaixado. É
+            também o que libera a sua saída, se você for o único hoje.
+          </p>
+        </>
+      ) : null}
+
       <div className={styles.actions}>
         <Button
           isFullWidth
           variant="outline"
           intent="danger"
-          disabled={!myRole}
+          disabled={!myRole || !canLeave || isWorking}
           onClick={() => void handleLeave()}
         >
           SAIR DO GRUPO
         </Button>
       </div>
+
+      {isLastNarrator ? (
+        <p className={styles.note}>
+          {promotable.length > 0
+            ? 'Você é o único Narrador, então sair deixaria a mesa sem quem a administre — um grupo sem Narrador não pode ser apagado nem ter alguém promovido. Suba alguém a Narrador acima, ou desfaça a mesa.'
+            : 'Você é o único Narrador e não há mais ninguém na mesa. Sair deixaria o grupo inalcançável, então o que resta é desfazê-lo.'}
+        </p>
+      ) : null}
+
+      {isOwner && !isLastNarrator ? (
+        <p className={styles.note}>
+          O grupo é seu. Ao sair, você escolhe para qual Narrador ele fica.
+        </p>
+      ) : null}
+
+      {/* Apagar é do Dono, não de todo Narrador: o grupo é dele, e um Narrador
+          convidado que quiser sair sempre pode — o Dono continua na mesa como
+          segundo Narrador, então `canLeaveParty` já o libera. Ninguém fica
+          preso precisando desta porta. */}
+      {isOwner && myRole?.roleId === 'gm' ? (
+        <>
+          <SectionLabel>DESFAZER A MESA</SectionLabel>
+          <div className={styles.actions}>
+            <Button
+              isFullWidth
+              intent="danger"
+              disabled={isWorking}
+              onClick={() => setIsConfirmingDelete(true)}
+            >
+              APAGAR GRUPO
+            </Button>
+          </div>
+        </>
+      ) : null}
+
+      {/* Entregar o grupo: só aparece quando o Dono tenta sair, porque é aí que
+          a escolha existe. `isPersistent` porque sair pelo fundo deixaria a
+          pessoa achando que saiu — e ela continua dentro. */}
+      <Modal
+        isOpen={isHandingOver}
+        isPersistent
+        title="Para quem fica o grupo?"
+        onClose={() => setIsHandingOver(false)}
+        footer={
+          <Button
+            variant="outline"
+            disabled={isWorking}
+            onClick={() => setIsHandingOver(false)}
+          >
+            CANCELAR
+          </Button>
+        }
+      >
+        {successors.length > 0 ? (
+          <>
+            <p className={styles.note}>
+              O grupo <b>{party?.name || 'Sem nome'}</b> é seu. Escolha quem passa a
+              ser o Dono — você sai na mesma ação.
+            </p>
+            <div className={styles.actions}>
+              {successors.map((member) => (
+                <Button
+                  key={member.userId}
+                  isFullWidth
+                  variant="outline"
+                  disabled={isWorking}
+                  onClick={() => void handleHandOver(member.userId)}
+                >
+                  {nameOf(member.userId).toUpperCase()}
+                </Button>
+              ))}
+            </div>
+          </>
+        ) : (
+          <p className={styles.note}>
+            O grupo só pode ficar com outro Narrador, e ainda não há nenhum além de
+            você. Feche isto e suba alguém a Narrador — ou desfaça a mesa, se ela
+            acabou.
+          </p>
+        )}
+      </Modal>
+
+      {/* Modal da ronin-ui: <dialog> nativo, então prender o foco, fechar no
+          Escape e devolver o foco ao gatilho vêm do navegador. `isPersistent`
+          porque apagar é irreversível — sair sem querer clicando no fundo é
+          exatamente o acidente a evitar. */}
+      <Modal
+        isOpen={isConfirmingDelete}
+        isPersistent
+        title="Apagar este grupo?"
+        onClose={() => setIsConfirmingDelete(false)}
+        footer={
+          <>
+            <Button
+              variant="outline"
+              disabled={isWorking}
+              onClick={() => setIsConfirmingDelete(false)}
+            >
+              CANCELAR
+            </Button>
+            <Button intent="danger" disabled={isWorking} onClick={() => void handleDelete()}>
+              {isWorking ? 'APAGANDO…' : 'APAGAR'}
+            </Button>
+          </>
+        }
+      >
+        <p className={styles.note}>
+          O grupo <b>{party?.name || 'Sem nome'}</b> some para todos os{' '}
+          {members.length === 1 ? 'seus membros' : `${members.length} membros`}, junto
+          com o código de convite. Não dá para desfazer.
+        </p>
+        <p className={styles.note}>
+          As {sheets.length === 1 ? 'ficha' : 'fichas'} do grupo{' '}
+          <b>não {sheets.length === 1 ? 'é apagada' : 'são apagadas'}</b> — cada uma
+          volta para quem a escreveu, sem grupo.
+        </p>
+      </Modal>
     </main>
   )
 }

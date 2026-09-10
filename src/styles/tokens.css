@@ -112,6 +112,21 @@
 
   --bottom-bar-height: calc(58px + env(safe-area-inset-bottom));
   --content-max-width: 640px;
+
+  /* Altura da faixa do brasão. Compartilhada com o topo do trilho lateral,
+     para que a linha horizontal atravesse a tela sem degrau. */
+  --header-height: 62px;
+
+  /* Largura do trilho lateral no desktop. `--side-nav-width` é o valor efetivo
+     e o shell o reescreve ao recolher — é ele que a barra, o padding do
+     conteúdo e o toast leem, para os três nunca discordarem.
+
+     O ponto de virada (900px) fica nos `@media`, porque `@media` não lê custom
+     property; ele se repete nos arquivos que o usam e não aparece aqui, para
+     não fingir que este bloco é a fonte da verdade dele. */
+  --side-nav-width-expanded: 168px;
+  --side-nav-width-collapsed: 56px;
+  --side-nav-width: var(--side-nav-width-expanded);
 }
 
 /* ── tema escuro — o padrão ───────────────────────────────────────────────

@@ -1,0 +1,7 @@
+/* Acompanha o texto ao lado: `1em` de lado, alinhado pelo bloco. */
+.icon {
+  display: block;
+  width: 1em;
+  height: 1em;
+  flex-shrink: 0;
+}

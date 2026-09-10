@@ -7,12 +7,29 @@
  * sem deploy. Ver CONFIG.md.
  */
 
+/**
+ * Ícones da navegação. União literal porque o valor não é texto livre: cada
+ * nome precisa ter arte desenhada em `components/NavIcon`, e o compilador é
+ * quem garante que um item do catálogo não aponte para ícone inexistente.
+ */
+export type NavIconName = 'compendium' | 'roster' | 'parties' | 'houseRules' | 'account'
+
 export type NavItem = {
   /** Chave estavel. E por ela que a config remota referencia o item. */
   key: string
   label: string
-  /** Glifo do proto. Texto, nao componente: nao arrasta uma lib de icones. */
-  icon: string
+  /**
+   * Nome do ícone, desenhado em `components/NavIcon` — não um glifo.
+   *
+   * Era um caractere Unicode, para não arrastar uma biblioteca de ícones. A
+   * biblioteca continua fora: a arte é local, no mesmo traço dos emblemas de
+   * domínio. O que mudou é que `◈ ◐ ◎ ⚙` não se distinguiam entre si no
+   * trilho recolhido, onde o ícone é tudo o que resta do item.
+   *
+   * Continua sendo **dado**, e não componente: o catálogo se mistura com a
+   * config remota, que precisa ser serializável.
+   */
+  icon: NavIconName
   path: string
   /** Some para quem nao entrou. */
   needAuth: boolean

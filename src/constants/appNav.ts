@@ -22,7 +22,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
   {
     key: 'compendium',
     label: 'COMPÊNDIO',
-    icon: '◈',
+    icon: 'compendium',
     path: ROUTES.compendium,
     needAuth: false,
     active: true,
@@ -31,7 +31,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
   {
     key: 'roster',
     label: 'FICHAS',
-    icon: '◐',
+    icon: 'roster',
     path: ROUTES.roster,
     needAuth: true,
     active: true,
@@ -40,7 +40,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
   {
     key: 'parties',
     label: 'GRUPOS',
-    icon: '◎',
+    icon: 'parties',
     path: ROUTES.parties,
     needAuth: true,
     active: true,
@@ -49,7 +49,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
   {
     key: 'houseRules',
     label: 'REGRAS',
-    icon: '⚙',
+    icon: 'houseRules',
     path: ROUTES.houseRules,
     needAuth: false,
     active: true,

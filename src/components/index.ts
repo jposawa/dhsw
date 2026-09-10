@@ -29,3 +29,5 @@ export {
 
 export { Pip } from './Pip'
 export { StepRule } from './StepRule'
+export { DomainSymbol } from './DomainSymbol'
+export { NavIcon } from './NavIcon'

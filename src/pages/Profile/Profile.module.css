@@ -46,7 +46,7 @@
 .label {
   font-size: var(--text-2xs);
   letter-spacing: var(--tracking-wider);
-  color: var(--color-chrome-dim);
+  color: var(--color-text-muted);
 }
 
 .input {

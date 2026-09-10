@@ -92,7 +92,7 @@
     justify-content: flex-end;
     height: var(--header-height);
     padding-inline: var(--space-3);
-    color: var(--color-chrome-dim);
+    color: var(--color-text-muted);
     border-bottom: var(--border-width) solid var(--color-chrome-dim);
     transition: color 0.15s ease;
   }

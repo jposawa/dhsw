@@ -47,7 +47,7 @@
   margin-bottom: var(--space-1);
   font-size: var(--text-2xs);
   letter-spacing: var(--tracking-wider);
-  color: var(--color-chrome-dim);
+  color: var(--color-text-muted);
 }
 
 .field input,

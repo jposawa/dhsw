@@ -179,7 +179,9 @@
   --color-domain-allure: #c96b96;
   --color-domain-edge: #3fae9b;
   --color-domain-essence: #8e7bd8;
-  --color-domain-havoc: #d25a47;
+  /* Clareado de #d25a47: 4,33:1 sobre `--color-bg-elevated`, abaixo de AA —
+     e é ali que a cor vira o rótulo da carta, nas linhas do compêndio. */
+  --color-domain-havoc: #d4614f;
   /* Clareado de #6673c4: 4,31:1 sobre `--color-bg`, abaixo de AA. */
   --color-domain-veil: #7d8ad6;
 
@@ -193,9 +195,16 @@
 }
 
 /* ── tema claro — secundário ──────────────────────────────────────────────
- * As cores de domínio ficam nos valores escuros DE PROPÓSITO: nenhuma passa
- * 4,5:1 em fundo claro (Aegis dá 2,25). Aqui elas nunca são texto — só faixa,
- * borda e preenchimento. Decisão em aberto em STYLING.md.
+ * As cores de domínio são **escurecidas** aqui, e a razão é a regra do
+ * STYLING.md: "AEGIS 3 · Recall 2" é o dado da carta, não decoração, então o
+ * token se ajusta em vez de a exceção se abrir.
+ *
+ * A versão anterior deste bloco afirmava que no tema claro elas "nunca são
+ * texto" — e isso nunca foi verdade: `Compendium.module.css` pinta o nome do
+ * domínio e o nível de cada linha com elas. Aegis dava 2,25:1 sobre branco,
+ * metade do mínimo. Os valores abaixo mantêm matiz e saturação e baixam só a
+ * luminosidade, até 4,6:1 sobre `--color-bg-elevated`, que é o fundo onde essa
+ * cor vira texto.
  * ───────────────────────────────────────────────────────────────────────── */
 
 .theme-light {
@@ -217,7 +226,9 @@
   --color-text-strong: var(--color-chrome-strong);
 
   --color-text-muted: #5a636d;
-  --color-text-dim: #6b7480;
+  /* Escurecido de #6b7480: dava 4,26:1 sobre `--color-bg`, e é o rótulo dos
+     destinos na navegação — texto, não ornamento. */
+  --color-text-dim: #5e6671;
   --color-text-disabled: #a7aec0;
 
   --color-primary: #46545f;
@@ -228,12 +239,12 @@
   --color-info: #1a5f8a;
   --color-neutral: #5a636d;
 
-  --color-domain-aegis: #d9a441;
-  --color-domain-allure: #c96b96;
-  --color-domain-edge: #3fae9b;
-  --color-domain-essence: #8e7bd8;
-  --color-domain-havoc: #d25a47;
-  --color-domain-veil: #6673c4;
+  --color-domain-aegis: #976d1e;
+  --color-domain-allure: #be4c80;
+  --color-domain-edge: #2f8173;
+  --color-domain-essence: #7a63d1;
+  --color-domain-havoc: #cd4833;
+  --color-domain-veil: #616fc2;
 
   --color-on-accent: #ffffff;
   --color-on-chrome: var(--color-on-accent);

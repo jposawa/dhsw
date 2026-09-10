@@ -58,7 +58,9 @@
   font-size: var(--text-2xs);
   letter-spacing: var(--tracking-wider);
   text-indent: var(--tracking-wider);
-  color: var(--color-chrome-dim);
+  /* `--color-chrome-dim` daria 3,4:1 no claro e 3,1:1 no escuro. Ele serve
+     borda e ornamento, onde isso basta; aqui é texto. */
+  color: var(--color-text-muted);
 }
 
 .segments {

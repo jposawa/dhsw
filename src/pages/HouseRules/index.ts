@@ -1,1 +1,1 @@
-export { HouseRules } from './HouseRules'
+export { HouseRules } from "./HouseRules"

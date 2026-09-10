@@ -14,7 +14,7 @@
  * uma terceira tabela — a razão de `SheetAccess` existir não se aplica.
  */
 
-export type PartyRoleId = 'player' | 'gm'
+export type PartyRoleId = "player" | "gm"
 
 /** Espaçados de 10, como os papéis de ficha, para caber um no meio depois. */
 export type PartyRoleLevel = 10 | 20

@@ -1,6 +1,6 @@
 // GERADO POR scripts/build-compendium.ts — NÃO EDITAR À MÃO.
 // Fonte: specs/dh-sw.html
-import type { Skill } from '@/types'
+import type { Skill } from "@/types"
 
 export const SKILLS: readonly Skill[] = [
   {

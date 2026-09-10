@@ -1,10 +1,10 @@
-import { atom } from 'jotai'
-import { atomWithStorage } from 'jotai/utils'
+import { atom } from "jotai"
+import { atomWithStorage } from "jotai/utils"
 
-import { STORAGE_KEYS, STORAGE_VERSIONS } from '@/constants'
-import { rosterV1ToV2 } from '@/helpers'
-import { createVersionedStorage } from '@/services'
-import type { Character, RosterState } from '@/types'
+import { STORAGE_KEYS, STORAGE_VERSIONS } from "@/constants"
+import { rosterV1ToV2 } from "@/helpers"
+import { createVersionedStorage } from "@/services"
+import type { Character, RosterState } from "@/types"
 
 const EMPTY_ROSTER: RosterState = { characters: {}, order: [] }
 

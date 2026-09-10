@@ -1,6 +1,6 @@
-import type { SyncStorage } from 'jotai/vanilla/utils/atomWithStorage'
+import type { SyncStorage } from "jotai/vanilla/utils/atomWithStorage"
 
-import type { VersionedStorageOptions } from '@/types'
+import type { VersionedStorageOptions } from "@/types"
 
 /**
  * Armazenamento local versionado.
@@ -17,11 +17,11 @@ type VersionedPayload<TValue> = {
 }
 
 const isVersionedPayload = (raw: unknown): raw is VersionedPayload<unknown> =>
-  typeof raw === 'object' &&
+  typeof raw === "object" &&
   raw !== null &&
-  'version' in raw &&
-  typeof (raw as { version: unknown }).version === 'number' &&
-  'value' in raw
+  "version" in raw &&
+  typeof (raw as { version: unknown }).version === "number" &&
+  "value" in raw
 
 export const createVersionedStorage = <TValue>(
   { version, migrations }: VersionedStorageOptions<TValue>,

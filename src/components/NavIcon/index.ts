@@ -1,1 +1,1 @@
-export { NavIcon } from './NavIcon'
+export { NavIcon } from "./NavIcon"

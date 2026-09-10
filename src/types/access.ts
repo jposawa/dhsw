@@ -12,7 +12,7 @@
  * Os niveis numericos vivem em `constants/access.ts`.
  */
 
-export type SheetRoleId = 'reader' | 'coAuthor' | 'author'
+export type SheetRoleId = "reader" | "coAuthor" | "author"
 
 /** Espacados de 10 para caber um papel no meio sem tocar em regra existente. */
 export type SheetRoleLevel = 10 | 20 | 30
@@ -62,6 +62,6 @@ export type SheetIndexEntry = {
 
 /** Uma ficha alcancavel pelo jogador, com o papel dele nela. */
 export type SheetWithRole = {
-  character: import('./character').Character
+  character: import("./character").Character
   roleId: SheetRoleId
 }

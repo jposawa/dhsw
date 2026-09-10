@@ -1,25 +1,25 @@
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import React from 'react'
+import { useAtom, useAtomValue, useSetAtom } from "jotai"
+import React from "react"
 
-import { Avatar, Button, Input, SectionLabel, StepRule, Switch } from '@/components'
-import { databaseEnvironment } from '@/lib/firebase'
-import { fetchProfile, updateDisplayName } from '@/services'
+import { Avatar, Button, Input, SectionLabel, StepRule, Switch } from "@/components"
+import { databaseEnvironment } from "@/lib/firebase"
+import { fetchProfile, updateDisplayName } from "@/services"
 import {
   charactersAtom,
   syncErrorAtom,
   syncStatusAtom,
   themeAtom,
   toastAtom,
-} from '@/states'
-import { useAuth } from '@/hooks'
+} from "@/states"
+import { useAuth } from "@/hooks"
 
-import styles from './Profile.module.css'
+import styles from "./Profile.module.css"
 
 const SYNC_LABELS: Record<string, string> = {
-  idle: 'não sincronizado',
-  pulling: 'sincronizando…',
-  ready: 'em dia',
-  error: 'falhou',
+  idle: "não sincronizado",
+  pulling: "sincronizando…",
+  ready: "em dia",
+  error: "falhou",
 }
 
 /**
@@ -38,8 +38,8 @@ export const Profile = () => {
   const characters = useAtomValue(charactersAtom)
   const setToast = useSetAtom(toastAtom)
 
-  const [displayName, setDisplayName] = React.useState('')
-  const [savedName, setSavedName] = React.useState('')
+  const [displayName, setDisplayName] = React.useState("")
+  const [savedName, setSavedName] = React.useState("")
   const [isSaving, setIsSaving] = React.useState(false)
 
   // O nome vem do perfil no banco, não do provedor: é lá que mora o que a
@@ -84,15 +84,15 @@ export const Profile = () => {
     try {
       await updateDisplayName(user.userId, trimmedName)
       setSavedName(trimmedName)
-      setToast('Nome salvo')
+      setToast("Nome salvo")
     } catch {
-      setToast('Não foi possível salvar o nome.')
+      setToast("Não foi possível salvar o nome.")
     } finally {
       setIsSaving(false)
     }
   }
 
-  const isDark = theme === 'dark'
+  const isDark = theme === "dark"
 
   return (
     <main className={styles.page}>
@@ -115,7 +115,7 @@ export const Profile = () => {
           onValueChange={setDisplayName}
         />
         <Button isFullWidth disabled={!canSave} onClick={() => void handleSave()}>
-          {isSaving ? 'SALVANDO…' : 'SALVAR NOME'}
+          {isSaving ? "SALVANDO…" : "SALVAR NOME"}
         </Button>
       </div>
 
@@ -134,10 +134,10 @@ export const Profile = () => {
           <span
             className={[
               styles.rowValue,
-              syncStatus === 'error' ? styles.rowValueWarn : '',
+              syncStatus === "error" ? styles.rowValueWarn : "",
             ]
               .filter(Boolean)
-              .join(' ')}
+              .join(" ")}
           >
             {SYNC_LABELS[syncStatus] ?? syncStatus}
           </span>
@@ -165,7 +165,7 @@ export const Profile = () => {
       <Switch
         className={styles.switch}
         isOn={isDark}
-        onToggle={() => setTheme(isDark ? 'light' : 'dark')}
+        onToggle={() => setTheme(isDark ? "light" : "dark")}
       >
         TEMA ESCURO
       </Switch>

@@ -1,7 +1,7 @@
-import { get, update } from 'firebase/database'
+import { get, update } from "firebase/database"
 
-import { DB_PATHS, PARTY_ROLE_LEVEL } from '@/constants'
-import { dhswPath, dhswRef, dhswRootRef } from '@/lib/firebase'
+import { DB_PATHS, PARTY_ROLE_LEVEL } from "@/constants"
+import { dhswPath, dhswRef, dhswRootRef } from "@/lib/firebase"
 import type {
   Character,
   Party,
@@ -9,7 +9,7 @@ import type {
   PartyMember,
   PartyRoleId,
   PartyWithRole,
-} from '@/types'
+} from "@/types"
 
 /**
  * Grupos de jogo.
@@ -31,7 +31,7 @@ const sanitize = <TValue>(value: TValue): TValue => {
     return value.map((item) => sanitize(item)) as TValue
   }
 
-  if (value === null || typeof value !== 'object') {
+  if (value === null || typeof value !== "object") {
     return value
   }
 
@@ -74,10 +74,10 @@ export const createParty = async (name: string, userId: string): Promise<Party> 
     createdBy: userId,
     createdAt: now,
     updatedAt: now,
-    notes: '',
+    notes: "",
   }
 
-  const member = memberRow(party.id, userId, 'gm')
+  const member = memberRow(party.id, userId, "gm")
 
   await update(dhswRootRef(), {
     [dhswPath(DB_PATHS.party(party.id))]: sanitize(party),
@@ -159,7 +159,7 @@ export const joinParty = async (partyId: string, userId: string): Promise<Party>
   const indexSnapshot = await get(dhswRef(DB_PATHS.userParty(userId, partyId)))
 
   if (!indexSnapshot.exists()) {
-    const member = memberRow(partyId, userId, 'player')
+    const member = memberRow(partyId, userId, "player")
 
     await update(dhswRootRef(), {
       [dhswPath(DB_PATHS.partyMember(partyId, userId))]: sanitize(member),
@@ -172,7 +172,7 @@ export const joinParty = async (partyId: string, userId: string): Promise<Party>
   if (!party) {
     await leaveParty(partyId, userId)
 
-    throw new Error('Grupo não encontrado')
+    throw new Error("Grupo não encontrado")
   }
 
   return party
@@ -197,7 +197,7 @@ export const leaveParty = async (partyId: string, userId: string): Promise<void>
  * dele: remontar a linha do zero reescreveria quando a pessoa entrou.
  */
 export const promoteToNarrator = async (member: PartyMember): Promise<PartyMember> => {
-  const promoted: PartyMember = { ...member, roleId: 'gm', level: PARTY_ROLE_LEVEL.gm }
+  const promoted: PartyMember = { ...member, roleId: "gm", level: PARTY_ROLE_LEVEL.gm }
 
   await update(dhswRootRef(), {
     [dhswPath(DB_PATHS.partyMember(member.partyId, member.userId))]: sanitize(promoted),

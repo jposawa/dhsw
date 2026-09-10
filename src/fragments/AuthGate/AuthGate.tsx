@@ -1,12 +1,12 @@
-import { useAtomValue } from 'jotai'
-import { Link, Outlet } from 'react-router-dom'
+import { useAtomValue } from "jotai"
+import { Link, Outlet } from "react-router-dom"
 
-import { Button, StepRule } from '@/components'
-import { ROUTES } from '@/constants'
-import { useAuth } from '@/hooks'
-import { authAtom } from '@/states'
+import { Button, StepRule } from "@/components"
+import { ROUTES } from "@/constants"
+import { useAuth } from "@/hooks"
+import { authAtom } from "@/states"
 
-import styles from './AuthGate.module.css'
+import styles from "./AuthGate.module.css"
 
 /**
  * Porta da parte de ficha.
@@ -22,7 +22,7 @@ export const AuthGate = () => {
   const { status } = useAtomValue(authAtom)
   const { signIn } = useAuth()
 
-  if (status === 'unknown') {
+  if (status === "unknown") {
     return (
       <main className={styles.page}>
         <p className={styles.waiting}>Restaurando sessão…</p>
@@ -30,7 +30,7 @@ export const AuthGate = () => {
     )
   }
 
-  if (status === 'signed-out') {
+  if (status === "signed-out") {
     return (
       <main className={styles.page}>
         <StepRule />

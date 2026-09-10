@@ -1,4 +1,4 @@
-import type { HomeConfig, NavItem, NavItemOverride } from '@/types'
+import type { HomeConfig, NavItem, NavItemOverride } from "@/types"
 
 /**
  * Composição do menu e da página inicial. Puro — a UI só renderiza.

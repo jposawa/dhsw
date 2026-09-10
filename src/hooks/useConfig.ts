@@ -1,9 +1,9 @@
-import { useAtomValue, useStore } from 'jotai'
-import React from 'react'
+import { useAtomValue, useStore } from "jotai"
+import React from "react"
 
-import { fetchRemoteConfig } from '@/services'
-import { configStatusAtom, remoteConfigAtom } from '@/states'
-import type { ConfigStatus, RemoteConfig } from '@/types'
+import { fetchRemoteConfig } from "@/services"
+import { configStatusAtom, remoteConfigAtom } from "@/states"
+import type { ConfigStatus, RemoteConfig } from "@/types"
 
 export type UseConfigOptions = {
   /**
@@ -49,18 +49,18 @@ export const useConfig = ({ initialFetch = false }: UseConfigOptions = {}): UseC
   const store = useStore()
 
   React.useEffect(() => {
-    if (!initialFetch || store.get(configStatusAtom) !== 'default') {
+    if (!initialFetch || store.get(configStatusAtom) !== "default") {
       return
     }
 
-    store.set(configStatusAtom, 'loading')
+    store.set(configStatusAtom, "loading")
     let isCancelled = false
 
     void fetchRemoteConfig()
       .then((remote) => {
         if (!isCancelled) {
           store.set(remoteConfigAtom, remote)
-          store.set(configStatusAtom, 'loaded')
+          store.set(configStatusAtom, "loaded")
         }
       })
       .catch(() => {
@@ -69,7 +69,7 @@ export const useConfig = ({ initialFetch = false }: UseConfigOptions = {}): UseC
         // não ficar preso em 'loading' para sempre — e nada na tela muda,
         // porque o padrão do código continua valendo.
         if (!isCancelled) {
-          store.set(configStatusAtom, 'error')
+          store.set(configStatusAtom, "error")
         }
       })
 

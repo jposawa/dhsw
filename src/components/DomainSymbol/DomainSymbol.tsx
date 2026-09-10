@@ -1,8 +1,8 @@
-import { domainColorToken } from '@/helpers'
-import type { BaseComponent, Domain } from '@/types'
+import { domainColorToken } from "@/helpers"
+import type { BaseComponent, Domain } from "@/types"
 
-import styles from './DomainSymbol.module.css'
-import { DOMAIN_SYMBOL_ART } from './symbols'
+import styles from "./DomainSymbol.module.css"
+import { DOMAIN_SYMBOL_ART } from "./symbols"
 
 type DomainSymbolProps = BaseComponent & {
   domain: Domain
@@ -28,7 +28,7 @@ type DomainSymbolProps = BaseComponent & {
  */
 export const DomainSymbol = ({ domain, label, className, style }: DomainSymbolProps) => (
   <svg
-    className={[styles.symbol, className].filter(Boolean).join(' ')}
+    className={[styles.symbol, className].filter(Boolean).join(" ")}
     style={{ color: domainColorToken(domain), ...style }}
     viewBox="0 0 24 24"
     fill="none"
@@ -36,7 +36,7 @@ export const DomainSymbol = ({ domain, label, className, style }: DomainSymbolPr
     strokeWidth="1.4"
     strokeLinecap="round"
     strokeLinejoin="round"
-    role={label ? 'img' : undefined}
+    role={label ? "img" : undefined}
     aria-label={label}
     aria-hidden={label ? undefined : true}
     data-testid={`domain-symbol-${domain.toLowerCase()}`}

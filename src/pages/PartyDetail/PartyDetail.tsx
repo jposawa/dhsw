@@ -1,10 +1,10 @@
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import React from 'react'
-import { Navigate, useNavigate, useParams } from 'react-router-dom'
+import { useAtom, useAtomValue, useSetAtom } from "jotai"
+import React from "react"
+import { Navigate, useNavigate, useParams } from "react-router-dom"
 
-import { CLASSES_BY_NAME } from '@/compendium'
-import { Avatar, Button, Modal, SectionLabel, StepRule } from '@/components'
-import { PARTY_ROLES, ROUTES } from '@/constants'
+import { CLASSES_BY_NAME } from "@/compendium"
+import { Avatar, Button, Modal, SectionLabel, StepRule } from "@/components"
+import { PARTY_ROLES, ROUTES } from "@/constants"
 import {
   canLeaveParty,
   domainColorToken,
@@ -13,7 +13,7 @@ import {
   promotableMembers,
   successorCandidates,
   touchCharacter,
-} from '@/helpers'
+} from "@/helpers"
 import {
   deleteParty,
   fetchParty,
@@ -24,11 +24,11 @@ import {
   leaveParty,
   promoteToNarrator,
   setSheetParty,
-} from '@/services'
-import { authAtom, charactersAtom, rosterAtom, toastAtom } from '@/states'
-import type { Character, Party, PartyMember, PartyMemberView } from '@/types'
+} from "@/services"
+import { authAtom, charactersAtom, rosterAtom, toastAtom } from "@/states"
+import type { Character, Party, PartyMember, PartyMemberView } from "@/types"
 
-import styles from './PartyDetail.module.css'
+import styles from "./PartyDetail.module.css"
 
 const labelForRole = (roleId: string): string =>
   PARTY_ROLES.find((role) => role.id === roleId)?.label ?? roleId
@@ -78,7 +78,7 @@ export const PartyDetail = () => {
 
             return {
               member,
-              displayName: profile?.displayName ?? 'Jogador',
+              displayName: profile?.displayName ?? "Jogador",
               photoUrl: profile?.photoUrl ?? null,
             }
           }),
@@ -91,7 +91,7 @@ export const PartyDetail = () => {
         }
       } catch {
         if (!isCancelled) {
-          setToast('Não foi possível carregar o grupo.')
+          setToast("Não foi possível carregar o grupo.")
         }
       } finally {
         if (!isCancelled) {
@@ -128,7 +128,7 @@ export const PartyDetail = () => {
   const successors = successorCandidates(memberRows, user.userId)
 
   const nameOf = (userId: string): string =>
-    members.find((view) => view.member.userId === userId)?.displayName ?? 'Jogador'
+    members.find((view) => view.member.userId === userId)?.displayName ?? "Jogador"
 
   const sheetsInParty = new Set(sheets.map((sheet) => sheet.id))
   const addableSheets = myCharacters.filter((character) => !sheetsInParty.has(character.id))
@@ -147,9 +147,9 @@ export const PartyDetail = () => {
         },
       })
       setSheets((current) => [...current, { ...character, partyId }])
-      setToast('Ficha adicionada ao grupo')
+      setToast("Ficha adicionada ao grupo")
     } catch {
-      setToast('Não foi possível adicionar a ficha.')
+      setToast("Não foi possível adicionar a ficha.")
     }
   }
 
@@ -165,10 +165,10 @@ export const PartyDetail = () => {
 
     try {
       await leaveParty(partyId, user.userId)
-      setToast('Você saiu do grupo')
+      setToast("Você saiu do grupo")
       void navigate(ROUTES.parties)
     } catch {
-      setToast('Não foi possível sair do grupo.')
+      setToast("Não foi possível sair do grupo.")
     } finally {
       setIsWorking(false)
     }
@@ -188,7 +188,7 @@ export const PartyDetail = () => {
         ),
       )
     } catch {
-      setToast('Não foi possível promover.')
+      setToast("Não foi possível promover.")
     } finally {
       setIsWorking(false)
     }
@@ -202,7 +202,7 @@ export const PartyDetail = () => {
       setToast(`O grupo agora é de ${nameOf(toUserId)}`)
       void navigate(ROUTES.parties)
     } catch {
-      setToast('Não foi possível entregar o grupo.')
+      setToast("Não foi possível entregar o grupo.")
     } finally {
       setIsWorking(false)
       setIsHandingOver(false)
@@ -229,10 +229,10 @@ export const PartyDetail = () => {
       )
 
       setRoster({ ...roster, characters: released })
-      setToast('Grupo apagado')
+      setToast("Grupo apagado")
       void navigate(ROUTES.parties)
     } catch {
-      setToast('Não foi possível apagar o grupo.')
+      setToast("Não foi possível apagar o grupo.")
     } finally {
       setIsWorking(false)
       setIsConfirmingDelete(false)
@@ -243,7 +243,7 @@ export const PartyDetail = () => {
     <main className={styles.page}>
       <StepRule />
 
-      <h2 className={styles.title}>{party?.name ?? (isLoading ? 'Carregando…' : 'Grupo')}</h2>
+      <h2 className={styles.title}>{party?.name ?? (isLoading ? "Carregando…" : "Grupo")}</h2>
 
       <SectionLabel detail={String(members.length)}>MEMBROS</SectionLabel>
       <ul className={styles.list}>
@@ -254,7 +254,7 @@ export const PartyDetail = () => {
               <b className={styles.rowName}>{displayName}</b>
               <span className={styles.rowMeta}>
                 {labelForRole(member.roleId)}
-                {isPartyOwner(party, member.userId) ? ' · dono' : ''}
+                {isPartyOwner(party, member.userId) ? " · dono" : ""}
               </span>
             </span>
           </li>
@@ -277,7 +277,7 @@ export const PartyDetail = () => {
                 key={sheet.id}
                 style={
                   {
-                    '--domain-color': classDefinition
+                    "--domain-color": classDefinition
                       ? domainColorToken(classDefinition.domains[0])
                       : undefined,
                   } as React.CSSProperties
@@ -285,10 +285,10 @@ export const PartyDetail = () => {
               >
                 <span className={styles.level}>{sheet.level}</span>
                 <span className={styles.rowText}>
-                  <b className={styles.rowName}>{sheet.name || 'Sem nome'}</b>
+                  <b className={styles.rowName}>{sheet.name || "Sem nome"}</b>
                   <span className={styles.rowMeta}>
-                    {[sheet.ancestry, sheet.className].filter(Boolean).join(' · ') ||
-                      'ficha em branco'}
+                    {[sheet.ancestry, sheet.className].filter(Boolean).join(" · ") ||
+                      "ficha em branco"}
                   </span>
                 </span>
               </li>
@@ -308,7 +308,7 @@ export const PartyDetail = () => {
                 variant="outline"
                 onClick={() => void handleAddSheet(character)}
               >
-                + &nbsp;{character.name || 'Sem nome'}
+                + &nbsp;{character.name || "Sem nome"}
               </Button>
             ))}
           </div>
@@ -325,7 +325,7 @@ export const PartyDetail = () => {
       {/* Promover é ação de Narrador, e não só a saída de emergência de quem
           está preso: uma mesa grande quer um segundo Narrador de qualquer
           jeito. Por isso a seção não depende de `isLastNarrator`. */}
-      {myRole?.roleId === 'gm' && promotable.length > 0 ? (
+      {myRole?.roleId === "gm" && promotable.length > 0 ? (
         <>
           <SectionLabel>ADICIONAR NARRADOR</SectionLabel>
           <div className={styles.actions}>
@@ -363,8 +363,8 @@ export const PartyDetail = () => {
       {isLastNarrator ? (
         <p className={styles.note}>
           {promotable.length > 0
-            ? 'Você é o único Narrador, então sair deixaria a mesa sem quem a administre — um grupo sem Narrador não pode ser apagado nem ter alguém promovido. Suba alguém a Narrador acima, ou desfaça a mesa.'
-            : 'Você é o único Narrador e não há mais ninguém na mesa. Sair deixaria o grupo inalcançável, então o que resta é desfazê-lo.'}
+            ? "Você é o único Narrador, então sair deixaria a mesa sem quem a administre — um grupo sem Narrador não pode ser apagado nem ter alguém promovido. Suba alguém a Narrador acima, ou desfaça a mesa."
+            : "Você é o único Narrador e não há mais ninguém na mesa. Sair deixaria o grupo inalcançável, então o que resta é desfazê-lo."}
         </p>
       ) : null}
 
@@ -378,7 +378,7 @@ export const PartyDetail = () => {
           convidado que quiser sair sempre pode — o Dono continua na mesa como
           segundo Narrador, então `canLeaveParty` já o libera. Ninguém fica
           preso precisando desta porta. */}
-      {isOwner && myRole?.roleId === 'gm' ? (
+      {isOwner && myRole?.roleId === "gm" ? (
         <>
           <SectionLabel>DESFAZER A MESA</SectionLabel>
           <div className={styles.actions}>
@@ -415,7 +415,7 @@ export const PartyDetail = () => {
         {successors.length > 0 ? (
           <>
             <p className={styles.note}>
-              O grupo <b>{party?.name || 'Sem nome'}</b> é seu. Escolha quem passa a
+              O grupo <b>{party?.name || "Sem nome"}</b> é seu. Escolha quem passa a
               ser o Dono — você sai na mesma ação.
             </p>
             <div className={styles.actions}>
@@ -460,19 +460,19 @@ export const PartyDetail = () => {
               CANCELAR
             </Button>
             <Button intent="danger" disabled={isWorking} onClick={() => void handleDelete()}>
-              {isWorking ? 'APAGANDO…' : 'APAGAR'}
+              {isWorking ? "APAGANDO…" : "APAGAR"}
             </Button>
           </>
         }
       >
         <p className={styles.note}>
-          O grupo <b>{party?.name || 'Sem nome'}</b> some para todos os{' '}
-          {members.length === 1 ? 'seus membros' : `${members.length} membros`}, junto
+          O grupo <b>{party?.name || "Sem nome"}</b> some para todos os{" "}
+          {members.length === 1 ? "seus membros" : `${members.length} membros`}, junto
           com o código de convite. Não dá para desfazer.
         </p>
         <p className={styles.note}>
-          As {sheets.length === 1 ? 'ficha' : 'fichas'} do grupo{' '}
-          <b>não {sheets.length === 1 ? 'é apagada' : 'são apagadas'}</b> — cada uma
+          As {sheets.length === 1 ? "ficha" : "fichas"} do grupo{" "}
+          <b>não {sheets.length === 1 ? "é apagada" : "são apagadas"}</b> — cada uma
           volta para quem a escreveu, sem grupo.
         </p>
       </Modal>

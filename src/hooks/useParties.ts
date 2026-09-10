@@ -1,9 +1,9 @@
-import { useAtomValue } from 'jotai'
-import React from 'react'
+import { useAtomValue } from "jotai"
+import React from "react"
 
-import { fetchPartiesForUser } from '@/services'
-import { authAtom } from '@/states'
-import type { PartyWithRole } from '@/types'
+import { fetchPartiesForUser } from "@/services"
+import { authAtom } from "@/states"
+import type { PartyWithRole } from "@/types"
 
 export type UsePartiesResult = {
   parties: PartyWithRole[]

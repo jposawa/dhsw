@@ -1,13 +1,13 @@
-import { useAtom, useAtomValue } from 'jotai'
-import React from 'react'
-import { Outlet, useLocation } from 'react-router-dom'
+import { useAtom, useAtomValue } from "jotai"
+import React from "react"
+import { Outlet, useLocation } from "react-router-dom"
 
-import { NAV_ITEMS, ROUTES } from '@/constants'
-import { BottomNav } from '@/fragments'
-import { useAuth, useConfig, useSheetSync } from '@/hooks'
-import { themeAtom, toastAtom, isNavCollapsedAtom } from '@/states'
+import { NAV_ITEMS, ROUTES } from "@/constants"
+import { BottomNav } from "@/fragments"
+import { useAuth, useConfig, useSheetSync } from "@/hooks"
+import { themeAtom, toastAtom, isNavCollapsedAtom } from "@/states"
 
-import styles from './App.module.css'
+import styles from "./App.module.css"
 
 /**
  * A marca: um recorte do mapa holográfico da galáxia.
@@ -97,10 +97,10 @@ const subtitleFor = (pathname: string): string => {
   }
 
   if (pathname === ROUTES.profile) {
-    return 'PERFIL'
+    return "PERFIL"
   }
 
-  return pathname.startsWith(ROUTES.sheet('')) ? 'FICHA' : 'DH · SW'
+  return pathname.startsWith(ROUTES.sheet("")) ? "FICHA" : "DH · SW"
 }
 
 export const App = () => {
@@ -135,9 +135,9 @@ export const App = () => {
          herdar do ancestral comum é o que mantém os três de acordo. */
       style={
         {
-          '--side-nav-width': isNavCollapsed
-            ? 'var(--side-nav-width-collapsed)'
-            : 'var(--side-nav-width-expanded)',
+          "--side-nav-width": isNavCollapsed
+            ? "var(--side-nav-width-collapsed)"
+            : "var(--side-nav-width-expanded)",
         } as React.CSSProperties
       }
     >

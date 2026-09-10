@@ -1,4 +1,4 @@
-import type { SheetRole, SheetRoleId, SheetRoleLevel } from '@/types'
+import type { SheetRole, SheetRoleId, SheetRoleLevel } from "@/types"
 
 /**
  * Papeis de acesso a ficha.
@@ -14,7 +14,7 @@ export const SHEET_ROLE_LEVEL: Readonly<Record<SheetRoleId, SheetRoleLevel>> = {
 }
 
 export const SHEET_ROLES: readonly SheetRole[] = [
-  { id: 'reader', level: 10, label: 'Leitor' },
-  { id: 'coAuthor', level: 20, label: 'Co-autor' },
-  { id: 'author', level: 30, label: 'Autor' },
+  { id: "reader", level: 10, label: "Leitor" },
+  { id: "coAuthor", level: 20, label: "Co-autor" },
+  { id: "author", level: 30, label: "Autor" },
 ]

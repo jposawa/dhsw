@@ -1,6 +1,6 @@
-import { WEAPONS } from '@/compendium'
-import { fail, ok } from '@/helpers'
-import type { Character, EquipSlot, InventoryEntry, Result } from '@/types'
+import { WEAPONS } from "@/compendium"
+import { fail, ok } from "@/helpers"
+import type { Character, EquipSlot, InventoryEntry, Result } from "@/types"
 
 /**
  * Regras de equipar, aplicadas na hora e não depois.
@@ -11,11 +11,11 @@ import type { Character, EquipSlot, InventoryEntry, Result } from '@/types'
  */
 
 const slotForEntry = (entry: InventoryEntry, requested?: EquipSlot): EquipSlot | null => {
-  if (entry.kind === 'armor') {
-    return 'armor'
+  if (entry.kind === "armor") {
+    return "armor"
   }
 
-  if (entry.kind !== 'weapon') {
+  if (entry.kind !== "weapon") {
     return null
   }
 
@@ -25,7 +25,7 @@ const slotForEntry = (entry: InventoryEntry, requested?: EquipSlot): EquipSlot |
 
   const weapon = WEAPONS.find((candidate) => candidate.name === entry.name)
 
-  return weapon?.burden === 'Secundária' ? 'secondary' : 'primary'
+  return weapon?.burden === "Secundária" ? "secondary" : "primary"
 }
 
 export const equip = (
@@ -36,13 +36,13 @@ export const equip = (
   const entry = character.inventory.find((candidate) => candidate.id === entryId)
 
   if (!entry) {
-    return fail('entryNotFound', entryId)
+    return fail("entryNotFound", entryId)
   }
 
   const slot = slotForEntry(entry, requestedSlot)
 
   if (!slot) {
-    return fail('entryNotFound', 'Item não é equipável')
+    return fail("entryNotFound", "Item não é equipável")
   }
 
   const occupant = character.inventory.find(
@@ -50,7 +50,7 @@ export const equip = (
   )
 
   if (occupant) {
-    return fail(slot === 'armor' ? 'armorSlotTaken' : 'weaponSlotTaken', occupant.name)
+    return fail(slot === "armor" ? "armorSlotTaken" : "weaponSlotTaken", occupant.name)
   }
 
   return ok({
@@ -67,7 +67,7 @@ export const unequip = (character: Character, entryId: string): Result<Character
   const entry = character.inventory.find((candidate) => candidate.id === entryId)
 
   if (!entry) {
-    return fail('entryNotFound', entryId)
+    return fail("entryNotFound", entryId)
   }
 
   return ok({
@@ -84,7 +84,7 @@ export const unequip = (character: Character, entryId: string): Result<Character
  */
 export const hasActiveBonded = (character: Character): boolean => {
   const equippedWeapons = character.inventory.filter(
-    (entry) => entry.kind === 'weapon' && entry.isEquipped,
+    (entry) => entry.kind === "weapon" && entry.isEquipped,
   )
 
   if (equippedWeapons.length !== 1) {
@@ -100,8 +100,8 @@ export const hasActiveBonded = (character: Character): boolean => {
 export const consume = (character: Character, entryId: string): Result<Character> => {
   const entry = character.inventory.find((candidate) => candidate.id === entryId)
 
-  if (!entry || entry.kind !== 'consumable') {
-    return fail('entryNotFound', entryId)
+  if (!entry || entry.kind !== "consumable") {
+    return fail("entryNotFound", entryId)
   }
 
   const remaining = entry.quantity - 1

@@ -14,7 +14,7 @@ export type AuthUser = {
  * `unknown` nao e detalhe: no boot o Firebase leva um instante para restaurar
  * a sessao. Sem esse estado, quem ja esta logado ve a tela de login piscar.
  */
-export type AuthStatus = 'unknown' | 'signed-in' | 'signed-out'
+export type AuthStatus = "unknown" | "signed-in" | "signed-out"
 
 export type AuthState = {
   status: AuthStatus
@@ -22,4 +22,4 @@ export type AuthState = {
 }
 
 /** Estado da sincronizacao das fichas com o Realtime Database. */
-export type SyncStatus = 'idle' | 'pulling' | 'ready' | 'error'
+export type SyncStatus = "idle" | "pulling" | "ready" | "error"

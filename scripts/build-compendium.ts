@@ -6,17 +6,17 @@
  *
  * Roda com: npm run build:compendium
  */
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs"
+import { join } from "node:path"
 
-const PROTOTYPE_PATH = join(process.cwd(), 'specs', 'dh-sw.html')
-const OUTPUT_DIR = join(process.cwd(), 'src', 'compendium')
+const PROTOTYPE_PATH = join(process.cwd(), "specs", "dh-sw.html")
+const OUTPUT_DIR = join(process.cwd(), "src", "compendium")
 
 const HEADER = [
-  '// GERADO POR scripts/build-compendium.ts — NÃO EDITAR À MÃO.',
-  '// Fonte: specs/dh-sw.html',
-  '',
-].join('\n')
+  "// GERADO POR scripts/build-compendium.ts — NÃO EDITAR À MÃO.",
+  "// Fonte: specs/dh-sw.html",
+  "",
+].join("\n")
 
 /* ── formato cru do protótipo ─────────────────────────────────────────── */
 
@@ -45,7 +45,7 @@ type RawDatabase = {
 }
 
 const readPrototypeDatabase = (): RawDatabase => {
-  const html = readFileSync(PROTOTYPE_PATH, 'utf8')
+  const html = readFileSync(PROTOTYPE_PATH, "utf8")
   const match = html.match(/<script id="db" type="application\/json">([\s\S]*?)<\/script>/)
 
   if (!match) {
@@ -62,13 +62,13 @@ const readPrototypeDatabase = (): RawDatabase => {
  * DOMAIN.md registra isso como dívida do dado: some aqui, não na renderização.
  */
 const stripNotionHeader = (text: string): string => {
-  const lines = text.split('\n')
+  const lines = text.split("\n")
   const isHeaderLine = (line: string) =>
     /^#\s/.test(line) ||
     /^(Category|Domain|Level|Recall cost|Summary):/i.test(line)
 
   const body = lines.filter((line) => !isHeaderLine(line.trim()))
-  const cleaned = body.join('\n').trim()
+  const cleaned = body.join("\n").trim()
 
   // Algumas entradas só têm o cabeçalho; nesse caso o "Summary:" era o texto.
   if (cleaned) {
@@ -77,7 +77,7 @@ const stripNotionHeader = (text: string): string => {
 
   const summary = lines.find((line) => /^Summary:/i.test(line.trim()))
 
-  return summary ? summary.replace(/^Summary:\s*/i, '').trim() : text.trim()
+  return summary ? summary.replace(/^Summary:\s*/i, "").trim() : text.trim()
 }
 
 /* ── invariantes: quebram o build, não a mesa ─────────────────────────── */
@@ -149,32 +149,32 @@ const checkInvariants = (db: RawDatabase) => {
     }
   }
 
-  assertUniqueNames('skills', db.skills.map((skill) => skill.n))
-  assertUniqueNames('weapons', db.weapons.map((weapon) => weapon.n))
-  assertUniqueNames('armorNamed', db.armorNamed.map((armor) => armor.n))
-  assertUniqueNames('items', db.items.map((item) => item.n))
-  assertUniqueNames('consumables', db.consumables.map((entry) => entry.n))
+  assertUniqueNames("skills", db.skills.map((skill) => skill.n))
+  assertUniqueNames("weapons", db.weapons.map((weapon) => weapon.n))
+  assertUniqueNames("armorNamed", db.armorNamed.map((armor) => armor.n))
+  assertUniqueNames("items", db.items.map((item) => item.n))
+  assertUniqueNames("consumables", db.consumables.map((entry) => entry.n))
 }
 
 /* ── índice de busca, pré-computado ───────────────────────────────────── */
 
 // Faixa de marcas de combinação do Unicode, escrita por código para continuar
 // legível: um literal aqui seria um caractere invisível no editor.
-const COMBINING_MARKS = new RegExp('[\\u0300-\\u036f]', 'g')
+const COMBINING_MARKS = new RegExp("[\\u0300-\\u036f]", "g")
 
 const normalizeForSearch = (value: string): string =>
   value
     .toLowerCase()
-    .normalize('NFD')
-    .replace(COMBINING_MARKS, '')
-    .replace(/[^a-z0-9\s]/g, ' ')
-    .replace(/\s+/g, ' ')
+    .normalize("NFD")
+    .replace(COMBINING_MARKS, "")
+    .replace(/[^a-z0-9\s]/g, " ")
+    .replace(/\s+/g, " ")
     .trim()
 
 /* ── emissão ──────────────────────────────────────────────────────────── */
 
 const emit = (fileName: string, body: string) => {
-  writeFileSync(join(OUTPUT_DIR, fileName), `${HEADER}${body}`, 'utf8')
+  writeFileSync(join(OUTPUT_DIR, fileName), `${HEADER}${body}`, "utf8")
 }
 
 const serialize = (value: unknown): string => JSON.stringify(value, null, 2)
@@ -193,31 +193,31 @@ const build = () => {
     text: stripNotionHeader(skill.t),
   }))
 
-  emit('skills.ts', [
-    "import type { Skill } from '@/types'",
-    '',
+  emit("skills.ts", [
+    "import type { Skill } from \"@/types\"",
+    "",
     `export const SKILLS: readonly Skill[] = ${serialize(skills)} as const`,
-    '',
-    'export const SKILL_SEARCH_INDEX: Readonly<Record<string, string>> =',
+    "",
+    "export const SKILL_SEARCH_INDEX: Readonly<Record<string, string>> =",
     `  ${serialize(Object.fromEntries(skills.map((skill) => [
       skill.name,
       normalizeForSearch(`${skill.name} ${skill.domain} ${skill.text}`),
     ])))}`,
-    '',
-  ].join('\n'))
+    "",
+  ].join("\n"))
 
-  emit('domains.ts', [
-    "import type { DomainDefinition } from '@/types'",
-    '',
+  emit("domains.ts", [
+    "import type { DomainDefinition } from \"@/types\"",
+    "",
     `export const DOMAIN_DEFINITIONS: readonly DomainDefinition[] = ${serialize(
       db.domains.map((domain) => ({ name: domain.n, description: domain.desc })),
     )} as const`,
-    '',
-  ].join('\n'))
+    "",
+  ].join("\n"))
 
-  emit('classes.ts', [
-    "import type { ClassDefinition } from '@/types'",
-    '',
+  emit("classes.ts", [
+    "import type { ClassDefinition } from \"@/types\"",
+    "",
     `export const CLASSES: readonly ClassDefinition[] = ${serialize(
       db.classes.map((klass) => ({
         name: klass.n,
@@ -232,15 +232,15 @@ const build = () => {
         hopeFeatureRationale: klass.hopeWhy ?? null,
       })),
     )} as const`,
-    '',
-  ].join('\n'))
+    "",
+  ].join("\n"))
 
   const toFeatures = (features: RawFeature[]) =>
     features.map((feature) => ({ name: feature.n, text: feature.t }))
 
-  emit('subclasses.ts', [
-    "import type { Subclass } from '@/types'",
-    '',
+  emit("subclasses.ts", [
+    "import type { Subclass } from \"@/types\"",
+    "",
     `export const SUBCLASSES: readonly Subclass[] = ${serialize(
       db.subclasses.map((subclass) => ({
         name: subclass.n,
@@ -251,12 +251,12 @@ const build = () => {
         mastery: toFeatures(subclass.m),
       })),
     )} as const`,
-    '',
-  ].join('\n'))
+    "",
+  ].join("\n"))
 
-  emit('ancestries.ts', [
-    "import type { Ancestry } from '@/types'",
-    '',
+  emit("ancestries.ts", [
+    "import type { Ancestry } from \"@/types\"",
+    "",
     `export const ANCESTRIES: readonly Ancestry[] = ${serialize(
       db.ancestries.map((ancestry) => ({
         name: ancestry.n,
@@ -264,12 +264,12 @@ const build = () => {
         features: ancestry.f,
       })),
     )} as const`,
-    '',
-  ].join('\n'))
+    "",
+  ].join("\n"))
 
-  emit('communities.ts', [
-    "import type { Community } from '@/types'",
-    '',
+  emit("communities.ts", [
+    "import type { Community } from \"@/types\"",
+    "",
     `export const COMMUNITIES: readonly Community[] = ${serialize(
       db.communities.map((community) => ({
         name: community.n,
@@ -277,12 +277,12 @@ const build = () => {
         feature: community.f,
       })),
     )} as const`,
-    '',
-  ].join('\n'))
+    "",
+  ].join("\n"))
 
-  emit('armor.ts', [
-    "import type { ArmorLine, NamedArmor } from '@/types'",
-    '',
+  emit("armor.ts", [
+    "import type { ArmorLine, NamedArmor } from \"@/types\"",
+    "",
     `export const ARMOR_LINES: readonly ArmorLine[] = ${serialize(
       db.armor.map((line) => ({
         name: line.l,
@@ -294,7 +294,7 @@ const build = () => {
         })),
       })),
     )} as const`,
-    '',
+    "",
     `export const NAMED_ARMOR: readonly NamedArmor[] = ${serialize(
       db.armorNamed.map((armor) => ({
         name: armor.n,
@@ -303,12 +303,12 @@ const build = () => {
         feature: armor.f,
       })),
     )} as const`,
-    '',
-  ].join('\n'))
+    "",
+  ].join("\n"))
 
-  emit('weapons.ts', [
-    "import type { Weapon } from '@/types'",
-    '',
+  emit("weapons.ts", [
+    "import type { Weapon } from \"@/types\"",
+    "",
     `export const WEAPONS: readonly Weapon[] = ${serialize(
       db.weapons.map((weapon) => ({
         name: weapon.n,
@@ -322,33 +322,33 @@ const build = () => {
         isIconic: Boolean(weapon.ic),
       })),
     )} as const`,
-    '',
-  ].join('\n'))
+    "",
+  ].join("\n"))
 
   const toEntries = (entries: RawEntry[]) =>
     entries.map((entry) => ({ name: entry.n, tier: entry.t, text: entry.txt }))
 
-  emit('items.ts', [
-    "import type { CompendiumEntry } from '@/types'",
-    '',
+  emit("items.ts", [
+    "import type { CompendiumEntry } from \"@/types\"",
+    "",
     `export const ITEMS: readonly CompendiumEntry[] = ${serialize(toEntries(db.items))} as const`,
-    '',
-  ].join('\n'))
+    "",
+  ].join("\n"))
 
-  emit('consumables.ts', [
-    "import type { CompendiumEntry } from '@/types'",
-    '',
+  emit("consumables.ts", [
+    "import type { CompendiumEntry } from \"@/types\"",
+    "",
     `export const CONSUMABLES: readonly CompendiumEntry[] = ${serialize(toEntries(db.consumables))} as const`,
-    '',
-  ].join('\n'))
+    "",
+  ].join("\n"))
 
   console.log([
-    `compêndio gerado em src/compendium/`,
+    "compêndio gerado em src/compendium/",
     `  ${skills.length} cartas · ${db.classes.length} classes · ${db.subclasses.length} subclasses`,
     `  ${db.ancestries.length} espécies · ${db.communities.length} origens`,
     `  ${db.weapons.length} armas · ${db.armorNamed.length} armaduras · ${db.items.length} itens · ${db.consumables.length} consumíveis`,
-    `  invariantes conferidas: OK`,
-  ].join('\n'))
+    "  invariantes conferidas: OK",
+  ].join("\n"))
 }
 
 build()

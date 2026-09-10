@@ -1,4 +1,4 @@
-import type { DatabaseEnvironment } from '@/types'
+import type { DatabaseEnvironment } from "@/types"
 
 /**
  * Caminhos do Realtime Database.
@@ -24,20 +24,20 @@ import type { DatabaseEnvironment } from '@/types'
  * junto com a raiz por `dhswRef`. Ver BACKEND.md.
  */
 
-export const DATABASE_ROOT = 'dhsw'
+export const DATABASE_ROOT = "dhsw"
 
-export const DATABASE_ENVIRONMENTS: Readonly<Record<'Stage' | 'Prod', DatabaseEnvironment>> = {
-  Stage: 'stage',
-  Prod: 'prod',
+export const DATABASE_ENVIRONMENTS: Readonly<Record<"Stage" | "Prod", DatabaseEnvironment>> = {
+  Stage: "stage",
+  Prod: "prod",
 }
 
 export const DB_PATHS = {
   /** Leitura pública, escrita nunca pelo cliente. Ver CONFIG.md. */
-  config: 'config',
+  config: "config",
 
   profile: (userId: string) => `profiles/${userId}`,
 
-  sheets: 'sheets',
+  sheets: "sheets",
   sheet: (sheetId: string) => `sheets/${sheetId}`,
 
   /** Papel de cada jogador numa ficha. Carrega `level` para a regra de segurança comparar. */

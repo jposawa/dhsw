@@ -1,1 +1,1 @@
-export { Compendium } from './Compendium'
+export { Compendium } from "./Compendium"

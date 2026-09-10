@@ -1,5 +1,5 @@
-import { CHARACTER_SCHEMA_VERSION } from '@/constants'
-import type { Character, RosterState } from '@/types'
+import { CHARACTER_SCHEMA_VERSION } from "@/constants"
+import type { Character, RosterState } from "@/types"
 
 /**
  * Migrações do formato salvo. Puras, e **acumulativas: nenhuma é apagada**.

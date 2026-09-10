@@ -1,10 +1,10 @@
 /** Chaves e versoes do armazenamento local. A implementacao vive em `services/`. */
 
 export const STORAGE_KEYS = {
-  roster: 'dhsw:roster',
-  houseRules: 'dhsw:houseRules',
-  theme: 'dhsw:theme',
-  navCollapsed: 'dhsw:navCollapsed',
+  roster: "dhsw:roster",
+  houseRules: "dhsw:houseRules",
+  theme: "dhsw:theme",
+  navCollapsed: "dhsw:navCollapsed",
 } as const
 
 /** Versao do formato de cada chave. Sobe junto com a migracao correspondente. */

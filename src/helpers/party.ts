@@ -1,4 +1,4 @@
-import type { Party, PartyMember } from '@/types'
+import type { Party, PartyMember } from "@/types"
 
 /**
  * O que cada pessoa pode fazer com o grupo em que está.
@@ -23,7 +23,7 @@ import type { Party, PartyMember } from '@/types'
 
 export const partyNarrators = (
   members: readonly PartyMember[],
-): readonly PartyMember[] => members.filter((member) => member.roleId === 'gm')
+): readonly PartyMember[] => members.filter((member) => member.roleId === "gm")
 
 export const isPartyNarrator = (
   members: readonly PartyMember[],
@@ -62,7 +62,7 @@ export const canLeaveParty = (
 /** Quem ainda não é Narrador e pode ser promovido. */
 export const promotableMembers = (
   members: readonly PartyMember[],
-): readonly PartyMember[] => members.filter((member) => member.roleId !== 'gm')
+): readonly PartyMember[] => members.filter((member) => member.roleId !== "gm")
 
 /**
  * Para quem a **posse** pode ir: outro Narrador.

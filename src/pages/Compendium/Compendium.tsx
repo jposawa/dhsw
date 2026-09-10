@@ -1,13 +1,13 @@
-import React from 'react'
+import React from "react"
 
-import { Chip, Collapse, DomainSymbol, Input, SectionLabel, StepRule } from '@/components'
-import { DOMAIN_LIST } from '@/constants'
-import { SkillText } from '@/fragments'
-import { domainColorToken } from '@/helpers'
-import { useSkillSearch } from '@/hooks'
-import type { Domain } from '@/types'
+import { Chip, Collapse, DomainSymbol, Input, SectionLabel, StepRule } from "@/components"
+import { DOMAIN_LIST } from "@/constants"
+import { SkillText } from "@/fragments"
+import { domainColorToken } from "@/helpers"
+import { useSkillSearch } from "@/hooks"
+import type { Domain } from "@/types"
 
-import styles from './Compendium.module.css'
+import styles from "./Compendium.module.css"
 
 /**
  * Busca no compêndio. As 126 cartas vêm de módulo estático — sem fetch, sem
@@ -15,7 +15,7 @@ import styles from './Compendium.module.css'
  * existe. O índice de busca é pré-computado no build.
  */
 export const Compendium = () => {
-  const [query, setQuery] = React.useState('')
+  const [query, setQuery] = React.useState("")
   const [domains, setDomains] = React.useState<ReadonlySet<Domain>>(new Set())
   const [openSkills, setOpenSkills] = React.useState<ReadonlySet<string>>(new Set())
 
@@ -81,7 +81,7 @@ export const Compendium = () => {
               key={skill.name}
               className={styles.row}
               style={
-                { '--domain-color': domainColorToken(skill.domain) } as React.CSSProperties
+                { "--domain-color": domainColorToken(skill.domain) } as React.CSSProperties
               }
             >
               {/* Collapse, e não um <button> com o corpo dentro: o texto da

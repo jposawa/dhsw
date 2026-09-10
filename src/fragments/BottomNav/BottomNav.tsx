@@ -1,13 +1,13 @@
-import { useAtom } from 'jotai'
-import { NavLink } from 'react-router-dom'
+import { useAtom } from "jotai"
+import { NavLink } from "react-router-dom"
 
-import { NavIcon } from '@/components'
-import { useNavItems } from '@/hooks'
-import { isNavCollapsedAtom } from '@/states'
+import { NavIcon } from "@/components"
+import { useNavItems } from "@/hooks"
+import { isNavCollapsedAtom } from "@/states"
 
-import { UserMenu } from '../UserMenu'
+import { UserMenu } from "../UserMenu"
 
-import styles from './BottomNav.module.css'
+import styles from "./BottomNav.module.css"
 
 /**
  * Navegação principal: barra inferior no celular, trilho vertical à esquerda
@@ -42,12 +42,12 @@ export const BottomNav = () => {
         type="button"
         className={styles.collapseToggle}
         aria-expanded={!isCollapsed}
-        aria-label={isCollapsed ? 'Expandir menu' : 'Recolher menu'}
+        aria-label={isCollapsed ? "Expandir menu" : "Recolher menu"}
         data-testid="nav-collapse-toggle"
         onClick={() => setIsCollapsed((collapsed) => !collapsed)}
       >
         <i className={styles.collapseIcon} aria-hidden="true">
-          {isCollapsed ? '»' : '«'}
+          {isCollapsed ? "»" : "«"}
         </i>
       </button>
 

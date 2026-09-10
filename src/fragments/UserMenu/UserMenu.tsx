@@ -1,19 +1,19 @@
-import { useAtom, useAtomValue } from 'jotai'
-import React from 'react'
-import { Link } from 'react-router-dom'
+import { useAtom, useAtomValue } from "jotai"
+import React from "react"
+import { Link } from "react-router-dom"
 
-import { Avatar, NavIcon, Switch } from '@/components'
-import { ROUTES } from '@/constants'
-import { useAuth } from '@/hooks'
-import { charactersAtom, syncStatusAtom, themeAtom } from '@/states'
+import { Avatar, NavIcon, Switch } from "@/components"
+import { ROUTES } from "@/constants"
+import { useAuth } from "@/hooks"
+import { charactersAtom, syncStatusAtom, themeAtom } from "@/states"
 
-import styles from './UserMenu.module.css'
+import styles from "./UserMenu.module.css"
 
 const SYNC_LABELS: Record<string, string> = {
-  idle: 'não sincronizado',
-  pulling: 'sincronizando…',
-  ready: 'em dia',
-  error: 'falhou',
+  idle: "não sincronizado",
+  pulling: "sincronizando…",
+  ready: "em dia",
+  error: "falhou",
 }
 
 /**
@@ -49,7 +49,7 @@ export const UserMenu = ({ isNavCollapsed = false }: { isNavCollapsed?: boolean 
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         close()
         // Devolve o foco ao gatilho: fechar com Escape e perder o foco no
         // corpo do documento deixa quem usa teclado sem lugar.
@@ -57,20 +57,20 @@ export const UserMenu = ({ isNavCollapsed = false }: { isNavCollapsed?: boolean 
       }
     }
 
-    document.addEventListener('pointerdown', handlePointerDown)
-    document.addEventListener('keydown', handleKeyDown)
+    document.addEventListener("pointerdown", handlePointerDown)
+    document.addEventListener("keydown", handleKeyDown)
 
     return () => {
-      document.removeEventListener('pointerdown', handlePointerDown)
-      document.removeEventListener('keydown', handleKeyDown)
+      document.removeEventListener("pointerdown", handlePointerDown)
+      document.removeEventListener("keydown", handleKeyDown)
     }
   }, [isOpen, close])
 
-  if (status === 'unknown') {
+  if (status === "unknown") {
     return (
       <div className={styles.wrapper}>
-        <span className={[styles.trigger, styles.placeholder].join(' ')}>
-          <i className={[styles.triggerSlot, styles.triggerIcon].join(' ')} aria-hidden="true">
+        <span className={[styles.trigger, styles.placeholder].join(" ")}>
+          <i className={[styles.triggerSlot, styles.triggerIcon].join(" ")} aria-hidden="true">
             <NavIcon name="account" />
           </i>
           <span className={styles.triggerLabel}>CONTA</span>
@@ -79,17 +79,17 @@ export const UserMenu = ({ isNavCollapsed = false }: { isNavCollapsed?: boolean 
     )
   }
 
-  if (status === 'signed-out' || !user) {
+  if (status === "signed-out" || !user) {
     return (
       <div className={styles.wrapper}>
         <button
           type="button"
           className={styles.trigger}
-          title={isNavCollapsed ? 'Entrar' : undefined}
-          aria-label={isNavCollapsed ? 'Entrar' : undefined}
+          title={isNavCollapsed ? "Entrar" : undefined}
+          aria-label={isNavCollapsed ? "Entrar" : undefined}
           onClick={() => void signIn()}
         >
-          <i className={[styles.triggerSlot, styles.triggerIcon].join(' ')} aria-hidden="true">
+          <i className={[styles.triggerSlot, styles.triggerIcon].join(" ")} aria-hidden="true">
             <NavIcon name="account" />
           </i>
           <span className={styles.triggerLabel}>ENTRAR</span>
@@ -98,7 +98,7 @@ export const UserMenu = ({ isNavCollapsed = false }: { isNavCollapsed?: boolean 
     )
   }
 
-  const isDark = theme === 'dark'
+  const isDark = theme === "dark"
 
   return (
     <div className={styles.wrapper} ref={wrapperRef} data-collapsed={isNavCollapsed}>
@@ -137,10 +137,10 @@ export const UserMenu = ({ isNavCollapsed = false }: { isNavCollapsed?: boolean 
               <b
                 className={[
                   styles.previewValue,
-                  syncStatus === 'error' ? styles.previewValueWarn : '',
+                  syncStatus === "error" ? styles.previewValueWarn : "",
                 ]
                   .filter(Boolean)
-                  .join(' ')}
+                  .join(" ")}
               >
                 {SYNC_LABELS[syncStatus] ?? syncStatus}
               </b>
@@ -155,7 +155,7 @@ export const UserMenu = ({ isNavCollapsed = false }: { isNavCollapsed?: boolean 
               <Link className={styles.item} to={ROUTES.profile} onClick={close}>
                 <span>
                   <i className={styles.itemIcon} aria-hidden="true">
-                    ◇{' '}
+                    ◇{" "}
                   </i>
                   Perfil
                 </span>
@@ -166,10 +166,10 @@ export const UserMenu = ({ isNavCollapsed = false }: { isNavCollapsed?: boolean 
               <Switch
                 className={styles.item}
                 isOn={isDark}
-                onToggle={() => setTheme(isDark ? 'light' : 'dark')}
+                onToggle={() => setTheme(isDark ? "light" : "dark")}
               >
                 <i className={styles.itemIcon} aria-hidden="true">
-                  {isDark ? '◐' : '◑'}
+                  {isDark ? "◐" : "◑"}
                 </i>
                 Tema escuro
               </Switch>
@@ -178,12 +178,12 @@ export const UserMenu = ({ isNavCollapsed = false }: { isNavCollapsed?: boolean 
             <li>
               <button
                 type="button"
-                className={[styles.item, styles.signOut].join(' ')}
+                className={[styles.item, styles.signOut].join(" ")}
                 onClick={() => void signOut()}
               >
                 <span>
                   <i className={styles.itemIcon} aria-hidden="true">
-                    ✕{' '}
+                    ✕{" "}
                   </i>
                   Sair da conta
                 </span>

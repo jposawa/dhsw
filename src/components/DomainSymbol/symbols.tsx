@@ -1,4 +1,4 @@
-import type { Domain } from '@/types'
+import type { Domain } from "@/types"
 
 /**
  * Os seis emblemas de domínio, em traço geométrico.

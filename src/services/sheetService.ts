@@ -1,14 +1,14 @@
-import { get, update } from 'firebase/database'
+import { get, update } from "firebase/database"
 
-import { DB_PATHS, SHEET_ROLE_LEVEL } from '@/constants'
-import { dhswPath, dhswRef, dhswRootRef } from '@/lib/firebase'
+import { DB_PATHS, SHEET_ROLE_LEVEL } from "@/constants"
+import { dhswPath, dhswRef, dhswRootRef } from "@/lib/firebase"
 import type {
   Character,
   SheetAccess,
   SheetIndexEntry,
   SheetRoleId,
   SheetWithRole,
-} from '@/types'
+} from "@/types"
 
 /**
  * Única camada que fala com o Realtime Database para fichas.
@@ -24,7 +24,7 @@ const sanitize = <TValue>(value: TValue): TValue => {
     return value.map((item) => sanitize(item)) as TValue
   }
 
-  if (value === null || typeof value !== 'object') {
+  if (value === null || typeof value !== "object") {
     return value
   }
 
@@ -67,7 +67,7 @@ export const createSheet = async (
   character: Character,
   authorId: string,
 ): Promise<void> => {
-  const access = accessRow(character.id, authorId, 'author', authorId)
+  const access = accessRow(character.id, authorId, "author", authorId)
 
   await update(dhswRootRef(), {
     [dhswPath(DB_PATHS.sheet(character.id))]: sanitize(character),
@@ -117,7 +117,7 @@ export const fetchSheetsForUser = async (userId: string): Promise<SheetWithRole[
 export const grantAccess = async (
   sheetId: string,
   targetUserId: string,
-  roleId: Exclude<SheetRoleId, 'author'>,
+  roleId: Exclude<SheetRoleId, "author">,
   grantedBy: string,
 ): Promise<void> => {
   const access = accessRow(sheetId, targetUserId, roleId, grantedBy)

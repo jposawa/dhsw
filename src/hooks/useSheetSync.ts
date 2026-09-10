@@ -1,16 +1,16 @@
-import { useAtom, useAtomValue, useSetAtom, useStore } from 'jotai'
-import React from 'react'
+import { useAtom, useAtomValue, useSetAtom, useStore } from "jotai"
+import React from "react"
 
-import { describeError, findUnsyncedCharacters, mergeRosters } from '@/helpers'
-import { createSheet, fetchSheetsForUser, saveSheet } from '@/services'
+import { describeError, findUnsyncedCharacters, mergeRosters } from "@/helpers"
+import { createSheet, fetchSheetsForUser, saveSheet } from "@/services"
 import {
   authAtom,
   rosterAtom,
   sheetRolesAtom,
   syncErrorAtom,
   syncStatusAtom,
-} from '@/states'
-import type { SheetRoleId } from '@/types'
+} from "@/states"
+import type { SheetRoleId } from "@/types"
 
 /**
  * Escrita segura no dedo. Segurar um stepper dispara vinte mudanças de estado;
@@ -58,7 +58,7 @@ export const useSheetSync = () => {
   /* ── 1. Puxar e adotar, uma vez por login ────────────────────────────── */
 
   React.useEffect(() => {
-    if (status !== 'signed-in' || !user) {
+    if (status !== "signed-in" || !user) {
       pulledFor.current = null
       remoteIds.current = new Set()
       pushedAt.current = {}
@@ -73,7 +73,7 @@ export const useSheetSync = () => {
     let isCancelled = false
 
     const pull = async () => {
-      setSyncStatus('pulling')
+      setSyncStatus("pulling")
 
       try {
         const remote = await fetchSheetsForUser(user.userId)
@@ -101,7 +101,7 @@ export const useSheetSync = () => {
 
         for (const orphan of orphans) {
           await createSheet(orphan, user.userId)
-          roles[orphan.id] = 'author'
+          roles[orphan.id] = "author"
           remoteIds.current.add(orphan.id)
           pushedAt.current[orphan.id] = orphan.updatedAt
         }
@@ -113,13 +113,13 @@ export const useSheetSync = () => {
         setRoster(merged)
         setSheetRoles(roles)
         setSyncError(null)
-        setSyncStatus('ready')
+        setSyncStatus("ready")
       } catch (error) {
         if (!isCancelled) {
           // Não bloqueia nada: o roster local continua servindo, e o que já
           // se sabe do servidor continua valendo para as escritas seguintes.
           setSyncError(`leitura: ${describeError(error)}`)
-          setSyncStatus('error')
+          setSyncStatus("error")
         }
       } finally {
         // Marcado mesmo em falha: sem isto, um pull que falhou tentaria de
@@ -176,7 +176,7 @@ export const useSheetSync = () => {
           }
 
           setSyncError(`escrita: ${describeError(error)}`)
-          setSyncStatus('error')
+          setSyncStatus("error")
         })
       }
     }, WRITE_DEBOUNCE_MS)

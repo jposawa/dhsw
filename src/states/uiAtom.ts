@@ -1,11 +1,11 @@
-import { atom } from 'jotai'
-import { atomWithStorage } from 'jotai/utils'
+import { atom } from "jotai"
+import { atomWithStorage } from "jotai/utils"
 
-import { STORAGE_KEYS } from '@/constants'
-import type { Theme } from '@/types'
+import { STORAGE_KEYS } from "@/constants"
+import type { Theme } from "@/types"
 
 /** Escuro e o padrao: app de mesa, sala mal iluminada. */
-export const themeAtom = atomWithStorage<Theme>(STORAGE_KEYS.theme, 'dark', undefined, {
+export const themeAtom = atomWithStorage<Theme>(STORAGE_KEYS.theme, "dark", undefined, {
   getOnInit: true,
 })
 

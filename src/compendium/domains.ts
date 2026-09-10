@@ -1,6 +1,6 @@
 // GERADO POR scripts/build-compendium.ts — NÃO EDITAR À MÃO.
 // Fonte: specs/dh-sw.html
-import type { DomainDefinition } from '@/types'
+import type { DomainDefinition } from "@/types"
 
 export const DOMAIN_DEFINITIONS: readonly DomainDefinition[] = [
   {

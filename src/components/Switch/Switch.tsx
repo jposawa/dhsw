@@ -1,6 +1,6 @@
-import type { BaseComponent } from '@/types'
+import type { BaseComponent } from "@/types"
 
-import styles from './Switch.module.css'
+import styles from "./Switch.module.css"
 
 type SwitchProps = BaseComponent & {
   isOn: boolean
@@ -39,7 +39,7 @@ export const Switch = ({
     role="switch"
     aria-checked={isOn}
     disabled={disabled}
-    className={[styles.switch, className].filter(Boolean).join(' ')}
+    className={[styles.switch, className].filter(Boolean).join(" ")}
     style={style}
     data-testid="switch"
     onClick={onToggle}

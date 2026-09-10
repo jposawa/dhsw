@@ -1,4 +1,4 @@
-import type { Result, RuleErrorCode } from '@/types'
+import type { Result, RuleErrorCode } from "@/types"
 
 /** Construtores de `Result`. Funcoes puras — `types/` guarda so o formato. */
 

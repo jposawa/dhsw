@@ -1,1 +1,1 @@
-export { DomainSymbol } from './DomainSymbol'
+export { DomainSymbol } from "./DomainSymbol"

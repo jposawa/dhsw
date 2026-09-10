@@ -1,4 +1,4 @@
-import { ARMOR_LINES, CLASSES, NAMED_ARMOR } from '@/compendium'
+import { ARMOR_LINES, CLASSES, NAMED_ARMOR } from "@/compendium"
 import {
   ARMOR_LINE_MODIFIERS,
   BARE_BONES_ARMOR_SCORE_BASE,
@@ -9,7 +9,7 @@ import {
   MIN_LEVEL,
   TIER_BOUNDARIES,
   TRAIT_LIST,
-} from '@/constants'
+} from "@/constants"
 import type {
   Character,
   ClassDefinition,
@@ -19,9 +19,9 @@ import type {
   Modifier,
   Tier,
   Trait,
-} from '@/types'
+} from "@/types"
 
-import { createModifierCollector, resolveStat } from './stat'
+import { createModifierCollector, resolveStat } from "./stat"
 
 /** Tier é derivado do nível, sempre. Nunca guardado. */
 export const tierOf = (level: number): Tier => {
@@ -42,7 +42,7 @@ const findClass = (className: string | null): ClassDefinition | null =>
 /** Resolve a armadura vestida contra a linha e o tier dela. */
 export const resolveEquippedArmor = (character: Character): EquippedArmor | null => {
   const entry = character.inventory.find(
-    (candidate) => candidate.kind === 'armor' && candidate.isEquipped,
+    (candidate) => candidate.kind === "armor" && candidate.isEquipped,
   )
 
   if (!entry) {
@@ -100,9 +100,9 @@ const tallyAdvancements = (character: Character) => {
 
 const loadoutMaxFor = (houseRules: HouseRules, tier: Tier): number => {
   switch (houseRules.loadoutSize) {
-    case '3+tier':
+    case "3+tier":
       return 3 + tier
-    case '4+tier':
+    case "4+tier":
       return 4 + tier
     default:
       return DEFAULT_LOADOUT_SIZE
@@ -131,9 +131,9 @@ export const derive = (character: Character, houseRules: HouseRules): DerivedSta
   // de equipamento hoje; módulos e features entram por aqui quando existirem.
   if (equippedArmor && equippedArmor.agilityModifier !== 0) {
     collector.add({
-      target: 'trait.Agility',
+      target: "trait.Agility",
       value: equippedArmor.agilityModifier,
-      source: { kind: 'armor', entryId: equippedArmor.entryId, name: equippedArmor.name },
+      source: { kind: "armor", entryId: equippedArmor.entryId, name: equippedArmor.name },
     })
   }
 
@@ -159,9 +159,9 @@ export const derive = (character: Character, houseRules: HouseRules): DerivedSta
 
   if (!isBareBones) {
     collector.add({
-      target: 'evasion',
+      target: "evasion",
       value: equippedArmor.evasionModifier,
-      source: { kind: 'armor', entryId: equippedArmor.entryId, name: equippedArmor.name },
+      source: { kind: "armor", entryId: equippedArmor.entryId, name: equippedArmor.name },
     })
   }
 
@@ -170,26 +170,26 @@ export const derive = (character: Character, houseRules: HouseRules): DerivedSta
   const severeBase = isBareBones ? bareBones.severeBase : equippedArmor.severeBase
 
   const levelThresholdModifier = (): Modifier => ({
-    target: 'majorThreshold',
+    target: "majorThreshold",
     value: level,
-    source: { kind: 'advancement', level },
+    source: { kind: "advancement", level },
   })
 
   const majorModifiers: Modifier[] = [levelThresholdModifier()]
   const severeModifiers: Modifier[] = [
-    { ...levelThresholdModifier(), target: 'severeThreshold' },
+    { ...levelThresholdModifier(), target: "severeThreshold" },
   ]
 
   if (advancements.thresholds > 0) {
     majorModifiers.push({
-      target: 'majorThreshold',
+      target: "majorThreshold",
       value: advancements.thresholds,
-      source: { kind: 'advancement', level },
+      source: { kind: "advancement", level },
     })
     severeModifiers.push({
-      target: 'severeThreshold',
+      target: "severeThreshold",
       value: advancements.thresholds,
-      source: { kind: 'advancement', level },
+      source: { kind: "advancement", level },
     })
   }
 
@@ -197,9 +197,9 @@ export const derive = (character: Character, houseRules: HouseRules): DerivedSta
 
   if (advancements.evasion > 0) {
     collector.add({
-      target: 'evasion',
+      target: "evasion",
       value: advancements.evasion,
-      source: { kind: 'advancement', level },
+      source: { kind: "advancement", level },
     })
   }
 
@@ -209,9 +209,9 @@ export const derive = (character: Character, houseRules: HouseRules): DerivedSta
     const rounded = houseRules.roundsEvasionUp ? Math.ceil(raw) : Math.floor(raw)
 
     collector.add({
-      target: 'evasion',
+      target: "evasion",
       value: rounded,
-      source: { kind: 'houseRule', rule: '(Agility + Instinct) ÷ 2' },
+      source: { kind: "houseRule", rule: "(Agility + Instinct) ÷ 2" },
     })
   }
 
@@ -219,25 +219,25 @@ export const derive = (character: Character, houseRules: HouseRules): DerivedSta
 
   if (advancements.hp > 0) {
     collector.add({
-      target: 'hitPointsMax',
+      target: "hitPointsMax",
       value: advancements.hp,
-      source: { kind: 'advancement', level },
+      source: { kind: "advancement", level },
     })
   }
 
   if (advancements.stress > 0) {
     collector.add({
-      target: 'stressMax',
+      target: "stressMax",
       value: advancements.stress,
-      source: { kind: 'advancement', level },
+      source: { kind: "advancement", level },
     })
   }
 
   if (advancements.proficiency > 0) {
     collector.add({
-      target: 'proficiency',
+      target: "proficiency",
       value: advancements.proficiency,
-      source: { kind: 'advancement', level },
+      source: { kind: "advancement", level },
     })
   }
 
@@ -245,14 +245,14 @@ export const derive = (character: Character, houseRules: HouseRules): DerivedSta
     level,
     tier,
     traits,
-    proficiency: resolveStat(tier, collector.for('proficiency')),
-    evasion: resolveStat(classDefinition?.evasion ?? 10, collector.for('evasion')),
-    armorScore: resolveStat(Math.max(0, armorScoreBase), collector.for('armorScore')),
+    proficiency: resolveStat(tier, collector.for("proficiency")),
+    evasion: resolveStat(classDefinition?.evasion ?? 10, collector.for("evasion")),
+    armorScore: resolveStat(Math.max(0, armorScoreBase), collector.for("armorScore")),
     hitPointsMax: resolveStat(
       classDefinition?.hitPoints ?? 6,
-      collector.for('hitPointsMax'),
+      collector.for("hitPointsMax"),
     ),
-    stressMax: resolveStat(BASE_STRESS, collector.for('stressMax')),
+    stressMax: resolveStat(BASE_STRESS, collector.for("stressMax")),
     majorThreshold: resolveStat(majorBase, majorModifiers),
     severeThreshold: resolveStat(severeBase, severeModifiers),
     loadoutMax: resolveStat(loadoutMaxFor(houseRules, tier), []),

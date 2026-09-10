@@ -1,11 +1,11 @@
-import { useAtomValue } from 'jotai'
-import React from 'react'
+import { useAtomValue } from "jotai"
+import React from "react"
 
-import { DEFAULT_HOME, NAV_ITEMS } from '@/constants'
-import { resolveHomePath } from '@/helpers'
-import { authAtom } from '@/states'
+import { DEFAULT_HOME, NAV_ITEMS } from "@/constants"
+import { resolveHomePath } from "@/helpers"
+import { authAtom } from "@/states"
 
-import { useConfig } from './useConfig'
+import { useConfig } from "./useConfig"
 
 export type HomeRouteResult = {
   /** `true` enquanto a sessao esta sendo restaurada — nao decida ainda. */
@@ -26,9 +26,9 @@ export const useHomeRoute = (): HomeRouteResult => {
   const { config } = useConfig()
 
   const path = React.useMemo(
-    () => resolveHomePath(NAV_ITEMS, config.home, DEFAULT_HOME, status === 'signed-in'),
+    () => resolveHomePath(NAV_ITEMS, config.home, DEFAULT_HOME, status === "signed-in"),
     [config.home, status],
   )
 
-  return { isResolving: status === 'unknown', path }
+  return { isResolving: status === "unknown", path }
 }

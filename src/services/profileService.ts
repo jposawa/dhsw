@@ -1,8 +1,8 @@
-import { get, update } from 'firebase/database'
+import { get, update } from "firebase/database"
 
-import { DB_PATHS } from '@/constants'
-import { dhswRef } from '@/lib/firebase'
-import type { AuthUser, Profile } from '@/types'
+import { DB_PATHS } from "@/constants"
+import { dhswRef } from "@/lib/firebase"
+import type { AuthUser, Profile } from "@/types"
 
 /**
  * Espelho do usuário autenticado em `profiles/<uid>`.

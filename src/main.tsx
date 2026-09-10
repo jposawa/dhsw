@@ -1,24 +1,24 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { StrictMode } from "react"
+import { createRoot } from "react-dom/client"
+import { createBrowserRouter, RouterProvider } from "react-router-dom"
 
-import { ROUTES } from '@/constants'
-import { AuthGate, HomeRoute } from '@/fragments'
-import { Compendium } from '@/pages/Compendium'
-import { HouseRules } from '@/pages/HouseRules'
-import { Parties } from '@/pages/Parties'
-import { PartyDetail } from '@/pages/PartyDetail'
-import { Profile } from '@/pages/Profile'
-import { Roster } from '@/pages/Roster'
-import { Sheet } from '@/pages/Sheet'
+import { ROUTES } from "@/constants"
+import { AuthGate, HomeRoute } from "@/fragments"
+import { Compendium } from "@/pages/Compendium"
+import { HouseRules } from "@/pages/HouseRules"
+import { Parties } from "@/pages/Parties"
+import { PartyDetail } from "@/pages/PartyDetail"
+import { Profile } from "@/pages/Profile"
+import { Roster } from "@/pages/Roster"
+import { Sheet } from "@/pages/Sheet"
 
-import '@jposawa/ronin-ui/tokens.css'
-import '@jposawa/ronin-ui/styles.css'
+import "@jposawa/ronin-ui/tokens.css"
+import "@jposawa/ronin-ui/styles.css"
 
-import { App } from './App'
+import { App } from "./App"
 // Depois da biblioteca e fora de `@layer`: e o que faz os valores do DH-SW
 // vencerem os padroes dela. Ver styles/tokens.css.
-import './styles/tokens.css'
+import "./styles/tokens.css"
 
 /**
  * BrowserRouter, não hash.
@@ -66,7 +66,7 @@ const router = createBrowserRouter([
   },
 ])
 
-createRoot(document.getElementById('root')!).render(
+createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <RouterProvider router={router} />
   </StrictMode>,

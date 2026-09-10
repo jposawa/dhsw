@@ -1,8 +1,8 @@
-import React from 'react'
+import React from "react"
 
-import { SKILLS, SKILL_SEARCH_INDEX } from '@/compendium'
-import { filterByIndex } from '@/helpers'
-import type { Domain, Skill } from '@/types'
+import { SKILLS, SKILL_SEARCH_INDEX } from "@/compendium"
+import { filterByIndex } from "@/helpers"
+import type { Domain, Skill } from "@/types"
 
 /** Busca nas 126 cartas contra o indice pre-computado, com filtro de dominio. */
 export const useSkillSearch = (query: string, domains: ReadonlySet<Domain>): Skill[] =>

@@ -1,6 +1,6 @@
-import type { HouseRules, RemoteConfig } from '@/types'
+import type { HouseRules, RemoteConfig } from "@/types"
 
-import { DEFAULT_HOME } from './appNav'
+import { DEFAULT_HOME } from "./appNav"
 
 /**
  * Default embutido no codigo. Banco fora do ar, offline ou no ausente nao
@@ -20,5 +20,5 @@ export const DEFAULT_HOUSE_RULES: HouseRules = {
   hasTwoCardsPerLevel: false,
   hasEvasionFromTraits: false,
   roundsEvasionUp: false,
-  loadoutSize: '5',
+  loadoutSize: "5",
 }

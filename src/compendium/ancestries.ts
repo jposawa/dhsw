@@ -1,6 +1,6 @@
 // GERADO POR scripts/build-compendium.ts — NÃO EDITAR À MÃO.
 // Fonte: specs/dh-sw.html
-import type { Ancestry } from '@/types'
+import type { Ancestry } from "@/types"
 
 export const ANCESTRIES: readonly Ancestry[] = [
   {

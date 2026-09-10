@@ -1,6 +1,6 @@
 // GERADO POR scripts/build-compendium.ts — NÃO EDITAR À MÃO.
 // Fonte: specs/dh-sw.html
-import type { Community } from '@/types'
+import type { Community } from "@/types"
 
 export const COMMUNITIES: readonly Community[] = [
   {

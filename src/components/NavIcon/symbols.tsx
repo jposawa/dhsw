@@ -1,4 +1,4 @@
-import type { NavIconName } from '@/types'
+import type { NavIconName } from "@/types"
 
 /**
  * Os ícones da navegação, no mesmo traço geométrico dos emblemas de domínio.

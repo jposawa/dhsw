@@ -1,6 +1,6 @@
-import type { NavItem } from '@/types'
+import type { NavItem } from "@/types"
 
-import { ROUTES } from './routes'
+import { ROUTES } from "./routes"
 
 /**
  * Catalogo de destinos.
@@ -20,36 +20,36 @@ import { ROUTES } from './routes'
  */
 export const NAV_ITEMS: readonly NavItem[] = [
   {
-    key: 'compendium',
-    label: 'COMPÊNDIO',
-    icon: 'compendium',
+    key: "compendium",
+    label: "COMPÊNDIO",
+    icon: "compendium",
     path: ROUTES.compendium,
     needAuth: false,
     active: true,
     order: 0,
   },
   {
-    key: 'roster',
-    label: 'FICHAS',
-    icon: 'roster',
+    key: "roster",
+    label: "FICHAS",
+    icon: "roster",
     path: ROUTES.roster,
     needAuth: true,
     active: true,
     order: 1,
   },
   {
-    key: 'parties',
-    label: 'GRUPOS',
-    icon: 'parties',
+    key: "parties",
+    label: "GRUPOS",
+    icon: "parties",
     path: ROUTES.parties,
     needAuth: true,
     active: true,
     order: 2,
   },
   {
-    key: 'houseRules',
-    label: 'REGRAS',
-    icon: 'houseRules',
+    key: "houseRules",
+    label: "REGRAS",
+    icon: "houseRules",
     path: ROUTES.houseRules,
     needAuth: false,
     active: true,
@@ -64,6 +64,6 @@ export const NAV_ITEMS: readonly NavItem[] = [
  * nao trouxe o campo, ou trouxe chave que nao serve.
  */
 export const DEFAULT_HOME = {
-  authenticated: 'roster',
-  anonymous: 'compendium',
+  authenticated: "roster",
+  anonymous: "compendium",
 } as const

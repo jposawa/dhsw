@@ -1,8 +1,8 @@
-import { Navigate } from 'react-router-dom'
+import { Navigate } from "react-router-dom"
 
-import { useHomeRoute } from '@/hooks'
+import { useHomeRoute } from "@/hooks"
 
-import styles from './HomeRoute.module.css'
+import styles from "./HomeRoute.module.css"
 
 /**
  * `/` não tem tela própria: manda para o destino da sessão.

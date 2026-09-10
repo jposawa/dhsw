@@ -1,6 +1,6 @@
-import type { DamageType, Domain, Level, Range, Tier, Trait, WeaponBurden } from './domain'
+import type { DamageType, Domain, Level, Range, Tier, Trait, WeaponBurden } from "./domain"
 
-export type SkillCategory = 'Ability' | 'Force' | 'Holocron'
+export type SkillCategory = "Ability" | "Force" | "Holocron"
 
 /** Carta de domínio. Referenciada por nome — ver DOMAIN.md. */
 export type Skill = {
@@ -62,7 +62,7 @@ export type Community = {
   feature: string
 }
 
-export type ArmorLineName = 'Flexible' | 'Neutra' | 'Heavy' | 'Very Heavy'
+export type ArmorLineName = "Flexible" | "Neutra" | "Heavy" | "Very Heavy"
 
 export type ArmorTier = {
   /** Número de Armor Slots. */
@@ -88,7 +88,7 @@ export type NamedArmor = {
 
 export type Weapon = {
   name: string
-  trait: Trait | 'Forcewield'
+  trait: Trait | "Forcewield"
   range: Range
   damageDie: string
   /** Bônus de dano por tier, índice 0 = Tier 1. */
@@ -115,7 +115,7 @@ export type CompendiumEntry = {
  */
 export type EquipmentModule = {
   name: string
-  track: 'kyber' | 'tech' | 'armor'
+  track: "kyber" | "tech" | "armor"
   tier: Tier
   slots: number
   effect: string

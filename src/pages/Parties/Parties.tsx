@@ -1,14 +1,14 @@
-import { useAtomValue, useSetAtom } from 'jotai'
-import React from 'react'
-import { Link } from 'react-router-dom'
+import { useAtomValue, useSetAtom } from "jotai"
+import React from "react"
+import { Link } from "react-router-dom"
 
-import { Button, Input, SectionLabel, StepRule } from '@/components'
-import { PARTY_NAME_MAX_LENGTH, PARTY_ROLES, ROUTES } from '@/constants'
-import { createParty, joinParty } from '@/services'
-import { useParties } from '@/hooks'
-import { authAtom, toastAtom } from '@/states'
+import { Button, Input, SectionLabel, StepRule } from "@/components"
+import { PARTY_NAME_MAX_LENGTH, PARTY_ROLES, ROUTES } from "@/constants"
+import { createParty, joinParty } from "@/services"
+import { useParties } from "@/hooks"
+import { authAtom, toastAtom } from "@/states"
 
-import styles from './Parties.module.css'
+import styles from "./Parties.module.css"
 
 const labelForRole = (roleId: string): string =>
   PARTY_ROLES.find((role) => role.id === roleId)?.label ?? roleId
@@ -23,8 +23,8 @@ export const Parties = () => {
   const { parties, isLoading, refresh } = useParties()
   const setToast = useSetAtom(toastAtom)
 
-  const [newName, setNewName] = React.useState('')
-  const [joinCode, setJoinCode] = React.useState('')
+  const [newName, setNewName] = React.useState("")
+  const [joinCode, setJoinCode] = React.useState("")
   const [isWorking, setIsWorking] = React.useState(false)
 
   if (!user) {
@@ -36,11 +36,11 @@ export const Parties = () => {
 
     try {
       await createParty(newName.trim(), user.userId)
-      setNewName('')
-      setToast('Grupo criado')
+      setNewName("")
+      setToast("Grupo criado")
       refresh()
     } catch {
-      setToast('Não foi possível criar o grupo.')
+      setToast("Não foi possível criar o grupo.")
     } finally {
       setIsWorking(false)
     }
@@ -51,11 +51,11 @@ export const Parties = () => {
 
     try {
       const party = await joinParty(joinCode.trim(), user.userId)
-      setJoinCode('')
-      setToast(`Você entrou em ${party.name || 'um grupo'}`)
+      setJoinCode("")
+      setToast(`Você entrou em ${party.name || "um grupo"}`)
       refresh()
     } catch {
-      setToast('Código não encontrado, ou sem permissão para entrar.')
+      setToast("Código não encontrado, ou sem permissão para entrar.")
     } finally {
       setIsWorking(false)
     }
@@ -65,7 +65,7 @@ export const Parties = () => {
     <main className={styles.page}>
       <StepRule />
 
-      <SectionLabel detail={isLoading ? 'carregando…' : String(parties.length)}>
+      <SectionLabel detail={isLoading ? "carregando…" : String(parties.length)}>
         SEUS GRUPOS
       </SectionLabel>
 
@@ -79,7 +79,7 @@ export const Parties = () => {
           {parties.map(({ party, roleId }) => (
             <li className={styles.card} key={party.id}>
               <Link className={styles.open} to={ROUTES.party(party.id)}>
-                <b className={styles.name}>{party.name || 'Sem nome'}</b>
+                <b className={styles.name}>{party.name || "Sem nome"}</b>
                 <span className={styles.role}>{labelForRole(roleId)}</span>
               </Link>
             </li>

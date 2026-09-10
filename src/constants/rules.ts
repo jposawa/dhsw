@@ -1,4 +1,4 @@
-import type { ArmorLineName, Tier } from '@/types'
+import type { ArmorLineName, Tier } from "@/types"
 
 /**
  * Constantes do SRD 2.0 conforme dh-sw-v2-spec.md.
@@ -34,7 +34,7 @@ export const ARMOR_LINE_MODIFIERS: Readonly<
   Flexible: { evasion: 1, agility: 0 },
   Neutra: { evasion: 0, agility: 0 },
   Heavy: { evasion: -1, agility: 0 },
-  'Very Heavy': { evasion: -2, agility: -1 },
+  "Very Heavy": { evasion: -2, agility: -1 },
 }
 
 /**

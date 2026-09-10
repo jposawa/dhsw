@@ -1,4 +1,4 @@
-import type { Modifier, ResolvedStat, StatKey } from '@/types'
+import type { Modifier, ResolvedStat, StatKey } from "@/types"
 
 /**
  * Montagem de característica: base + modificadores → total.

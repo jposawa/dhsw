@@ -1,6 +1,6 @@
 // GERADO POR scripts/build-compendium.ts — NÃO EDITAR À MÃO.
 // Fonte: specs/dh-sw.html
-import type { CompendiumEntry } from '@/types'
+import type { CompendiumEntry } from "@/types"
 
 export const ITEMS: readonly CompendiumEntry[] = [
   {

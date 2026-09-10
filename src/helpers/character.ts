@@ -1,8 +1,8 @@
-import { CHARACTER_SCHEMA_VERSION, TRAIT_LIST } from '@/constants'
-import type { Character, Trait } from '@/types'
+import { CHARACTER_SCHEMA_VERSION, TRAIT_LIST } from "@/constants"
+import type { Character, Trait } from "@/types"
 
 /** Fabrica de ficha em branco. Pura — o id vem de `crypto.randomUUID`. */
-export const createCharacter = (name = ''): Character => {
+export const createCharacter = (name = ""): Character => {
   const now = Date.now()
 
   return {
@@ -27,13 +27,13 @@ export const createCharacter = (name = ''): Character => {
     inventory: [],
     advancements: [],
     experiences: [],
-    notes: '',
+    notes: "",
   }
 }
 
 /** Copia de uma ficha: id novo, carimbos novos, o resto identico. */
 export const duplicateCharacter = (source: Character): Character => {
-  const name = `${source.name || 'Sem nome'} (cópia)`
+  const name = `${source.name || "Sem nome"} (cópia)`
   const now = Date.now()
 
   return { ...source, id: crypto.randomUUID(), name, createdAt: now, updatedAt: now }

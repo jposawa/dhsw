@@ -4,10 +4,10 @@ import {
   signInWithPopup,
   signOut,
   type User,
-} from 'firebase/auth'
+} from "firebase/auth"
 
-import { firebaseAuth } from '@/lib/firebase'
-import type { AuthUser } from '@/types'
+import { firebaseAuth } from "@/lib/firebase"
+import type { AuthUser } from "@/types"
 
 /**
  * Login com Google.
@@ -24,8 +24,8 @@ const provider = new GoogleAuthProvider()
 /** Vendor não sobe: o `User` do Firebase vira tipo do domínio na fronteira. */
 const toAuthUser = (user: User): AuthUser => ({
   userId: user.uid,
-  displayName: user.displayName ?? user.email ?? 'Sem nome',
-  email: user.email ?? '',
+  displayName: user.displayName ?? user.email ?? "Sem nome",
+  email: user.email ?? "",
   photoUrl: user.photoURL,
 })
 

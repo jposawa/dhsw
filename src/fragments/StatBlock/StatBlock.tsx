@@ -1,9 +1,9 @@
-import React from 'react'
+import React from "react"
 
-import { describeModifierSource, formatSigned } from '@/helpers'
-import type { BaseComponent, ResolvedStat } from '@/types'
+import { describeModifierSource, formatSigned } from "@/helpers"
+import type { BaseComponent, ResolvedStat } from "@/types"
 
-import styles from './StatBlock.module.css'
+import styles from "./StatBlock.module.css"
 
 type StatBlockProps = BaseComponent & {
   label: string
@@ -23,15 +23,15 @@ export const StatBlock = ({ label, stat, className, style }: StatBlockProps) => 
   return (
     <button
       type="button"
-      className={[styles.block, className].filter(Boolean).join(' ')}
+      className={[styles.block, className].filter(Boolean).join(" ")}
       style={style}
       aria-expanded={isOpen}
-      aria-label={`${label}: ${stat.total}${hasDetail ? '. Toque para ver os modificadores' : ''}`}
+      aria-label={`${label}: ${stat.total}${hasDetail ? ". Toque para ver os modificadores" : ""}`}
       onClick={() => setIsOpen((open) => hasDetail && !open)}
     >
       <span className={styles.summary}>
         <span className={styles.value}>{stat.total}</span>
-        <span className={[styles.key, hasDetail ? styles.hasDetail : ''].filter(Boolean).join(' ')}>
+        <span className={[styles.key, hasDetail ? styles.hasDetail : ""].filter(Boolean).join(" ")}>
           {label}
         </span>
       </span>
@@ -46,9 +46,9 @@ export const StatBlock = ({ label, stat, className, style }: StatBlockProps) => 
             <span className={styles.line} key={`${modifier.source.kind}-${index}`}>
               <span>{describeModifierSource(modifier)}</span>
               <span
-                className={[styles.lineValue, modifier.value < 0 ? styles.negative : '']
+                className={[styles.lineValue, modifier.value < 0 ? styles.negative : ""]
                   .filter(Boolean)
-                  .join(' ')}
+                  .join(" ")}
               >
                 {formatSigned(modifier.value)}
               </span>

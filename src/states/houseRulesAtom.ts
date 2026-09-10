@@ -1,8 +1,8 @@
-import { atomWithStorage } from 'jotai/utils'
+import { atomWithStorage } from "jotai/utils"
 
-import { DEFAULT_HOUSE_RULES, STORAGE_KEYS, STORAGE_VERSIONS } from '@/constants'
-import { createVersionedStorage } from '@/services'
-import type { HouseRules } from '@/types'
+import { DEFAULT_HOUSE_RULES, STORAGE_KEYS, STORAGE_VERSIONS } from "@/constants"
+import { createVersionedStorage } from "@/services"
+import type { HouseRules } from "@/types"
 
 export const houseRulesAtom = atomWithStorage<HouseRules>(
   STORAGE_KEYS.houseRules,

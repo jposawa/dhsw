@@ -1,6 +1,6 @@
 // GERADO POR scripts/build-compendium.ts — NÃO EDITAR À MÃO.
 // Fonte: specs/dh-sw.html
-import type { ArmorLine, NamedArmor } from '@/types'
+import type { ArmorLine, NamedArmor } from "@/types"
 
 export const ARMOR_LINES: readonly ArmorLine[] = [
   {

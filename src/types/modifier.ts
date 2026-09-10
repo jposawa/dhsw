@@ -1,4 +1,4 @@
-import type { Trait } from './domain'
+import type { Trait } from "./domain"
 
 /**
  * Modelo de característica: valor base, modificadores, valor final.
@@ -12,35 +12,35 @@ import type { Trait } from './domain'
 /** Tudo que pode receber modificador. */
 export type StatKey =
   | `trait.${Trait}`
-  | 'evasion'
-  | 'armorScore'
-  | 'majorThreshold'
-  | 'severeThreshold'
-  | 'hitPointsMax'
-  | 'stressMax'
-  | 'proficiency'
-  | 'loadoutMax'
-  | 'damage'
-  | 'attackRoll'
+  | "evasion"
+  | "armorScore"
+  | "majorThreshold"
+  | "severeThreshold"
+  | "hitPointsMax"
+  | "stressMax"
+  | "proficiency"
+  | "loadoutMax"
+  | "damage"
+  | "attackRoll"
 
 /**
  * De onde o modificador veio. É o que permite à UI dizer
  * "+1 de Padded Flightsuit" em vez de "+1 de algum lugar".
  */
 export type ModifierSource =
-  | { kind: 'base' }
-  | { kind: 'class'; name: string }
-  | { kind: 'subclass'; name: string; feature: string }
-  | { kind: 'ancestry'; name: string; feature: string }
-  | { kind: 'community'; name: string; feature: string }
-  | { kind: 'advancement'; level: number }
-  | { kind: 'armor'; entryId: string; name: string }
-  | { kind: 'weapon'; entryId: string; name: string }
-  | { kind: 'module'; entryId: string; moduleName: string }
-  | { kind: 'item'; entryId: string; name: string }
-  | { kind: 'skill'; name: string }
-  | { kind: 'houseRule'; rule: string }
-  | { kind: 'situational'; label: string }
+  | { kind: "base" }
+  | { kind: "class"; name: string }
+  | { kind: "subclass"; name: string; feature: string }
+  | { kind: "ancestry"; name: string; feature: string }
+  | { kind: "community"; name: string; feature: string }
+  | { kind: "advancement"; level: number }
+  | { kind: "armor"; entryId: string; name: string }
+  | { kind: "weapon"; entryId: string; name: string }
+  | { kind: "module"; entryId: string; moduleName: string }
+  | { kind: "item"; entryId: string; name: string }
+  | { kind: "skill"; name: string }
+  | { kind: "houseRule"; rule: string }
+  | { kind: "situational"; label: string }
 
 export type Modifier = {
   target: StatKey
@@ -73,7 +73,7 @@ export type SituationalModifier = {
 export type RollPreparation = {
   trait: Trait
   /** Sempre 2d12 em Daggerheart: Hope e Fear. */
-  dice: 'Hope d12 + Fear d12'
+  dice: "Hope d12 + Fear d12"
   stat: ResolvedStat
   situational: readonly SituationalModifier[]
   /** stat.total + soma dos situacionais. */

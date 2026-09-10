@@ -1,4 +1,4 @@
-import type { Modifier } from '@/types'
+import type { Modifier } from "@/types"
 
 /** Sinal explicito: "+2" e "−1" leem melhor que "2" e "-1". */
 export const formatSigned = (value: number): string => {
@@ -12,25 +12,25 @@ export const formatSigned = (value: number): string => {
 /** Rotulo em pt-br da origem de um modificador, para o detalhamento na UI. */
 export const describeModifierSource = ({ source }: Modifier): string => {
   switch (source.kind) {
-    case 'base':
-      return 'base'
-    case 'class':
-    case 'armor':
-    case 'weapon':
-    case 'item':
-    case 'skill':
+    case "base":
+      return "base"
+    case "class":
+    case "armor":
+    case "weapon":
+    case "item":
+    case "skill":
       return source.name
-    case 'subclass':
-    case 'ancestry':
-    case 'community':
+    case "subclass":
+    case "ancestry":
+    case "community":
       return `${source.name} — ${source.feature}`
-    case 'advancement':
+    case "advancement":
       return `advancement, nível ${source.level}`
-    case 'module':
+    case "module":
       return source.moduleName
-    case 'houseRule':
+    case "houseRule":
       return `regra da casa — ${source.rule}`
-    case 'situational':
+    case "situational":
       return source.label
   }
 }
@@ -47,9 +47,9 @@ export const describeError = (error: unknown): string => {
     return error.message
   }
 
-  if (typeof error === 'string') {
+  if (typeof error === "string") {
     return error
   }
 
-  return 'Erro desconhecido'
+  return "Erro desconhecido"
 }

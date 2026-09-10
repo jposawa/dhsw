@@ -1,1 +1,1 @@
-export { SkillText } from './SkillText'
+export { SkillText } from "./SkillText"

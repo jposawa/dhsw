@@ -1,18 +1,18 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it } from "vitest"
 
-import { DEFAULT_HOUSE_RULES } from '@/constants'
-import { createCharacter } from '@/helpers'
-import type { Character, HouseRules, InventoryEntry } from '@/types'
+import { DEFAULT_HOUSE_RULES } from "@/constants"
+import { createCharacter } from "@/helpers"
+import type { Character, HouseRules, InventoryEntry } from "@/types"
 
-import { derive, tierOf } from './derive'
+import { derive, tierOf } from "./derive"
 
 const withArmor = (character: Character, armorName: string): Character => {
   const entry: InventoryEntry = {
-    id: 'armor-entry',
-    kind: 'armor',
+    id: "armor-entry",
+    kind: "armor",
     name: armorName,
     isEquipped: true,
-    slot: 'armor',
+    slot: "armor",
     quantity: 1,
     installedModules: [],
     nickname: null,
@@ -22,13 +22,13 @@ const withArmor = (character: Character, armorName: string): Character => {
 }
 
 const soldier = (level: number): Character => ({
-  ...createCharacter('Teste'),
-  className: 'Soldier',
+  ...createCharacter("Teste"),
+  className: "Soldier",
   level,
 })
 
-describe('tierOf', () => {
-  it('segue as faixas do SRD: 1 / 2-4 / 5-7 / 8-10', () => {
+describe("tierOf", () => {
+  it("segue as faixas do SRD: 1 / 2-4 / 5-7 / 8-10", () => {
     expect(tierOf(1)).toBe(1)
     expect(tierOf(2)).toBe(2)
     expect(tierOf(4)).toBe(2)
@@ -38,33 +38,33 @@ describe('tierOf', () => {
     expect(tierOf(10)).toBe(4)
   })
 
-  it('trava fora da faixa em vez de estourar', () => {
+  it("trava fora da faixa em vez de estourar", () => {
     expect(tierOf(0)).toBe(1)
     expect(tierOf(99)).toBe(4)
   })
 })
 
-describe('derive — thresholds', () => {
-  it('soma o nivel ao threshold base da armadura', () => {
+describe("derive — thresholds", () => {
+  it("soma o nivel ao threshold base da armadura", () => {
     // Trooper Plate e Heavy T1: base 7/15. dh-sw-v2-spec.md §4.4
-    const character = withArmor(soldier(1), 'Trooper Plate')
+    const character = withArmor(soldier(1), "Trooper Plate")
     const derived = derive(character, DEFAULT_HOUSE_RULES)
 
     expect(derived.majorThreshold.total).toBe(8)
     expect(derived.severeThreshold.total).toBe(16)
   })
 
-  it('reproduz o Soldier da v1 no nivel 1 — 8/16, a ancora da spec', () => {
+  it("reproduz o Soldier da v1 no nivel 1 — 8/16, a ancora da spec", () => {
     // "O Soldier da v1 (8/16 no Level 1) e exatamente a linha Heavy de Tier 1
     // — 7/15 mais o Level." dh-sw-v2-spec.md §4.4
-    const derived = derive(withArmor(soldier(1), 'Trooper Plate'), DEFAULT_HOUSE_RULES)
+    const derived = derive(withArmor(soldier(1), "Trooper Plate"), DEFAULT_HOUSE_RULES)
 
     expect([derived.majorThreshold.total, derived.severeThreshold.total]).toEqual([8, 16])
   })
 })
 
-describe('derive — Bare Bones', () => {
-  it('usa 3 + Strength e a tabela do SRD quando nao ha armadura', () => {
+describe("derive — Bare Bones", () => {
+  it("usa 3 + Strength e a tabela do SRD quando nao ha armadura", () => {
     const character: Character = {
       ...soldier(1),
       traits: { ...soldier(1).traits, Strength: 2 },
@@ -79,28 +79,28 @@ describe('derive — Bare Bones', () => {
   })
 })
 
-describe('derive — Evasion', () => {
-  it('parte da classe e aplica o modificador da linha de armadura', () => {
+describe("derive — Evasion", () => {
+  it("parte da classe e aplica o modificador da linha de armadura", () => {
     // Soldier tem Evasion 9 na v2; Heavy custa -1.
-    const derived = derive(withArmor(soldier(1), 'Trooper Plate'), DEFAULT_HOUSE_RULES)
+    const derived = derive(withArmor(soldier(1), "Trooper Plate"), DEFAULT_HOUSE_RULES)
 
     expect(derived.evasion.base).toBe(9)
     expect(derived.evasion.total).toBe(8)
   })
 
-  it('nomeia a origem de cada modificador', () => {
-    const derived = derive(withArmor(soldier(1), 'Trooper Plate'), DEFAULT_HOUSE_RULES)
+  it("nomeia a origem de cada modificador", () => {
+    const derived = derive(withArmor(soldier(1), "Trooper Plate"), DEFAULT_HOUSE_RULES)
     const [modifier] = derived.evasion.modifiers
 
     expect(modifier.source).toEqual({
-      kind: 'armor',
-      entryId: 'armor-entry',
-      name: 'Trooper Plate',
+      kind: "armor",
+      entryId: "armor-entry",
+      name: "Trooper Plate",
     })
     expect(modifier.value).toBe(-1)
   })
 
-  it('nao cria modificador para a linha Neutra, que soma zero', () => {
+  it("nao cria modificador para a linha Neutra, que soma zero", () => {
     // Fonte sem efeito nao entra na lista: "Neutra: +0" e ruido.
     const derived = derive(withArmor(soldier(1), "Smuggler's Vest"), DEFAULT_HOUSE_RULES)
 
@@ -108,7 +108,7 @@ describe('derive — Evasion', () => {
     expect(derived.evasion.total).toBe(9)
   })
 
-  it('aplica a regra da casa de (Agility + Instinct) / 2', () => {
+  it("aplica a regra da casa de (Agility + Instinct) / 2", () => {
     const houseRules: HouseRules = { ...DEFAULT_HOUSE_RULES, hasEvasionFromTraits: true }
     const base = soldier(1)
     const character: Character = {
@@ -126,13 +126,13 @@ describe('derive — Evasion', () => {
   })
 })
 
-describe('derive — Very Heavy modifica Agility, e o efeito propaga', () => {
-  it('desconta 1 de Agility e isso muda a Evasion da regra da casa', () => {
+describe("derive — Very Heavy modifica Agility, e o efeito propaga", () => {
+  it("desconta 1 de Agility e isso muda a Evasion da regra da casa", () => {
     const houseRules: HouseRules = { ...DEFAULT_HOUSE_RULES, hasEvasionFromTraits: true }
     const base = soldier(1)
     const character = withArmor(
       { ...base, traits: { ...base.traits, Agility: 3, Instinct: 3 } },
-      'Siege Carapace',
+      "Siege Carapace",
     )
     const derived = derive(character, houseRules)
 
@@ -143,9 +143,9 @@ describe('derive — Very Heavy modifica Agility, e o efeito propaga', () => {
   })
 })
 
-describe('derive — nada de derivado e guardado', () => {
-  it('o mesmo personagem sempre produz o mesmo resultado', () => {
-    const character = withArmor(soldier(5), 'Hunter’s Rig')
+describe("derive — nada de derivado e guardado", () => {
+  it("o mesmo personagem sempre produz o mesmo resultado", () => {
+    const character = withArmor(soldier(5), "Hunter’s Rig")
     const first = derive(character, DEFAULT_HOUSE_RULES)
     const second = derive(character, DEFAULT_HOUSE_RULES)
 

@@ -1,8 +1,8 @@
-import type { Level, Tier, Trait } from './domain'
-import type { ResolvedStat } from './modifier'
+import type { Level, Tier, Trait } from "./domain"
+import type { ResolvedStat } from "./modifier"
 
-export type InventoryEntryKind = 'weapon' | 'armor' | 'item' | 'consumable'
-export type EquipSlot = 'primary' | 'secondary' | 'armor'
+export type InventoryEntryKind = "weapon" | "armor" | "item" | "consumable"
+export type EquipSlot = "primary" | "secondary" | "armor"
 
 export type InventoryEntry = {
   id: string
@@ -18,15 +18,15 @@ export type InventoryEntry = {
 }
 
 export type AdvancementKind =
-  | 'trait'
-  | 'hp'
-  | 'stress'
-  | 'evasion'
-  | 'proficiency'
-  | 'subclass'
-  | 'multiclass'
-  | 'domainCard'
-  | 'experience'
+  | "trait"
+  | "hp"
+  | "stress"
+  | "evasion"
+  | "proficiency"
+  | "subclass"
+  | "multiclass"
+  | "domainCard"
+  | "experience"
 
 export type Advancement = {
   level: Level
@@ -88,7 +88,7 @@ export type HouseRules = {
   hasTwoCardsPerLevel: boolean
   hasEvasionFromTraits: boolean
   roundsEvasionUp: boolean
-  loadoutSize: '5' | '3+tier' | '4+tier'
+  loadoutSize: "5" | "3+tier" | "4+tier"
 }
 
 /** Armadura equipada, já resolvida contra a linha e o tier. */

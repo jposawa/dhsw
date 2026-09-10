@@ -1,17 +1,17 @@
-import { useAtom, useAtomValue } from 'jotai'
-import React from 'react'
-import { Navigate, useParams } from 'react-router-dom'
+import { useAtom, useAtomValue } from "jotai"
+import React from "react"
+import { Navigate, useParams } from "react-router-dom"
 
-import { ANCESTRIES, CLASSES, COMMUNITIES, SUBCLASSES } from '@/compendium'
-import { SectionLabel, StepRule, Stepper } from '@/components'
-import { MAX_LEVEL, MIN_LEVEL, ROUTES, SHEET_TABS, TRAIT_LIST } from '@/constants'
-import { MarkerTrack, StatBlock } from '@/fragments'
-import { domainColorToken, formatSigned, touchCharacter } from '@/helpers'
-import { derive } from '@/rules'
-import { houseRulesAtom, rosterAtom, sheetRolesAtom } from '@/states'
-import type { Character, SheetTabId } from '@/types'
+import { ANCESTRIES, CLASSES, COMMUNITIES, SUBCLASSES } from "@/compendium"
+import { SectionLabel, StepRule, Stepper } from "@/components"
+import { MAX_LEVEL, MIN_LEVEL, ROUTES, SHEET_TABS, TRAIT_LIST } from "@/constants"
+import { MarkerTrack, StatBlock } from "@/fragments"
+import { domainColorToken, formatSigned, touchCharacter } from "@/helpers"
+import { derive } from "@/rules"
+import { houseRulesAtom, rosterAtom, sheetRolesAtom } from "@/states"
+import type { Character, SheetTabId } from "@/types"
 
-import styles from './Sheet.module.css'
+import styles from "./Sheet.module.css"
 
 /**
  * A ficha. Combate abre primeiro: é a tela usada em 80% do tempo de sessão.
@@ -24,12 +24,12 @@ export const Sheet = () => {
   const [roster, setRoster] = useAtom(rosterAtom)
   const houseRules = useAtomValue(houseRulesAtom)
   const sheetRoles = useAtomValue(sheetRolesAtom)
-  const [tab, setTab] = React.useState<SheetTabId>('combate')
+  const [tab, setTab] = React.useState<SheetTabId>("combate")
 
   const character = sheetId ? roster.characters[sheetId] : undefined
 
   // Papel ausente = ficha local ainda não sincronizada, e ela é sua.
-  const isReadOnly = sheetId ? sheetRoles[sheetId] === 'reader' : false
+  const isReadOnly = sheetId ? sheetRoles[sheetId] === "reader" : false
 
   const update = (mutate: (current: Character) => Character) => {
     if (!character || isReadOnly) {
@@ -76,7 +76,7 @@ export const Sheet = () => {
         </p>
       ) : null}
 
-      {tab !== 'combate' ? (
+      {tab !== "combate" ? (
         <p className={styles.note}>
           Aba {activeTab?.label} ainda não implementada. Ver a ordem de entrega em
           DOMAIN.md.
@@ -86,7 +86,7 @@ export const Sheet = () => {
           <StepRule />
 
           <div className={styles.identity}>
-            <div className={[styles.field, styles.fieldWide].join(' ')}>
+            <div className={[styles.field, styles.fieldWide].join(" ")}>
               <label htmlFor="character-name">NOME</label>
               <input
                 id="character-name"
@@ -102,7 +102,7 @@ export const Sheet = () => {
               <label htmlFor="character-ancestry">ESPÉCIE</label>
               <select
                 id="character-ancestry"
-                value={character.ancestry ?? ''}
+                value={character.ancestry ?? ""}
                 onChange={(event) =>
                   update((current) => ({ ...current, ancestry: event.target.value || null }))
                 }
@@ -118,7 +118,7 @@ export const Sheet = () => {
               <label htmlFor="character-community">ORIGEM</label>
               <select
                 id="character-community"
-                value={character.community ?? ''}
+                value={character.community ?? ""}
                 onChange={(event) =>
                   update((current) => ({ ...current, community: event.target.value || null }))
                 }
@@ -134,7 +134,7 @@ export const Sheet = () => {
               <label htmlFor="character-class">CLASSE</label>
               <select
                 id="character-class"
-                value={character.className ?? ''}
+                value={character.className ?? ""}
                 onChange={(event) =>
                   update((current) => ({
                     ...current,
@@ -156,7 +156,7 @@ export const Sheet = () => {
               <label htmlFor="character-subclass">SUBCLASSE</label>
               <select
                 id="character-subclass"
-                value={character.subclass ?? ''}
+                value={character.subclass ?? ""}
                 onChange={(event) =>
                   update((current) => ({ ...current, subclass: event.target.value || null }))
                 }
@@ -188,19 +188,19 @@ export const Sheet = () => {
               <b className={styles.thresholdValue}>{derived.tier}</b>
               TIER
             </div>
-            <div className={[styles.thresholdCell, styles.armorCell].join(' ')}>
+            <div className={[styles.thresholdCell, styles.armorCell].join(" ")}>
               <b className={styles.thresholdValue}>
-                {derived.isBareBones ? 'Bare Bones' : derived.equippedArmor?.line}
+                {derived.isBareBones ? "Bare Bones" : derived.equippedArmor?.line}
               </b>
               {derived.equippedArmor
                 ? derived.equippedArmor.name.toUpperCase()
-                : 'SEM ARMADURA'}
+                : "SEM ARMADURA"}
             </div>
           </div>
 
           {derived.isBareBones ? (
             <p className={styles.note}>
-              Sem armadura vestida: Armor Score 3 + Strength, thresholds{' '}
+              Sem armadura vestida: Armor Score 3 + Strength, thresholds{" "}
               {derived.majorThreshold.base}/{derived.severeThreshold.base} + nível. Não é
               erro — é escolha de build.
             </p>
@@ -246,7 +246,7 @@ export const Sheet = () => {
             label="HIT POINTS"
             marked={character.marks.hp}
             max={derived.hitPointsMax.total}
-            color={domainColorToken('Havoc')}
+            color={domainColorToken("Havoc")}
             onChange={(hp) =>
               update((current) => ({ ...current, marks: { ...current.marks, hp } }))
             }
@@ -255,7 +255,7 @@ export const Sheet = () => {
             label="STRESS"
             marked={character.marks.stress}
             max={derived.stressMax.total}
-            color={domainColorToken('Essence')}
+            color={domainColorToken("Essence")}
             onChange={(stress) =>
               update((current) => ({ ...current, marks: { ...current.marks, stress } }))
             }
@@ -264,7 +264,7 @@ export const Sheet = () => {
             label="ARMOR SLOTS"
             marked={character.marks.armor}
             max={derived.armorScore.total}
-            color={domainColorToken('Edge')}
+            color={domainColorToken("Edge")}
             onChange={(armor) =>
               update((current) => ({ ...current, marks: { ...current.marks, armor } }))
             }
@@ -273,7 +273,7 @@ export const Sheet = () => {
             label="HOPE"
             marked={character.marks.hope}
             max={6}
-            color={domainColorToken('Aegis')}
+            color={domainColorToken("Aegis")}
             onChange={(hope) =>
               update((current) => ({ ...current, marks: { ...current.marks, hope } }))
             }

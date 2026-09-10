@@ -1,6 +1,6 @@
 // GERADO POR scripts/build-compendium.ts — NÃO EDITAR À MÃO.
 // Fonte: specs/dh-sw.html
-import type { Subclass } from '@/types'
+import type { Subclass } from "@/types"
 
 export const SUBCLASSES: readonly Subclass[] = [
   {

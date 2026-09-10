@@ -13,13 +13,13 @@ export type Result<TValue> =
   | { ok: false; code: RuleErrorCode; detail?: string }
 
 export type RuleErrorCode =
-  | 'loadoutFull'
-  | 'notEnoughStress'
-  | 'skillUnknown'
-  | 'skillAlreadyInLoadout'
-  | 'armorSlotTaken'
-  | 'weaponSlotTaken'
-  | 'moduleTierTooHigh'
-  | 'noModuleSlots'
-  | 'maxLevelReached'
-  | 'entryNotFound'
+  | "loadoutFull"
+  | "notEnoughStress"
+  | "skillUnknown"
+  | "skillAlreadyInLoadout"
+  | "armorSlotTaken"
+  | "weaponSlotTaken"
+  | "moduleTierTooHigh"
+  | "noModuleSlots"
+  | "maxLevelReached"
+  | "entryNotFound"

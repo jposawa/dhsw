@@ -1,15 +1,15 @@
-import { useAtom } from 'jotai'
+import { useAtom } from "jotai"
 
-import { Chip, Pip, StepRule } from '@/components'
-import type { HouseRules as HouseRulesType } from '@/types'
-import { houseRulesAtom } from '@/states'
+import { Chip, Pip, StepRule } from "@/components"
+import type { HouseRules as HouseRulesType } from "@/types"
+import { houseRulesAtom } from "@/states"
 
-import styles from './HouseRules.module.css'
+import styles from "./HouseRules.module.css"
 
-const LOADOUT_OPTIONS: readonly { value: HouseRulesType['loadoutSize']; label: string }[] = [
-  { value: '5', label: '5 fixo' },
-  { value: '3+tier', label: '3 + Tier' },
-  { value: '4+tier', label: '4 + Tier' },
+const LOADOUT_OPTIONS: readonly { value: HouseRulesType["loadoutSize"]; label: string }[] = [
+  { value: "5", label: "5 fixo" },
+  { value: "3+tier", label: "3 + Tier" },
+  { value: "4+tier", label: "4 + Tier" },
 ]
 
 type ToggleProps = {

@@ -1,7 +1,7 @@
-import { Pip, SectionLabel } from '@/components'
-import type { BaseComponent } from '@/types'
+import { Pip, SectionLabel } from "@/components"
+import type { BaseComponent } from "@/types"
 
-import styles from './MarkerTrack.module.css'
+import styles from "./MarkerTrack.module.css"
 
 type MarkerTrackProps = BaseComponent & {
   label: string
@@ -26,7 +26,7 @@ export const MarkerTrack = ({
   className,
   style,
 }: MarkerTrackProps) => (
-  <div className={[styles.track, className].filter(Boolean).join(' ')} style={style}>
+  <div className={[styles.track, className].filter(Boolean).join(" ")} style={style}>
     <SectionLabel detail={`${marked}/${max}`}>{label}</SectionLabel>
     <div className={styles.pips}>
       {Array.from({ length: max }, (_, index) => {

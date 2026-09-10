@@ -1,6 +1,6 @@
-import { atom } from 'jotai'
+import { atom } from "jotai"
 
-import type { AuthState, SheetRoleId, SyncStatus } from '@/types'
+import type { AuthState, SheetRoleId, SyncStatus } from "@/types"
 
 /**
  * Estado de autenticacao. Nao persistido: quem guarda a sessao e o proprio
@@ -8,9 +8,9 @@ import type { AuthState, SheetRoleId, SyncStatus } from '@/types'
  *
  * Comeca em `unknown` de proposito — ver `types/auth.ts`.
  */
-export const authAtom = atom<AuthState>({ status: 'unknown', user: null })
+export const authAtom = atom<AuthState>({ status: "unknown", user: null })
 
-export const syncStatusAtom = atom<SyncStatus>('idle')
+export const syncStatusAtom = atom<SyncStatus>("idle")
 
 /**
  * Motivo da ultima falha de sincronizacao, cru.

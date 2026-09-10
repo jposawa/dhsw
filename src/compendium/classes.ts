@@ -1,6 +1,6 @@
 // GERADO POR scripts/build-compendium.ts — NÃO EDITAR À MÃO.
 // Fonte: specs/dh-sw.html
-import type { ClassDefinition } from '@/types'
+import type { ClassDefinition } from "@/types"
 
 export const CLASSES: readonly ClassDefinition[] = [
   {

@@ -25,10 +25,10 @@ export {
   Stepper,
   Tabs,
   Tooltip,
-} from '@jposawa/ronin-ui'
+} from "@jposawa/ronin-ui"
 
-export { Pip } from './Pip'
-export { StepRule } from './StepRule'
-export { DomainSymbol } from './DomainSymbol'
-export { NavIcon } from './NavIcon'
-export { Switch } from './Switch'
+export { Pip } from "./Pip"
+export { StepRule } from "./StepRule"
+export { DomainSymbol } from "./DomainSymbol"
+export { NavIcon } from "./NavIcon"
+export { Switch } from "./Switch"

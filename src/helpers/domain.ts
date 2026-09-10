@@ -1,4 +1,4 @@
-import type { Domain } from '@/types'
+import type { Domain } from "@/types"
 
 /**
  * Token CSS da cor de um dominio.

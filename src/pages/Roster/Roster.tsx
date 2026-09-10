@@ -1,20 +1,20 @@
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { Link } from 'react-router-dom'
+import { useAtom, useAtomValue, useSetAtom } from "jotai"
+import { Link } from "react-router-dom"
 
-import { CLASSES_BY_NAME } from '@/compendium'
-import { Button, SectionLabel, StepRule } from '@/components'
-import { ROUTES } from '@/constants'
-import { createCharacter, domainColorToken, duplicateCharacter } from '@/helpers'
-import { deleteSheet, leaveSheet } from '@/services'
-import { authAtom, charactersAtom, rosterAtom, sheetRolesAtom, toastAtom } from '@/states'
-import type { Character } from '@/types'
+import { CLASSES_BY_NAME } from "@/compendium"
+import { Button, SectionLabel, StepRule } from "@/components"
+import { ROUTES } from "@/constants"
+import { createCharacter, domainColorToken, duplicateCharacter } from "@/helpers"
+import { deleteSheet, leaveSheet } from "@/services"
+import { authAtom, charactersAtom, rosterAtom, sheetRolesAtom, toastAtom } from "@/states"
+import type { Character } from "@/types"
 
-import styles from './Roster.module.css'
+import styles from "./Roster.module.css"
 
 const summaryOf = (character: Character): string =>
   [character.ancestry, character.className, character.subclass]
     .filter(Boolean)
-    .join(' · ') || 'ficha em branco'
+    .join(" · ") || "ficha em branco"
 
 /**
  * Rota raiz, atrás do login. O roster abre primeiro, não a ficha: a maioria
@@ -35,7 +35,7 @@ export const Roster = () => {
     })
     // A escrita remota é do `useSheetSync`: ficha que o servidor nunca viu
     // entra por `createSheet`, que é quem cria a linha de acesso junto.
-    setSheetRoles({ ...sheetRoles, [character.id]: 'author' })
+    setSheetRoles({ ...sheetRoles, [character.id]: "author" })
   }
 
   const handleCreate = () => {
@@ -44,7 +44,7 @@ export const Roster = () => {
 
   const handleDuplicate = (source: Character) => {
     addLocally(duplicateCharacter(source))
-    setToast('Ficha duplicada')
+    setToast("Ficha duplicada")
   }
 
   /**
@@ -54,7 +54,7 @@ export const Roster = () => {
    */
   const handleRemove = (character: Character) => {
     const role = sheetRoles[character.id]
-    const isAuthor = role === undefined || role === 'author'
+    const isAuthor = role === undefined || role === "author"
 
     const remaining = { ...roster.characters }
     delete remaining[character.id]
@@ -73,17 +73,17 @@ export const Roster = () => {
         ? deleteSheet(character.id)
         : leaveSheet(character.id, user.userId)
 
-      void remove.catch(() => setToast('Removida daqui, mas falhou no servidor.'))
+      void remove.catch(() => setToast("Removida daqui, mas falhou no servidor."))
     }
 
-    setToast(isAuthor ? 'Ficha apagada' : 'Você saiu da ficha')
+    setToast(isAuthor ? "Ficha apagada" : "Você saiu da ficha")
   }
 
   return (
     <main className={styles.page}>
       <StepRule />
       <SectionLabel>
-        {characters.length} {characters.length === 1 ? 'ficha' : 'fichas'}
+        {characters.length} {characters.length === 1 ? "ficha" : "fichas"}
       </SectionLabel>
 
       {characters.length === 0 ? (
@@ -98,37 +98,37 @@ export const Roster = () => {
               ? domainColorToken(classDefinition.domains[0])
               : undefined
             const role = sheetRoles[character.id]
-            const isAuthor = role === undefined || role === 'author'
+            const isAuthor = role === undefined || role === "author"
 
             return (
               <li
                 className={styles.card}
                 key={character.id}
-                style={{ '--domain-color': color } as React.CSSProperties}
+                style={{ "--domain-color": color } as React.CSSProperties}
               >
                 <Link className={styles.open} to={ROUTES.sheet(character.id)}>
                   <span className={styles.level}>{character.level}</span>
                   <span>
-                    <b className={styles.name}>{character.name || 'Sem nome'}</b>
+                    <b className={styles.name}>{character.name || "Sem nome"}</b>
                     <span className={styles.summary}>{summaryOf(character)}</span>
                   </span>
                 </Link>
                 <Button
                   variant="text"
                   className={styles.action}
-                  aria-label={`Duplicar ${character.name || 'ficha sem nome'}`}
+                  aria-label={`Duplicar ${character.name || "ficha sem nome"}`}
                   onClick={() => handleDuplicate(character)}
                 >
                   ⧉
                 </Button>
                 <Button
                   variant="text"
-                  intent={isAuthor ? 'danger' : 'neutral'}
+                  intent={isAuthor ? "danger" : "neutral"}
                   className={styles.action}
                   aria-label={
                     isAuthor
-                      ? `Apagar ${character.name || 'ficha sem nome'}`
-                      : `Sair de ${character.name || 'ficha sem nome'}`
+                      ? `Apagar ${character.name || "ficha sem nome"}`
+                      : `Sair de ${character.name || "ficha sem nome"}`
                   }
                   onClick={() => handleRemove(character)}
                 >

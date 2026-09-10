@@ -1,6 +1,6 @@
 // GERADO POR scripts/build-compendium.ts — NÃO EDITAR À MÃO.
 // Fonte: specs/dh-sw.html
-import type { Weapon } from '@/types'
+import type { Weapon } from "@/types"
 
 export const WEAPONS: readonly Weapon[] = [
   {

@@ -1,7 +1,7 @@
-import type { BaseComponent, NavIconName } from '@/types'
+import type { BaseComponent, NavIconName } from "@/types"
 
-import styles from './NavIcon.module.css'
-import { NAV_ICON_ART } from './symbols'
+import styles from "./NavIcon.module.css"
+import { NAV_ICON_ART } from "./symbols"
 
 type NavIconProps = BaseComponent & {
   name: NavIconName
@@ -27,7 +27,7 @@ type NavIconProps = BaseComponent & {
  */
 export const NavIcon = ({ name, label, className, style }: NavIconProps) => (
   <svg
-    className={[styles.icon, className].filter(Boolean).join(' ')}
+    className={[styles.icon, className].filter(Boolean).join(" ")}
     style={style}
     viewBox="0 0 24 24"
     fill="none"
@@ -35,7 +35,7 @@ export const NavIcon = ({ name, label, className, style }: NavIconProps) => (
     strokeWidth="1.4"
     strokeLinecap="round"
     strokeLinejoin="round"
-    role={label ? 'img' : undefined}
+    role={label ? "img" : undefined}
     aria-label={label}
     aria-hidden={label ? undefined : true}
     data-testid={`nav-icon-${name}`}

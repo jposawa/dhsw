@@ -1,0 +1,86 @@
+/*
+ * Interruptor: rótulo à esquerda, trilho à direita.
+ *
+ * `background`/`border` zerados porque o reset global normaliza só `font` e
+ * `color`, e um `button` global apagaria as bordas da ronin-ui, que declara os
+ * componentes dela em `@layer`.
+ */
+.switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: var(--size-touch-target);
+  padding: 0 var(--space-3);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  text-align: left;
+  color: var(--color-chrome-strong);
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.switch:hover:not(:disabled) {
+  background: var(--color-surface);
+}
+
+.switch:disabled {
+  color: var(--color-text-disabled, var(--color-text-dim));
+  cursor: not-allowed;
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+/* 2px de folga de cada lado: é o que o polegar percorre, e o que faz o estado
+   ser legível de relance sem precisar ler o rótulo. */
+.track {
+  position: relative;
+  display: block;
+  flex-shrink: 0;
+  width: 34px;
+  height: 18px;
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-pill);
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  display: block;
+  width: 12px;
+  height: 12px;
+  background: var(--color-chrome-dim);
+  border-radius: var(--border-radius-pill);
+  transition: transform 0.15s ease, background-color 0.15s ease;
+}
+
+.switch[aria-checked='true'] .track {
+  background: color-mix(in srgb, var(--color-chrome) 28%, transparent);
+  border-color: var(--color-chrome);
+}
+
+.switch[aria-checked='true'] .thumb {
+  background: var(--color-chrome-strong);
+  transform: translateX(16px);
+}
+
+/* O foco é do botão inteiro, mas o desenho que interessa é o trilho. */
+.switch:focus-visible {
+  outline: none;
+}
+
+.switch:focus-visible .track {
+  outline: 2px solid var(--color-chrome-strong);
+  outline-offset: 2px;
+}

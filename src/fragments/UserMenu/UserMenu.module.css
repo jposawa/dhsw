@@ -133,6 +133,14 @@
   list-style: none;
 }
 
+/*
+ * Serve tanto para `<Link>` quanto para `<button>` — daí o reset de fundo e
+ * borda: sem ele, só as linhas que são botão (Tema, Sair) caem no cinza com
+ * borda `outset` do navegador, e a lista fica com duas aparências.
+ *
+ * Local, e não num `button` global: a ronin-ui declara os componentes dela em
+ * `@layer`, e regra sem layer vence qualquer layer.
+ */
 .item {
   display: flex;
   align-items: center;
@@ -146,6 +154,9 @@
   text-align: left;
   text-decoration: none;
   color: var(--color-chrome-strong);
+  background: none;
+  border: none;
+  cursor: pointer;
   transition: background-color 0.15s ease;
 }
 
@@ -156,11 +167,6 @@
 .itemIcon {
   font-style: normal;
   color: var(--color-chrome-dim);
-}
-
-.itemValue {
-  font-size: var(--text-2xs);
-  color: var(--color-text-dim);
 }
 
 /* Destrutivo usa `--color-danger`, nunca a cor de um dominio: as seis sao

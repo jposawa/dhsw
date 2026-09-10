@@ -1,7 +1,7 @@
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import React from 'react'
 
-import { Avatar, Button, Input, SectionLabel, StepRule } from '@/components'
+import { Avatar, Button, Input, SectionLabel, StepRule, Switch } from '@/components'
 import { databaseEnvironment } from '@/lib/firebase'
 import { fetchProfile, updateDisplayName } from '@/services'
 import {
@@ -162,15 +162,13 @@ export const Profile = () => {
       </p>
 
       <SectionLabel>PREFERÊNCIAS</SectionLabel>
-      <Button
-        isFullWidth
-        variant="outline"
-        aria-pressed={isDark}
-        className={styles.action}
-        onClick={() => setTheme(isDark ? 'light' : 'dark')}
+      <Switch
+        className={styles.switch}
+        isOn={isDark}
+        onToggle={() => setTheme(isDark ? 'light' : 'dark')}
       >
-        TEMA — {isDark ? 'ESCURO' : 'CLARO'}
-      </Button>
+        TEMA ESCURO
+      </Switch>
 
       <Button
         isFullWidth

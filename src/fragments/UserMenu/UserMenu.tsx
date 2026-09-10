@@ -2,7 +2,7 @@ import { useAtom, useAtomValue } from 'jotai'
 import React from 'react'
 import { Link } from 'react-router-dom'
 
-import { Avatar, NavIcon } from '@/components'
+import { Avatar, NavIcon, Switch } from '@/components'
 import { ROUTES } from '@/constants'
 import { useAuth } from '@/hooks'
 import { charactersAtom, syncStatusAtom, themeAtom } from '@/states'
@@ -163,20 +163,16 @@ export const UserMenu = ({ isNavCollapsed = false }: { isNavCollapsed?: boolean 
             </li>
 
             <li>
-              <button
-                type="button"
+              <Switch
                 className={styles.item}
-                aria-pressed={isDark}
-                onClick={() => setTheme(isDark ? 'light' : 'dark')}
+                isOn={isDark}
+                onToggle={() => setTheme(isDark ? 'light' : 'dark')}
               >
-                <span>
-                  <i className={styles.itemIcon} aria-hidden="true">
-                    {isDark ? '◐' : '◑'}{' '}
-                  </i>
-                  Tema
-                </span>
-                <span className={styles.itemValue}>{isDark ? 'ESCURO' : 'CLARO'}</span>
-              </button>
+                <i className={styles.itemIcon} aria-hidden="true">
+                  {isDark ? '◐' : '◑'}
+                </i>
+                Tema escuro
+              </Switch>
             </li>
 
             <li>

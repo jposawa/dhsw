@@ -1,32 +1,47 @@
 [
   {
-    "name": "Coreborne",
-    "description": "Mundos do Núcleo: burocracia, dinheiro antigo, regras que valem para os outros.",
-    "feature": "Credentials — Uma vez por sessão, gaste uma Hope para ter acesso plausível a um espaço civil restrito."
+    "name": "Highborne",
+    "description": "Casas nobres, senadores, herdeiros de corporação. Criado entre salões e protocolo, onde reputação é moeda e quase tudo tem preço.",
+    "feature": "**Privilege** — Vantagem em rolagens para lidar com a elite, negociar preços ou usar sua reputação para conseguir o que quer."
   },
   {
-    "name": "Rimborne",
-    "description": "Orla Exterior: escassez, improviso, desconfiança do que vem de longe.",
-    "feature": "Make Do — Ao improvisar reparo com sucata, marque um Stress para tratar sucesso com Fear como sucesso com Hope."
+    "name": "Loreborne",
+    "description": "Arquivos, academias, cortes políticas. Criado onde conhecimento e articulação valem mais que força.",
+    "feature": "**Well-Read** — Vantagem em rolagens que envolvam a história, a cultura ou a política de uma pessoa ou lugar notável."
   },
   {
-    "name": "Fleetborne",
-    "description": "Criado a bordo de frota militar: turnos, hierarquia, alarmes.",
-    "feature": "Brace for Impact — Você e aliados em Very Close ganham +1 em reaction rolls contra efeitos de área."
+    "name": "Orderborne",
+    "description": "Uma ordem, uma academia militar, um templo. Disciplina ou fé antes de uma vida própria.",
+    "feature": "**Dedicated** — Registre três ditados ou valores da sua criação. Uma vez por rest, ao descrever como sua ação encarna um deles, role um d20 como Hope Die."
   },
   {
-    "name": "Shadowborne",
-    "description": "Sindicatos, contrabando, dívidas fora de registro.",
-    "feature": "Who to Ask — Uma vez por long rest, você sabe onde achar um contato ilegal ou bem contrabandeado na região."
+    "name": "Ridgeborne",
+    "description": "Mundos de montanha e rocha nua, onde o terreno mata antes do inimigo e ter a posição alta é tradição.",
+    "feature": "**Steady** — Vantagem em rolagens para atravessar penhascos e bordas perigosas, navegar ambientes hostis e usar conhecimento de sobrevivência."
   },
   {
-    "name": "Templeborne",
-    "description": "Criado numa ordem: um código antes de uma vida.",
-    "feature": "**The Code Holds** — Escolha um preceito da sua ordem na criação. Uma vez por sessão, ao segui-lo em prejuízo evidente de si mesmo ou do grupo, limpe 2 **Stress** e ganhe uma **Hope**."
+    "name": "Seaborne",
+    "description": "Mundos-oceano, cidades flutuantes, portos de pesca. A vida segue a maré, e a maré não pede licença.",
+    "feature": "**Know the Tide** — Quando rolar com Fear, ponha uma ficha nesta carta, até o seu nível. Antes de uma rolagem de ação, gaste quantas quiser para +1 cada. Fichas não gastas somem no fim da sessão."
   },
   {
-    "name": "Spaceborne",
-    "description": "Nascido a bordo. Gravidade é configuração, não fato.",
-    "feature": "Ship Sense — Em qualquer nave, marque um Stress para achar rota de fuga, compartimento oculto ou acesso de manutenção."
+    "name": "Slyborne",
+    "description": "Sindicatos, contrabando, golpe e dívida fora de registro — com códigos de honra mais duros que os da lei.",
+    "feature": "**Scoundrel** — Vantagem em rolagens para negociar com criminosos, perceber mentiras ou achar um lugar seguro para se esconder."
+  },
+  {
+    "name": "Underborne",
+    "description": "Os subníveis das cidades-planeta, minas e colônias sob a superfície. Engenho e coragem onde a luz não chega.",
+    "feature": "**Low-Light Living** — Em pouca luz ou sombra densa, vantagem em rolagens para se esconder, investigar ou perceber detalhes naquela área."
+  },
+  {
+    "name": "Wanderborne",
+    "description": "Nômades, caravanas, tripulações sem porto. Pouco se carrega, muito se conhece.",
+    "feature": "**Nomadic Pack** — Ponha um Nomadic Pack no inventário. Uma vez por sessão, gaste uma Hope para tirar dele um item comum útil à situação, combinado com o Narrador."
+  },
+  {
+    "name": "Wildborne",
+    "description": "Luas florestais e mundos selvagens, onde a comunidade vive da mata e a protege.",
+    "feature": "**Lightfoot** — Seu movimento é naturalmente silencioso. Vantagem em rolagens para se mover sem ser ouvido."
   }
 ]

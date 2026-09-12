@@ -99,6 +99,43 @@ export type CompendiumEntry = {
   text: string
 }
 
+export type RestKind = "short" | "long"
+
+/** Marcador que uma ação de downtime limpa. */
+export type DowntimeMarker = "hp" | "stress" | "armor"
+
+/**
+ * O que a ação faz com a ficha. `clearRolled` soma o Tier ao dado rolado;
+ * `narrative` não mexe em número nenhum.
+ */
+export type DowntimeEffect =
+  | { kind: "clearRolled"; marker: DowntimeMarker; dice: string; canTargetAlly: boolean }
+  | { kind: "clearAll"; marker: DowntimeMarker; canTargetAlly: boolean }
+  | { kind: "gainHope"; amount: number; withPartyAmount: number }
+  | { kind: "narrative" }
+
+/** Ação de downtime. Core Rulebook, "Downtime" (p. 105). */
+export type DowntimeMove = {
+  id: string
+  name: string
+  rest: RestKind
+  text: string
+  effect: DowntimeEffect
+}
+
+/**
+ * Uma das duas ações escolhidas num descanso. A mesma ação pode vir duas vezes.
+ *
+ * `rolled` é o resultado do dado de `clearRolled` — o Tier soma a regra.
+ * `isOnAlly` gasta a ação em outra ficha, e esta não muda.
+ */
+export type DowntimeChoice = {
+  moveId: string
+  rolled: number | null
+  isOnAlly: boolean
+  isWithParty: boolean
+}
+
 /**
  * O compêndio inteiro, uma coleção por chave.
  *
@@ -118,6 +155,7 @@ export type Compendium = {
   weapons: readonly Weapon[]
   items: readonly CompendiumEntry[]
   consumables: readonly CompendiumEntry[]
+  downtimeMoves: readonly DowntimeMove[]
 }
 
 export type CompendiumCollection = keyof Compendium

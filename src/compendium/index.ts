@@ -17,6 +17,7 @@ import classes from "./data/classes.json"
 import communities from "./data/communities.json"
 import consumables from "./data/consumables.json"
 import domains from "./data/domains.json"
+import downtimeMoves from "./data/downtimeMoves.json"
 import items from "./data/items.json"
 import namedArmor from "./data/namedArmor.json"
 import skills from "./data/skills.json"
@@ -42,4 +43,5 @@ export const FALLBACK_COMPENDIUM = {
   weapons,
   items,
   consumables,
+  downtimeMoves,
 } as Compendium

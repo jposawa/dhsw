@@ -42,3 +42,6 @@ export const DEFAULT_LOADOUT_SIZE = 5
 /** Duas Experiences na criação, e toda Experience nova nasce a +2. */
 export const STARTING_EXPERIENCES = 2
 export const NEW_EXPERIENCE_BONUS = 2
+
+/** Duas ações de downtime por descanso; a mesma pode ser escolhida duas vezes. */
+export const DOWNTIME_MOVES_PER_REST = 2

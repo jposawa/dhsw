@@ -1,13 +1,15 @@
-import { SectionLabel } from "@jposawa/ronin-ui"
+import { Button, SectionLabel } from "@jposawa/ronin-ui"
+import React from "react"
 
 import { DotScale } from "@/components"
 import { EQUIP_SLOTS, HOPE_MAX, MAX_PROFICIENCY, TRAIT_LIST, TRAIT_VERBS } from "@/constants"
 import { MarkerTrack, RuleText, StatBlock, ThresholdBar } from "@/fragments"
 import { describeThresholdOrigin, domainColorToken, formatSigned } from "@/helpers"
 import { useCompendium } from "@/hooks"
-import type { Character, DerivedStats, EquipSlot, Marks } from "@/types"
+import type { Character, DerivedStats, EquipSlot, Marks, Result } from "@/types"
 
 import { ActiveWeapon } from "./ActiveWeapon"
+import { RestDrawer } from "./RestDrawer"
 
 import styles from "./CombatPlay.module.css"
 
@@ -24,7 +26,9 @@ const describeWearing = (derived: DerivedStats): string => {
 type CombatPlayProps = {
   character: Character
   derived: DerivedStats
+  isReadOnly: boolean
   onMarksChange: (marks: Marks) => void
+  onApply: (result: Result<Character>) => void
 }
 
 /**
@@ -44,10 +48,18 @@ type CombatPlayProps = {
  * 6. **Armas** com Proficiency já nos dados e a feature à vista.
  *
  * Nada aqui muda um máximo: marcar é estado de mesa e grava no toque. O que
- * define o máximo é modo edição, com Salvar.
+ * define o máximo é modo edição, com Salvar. Descansar também é jogada: duas
+ * ações de downtime, confirmadas na gaveta.
  */
-export const CombatPlay = ({ character, derived, onMarksChange }: CombatPlayProps) => {
+export const CombatPlay = ({
+  character,
+  derived,
+  isReadOnly,
+  onMarksChange,
+  onApply,
+}: CombatPlayProps) => {
   const { compendium } = useCompendium()
+  const [isResting, setIsResting] = React.useState(false)
 
   const classDefinition = compendium.classes.find(
     (candidate) => candidate.name === character.className,
@@ -163,6 +175,10 @@ export const CombatPlay = ({ character, derived, onMarksChange }: CombatPlayProp
           color={domainColorToken("Essence")}
           onChange={(stress) => onMarksChange({ ...character.marks, stress })}
         />
+
+        <Button variant="outline" isFullWidth disabled={isReadOnly} onClick={() => setIsResting(true)}>
+          DESCANSAR
+        </Button>
       </section>
 
       <section className={styles.hope}>
@@ -233,6 +249,14 @@ export const CombatPlay = ({ character, derived, onMarksChange }: CombatPlayProp
           ))}
         </ul>
       </section>
+
+      <RestDrawer
+        isOpen={isResting}
+        character={character}
+        derived={derived}
+        onApply={onApply}
+        onClose={() => setIsResting(false)}
+      />
     </div>
   )
 }

@@ -1,5 +1,6 @@
 export * from "./character"
 export * from "./compendium"
+export * from "./dice"
 export * from "./domain"
 export * from "./format"
 export * from "./inventory"

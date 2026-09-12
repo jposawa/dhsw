@@ -134,7 +134,13 @@ export const Sheet = () => {
       return isEditing && draft ? (
         <CombatEdit draft={draft} derived={derived} onChange={changeDraft} />
       ) : (
-        <CombatPlay character={character} derived={derived} onMarksChange={handleMarksChange} />
+        <CombatPlay
+          character={character}
+          derived={derived}
+          isReadOnly={isReadOnly}
+          onMarksChange={handleMarksChange}
+          onApply={applyResult}
+        />
       )
     }
 

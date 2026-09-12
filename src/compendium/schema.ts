@@ -10,6 +10,7 @@ import type {
   CompendiumCollection,
   CompendiumEntry,
   DomainDefinition,
+  DowntimeMove,
   NamedArmor,
   Skill,
   SkillCategory,
@@ -120,6 +121,30 @@ const entry = z.object({
   text: z.string(),
 }) satisfies z.ZodType<CompendiumEntry>
 
+const downtimeMarker = z.enum(["hp", "stress", "armor"])
+
+const downtimeMove = z.object({
+  id: name,
+  name,
+  rest: z.enum(["short", "long"]),
+  text: z.string(),
+  effect: z.discriminatedUnion("kind", [
+    z.object({
+      kind: z.literal("clearRolled"),
+      marker: downtimeMarker,
+      dice: z.string().regex(/^\d+d\d+$/),
+      canTargetAlly: z.boolean(),
+    }),
+    z.object({ kind: z.literal("clearAll"), marker: downtimeMarker, canTargetAlly: z.boolean() }),
+    z.object({
+      kind: z.literal("gainHope"),
+      amount: z.number().int().min(0),
+      withPartyAmount: z.number().int().min(0),
+    }),
+    z.object({ kind: z.literal("narrative") }),
+  ]),
+}) satisfies z.ZodType<DowntimeMove>
+
 export const COMPENDIUM_SCHEMAS = {
   skills: z.array(skill),
   domains: z.array(domain),
@@ -132,6 +157,7 @@ export const COMPENDIUM_SCHEMAS = {
   weapons: z.array(weapon),
   items: z.array(entry),
   consumables: z.array(entry),
+  downtimeMoves: z.array(downtimeMove),
 } satisfies Record<CompendiumCollection, z.ZodType>
 
 export const COMPENDIUM_COLLECTIONS = Object.keys(COMPENDIUM_SCHEMAS) as CompendiumCollection[]

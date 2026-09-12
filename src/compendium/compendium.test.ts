@@ -21,8 +21,15 @@ describe("compêndio embarcado", () => {
     expect(parsed.success ? [] : parsed.error.issues.slice(0, 3)).toEqual([])
   })
 
-  it.each(COMPENDIUM_COLLECTIONS)("%s não repete nome — a ficha referencia por nome", (collection) => {
+  // Ação de downtime tem id próprio: "Prepare" existe no Rest e no Long Rest.
+  const referencedByName = COMPENDIUM_COLLECTIONS.filter((collection) => collection !== "downtimeMoves")
+
+  it.each(referencedByName)("%s não repete nome — a ficha referencia por nome", (collection) => {
     expect(repeated(namesOf(FALLBACK_COMPENDIUM[collection]))).toEqual([])
+  })
+
+  it("ação de downtime não repete id", () => {
+    expect(repeated(FALLBACK_COMPENDIUM.downtimeMoves.map((move) => move.id))).toEqual([])
   })
 
   it("cada domínio tem 21 cartas: 3 no nível 1 e 2 em cada nível de 2 a 10", () => {

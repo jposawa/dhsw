@@ -3,6 +3,7 @@ import React from "react"
 
 import { CONSUMABLES, ITEMS, NAMED_ARMOR, WEAPONS } from "@/compendium"
 import { GEAR_KINDS } from "@/constants"
+import { RuleText } from "@/fragments"
 import { filterByText, formatSigned } from "@/helpers"
 import type { GearKind } from "@/types"
 
@@ -113,7 +114,9 @@ export const CompendiumGear = () => {
                   ))}
                 </p>
 
-                {weapon.feature ? <p className={styles.body}>{weapon.feature}</p> : null}
+                {weapon.feature ? (
+                  <RuleText className={styles.body} text={weapon.feature} />
+                ) : null}
               </article>
             </li>
           ))}
@@ -134,7 +137,9 @@ export const CompendiumGear = () => {
                   </hgroup>
                 </header>
 
-                {piece.feature ? <p className={styles.body}>{piece.feature}</p> : null}
+                {piece.feature ? (
+                  <RuleText className={styles.body} text={piece.feature} />
+                ) : null}
               </article>
             </li>
           ))}
@@ -153,7 +158,7 @@ export const CompendiumGear = () => {
                   </hgroup>
                 </header>
 
-                <p className={styles.body}>{entry.text}</p>
+                <RuleText className={styles.body} text={entry.text} />
               </article>
             </li>
           ))}

@@ -1,6 +1,7 @@
 import { get, update } from "firebase/database"
 
 import { DB_PATHS, SHEET_ROLE_LEVEL } from "@/constants"
+import { normalizeCharacter } from "@/helpers"
 import { dhswPath, dhswRef, dhswRootRef } from "@/lib/firebase"
 import type {
   Character,
@@ -83,7 +84,9 @@ export const saveSheet = async (character: Character): Promise<void> => {
 export const fetchSheet = async (sheetId: string): Promise<Character | null> => {
   const snapshot = await get(dhswRef(DB_PATHS.sheet(sheetId)))
 
-  return snapshot.exists() ? (snapshot.val() as Character) : null
+  // `normalizeCharacter` e nao `as Character`: o RTDB devolve a ficha sem as
+  // listas vazias que ela tinha ao subir. Ver `helpers/character.ts`.
+  return snapshot.exists() ? normalizeCharacter(snapshot.val() as Character) : null
 }
 
 /**

@@ -3,7 +3,7 @@ import clsx from "clsx"
 import { parseBlocks } from "@/helpers"
 import type { BaseComponent, InlineToken } from "@/types"
 
-import styles from "./SkillText.module.css"
+import styles from "./RuleText.module.css"
 
 const renderTokens = (tokens: readonly InlineToken[]) =>
   tokens.map((token, index) => {
@@ -26,12 +26,16 @@ const renderTokens = (tokens: readonly InlineToken[]) =>
     return <span key={index}>{token.value}</span>
   })
 
-type SkillTextProps = BaseComponent & {
+type RuleTextProps = BaseComponent & {
   text: string
 }
 
 /**
- * O texto de uma carta.
+ * Texto de regra: carta, feature de classe, de espécie, de origem, de arma.
+ *
+ * É o único lugar que lê o markdown mínimo do compêndio. Passar o texto cru
+ * para dentro de um `<p>` era o que fazia `**Force Absorption**` chegar à tela
+ * com os asteriscos — o dado tem marcação, e quem não a lê imprime.
  *
  * O titulo sai como `<strong>` num `<p>`, e nao como `<h4>`: uma carta aparece
  * em lista, em grade e dentro de um `Collapse`, cada um com um nivel de
@@ -39,7 +43,7 @@ type SkillTextProps = BaseComponent & {
  * quebraria a ordem do documento nos outros. A sub-habilidade e rotulo visual,
  * nao secao do documento.
  */
-export const SkillText = ({ text, className, style }: SkillTextProps) => (
+export const RuleText = ({ text, className, style }: RuleTextProps) => (
   <div className={clsx(styles.body, className)} style={style}>
     {parseBlocks(text).map((block, index) => {
       if (block.kind === "list") {

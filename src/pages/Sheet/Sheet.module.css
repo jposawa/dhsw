@@ -7,199 +7,72 @@
   padding: var(--space-4) var(--space-4) var(--space-6);
 }
 
-.tabs {
+/* O painel das abas é quem carrega o ritmo vertical do conteúdo — as abas em si
+   são só a régua acima dele. */
+.tabs [role="tabpanel"] {
   display: flex;
-  overflow-x: auto;
-  scrollbar-width: none;
-  margin: 0 calc(var(--space-4) * -1);
-  padding: 0 var(--space-4);
-  border-bottom: var(--border-width) solid var(--color-border-subtle);
+  flex-direction: column;
+  gap: var(--space-4);
 }
 
-.tabs::-webkit-scrollbar {
-  display: none;
-}
-
-.tab {
-  padding: var(--space-3) var(--space-4);
-  font-size: var(--text-xs);
-  letter-spacing: var(--tracking-wide);
-  white-space: nowrap;
-  color: var(--color-text-dim);
-  border-bottom: 2px solid transparent;
-}
-
-.tab[aria-current="true"] {
-  color: var(--color-chrome-strong);
-  border-bottom-color: var(--color-chrome);
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
 }
 
 /*
- * O ritmo da página é do `.page` (`gap`), não das margens dos filhos: cada
- * bloco só organiza o que tem dentro. STANDARDS.md.
+ * O alternador de modo.
+ *
+ * `background` e `border` explícitos nos filhos porque são `<button>` nus: sem
+ * eles o navegador pinta o botão de sistema, cinza e com moldura, que era
+ * exatamente o aspecto das abas antigas.
  */
-.block {
+.modeToggle {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  overflow: hidden;
+}
+
+.modeOption {
+  min-height: var(--size-touch-target);
+  padding: var(--space-1) var(--space-4);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  white-space: nowrap;
+  color: var(--color-text-dim);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.modeOption:hover:not(:disabled) {
+  color: var(--color-chrome-strong);
+}
+
+.modeOption[aria-checked="true"] {
+  color: var(--color-on-chrome);
+  background: var(--color-chrome);
+}
+
+.modeOption:disabled {
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+}
+
+.modeOption:focus-visible {
+  outline: 2px solid var(--color-chrome-strong);
+  outline-offset: -2px;
 }
 
 .saveState {
   margin: 0;
   font-size: var(--text-xs);
-  line-height: 1.55;
-  color: var(--color-text-dim);
-}
-
-/* ── identidade ──────────────────────────────────────────────────────────── */
-
-.identity {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-2);
-}
-
-.fieldWide {
-  grid-column: 1 / -1;
-}
-
-/* Nível numa linha só, rótulo à esquerda e stepper à direita: ele não é campo
-   de digitar e não deve fingir que é. */
-.levelField {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  padding: var(--space-2) var(--space-3);
-  background: var(--color-surface);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--border-radius-sm);
-}
-
-.field label,
-.fieldLabel {
-  display: block;
-  margin-bottom: var(--space-1);
-  font-size: var(--text-2xs);
-  letter-spacing: var(--tracking-wider);
-  color: var(--color-text-muted);
-}
-
-/* Na linha do nível o rótulo é irmão do stepper, não legenda acima dele. */
-.levelField .fieldLabel {
-  margin-bottom: 0;
-  color: var(--color-chrome-strong);
-}
-
-.field input,
-.field select {
-  width: 100%;
-  min-height: var(--size-touch-target);
-  padding: var(--space-3);
-  font-size: var(--text-md);
-  color: var(--color-ink);
-  background: var(--color-bg-elevated);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--border-radius-sm);
-  transition: border-color 0.15s ease;
-}
-
-.field input:focus-visible,
-.field select:focus-visible {
-  outline: 2px solid var(--color-chrome-strong);
-  outline-offset: -2px;
-  border-color: var(--color-chrome);
-}
-
-/* ── defesa ──────────────────────────────────────────────────────────────── */
-
-.stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-1);
-}
-
-.thresholds {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: var(--space-1);
-}
-
-.thresholdCell {
-  padding: var(--space-3) var(--space-1);
-  font-size: var(--text-2xs);
-  letter-spacing: var(--tracking-wider);
-  text-align: center;
-  color: var(--color-text-dim);
-  background: var(--color-bg-elevated);
-  border-top: var(--border-width) solid var(--color-border);
-}
-
-.thresholdValue {
-  display: block;
-  margin-bottom: var(--space-1);
-  font-size: var(--text-lg);
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: var(--tracking-normal);
-  color: var(--color-ink);
-}
-
-/* A célula da armadura carrega nome próprio e por isso pede a coluna larga;
-   a regra está na grade acima, aqui fica só o que é dela. */
-.armorCell {
-  min-width: 0;
-}
-
-/* ── marcadores ──────────────────────────────────────────────────────────── */
-
-.tracks {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-}
-
-.action {
-  width: 100%;
-  min-height: var(--size-touch-target);
-  padding: var(--space-3);
-  font-size: var(--text-xs);
-  letter-spacing: var(--tracking-wide);
-  color: var(--color-chrome-strong);
-  background: var(--color-surface);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--border-radius-sm);
-}
-
-.action:focus-visible {
-  outline: 2px solid var(--color-chrome-strong);
-  outline-offset: 2px;
-}
-
-/* ── traços ──────────────────────────────────────────────────────────────── */
-
-.traits {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-1);
-}
-
-.trait {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2);
-  padding: var(--space-1) var(--space-3);
-  background: var(--color-bg-elevated);
-}
-
-.traitName {
-  font-size: var(--text-xs);
-  letter-spacing: var(--tracking-wide);
-}
-
-.traitTotal {
-  font-size: var(--text-2xs);
+  line-height: 1.4;
+  text-align: right;
   color: var(--color-text-dim);
 }
 
@@ -208,10 +81,4 @@
   font-size: var(--text-xs);
   line-height: 1.55;
   color: var(--color-text-dim);
-}
-
-@media (min-width: 900px) {
-  .traits {
-    grid-template-columns: 1fr 1fr;
-  }
 }

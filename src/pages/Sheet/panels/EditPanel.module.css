@@ -1,0 +1,163 @@
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* ── prévia do que muda ──────────────────────────────────────────────────── */
+
+/*
+ * Seis números numa faixa, acima do formulário: é o retorno de escolher classe
+ * ou subir nível, e sem ele a escolha é às cegas. `auto-fit` para caber em três
+ * colunas no celular e em seis no desktop, sem media query.
+ */
+.preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(4.5rem, 1fr));
+  gap: var(--space-1);
+  margin: 0;
+}
+
+.previewCell {
+  padding: var(--space-2) var(--space-1);
+  text-align: center;
+  background: var(--color-bg-elevated);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+.previewCell dt {
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-text-muted);
+}
+
+.previewCell dd {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-lg);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  color: var(--color-chrome-strong);
+}
+
+/* ── campos ──────────────────────────────────────────────────────────────── */
+
+.fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+}
+
+.fieldWide {
+  grid-column: 1 / -1;
+}
+
+/* Nível numa linha só, rótulo à esquerda e stepper à direita: não é campo de
+   digitar e não deve fingir que é. */
+.levelRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  grid-column: 1 / -1;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+}
+
+.label {
+  display: block;
+  margin-bottom: var(--space-1);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-text-muted);
+}
+
+/* Na linha do nível o rótulo é irmão do stepper, não legenda acima dele. */
+.levelRow .label {
+  margin-bottom: 0;
+  color: var(--color-chrome-strong);
+}
+
+.input {
+  width: 100%;
+  min-height: var(--size-touch-target);
+  padding: var(--space-3);
+  font-size: var(--text-md);
+  color: var(--color-ink);
+  background: var(--color-bg-elevated);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  transition: border-color 0.15s ease;
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--color-chrome-strong);
+  outline-offset: -2px;
+  border-color: var(--color-chrome);
+}
+
+/* ── traços ──────────────────────────────────────────────────────────────── */
+
+.traits {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.trait {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  background: var(--color-bg-elevated);
+}
+
+.traitName {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+}
+
+.traitTotal {
+  font-size: var(--text-2xs);
+  color: var(--color-text-dim);
+}
+
+/* ── salvar ──────────────────────────────────────────────────────────────── */
+
+/*
+ * Grudada no fundo da janela.
+ *
+ * O formulário é mais alto que a tela; um Salvar no fim do documento só aparece
+ * para quem rolar até lá, e quem não rolar conclui que ele não existe. O `z-index`
+ * fica abaixo do `--z-nav` para a barra de navegação continuar por cima.
+ */
+.saveBar {
+  position: sticky;
+  bottom: 0;
+  z-index: var(--z-header);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--color-bg-elevated);
+  border-top: var(--border-width) solid var(--color-chrome-dim);
+}
+
+.saveHint {
+  margin: 0;
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+}
+
+.saveActions {
+  display: flex;
+  gap: var(--space-2);
+}

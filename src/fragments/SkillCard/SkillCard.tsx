@@ -5,7 +5,7 @@ import { DomainLabel } from "@/components"
 import { domainColorToken } from "@/helpers"
 import type { BaseComponent, Skill } from "@/types"
 
-import { SkillText } from "../SkillText"
+import { RuleText } from "../RuleText"
 
 import styles from "./SkillCard.module.css"
 
@@ -44,7 +44,7 @@ export const SkillCard = ({ skill, className, style }: SkillCardProps) => (
 
     <h3 className={styles.name}>{skill.name}</h3>
 
-    <SkillText className={styles.text} text={skill.text} />
+    <RuleText className={styles.text} text={skill.text} />
 
     <footer className={styles.footer}>{skill.category}</footer>
   </article>

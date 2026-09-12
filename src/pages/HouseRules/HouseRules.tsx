@@ -56,7 +56,7 @@ export const HouseRules = () => {
       <Toggle
         isOn={houseRules.hasEvasionFromTraits}
         title="Evasion escala com (Agility + Instinct) ÷ 2"
-        description="No SRD a Evasion só sobe por advancement. Ligando, os dois traços valem dobrado e ficam quase obrigatórios — no fim pode somar +5 ou +6, mais que a distância entre a classe mais e a menos evasiva."
+        description="Sem esta regra a Evasion só sobe por advancement. Ligando, os dois traços valem dobrado e ficam quase obrigatórios — no fim pode somar +5 ou +6, mais que a distância entre a classe mais e a menos evasiva."
         onToggle={() =>
           setHouseRules({
             ...houseRules,
@@ -84,9 +84,8 @@ export const HouseRules = () => {
         <div>
           <h3 className={styles.title}>Tamanho do loadout</h3>
           <p className={styles.note}>
-            Padrão do SRD é 5 fixo. <b>3 + Tier</b> dá 4/5/6/7: troca aperto no começo por
-            folga no fim. <b>4 + Tier</b> dá 5/6/7/8, nunca pior que o padrão — aumento
-            puro.
+            O padrão é 5 fixo. <b>3 + Tier</b> dá 4/5/6/7: troca aperto no começo por folga
+            no fim. <b>4 + Tier</b> dá 5/6/7/8, nunca pior que o padrão — aumento puro.
           </p>
           <div className={styles.chips}>
             {LOADOUT_OPTIONS.map((option) => (

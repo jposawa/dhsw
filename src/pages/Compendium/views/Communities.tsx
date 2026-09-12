@@ -2,6 +2,7 @@ import { Input, SectionLabel } from "@jposawa/ronin-ui"
 import React from "react"
 
 import { COMMUNITIES } from "@/compendium"
+import { RuleText } from "@/fragments"
 import { filterByText } from "@/helpers"
 
 import styles from "./Reference.module.css"
@@ -42,10 +43,12 @@ export const CompendiumCommunities = () => {
               <article className={styles.entry}>
                 <h3 className={styles.name}>{community.name}</h3>
 
-                <p className={styles.body}>{community.description}</p>
+                <RuleText className={styles.body} text={community.description} />
 
                 <ul className={styles.featureList}>
-                  <li className={styles.feature}>{community.feature}</li>
+                  <li className={styles.feature}>
+                    <RuleText text={community.feature} />
+                  </li>
                 </ul>
               </article>
             </li>

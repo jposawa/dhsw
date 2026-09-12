@@ -3,6 +3,7 @@ import React from "react"
 
 import { CLASSES, SUBCLASSES } from "@/compendium"
 import { DomainLabel } from "@/components"
+import { RuleText } from "@/fragments"
 import { domainColorToken, filterByText } from "@/helpers"
 
 import styles from "./Reference.module.css"
@@ -14,11 +15,6 @@ import styles from "./Reference.module.css"
  * escolhe sozinha — ela pertence a uma classe, e vê-la fora dela obrigaria a
  * lembrar a que classe pertence. Doze itens também não sustentariam um
  * segmento.
- *
- * Os campos de auditoria da migração v1 → v2 aparecem quando existem: é onde a
- * pessoa descobre que a Evasion mudou e por quê, em vez de achar que a ficha
- * está errada. Eles somem do dado quando a v2 fechar, e a tela some junto sem
- * precisar de edição.
  */
 export const CompendiumClasses = () => {
   const [query, setQuery] = React.useState("")
@@ -87,13 +83,7 @@ export const CompendiumClasses = () => {
                 <dl className={styles.stats}>
                   <div className={styles.stat}>
                     <dt>EVASION</dt>
-                    <dd>
-                      {klass.evasion}
-                      {klass.previousEvasion !== null &&
-                      klass.previousEvasion !== klass.evasion ? (
-                        <span className={styles.was}> era {klass.previousEvasion}</span>
-                      ) : null}
-                    </dd>
+                    <dd>{klass.evasion}</dd>
                   </div>
                   <div className={styles.stat}>
                     <dt>HIT POINTS</dt>
@@ -102,14 +92,10 @@ export const CompendiumClasses = () => {
                 </dl>
 
                 <h4 className={styles.label}>TRAÇOS</h4>
-                <p className={styles.body}>{klass.baseFeatures}</p>
+                <RuleText text={klass.baseFeatures} />
 
                 <h4 className={styles.label}>HOPE</h4>
-                <p className={styles.body}>{klass.hopeFeature}</p>
-
-                {klass.hopeFeatureRationale ? (
-                  <p className={styles.note}>{klass.hopeFeatureRationale}</p>
-                ) : null}
+                <RuleText text={klass.hopeFeature} />
 
                 <h4 className={styles.label}>SUBCLASSES</h4>
                 <ul className={styles.subList}>

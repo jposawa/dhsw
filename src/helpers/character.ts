@@ -44,3 +44,77 @@ export const touchCharacter = (character: Character): Character => ({
   ...character,
   updatedAt: Date.now(),
 })
+
+/**
+ * Completa o que o Realtime Database engole.
+ *
+ * **O RTDB não guarda array vazio nem objeto vazio — ele apaga a chave.** Uma
+ * ficha nova, sem inventário, sem cartas e sem advancements, sobe com cinco
+ * listas vazias e volta sem nenhuma delas. O `as Character` do serviço dizia
+ * que estava tudo lá, e a primeira linha de `resolveEquippedArmor` batia num
+ * `character.inventory` que não existia: a ficha não abria.
+ *
+ * Some aqui, na fronteira de leitura, e não em `rules/`: o contrato de
+ * `Character` é que os campos existem, e defender cada um deles dentro das
+ * regras espalharia o conserto por todo cálculo — hoje a armadura, amanhã o
+ * loadout.
+ */
+export const normalizeCharacter = (stored: Character): Character => {
+  const traits = TRAIT_LIST.reduce(
+    (filled, trait) => ({ ...filled, [trait]: stored.traits?.[trait] ?? 0 }),
+    {} as Record<Trait, number>,
+  )
+
+  return {
+    ...stored,
+    schema: stored.schema ?? CHARACTER_SCHEMA_VERSION,
+    name: stored.name ?? "",
+    level: stored.level ?? 1,
+    ancestry: stored.ancestry ?? null,
+    community: stored.community ?? null,
+    className: stored.className ?? null,
+    subclass: stored.subclass ?? null,
+    partyId: stored.partyId ?? null,
+    traits,
+    marks: {
+      hp: stored.marks?.hp ?? 0,
+      stress: stored.marks?.stress ?? 0,
+      armor: stored.marks?.armor ?? 0,
+      hope: stored.marks?.hope ?? 0,
+    },
+    loadout: stored.loadout ?? [],
+    vault: stored.vault ?? [],
+    inventory: stored.inventory ?? [],
+    advancements: stored.advancements ?? [],
+    experiences: stored.experiences ?? [],
+    notes: stored.notes ?? "",
+  }
+}
+
+/**
+ * Os campos que o modo edição altera.
+ *
+ * Marcador não está aqui de propósito: ele é gravado no toque pelo modo jogo, e
+ * contá-lo como alteração pendente faria "Salvar" acender por ter marcado um
+ * Stress. `updatedAt` também fica de fora — ele muda em toda gravação e diria
+ * que há mudança sempre.
+ */
+const EDITED_FIELDS = [
+  "name",
+  "level",
+  "className",
+  "subclass",
+  "ancestry",
+  "community",
+] as const
+
+/** O rascunho difere do que está salvo? É o que acende o botão de salvar. */
+export const hasSheetEdits = (draft: Character, saved: Character): boolean => {
+  const hasFieldChange = EDITED_FIELDS.some((field) => draft[field] !== saved[field])
+
+  if (hasFieldChange) {
+    return true
+  }
+
+  return TRAIT_LIST.some((trait) => draft.traits[trait] !== saved.traits[trait])
+}

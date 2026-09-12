@@ -4,6 +4,7 @@ import React from "react"
 import { DOMAIN_DEFINITIONS, SKILLS } from "@/compendium"
 import { DomainSymbol } from "@/components"
 import { DOMAIN_LIST } from "@/constants"
+import { RuleText } from "@/fragments"
 import { domainColorToken, filterByText } from "@/helpers"
 
 import styles from "./Reference.module.css"
@@ -72,7 +73,7 @@ export const CompendiumDomains = () => {
                   </hgroup>
                 </header>
 
-                <p className={styles.body}>{domain.description}</p>
+                <RuleText className={styles.body} text={domain.description} />
               </article>
             </li>
           ))}

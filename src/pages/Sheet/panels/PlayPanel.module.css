@@ -1,0 +1,189 @@
+/*
+ * A ficha em mesa.
+ *
+ * O ritmo vertical é do `.page` da ficha (`gap`); aqui cada bloco só organiza o
+ * que tem dentro. STANDARDS.md.
+ */
+
+.identity {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--color-bg-elevated);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+.identityText {
+  min-width: 0;
+}
+
+.name {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 500;
+  letter-spacing: var(--tracking-normal);
+  color: var(--color-ink);
+  overflow-wrap: break-word;
+}
+
+.lineage {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+}
+
+.levelBadge {
+  display: flex;
+  gap: var(--space-1);
+  margin: 0;
+  /* Nome longo encolhe; o nível não — é o segundo dado de identificação. */
+  flex-shrink: 0;
+}
+
+.levelCell {
+  min-width: 3.5rem;
+  padding: var(--space-1) var(--space-2);
+  text-align: center;
+  background: var(--color-surface);
+}
+
+.levelCell dt {
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-text-muted);
+}
+
+.levelCell dd {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+  color: var(--color-chrome-strong);
+}
+
+.block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* ── marcadores ──────────────────────────────────────────────────────────── */
+
+.tracks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/*
+ * `background` e `border` explícitos porque o elemento é um `<button>` nu: sem
+ * eles o navegador pinta o próprio botão cinza, com moldura de sistema, e o
+ * degrau de fundo do desenho vira uma caixa de formulário.
+ */
+.rest {
+  width: 100%;
+  min-height: var(--size-touch-target);
+  padding: var(--space-3);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-chrome-strong);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.rest:hover:not(:disabled) {
+  border-color: var(--color-chrome);
+}
+
+.rest:disabled {
+  color: var(--color-text-disabled);
+  cursor: not-allowed;
+}
+
+/* ── traços ──────────────────────────────────────────────────────────────── */
+
+.traits {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.trait {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-bg-elevated);
+}
+
+.traitName {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-muted);
+}
+
+.traitValue {
+  font-size: var(--text-md);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-chrome-strong);
+}
+
+/* ── defesa ──────────────────────────────────────────────────────────────── */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-1);
+}
+
+.thresholds {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: var(--space-1);
+}
+
+.thresholdCell {
+  min-width: 0;
+  padding: var(--space-3) var(--space-1);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  text-align: center;
+  color: var(--color-text-dim);
+  background: var(--color-bg-elevated);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+.thresholdValue {
+  display: block;
+  margin-bottom: var(--space-1);
+  font-size: var(--text-lg);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--tracking-normal);
+  color: var(--color-ink);
+}
+
+.note {
+  margin: 0;
+  font-size: var(--text-xs);
+  line-height: 1.55;
+  color: var(--color-text-dim);
+}
+
+@media (min-width: 900px) {
+  .traits {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

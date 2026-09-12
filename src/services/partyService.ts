@@ -1,6 +1,7 @@
 import { get, update } from "firebase/database"
 
 import { DB_PATHS, PARTY_ROLE_LEVEL } from "@/constants"
+import { normalizeCharacter } from "@/helpers"
 import { dhswPath, dhswRef, dhswRootRef } from "@/lib/firebase"
 import type {
   Character,
@@ -309,7 +310,7 @@ export const fetchPartySheets = async (partyId: string): Promise<Character[]> =>
     sheetIds.map(async (sheetId) => {
       const snapshot = await get(dhswRef(DB_PATHS.sheet(sheetId)))
 
-      return snapshot.exists() ? (snapshot.val() as Character) : null
+      return snapshot.exists() ? normalizeCharacter(snapshot.val() as Character) : null
     }),
   )
 

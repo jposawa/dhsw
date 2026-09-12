@@ -25,13 +25,6 @@ export type ClassDefinition = {
   subclasses: readonly string[]
   baseFeatures: string
   hopeFeature: string
-  /**
-   * Campos de auditoria da migração v1 → v2. A UI mostra "Evasion 7 na v1,
-   * 9 na v2" e o porquê da Hope feature reescrita. Saem quando a v2 fechar.
-   */
-  previousEvasion: number | null
-  previousHopeFeature: string | null
-  hopeFeatureRationale: string | null
 }
 
 export type SubclassFeature = {

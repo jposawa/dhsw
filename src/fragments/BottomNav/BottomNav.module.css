@@ -22,6 +22,11 @@
   letter-spacing: var(--tracking-wider);
   color: var(--color-text-dim);
   text-decoration: none;
+  /* O trilho tem <button> e <NavLink> na mesma classe: sem estes dois o
+     botão nu sai com o cinza e a moldura do navegador ao lado do link. */
+  background: transparent;
+  border: none;
+  cursor: pointer;
   transition: color 0.15s ease;
 }
 

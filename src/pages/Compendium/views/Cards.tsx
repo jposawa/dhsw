@@ -4,7 +4,7 @@ import React from "react"
 
 import { DomainLabel } from "@/components"
 import { DOMAIN_LIST } from "@/constants"
-import { SkillCard, SkillText } from "@/fragments"
+import { RuleText, SkillCard } from "@/fragments"
 import { domainColorToken } from "@/helpers"
 import { useSkillSearch } from "@/hooks"
 import { compendiumViewAtom, openSkillsAtom } from "@/states"
@@ -149,7 +149,7 @@ export const CompendiumCards = () => {
                   </span>
                 }
               >
-                <SkillText className={styles.rowText} text={skill.text} />
+                <RuleText className={styles.rowText} text={skill.text} />
               </Collapse>
             </li>
           ))}

@@ -2,6 +2,7 @@ import { Input, SectionLabel } from "@jposawa/ronin-ui"
 import React from "react"
 
 import { ANCESTRIES } from "@/compendium"
+import { RuleText } from "@/fragments"
 import { filterByText } from "@/helpers"
 
 import styles from "./Reference.module.css"
@@ -47,12 +48,12 @@ export const CompendiumAncestries = () => {
               <article className={styles.entry}>
                 <h3 className={styles.name}>{ancestry.name}</h3>
 
-                <p className={styles.body}>{ancestry.description}</p>
+                <RuleText className={styles.body} text={ancestry.description} />
 
                 <ul className={styles.featureList}>
                   {ancestry.features.map((feature) => (
                     <li key={feature} className={styles.feature}>
-                      {feature}
+                      <RuleText text={feature} />
                     </li>
                   ))}
                 </ul>

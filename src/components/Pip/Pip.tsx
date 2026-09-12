@@ -1,3 +1,5 @@
+import clsx from "clsx"
+
 import type { BaseComponent } from "@/types"
 
 import styles from "./Pip.module.css"
@@ -13,7 +15,7 @@ type PipProps = BaseComponent & {
 export const Pip = ({ isMarked, color, label, onToggle, className, style }: PipProps) => (
   <button
     type="button"
-    className={[styles.pip, className].filter(Boolean).join(" ")}
+    className={clsx(styles.pip, className)}
     style={{ ...style, "--pip-color": color } as React.CSSProperties}
     aria-pressed={isMarked}
     aria-label={label}

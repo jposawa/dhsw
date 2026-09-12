@@ -1,115 +1,45 @@
-import React from "react"
+import { NavLink, Outlet } from "react-router-dom"
 
-import { Chip, Collapse, DomainSymbol, Input, SectionLabel, StepRule } from "@/components"
-import { DOMAIN_LIST } from "@/constants"
-import { SkillText } from "@/fragments"
-import { domainColorToken } from "@/helpers"
-import { useSkillSearch } from "@/hooks"
-import type { Domain } from "@/types"
+import { StepRule } from "@/components"
+import { COMPENDIUM_TABS, ROUTES } from "@/constants"
 
 import styles from "./Compendium.module.css"
 
 /**
- * Busca no compêndio. As 126 cartas vêm de módulo estático — sem fetch, sem
- * estado de carregamento, sem modo offline para resolver problema que não
- * existe. O índice de busca é pré-computado no build.
+ * O compêndio, e a régua que escolhe o que dele se está vendo.
+ *
+ * **Cada segmento é uma rota, não um estado.** Ficha e compêndio divergem aqui
+ * de propósito: a aba da ficha é onde *você* estava numa ficha que já é o
+ * assunto da URL, e some quando se sai dela; o segmento do compêndio é o
+ * assunto em si. Sendo rota, ele volta com o botão de voltar, entra no
+ * histórico e pode ser mandado para a mesa — "olha a lista de armas" vira um
+ * link.
+ *
+ * O catálogo é `COMPENDIUM_TABS`, que já existia sem uso: as chaves dele são
+ * os caminhos, e é o que impede a régua e as rotas de divergirem.
+ *
+ * Este componente não busca nem filtra nada. Cada segmento tem dado de forma
+ * diferente — carta tem domínio e Recall, arma tem alcance e dado de dano — e
+ * uma busca genérica o bastante para os seis não serviria bem a nenhum. O que
+ * é comum é a moldura, e é só ela que mora aqui.
  */
-export const Compendium = () => {
-  const [query, setQuery] = React.useState("")
-  const [domains, setDomains] = React.useState<ReadonlySet<Domain>>(new Set())
-  const [openSkills, setOpenSkills] = React.useState<ReadonlySet<string>>(new Set())
+export const Compendium = () => (
+  <main className={styles.page}>
+    <StepRule />
 
-  const skills = useSkillSearch(query, domains)
+    <nav className={styles.segments} aria-label="Seções do compêndio">
+      {COMPENDIUM_TABS.map((tab) => (
+        <NavLink
+          key={tab.id}
+          to={ROUTES.compendiumTab(tab.id)}
+          className={styles.segment}
+          data-testid={`compendium-tab-${tab.id}`}
+        >
+          {tab.label}
+        </NavLink>
+      ))}
+    </nav>
 
-  const toggleDomain = (domain: Domain) => {
-    const next = new Set(domains)
-
-    if (next.has(domain)) {
-      next.delete(domain)
-    } else {
-      next.add(domain)
-    }
-
-    setDomains(next)
-  }
-
-  const toggleSkill = (skillName: string) => {
-    const next = new Set(openSkills)
-
-    if (next.has(skillName)) {
-      next.delete(skillName)
-    } else {
-      next.add(skillName)
-    }
-
-    setOpenSkills(next)
-  }
-
-  return (
-    <main className={styles.page}>
-      <StepRule />
-
-      <Input
-        type="search"
-        value={query}
-        placeholder="Buscar carta ou efeito"
-        aria-label="Buscar carta ou efeito"
-        autoComplete="off"
-        onValueChange={setQuery}
-      />
-
-      <div className={styles.chips}>
-        {DOMAIN_LIST.map((domain) => (
-          <Chip
-            key={domain}
-            label={domain}
-            isActive={domains.has(domain)}
-            color={domainColorToken(domain)}
-            onToggle={() => toggleDomain(domain)}
-          />
-        ))}
-      </div>
-
-      <SectionLabel>{skills.length} de 126</SectionLabel>
-
-      {skills.length === 0 ? (
-        <p className={styles.empty}>Nada encontrado para “{query}”.</p>
-      ) : (
-        <ul className={styles.list}>
-          {skills.map((skill) => (
-            <li
-              key={skill.name}
-              className={styles.row}
-              style={
-                { "--domain-color": domainColorToken(skill.domain) } as React.CSSProperties
-              }
-            >
-              {/* Collapse, e não um <button> com o corpo dentro: o texto da
-                  carta vira <p> e <ul>, que um botão não pode conter — o
-                  markup era inválido e a carta inteira virava nome acessível
-                  do controle. Aqui o corpo é irmão do gatilho, numa região
-                  ligada por aria-controls. */}
-              <Collapse
-                className={styles.card}
-                isOpen={openSkills.has(skill.name)}
-                onToggle={() => toggleSkill(skill.name)}
-                title={<span className={styles.rowName}>{skill.name}</span>}
-                detail={
-                  <span className={styles.rowMeta}>
-                    <span className={styles.rowLevel}>
-                      <DomainSymbol domain={skill.domain} />
-                      {skill.domain.toUpperCase()} {skill.level}
-                    </span>
-                    <span className={styles.rowRecall}>◦{skill.recallCost}</span>
-                  </span>
-                }
-              >
-                <SkillText text={skill.text} />
-              </Collapse>
-            </li>
-          ))}
-        </ul>
-      )}
-    </main>
-  )
-}
+    <Outlet />
+  </main>
+)

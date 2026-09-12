@@ -1,8 +1,9 @@
+import { Avatar } from "@jposawa/ronin-ui"
 import { useAtom, useAtomValue } from "jotai"
 import React from "react"
 import { Link } from "react-router-dom"
 
-import { Avatar, NavIcon, Switch } from "@/components"
+import { NavIcon, Switch } from "@/components"
 import { ROUTES } from "@/constants"
 import { useAuth } from "@/hooks"
 import { charactersAtom, syncStatusAtom, themeAtom } from "@/states"

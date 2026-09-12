@@ -88,9 +88,18 @@ const Crest = ({ subtitle }: { subtitle: string }) => (
 /**
  * Subtítulo do brasão: vem do mesmo catálogo do menu, para não haver duas
  * listas de nomes de página divergindo com o tempo.
+ *
+ * Casa por prefixo além de por igualdade, senão qualquer rota filha perde o
+ * nome — `/compendio/cartas` mostrava "DH · SW" no lugar de "COMPÊNDIO". A
+ * raiz fica de fora do teste de prefixo porque `/` é prefixo de tudo e
+ * roubaria o nome de todas as telas.
  */
 const subtitleFor = (pathname: string): string => {
-  const match = NAV_ITEMS.find((item) => item.path === pathname)
+  const match =
+    NAV_ITEMS.find((item) => item.path === pathname) ??
+    NAV_ITEMS.find(
+      (item) => item.path !== ROUTES.home && pathname.startsWith(`${item.path}/`),
+    )
 
   if (match) {
     return match.label
@@ -98,6 +107,10 @@ const subtitleFor = (pathname: string): string => {
 
   if (pathname === ROUTES.profile) {
     return "PERFIL"
+  }
+
+  if (pathname.startsWith(ROUTES.party(""))) {
+    return "GRUPO"
   }
 
   return pathname.startsWith(ROUTES.sheet("")) ? "FICHA" : "DH · SW"

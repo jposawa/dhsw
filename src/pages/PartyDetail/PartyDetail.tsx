@@ -1,12 +1,14 @@
+import { Avatar, Button, Modal, SectionLabel } from "@jposawa/ronin-ui"
 import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import React from "react"
 import { Navigate, useNavigate, useParams } from "react-router-dom"
 
 import { CLASSES_BY_NAME } from "@/compendium"
-import { Avatar, Button, Modal, SectionLabel, StepRule } from "@/components"
+import { StepRule } from "@/components"
 import { PARTY_ROLES, ROUTES } from "@/constants"
 import {
   canLeaveParty,
+  canRemoveSheetFromParty,
   domainColorToken,
   isPartyOwner,
   mustHandOverParty,
@@ -25,7 +27,7 @@ import {
   promoteToNarrator,
   setSheetParty,
 } from "@/services"
-import { authAtom, charactersAtom, rosterAtom, toastAtom } from "@/states"
+import { authAtom, charactersAtom, rosterAtom, sheetRolesAtom, toastAtom } from "@/states"
 import type { Character, Party, PartyMember, PartyMemberView } from "@/types"
 
 import styles from "./PartyDetail.module.css"
@@ -45,6 +47,7 @@ export const PartyDetail = () => {
   const { user } = useAtomValue(authAtom)
   const [roster, setRoster] = useAtom(rosterAtom)
   const myCharacters = useAtomValue(charactersAtom)
+  const sheetRoles = useAtomValue(sheetRolesAtom)
   const setToast = useSetAtom(toastAtom)
   const navigate = useNavigate()
 
@@ -55,6 +58,10 @@ export const PartyDetail = () => {
   const [isConfirmingDelete, setIsConfirmingDelete] = React.useState(false)
   const [isHandingOver, setIsHandingOver] = React.useState(false)
   const [isWorking, setIsWorking] = React.useState(false)
+  /** A ficha que está sendo tirada. A própria ficha, não um booleano: o modal
+      precisa dizer qual é, e um `isConfirming` obrigaria um segundo estado só
+      para lembrar disso. */
+  const [sheetToRemove, setSheetToRemove] = React.useState<Character | null>(null)
 
   React.useEffect(() => {
     if (!partyId) {
@@ -150,6 +157,37 @@ export const PartyDetail = () => {
       setToast("Ficha adicionada ao grupo")
     } catch {
       setToast("Não foi possível adicionar a ficha.")
+    }
+  }
+
+  const handleRemoveSheet = async (sheet: Character) => {
+    setIsWorking(true)
+
+    try {
+      await setSheetParty(sheet.id, null, partyId)
+
+      // A ficha não é apagada — só perde o vínculo. Se ela for sua, o roster
+      // local acompanha; se for de outra pessoa, não há o que atualizar aqui,
+      // porque ficha de terceiro nunca entra no roster local.
+      const mine = roster.characters[sheet.id]
+
+      if (mine) {
+        setRoster({
+          ...roster,
+          characters: {
+            ...roster.characters,
+            [sheet.id]: touchCharacter({ ...mine, partyId: null }),
+          },
+        })
+      }
+
+      setSheets((current) => current.filter((entry) => entry.id !== sheet.id))
+      setToast("Ficha tirada do grupo")
+    } catch {
+      setToast("Não foi possível tirar a ficha.")
+    } finally {
+      setIsWorking(false)
+      setSheetToRemove(null)
     }
   }
 
@@ -291,6 +329,22 @@ export const PartyDetail = () => {
                       "ficha em branco"}
                   </span>
                 </span>
+
+                {/* A porta de saída na própria linha, ao lado da ficha que ela
+                    tira. Pôr uma ficha era um botão e tirá-la não era nada —
+                    quem entrasse com a ficha errada ficava sem caminho de
+                    volta a não ser desfazer a mesa. */}
+                {canRemoveSheetFromParty(sheetRoles[sheet.id], memberRows, user.userId) ? (
+                  <Button
+                    variant="text"
+                    intent="danger"
+                    disabled={isWorking}
+                    aria-label={`Tirar ${sheet.name || "ficha sem nome"} do grupo`}
+                    onClick={() => setSheetToRemove(sheet)}
+                  >
+                    TIRAR
+                  </Button>
+                ) : null}
               </li>
             )
           })}
@@ -393,6 +447,40 @@ export const PartyDetail = () => {
           </div>
         </>
       ) : null}
+
+      {/* Tirar ficha passa por confirmação porque mexe no que a mesa inteira
+          vê, e porque pôr de volta uma ficha que não é sua depende do dono
+          dela estar por perto. `isPersistent` pelo mesmo motivo do apagar. */}
+      <Modal
+        isOpen={sheetToRemove !== null}
+        isPersistent
+        title="Tirar esta ficha do grupo?"
+        onClose={() => setSheetToRemove(null)}
+        footer={
+          <>
+            <Button
+              variant="outline"
+              disabled={isWorking}
+              onClick={() => setSheetToRemove(null)}
+            >
+              CANCELAR
+            </Button>
+            <Button
+              intent="danger"
+              disabled={isWorking}
+              onClick={() => sheetToRemove && void handleRemoveSheet(sheetToRemove)}
+            >
+              {isWorking ? "TIRANDO…" : "TIRAR"}
+            </Button>
+          </>
+        }
+      >
+        <p className={styles.note}>
+          <b>{sheetToRemove?.name || "Sem nome"}</b> sai da mesa e deixa de aparecer
+          para os outros membros. <b>A ficha não é apagada</b> — ela volta para quem a
+          escreveu, sem grupo, e pode entrar de novo depois.
+        </p>
+      </Modal>
 
       {/* Entregar o grupo: só aparece quando o Dono tenta sair, porque é aí que
           a escolha existe. `isPersistent` porque sair pelo fundo deixaria a

@@ -23,3 +23,15 @@ export const syncErrorAtom = atom<string | null>(null)
 
 /** Papel do usuario em cada ficha que ele alcanca. Vem de `userSheets`. */
 export const sheetRolesAtom = atom<Readonly<Record<string, SheetRoleId>>>({})
+
+/**
+ * Fichas com mudança local que o servidor ainda não recebeu.
+ *
+ * Existe para a ficha poder dizer se já salvou. O app grava no dedo e empurra
+ * com atraso — não há botão de salvar, e sem este conjunto não há como
+ * distinguir "salvo" de "ainda não", que é a dúvida que faz alguém fechar o
+ * app com medo de perder a sessão.
+ *
+ * Quem mantém é `useSheetSync`; a UI só lê.
+ */
+export const unsyncedSheetIdsAtom = atom<ReadonlySet<string>>(new Set<string>())

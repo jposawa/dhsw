@@ -9,6 +9,7 @@ import {
   sheetRolesAtom,
   syncErrorAtom,
   syncStatusAtom,
+  unsyncedSheetIdsAtom,
 } from "@/states"
 import type { SheetRoleId } from "@/types"
 
@@ -35,6 +36,7 @@ export const useSheetSync = () => {
   const [syncStatus, setSyncStatus] = useAtom(syncStatusAtom)
   const setSheetRoles = useSetAtom(sheetRolesAtom)
   const setSyncError = useSetAtom(syncErrorAtom)
+  const setUnsyncedSheetIds = useSetAtom(unsyncedSheetIdsAtom)
 
   // O store lê o roster atual dentro do efeito sem assiná-lo. Assinar faria
   // o pull depender do roster e criaria um laço: puxa, mescla, muda o
@@ -54,6 +56,36 @@ export const useSheetSync = () => {
   const remoteIds = React.useRef<Set<string>>(new Set())
   /** Última versão cuja escrita foi despachada. Evita reescrever o que não mudou. */
   const pushedAt = React.useRef<Record<string, number>>({})
+  /** Ids com escrita no ar. Uma ficha só sai de "salvando" quando volta. */
+  const inFlight = React.useRef<Set<string>>(new Set())
+
+  /**
+   * Publica quais fichas ainda não chegaram ao servidor.
+   *
+   * Lê o roster pelo store em vez de assiná-lo: quem chama já roda dentro do
+   * efeito de escrita, que depende do roster — assinar aqui só acrescentaria
+   * uma identidade nova a cada mudança e remontaria o efeito à toa.
+   */
+  const publishUnsynced = React.useCallback(() => {
+    const pending = new Set<string>()
+
+    for (const character of Object.values(store.get(rosterAtom).characters)) {
+      const isDispatched = pushedAt.current[character.id] === character.updatedAt
+
+      if (!isDispatched || inFlight.current.has(character.id)) {
+        pending.add(character.id)
+      }
+    }
+
+    // Só troca o atom quando o conjunto muda de verdade — um Set novo a cada
+    // tecla digitada rerenderizaria toda tela que lê daqui.
+    setUnsyncedSheetIds((current) => {
+      const isSame =
+        current.size === pending.size && [...pending].every((id) => current.has(id))
+
+      return isSame ? current : pending
+    })
+  }, [store, setUnsyncedSheetIds])
 
   /* ── 1. Puxar e adotar, uma vez por login ────────────────────────────── */
 
@@ -62,6 +94,8 @@ export const useSheetSync = () => {
       pulledFor.current = null
       remoteIds.current = new Set()
       pushedAt.current = {}
+      inFlight.current = new Set()
+      setUnsyncedSheetIds(new Set())
 
       return
     }
@@ -135,7 +169,16 @@ export const useSheetSync = () => {
     return () => {
       isCancelled = true
     }
-  }, [status, user, store, setRoster, setSheetRoles, setSyncError, setSyncStatus])
+  }, [
+    status,
+    user,
+    store,
+    setRoster,
+    setSheetRoles,
+    setSyncError,
+    setSyncStatus,
+    setUnsyncedSheetIds,
+  ])
 
   /* ── 2. Empurrar o que mudou, com debounce ───────────────────────────── */
 
@@ -143,6 +186,8 @@ export const useSheetSync = () => {
     if (!user || pulledFor.current !== user.userId) {
       return
     }
+
+    publishUnsynced()
 
     const timer = window.setTimeout(() => {
       for (const character of Object.values(roster.characters)) {
@@ -159,6 +204,7 @@ export const useSheetSync = () => {
         // Marcado antes de resolver, para o debounce seguinte não despachar a
         // mesma versão de novo enquanto esta ainda está no ar.
         pushedAt.current[character.id] = character.updatedAt
+        inFlight.current.add(character.id)
 
         const write = isNew
           ? createSheet(character, user.userId).then(() => {
@@ -166,18 +212,23 @@ export const useSheetSync = () => {
             })
           : saveSheet(character)
 
-        void write.catch((error: unknown) => {
-          // Desfaz a marca para a próxima mudança reenviar. Sem isto, uma
-          // escrita perdida só voltaria a ser tentada na sessão seguinte.
-          if (previousPush === undefined) {
-            delete pushedAt.current[character.id]
-          } else {
-            pushedAt.current[character.id] = previousPush
-          }
+        void write
+          .catch((error: unknown) => {
+            // Desfaz a marca para a próxima mudança reenviar. Sem isto, uma
+            // escrita perdida só voltaria a ser tentada na sessão seguinte.
+            if (previousPush === undefined) {
+              delete pushedAt.current[character.id]
+            } else {
+              pushedAt.current[character.id] = previousPush
+            }
 
-          setSyncError(`escrita: ${describeError(error)}`)
-          setSyncStatus("error")
-        })
+            setSyncError(`escrita: ${describeError(error)}`)
+            setSyncStatus("error")
+          })
+          .finally(() => {
+            inFlight.current.delete(character.id)
+            publishUnsynced()
+          })
       }
     }, WRITE_DEBOUNCE_MS)
 
@@ -185,5 +236,5 @@ export const useSheetSync = () => {
     // `syncStatus` entra como dependencia, nao como trava: e o que faz o
     // efeito rodar de novo quando o pull termina. Quem libera a escrita
     // continua sendo `pulledFor`.
-  }, [roster, syncStatus, user, setSyncError, setSyncStatus])
+  }, [roster, syncStatus, user, publishUnsynced, setSyncError, setSyncStatus])
 }

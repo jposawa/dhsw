@@ -1,4 +1,7 @@
-import { Pip, SectionLabel } from "@/components"
+import { SectionLabel } from "@jposawa/ronin-ui"
+import clsx from "clsx"
+
+import { Pip } from "@/components"
 import type { BaseComponent } from "@/types"
 
 import styles from "./MarkerTrack.module.css"
@@ -26,7 +29,7 @@ export const MarkerTrack = ({
   className,
   style,
 }: MarkerTrackProps) => (
-  <div className={[styles.track, className].filter(Boolean).join(" ")} style={style}>
+  <div className={clsx(styles.track, className)} style={style}>
     <SectionLabel detail={`${marked}/${max}`}>{label}</SectionLabel>
     <div className={styles.pips}>
       {Array.from({ length: max }, (_, index) => {

@@ -1,6 +1,7 @@
+import { Chip } from "@jposawa/ronin-ui"
 import { useAtom } from "jotai"
 
-import { Chip, Pip, StepRule } from "@/components"
+import { Pip, StepRule } from "@/components"
 import type { HouseRules as HouseRulesType } from "@/types"
 import { houseRulesAtom } from "@/states"
 

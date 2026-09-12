@@ -5,6 +5,7 @@ export const STORAGE_KEYS = {
   houseRules: "dhsw:houseRules",
   theme: "dhsw:theme",
   navCollapsed: "dhsw:navCollapsed",
+  compendiumView: "dhsw:compendiumView",
 } as const
 
 /** Versao do formato de cada chave. Sobe junto com a migracao correspondente. */

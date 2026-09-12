@@ -1,10 +1,18 @@
 import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
-import { createBrowserRouter, RouterProvider } from "react-router-dom"
+import { createBrowserRouter, Navigate, RouterProvider } from "react-router-dom"
 
 import { ROUTES } from "@/constants"
 import { AuthGate, HomeRoute } from "@/fragments"
-import { Compendium } from "@/pages/Compendium"
+import {
+  Compendium,
+  CompendiumAncestries,
+  CompendiumCards,
+  CompendiumClasses,
+  CompendiumCommunities,
+  CompendiumDomains,
+  CompendiumGear,
+} from "@/pages/Compendium"
 import { HouseRules } from "@/pages/HouseRules"
 import { Parties } from "@/pages/Parties"
 import { PartyDetail } from "@/pages/PartyDetail"
@@ -12,6 +20,12 @@ import { Profile } from "@/pages/Profile"
 import { Roster } from "@/pages/Roster"
 import { Sheet } from "@/pages/Sheet"
 
+// Os dois são carregados de propósito: `tokens.css` traz a escala que todo
+// `.module.css` deste projeto consome (`--space-*`, `--text-*`,
+// `--size-touch-target`, `--border-width`), e `styles.css` é o que desenha
+// Button, Input, Chip, Collapse e Modal. Sem eles o app cai para padding zero e
+// componente sem forma. O `styles/tokens.css` abaixo troca os VALORES — não a
+// escala, e não o desenho dos componentes.
 import "@jposawa/ronin-ui/tokens.css"
 import "@jposawa/ronin-ui/styles.css"
 
@@ -50,7 +64,22 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       { path: ROUTES.home, element: <HomeRoute /> },
-      { path: ROUTES.compendium, element: <Compendium /> },
+      {
+        path: ROUTES.compendium,
+        element: <Compendium />,
+        children: [
+          // `/compendio` sozinho não é tela: manda para o primeiro segmento.
+          // `replace` para o botão de voltar não cair no redirecionamento e
+          // parecer que travou.
+          { index: true, element: <Navigate to={ROUTES.compendiumTab("cartas")} replace /> },
+          { path: "cartas", element: <CompendiumCards /> },
+          { path: "dominios", element: <CompendiumDomains /> },
+          { path: "classes", element: <CompendiumClasses /> },
+          { path: "especies", element: <CompendiumAncestries /> },
+          { path: "origens", element: <CompendiumCommunities /> },
+          { path: "equipamento", element: <CompendiumGear /> },
+        ],
+      },
       { path: ROUTES.houseRules, element: <HouseRules /> },
       {
         element: <AuthGate />,

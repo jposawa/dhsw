@@ -1,8 +1,9 @@
+import { Button, Input, SectionLabel } from "@jposawa/ronin-ui"
 import { useAtomValue, useSetAtom } from "jotai"
 import React from "react"
 import { Link } from "react-router-dom"
 
-import { Button, Input, SectionLabel, StepRule } from "@/components"
+import { StepRule } from "@/components"
 import { PARTY_NAME_MAX_LENGTH, PARTY_ROLES, ROUTES } from "@/constants"
 import { createParty, joinParty } from "@/services"
 import { useParties } from "@/hooks"

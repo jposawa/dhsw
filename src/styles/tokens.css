@@ -103,6 +103,11 @@
   /* --border-radius-lg: 2px; */
   /* --border-radius-pill: 2px; */
 
+  /* O canto reto que STYLING.md nomeia — linhas, listas e tudo que encosta
+     numa borda. Token e não `0` cru no módulo: o dia em que a geometria do
+     protótipo entrar, ela entra por aqui. */
+  --border-radius-none: 0;
+
   --domain-stripe-width: 3px;
 
   /* Abaixo do `--z-dropdown: 100` da biblioteca, de propósito: modal e
@@ -111,7 +116,24 @@
   --z-nav: 30;
 
   --bottom-bar-height: calc(58px + env(safe-area-inset-bottom));
+
+  /*
+   * Duas larguras, porque são dois trabalhos.
+   *
+   * `--content-max-width` é coluna de **leitura**: prosa, formulário, lista que
+   * se lê linha a linha. Os 640px vêm do protótipo (`dh-sw.html`), e para
+   * leitura eles estão certos — linha longa demais faz o olho perder a volta.
+   *
+   * `--content-max-width-wide` é para **varredura**: grade de cartas, lista de
+   * armas, qualquer tela em que se procura em vez de ler. Espremer isso em
+   * 640px trata o desktop como celular esticado, que é o contrário de
+   * mobile-first: começar pelo celular é a base, não o teto.
+   *
+   * Nenhuma das duas prende nada no celular — abaixo delas o `max-width` não
+   * chega a valer, e a tela é sempre a largura toda.
+   */
   --content-max-width: 640px;
+  --content-max-width-wide: 1100px;
 
   /* Altura da faixa do brasão. Compartilhada com o topo do trilho lateral,
      para que a linha horizontal atravesse a tela sem degrau. */

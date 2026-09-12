@@ -1,85 +1,61 @@
+/*
+ * A página é a medida: uma só, para lista e para grade.
+ *
+ * O modo de exibição arruma os itens dentro dela e não mexe nela: largura que
+ * muda ao trocar lista por carta faz a régua de segmentos e a busca
+ * escorregarem debaixo do dedo, e o alternador passa a parecer um zoom. Onde
+ * a medida de leitura importa — o texto serifado de uma carta aberta — ela é
+ * um `max-width` no próprio bloco de texto, não uma largura de tela.
+ */
 .page {
-  max-width: var(--content-max-width);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: var(--content-max-width-wide);
   margin: 0 auto;
   padding: var(--space-4) var(--space-4) var(--space-6);
 }
 
-.chips {
+/*
+ * A régua de segmentos. O desenho é o que já estava em `App.module.css` sem
+ * uso desde o protótipo — trazido para cá, que é onde ele acabou servindo.
+ *
+ * Rola na horizontal em vez de quebrar em duas linhas: seis rótulos curtos
+ * cabem inteiros no desktop, e no celular a rolagem é o que preserva a ordem
+ * e a altura da faixa.
+ */
+.segments {
   display: flex;
   gap: var(--space-1);
   overflow-x: auto;
   scrollbar-width: none;
-  margin: var(--space-2) calc(var(--space-4) * -1) 0;
+  margin: 0 calc(var(--space-4) * -1);
   padding: 0 var(--space-4);
+  border-bottom: var(--border-width) solid var(--color-border-subtle);
 }
 
-.chips::-webkit-scrollbar {
+.segments::-webkit-scrollbar {
   display: none;
 }
 
-.list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-/* Faixa de dominio a esquerda: a cor identifica a carta. */
-.row {
-  background: var(--color-bg-elevated);
-  border-left: var(--domain-stripe-width) solid var(--domain-color, var(--color-chrome));
-}
-
-/*
- * O Collapse da ronin-ui chega com moldura e canto arredondado próprios. Aqui
- * a identidade da carta é a faixa de domínio da `.row`, e as duas juntas viram
- * caixa dentro de caixa — então o cartão fica transparente e sem borda.
- *
- * Descendente direto de propósito: `.card` sozinho empata em especificidade
- * com a classe da biblioteca, e quem venceria passaria a depender da ordem em
- * que o bundler junta os CSS. `.row > .card` ganha sempre.
- */
-.row > .card {
-  background: transparent;
-  border: none;
-  border-radius: 0;
-}
-
-.rowMeta {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-2);
-}
-
-.rowName {
-  font-size: var(--text-sm);
-  font-weight: 500;
-  letter-spacing: var(--tracking-normal);
-  color: var(--color-ink);
-}
-
-.rowLevel {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-1);
-  font-size: var(--text-2xs);
+.segment {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-xs);
   letter-spacing: var(--tracking-wide);
-  font-variant-numeric: tabular-nums;
-  color: var(--domain-color, var(--color-chrome));
+  white-space: nowrap;
+  color: var(--color-text-dim);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s ease, border-color 0.15s ease;
 }
 
-.rowRecall {
-  font-size: var(--text-2xs);
-  font-variant-numeric: tabular-nums;
-  color: var(--color-text-dim);
+.segment:hover {
+  color: var(--color-chrome-strong);
 }
 
-.empty {
-  padding: var(--space-6) var(--space-4);
-  font-family: var(--font-serif);
-  font-size: var(--text-md);
-  text-align: center;
-  color: var(--color-text-dim);
+/* `aria-current="page"` vem do NavLink — é o mesmo sinal que a navegação
+   principal usa para marcar onde se está. */
+.segment[aria-current="page"] {
+  color: var(--color-chrome-strong);
+  border-bottom-color: var(--color-chrome);
 }

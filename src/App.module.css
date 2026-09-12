@@ -1,5 +1,5 @@
 /**
- * Shell do app: brasão, abas segmentadas, barra inferior.
+ * Shell do app: brasão, barra inferior e trilho lateral.
  *
  * O shell NÃO renderiza <main> — cada página traz o seu. STRUCTURE.md.
  */
@@ -63,31 +63,6 @@
   color: var(--color-text-muted);
 }
 
-.segments {
-  display: flex;
-  overflow-x: auto;
-  scrollbar-width: none;
-  border-top: var(--border-width) solid var(--color-border-subtle);
-}
-
-.segments::-webkit-scrollbar {
-  display: none;
-}
-
-.segment {
-  padding: var(--space-3) var(--space-4);
-  font-size: var(--text-xs);
-  letter-spacing: var(--tracking-wide);
-  white-space: nowrap;
-  color: var(--color-text-dim);
-  border-bottom: 2px solid transparent;
-}
-
-.segment[aria-current='true'] {
-  color: var(--color-chrome-strong);
-  border-bottom-color: var(--color-chrome);
-}
-
 .toast {
   position: fixed;
   bottom: calc(var(--bottom-bar-height) + var(--space-4));
@@ -103,7 +78,6 @@
 }
 
 @media (min-width: 900px) {
-  .segments,
   .crest {
     max-width: var(--content-max-width);
     margin: 0 auto;

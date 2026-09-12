@@ -4,6 +4,7 @@ import type { Party, PartyMember, PartyRoleId } from "@/types"
 
 import {
   canLeaveParty,
+  canRemoveSheetFromParty,
   isPartyNarrator,
   isPartyOwner,
   mustHandOverParty,
@@ -128,5 +129,29 @@ describe("mustHandOverParty", () => {
     const members = [member("dono", "gm"), member("eu", "gm")]
 
     expect(mustHandOverParty(partyOf("dono"), members, "eu")).toBe(false)
+  })
+})
+
+describe("canRemoveSheetFromParty", () => {
+  const members = [member("gm", "gm"), member("eu", "player"), member("outro", "player")]
+
+  it("o autor tira a propria ficha", () => {
+    expect(canRemoveSheetFromParty("author", members, "eu")).toBe(true)
+  })
+
+  it("o co-autor tambem, porque escreve na ficha", () => {
+    expect(canRemoveSheetFromParty("coAuthor", members, "eu")).toBe(true)
+  })
+
+  it("o leitor nao tira — ele nem escreve na ficha", () => {
+    expect(canRemoveSheetFromParty("reader", members, "eu")).toBe(false)
+  })
+
+  it("o Narrador tira qualquer ficha da mesa, inclusive a que nao alcanca", () => {
+    expect(canRemoveSheetFromParty(undefined, members, "gm")).toBe(true)
+  })
+
+  it("jogador sem acesso a ficha nao tira a de outro", () => {
+    expect(canRemoveSheetFromParty(undefined, members, "outro")).toBe(false)
   })
 })

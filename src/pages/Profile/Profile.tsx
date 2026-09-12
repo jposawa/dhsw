@@ -1,7 +1,8 @@
+import { Avatar, Button, Input, SectionLabel } from "@jposawa/ronin-ui"
 import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import React from "react"
 
-import { Avatar, Button, Input, SectionLabel, StepRule, Switch } from "@/components"
+import { StepRule, Switch } from "@/components"
 import { databaseEnvironment } from "@/lib/firebase"
 import { fetchProfile, updateDisplayName } from "@/services"
 import {

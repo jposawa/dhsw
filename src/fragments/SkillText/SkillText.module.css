@@ -30,3 +30,24 @@
   font-style: normal;
   color: var(--color-chrome-strong);
 }
+
+/*
+ * Nome da sub-habilidade nas cartas Holocron.
+ *
+ * Em `--font-deco` porque e rotulo de interface, nao texto de regra: e a mesma
+ * divisao de papeis dos dois eixos de cor — cromo e a maquina, tinta e o
+ * conteudo. STYLING.md.
+ */
+.heading {
+  margin: var(--space-3) 0 var(--space-1);
+  font-family: var(--font-deco);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-chrome-strong);
+}
+
+/* O primeiro titulo abre a carta: sem espaco extra acima dele. */
+.heading:first-child {
+  margin-top: 0;
+}

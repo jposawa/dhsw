@@ -1,0 +1,256 @@
+/*
+ * Visual comum das telas de referência do compêndio — domínios, classes,
+ * espécies, origens e equipamento.
+ *
+ * Um arquivo só porque as cinco são a mesma coisa com dado diferente: nome,
+ * meta e um corpo de texto, numa linha elevada com faixa opcional de domínio.
+ * Cinco cópias divergiriam no primeiro ajuste de espaçamento.
+ *
+ * Nenhuma classe daqui define largura de tela: a medida é da página, e o que
+ * está dentro dela se arruma na largura que recebe. STANDARDS.md.
+ */
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* Rola na horizontal em vez de quebrar; as margens negativas sangram a faixa
+   até a borda da tela, para o chip cortado parecer cortado pela janela. */
+.chips {
+  display: flex;
+  gap: var(--space-1);
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin: 0 calc(var(--space-4) * -1);
+  padding: 0 var(--space-4);
+}
+
+.chips::-webkit-scrollbar {
+  display: none;
+}
+
+/*
+ * `auto-fill` com mínimo de 19rem: uma coluna no celular, duas ou três no
+ * desktop, sem media query. Estas telas são de **procurar** — "qual arma tem
+ * alcance Far?" —, e procurar numa coluna estreita obriga a rolar o que
+ * caberia na tela. `align-items: start` impede que abrir uma classe estique a
+ * vizinha até a mesma altura.
+ */
+.list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
+  align-items: start;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/*
+ * `--domain-color` só existe onde a entidade tem domínio (carta, classe). Sem
+ * ela a faixa cai no cromo, que é o certo: espécie e item não pertencem a
+ * domínio nenhum, e inventar uma cor ali seria informação falsa.
+ */
+.item {
+  display: grid;
+  min-width: 0;
+  background: var(--color-bg-elevated);
+  border-left: var(--domain-stripe-width) solid var(--domain-color, var(--color-chrome));
+}
+
+.entry {
+  padding: var(--space-3);
+}
+
+/* Classe usa Collapse, que traz o próprio padding — o item não põe o dele.
+   Descendente direto para vencer a classe da biblioteca sem depender da ordem
+   em que o bundler junta os CSS. */
+.item > .collapse {
+  background: transparent;
+  border: none;
+  border-radius: var(--border-radius-none);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* `hgroup`: o nome e a linha de meta são um bloco só de identificação, e é o
+   contêiner que decide que eles empilham. */
+.headText {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  /* Necessário: é o bloco de identificação que ocupa a sobra da linha e
+     empurra o valor (dado de dano) para a direita. */
+  flex-grow: 1;
+  margin: 0;
+}
+
+.symbol {
+  font-size: var(--text-xl);
+}
+
+.domains {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.name {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  letter-spacing: var(--tracking-normal);
+  color: var(--color-ink);
+}
+
+.meta {
+  margin: 0;
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+}
+
+.value {
+  font-size: var(--text-md);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-chrome-strong);
+  white-space: nowrap;
+}
+
+.unit {
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+}
+
+.body {
+  margin: var(--space-2) 0 0;
+  max-width: var(--content-max-width);
+  font-family: var(--font-serif);
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  color: var(--color-ink-reading);
+}
+
+.label {
+  margin: var(--space-3) 0 var(--space-1);
+  font-family: var(--font-deco);
+  font-size: var(--text-2xs);
+  font-weight: 400;
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-text-muted);
+}
+
+.note {
+  margin: var(--space-2) 0 0;
+  max-width: var(--content-max-width);
+  font-size: var(--text-xs);
+  line-height: 1.55;
+  color: var(--color-text-dim);
+}
+
+.featureList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.feature {
+  padding-left: var(--space-3);
+  font-family: var(--font-serif);
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  color: var(--color-ink-reading);
+  border-left: var(--border-width) solid var(--color-border);
+}
+
+/* ── classes ─────────────────────────────────────────────────────────────── */
+
+.stats {
+  display: flex;
+  gap: var(--space-4);
+  margin: 0;
+}
+
+.stat dt {
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-text-muted);
+}
+
+.stat dd {
+  margin: 0;
+  font-size: var(--text-md);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-chrome-strong);
+}
+
+.was {
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+}
+
+.subList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: var(--space-1) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.subRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2);
+  background: var(--color-surface);
+}
+
+.subName {
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+/* ── equipamento ─────────────────────────────────────────────────────────── */
+
+.tiers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: var(--space-2) 0 0;
+}
+
+.tier {
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-dim);
+}
+
+.iconic {
+  color: var(--color-chrome);
+}
+
+.empty {
+  padding: var(--space-6) var(--space-4);
+  font-family: var(--font-serif);
+  font-size: var(--text-md);
+  text-align: center;
+  color: var(--color-text-dim);
+}

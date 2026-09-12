@@ -1,3 +1,4 @@
+import clsx from "clsx"
 import React from "react"
 
 import { describeModifierSource, formatSigned } from "@/helpers"
@@ -23,7 +24,7 @@ export const StatBlock = ({ label, stat, className, style }: StatBlockProps) => 
   return (
     <button
       type="button"
-      className={[styles.block, className].filter(Boolean).join(" ")}
+      className={clsx(styles.block, className)}
       style={style}
       aria-expanded={isOpen}
       aria-label={`${label}: ${stat.total}${hasDetail ? ". Toque para ver os modificadores" : ""}`}
@@ -31,7 +32,7 @@ export const StatBlock = ({ label, stat, className, style }: StatBlockProps) => 
     >
       <span className={styles.summary}>
         <span className={styles.value}>{stat.total}</span>
-        <span className={[styles.key, hasDetail ? styles.hasDetail : ""].filter(Boolean).join(" ")}>
+        <span className={clsx(styles.key, hasDetail && styles.hasDetail)}>
           {label}
         </span>
       </span>
@@ -46,9 +47,7 @@ export const StatBlock = ({ label, stat, className, style }: StatBlockProps) => 
             <span className={styles.line} key={`${modifier.source.kind}-${index}`}>
               <span>{describeModifierSource(modifier)}</span>
               <span
-                className={[styles.lineValue, modifier.value < 0 ? styles.negative : ""]
-                  .filter(Boolean)
-                  .join(" ")}
+                className={clsx(styles.lineValue, modifier.value < 0 && styles.negative)}
               >
                 {formatSigned(modifier.value)}
               </span>

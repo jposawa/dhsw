@@ -1,3 +1,5 @@
+import clsx from "clsx"
+
 import { domainColorToken } from "@/helpers"
 import type { BaseComponent, Domain } from "@/types"
 
@@ -28,7 +30,7 @@ type DomainSymbolProps = BaseComponent & {
  */
 export const DomainSymbol = ({ domain, label, className, style }: DomainSymbolProps) => (
   <svg
-    className={[styles.symbol, className].filter(Boolean).join(" ")}
+    className={clsx(styles.symbol, className)}
     style={{ color: domainColorToken(domain), ...style }}
     viewBox="0 0 24 24"
     fill="none"

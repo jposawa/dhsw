@@ -1,4 +1,5 @@
-import type { Party, PartyMember } from "@/types"
+import { SHEET_ROLE_LEVEL } from "@/constants"
+import type { Party, PartyMember, SheetRoleId } from "@/types"
 
 /**
  * O que cada pessoa pode fazer com o grupo em que está.
@@ -90,3 +91,26 @@ export const mustHandOverParty = (
   userId: string,
 ): boolean =>
   isPartyOwner(party, userId) && members.some((member) => member.userId !== userId)
+
+/**
+ * Quem pode tirar uma ficha do grupo.
+ *
+ * As mesmas duas portas da `database.rules.json` em `partySheets/$partyId/
+ * $sheetId`: nível ≥ 20 no acesso à ficha (autor ou co-autor — é a ficha de
+ * quem está pedindo), **ou** nível ≥ 20 na mesa (Narrador). Um jogador não
+ * tira a ficha de outro, e o Narrador tira qualquer uma — é ele quem responde
+ * por quem está na mesa.
+ *
+ * Reescrever a condição na tela seria a versão do cliente discordando da do
+ * servidor no dia em que uma das duas mudasse; por isso mora aqui, com teste.
+ */
+export const canRemoveSheetFromParty = (
+  sheetRoleId: SheetRoleId | undefined,
+  members: readonly PartyMember[],
+  userId: string,
+): boolean => {
+  const hasSheetWrite =
+    sheetRoleId !== undefined && SHEET_ROLE_LEVEL[sheetRoleId] >= SHEET_ROLE_LEVEL.coAuthor
+
+  return hasSheetWrite || isPartyNarrator(members, userId)
+}

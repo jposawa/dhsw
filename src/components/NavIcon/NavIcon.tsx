@@ -1,3 +1,5 @@
+import clsx from "clsx"
+
 import type { BaseComponent, NavIconName } from "@/types"
 
 import styles from "./NavIcon.module.css"
@@ -27,7 +29,7 @@ type NavIconProps = BaseComponent & {
  */
 export const NavIcon = ({ name, label, className, style }: NavIconProps) => (
   <svg
-    className={[styles.icon, className].filter(Boolean).join(" ")}
+    className={clsx(styles.icon, className)}
     style={style}
     viewBox="0 0 24 24"
     fill="none"

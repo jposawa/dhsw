@@ -1,34 +1,16 @@
 /**
- * Primitivos de UI.
+ * Os primitivos **deste** projeto, e só eles.
  *
- * A maioria vem de `@jposawa/ronin-ui` e é reexportada aqui de propósito: o
- * barril continua sendo o endereço único (`@/components`), então trocar a
- * origem de um primitivo é uma linha neste arquivo, não uma varredura pelas
- * telas. STRUCTURE.md.
- *
- * Ficam locais só os que a biblioteca não tem porque são deste domínio:
- * `Pip` (marcador de HP/Stress/Armor, com alvo de 44px) e `StepRule` (a régua
- * escalonada, que é assinatura visual e não componente genérico).
+ * O que vem de `@jposawa/ronin-ui` é importado da biblioteca no ponto de uso.
+ * Reexportar dali daria a `@/components` um endereço para código que não é
+ * nosso: quem lesse `import { Button } from "@/components"` iria procurar o
+ * Button nesta pasta e não o acharia, e a dependência de terceiro sumiria da
+ * lista de imports de toda tela. STRUCTURE.md pede o barril por pasta — não
+ * um barril que se apresenta como dono do que reexporta.
  */
-export {
-  Avatar,
-  Badge,
-  Button,
-  Card,
-  Chip,
-  Collapse,
-  Drawer,
-  Input,
-  Modal,
-  Section,
-  SectionLabel,
-  Stepper,
-  Tabs,
-  Tooltip,
-} from "@jposawa/ronin-ui"
-
-export { Pip } from "./Pip"
-export { StepRule } from "./StepRule"
+export { DomainLabel } from "./DomainLabel"
 export { DomainSymbol } from "./DomainSymbol"
 export { NavIcon } from "./NavIcon"
+export { Pip } from "./Pip"
+export { StepRule } from "./StepRule"
 export { Switch } from "./Switch"

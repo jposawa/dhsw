@@ -2,7 +2,7 @@ import { atom } from "jotai"
 import { atomWithStorage } from "jotai/utils"
 
 import { STORAGE_KEYS } from "@/constants"
-import type { Theme } from "@/types"
+import type { CompendiumViewMode, Theme } from "@/types"
 
 /** Escuro e o padrao: app de mesa, sala mal iluminada. */
 export const themeAtom = atomWithStorage<Theme>(STORAGE_KEYS.theme, "dark", undefined, {
@@ -27,5 +27,16 @@ export const isNavCollapsedAtom = atomWithStorage<boolean>(
 
 /** Cartas abertas no compendio. Estado de sessao. */
 export const openSkillsAtom = atom<ReadonlySet<string>>(new Set<string>())
+
+/**
+ * Lista ou grade, no compêndio. Persistido: é preferência de leitura, e quem
+ * escolheu grade não quer reescolher a cada visita.
+ */
+export const compendiumViewAtom = atomWithStorage<CompendiumViewMode>(
+  STORAGE_KEYS.compendiumView,
+  "list",
+  undefined,
+  { getOnInit: true },
+)
 
 export const toastAtom = atom<string | null>(null)

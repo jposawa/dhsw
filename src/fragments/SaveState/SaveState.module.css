@@ -1,0 +1,17 @@
+/* Estados semânticos saem do cromo e da escala de fundo, nunca das seis cores
+   de domínio — elas identificam carta e mais nada. STYLING.md. */
+.saved {
+  color: var(--color-text-muted);
+}
+
+.pending {
+  color: var(--color-chrome-strong);
+}
+
+.failed {
+  color: var(--color-danger);
+}
+
+.local {
+  color: var(--color-text-muted);
+}

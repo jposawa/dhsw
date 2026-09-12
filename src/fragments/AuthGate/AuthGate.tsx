@@ -1,7 +1,8 @@
+import { Button } from "@jposawa/ronin-ui"
 import { useAtomValue } from "jotai"
 import { Link, Outlet } from "react-router-dom"
 
-import { Button, StepRule } from "@/components"
+import { StepRule } from "@/components"
 import { ROUTES } from "@/constants"
 import { useAuth } from "@/hooks"
 import { authAtom } from "@/states"

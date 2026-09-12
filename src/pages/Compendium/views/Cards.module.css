@@ -1,0 +1,182 @@
+/*
+ * As cartas — lista e grade.
+ *
+ * Nenhuma classe daqui define largura de tela. A medida é da página
+ * (`Compendium.module.css`), que é o contêiner: o alternador escolhe como os
+ * itens se arrumam dentro dela, não quanto dela eles ocupam. STANDARDS.md,
+ * "container-driven layout".
+ */
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/*
+ * Rola na horizontal em vez de quebrar: seis domínios cabem inteiros no
+ * desktop, e no celular a rolagem preserva a ordem e a altura da faixa. As
+ * margens negativas sangram a faixa até a borda da tela para o chip cortado
+ * parecer cortado pela janela, e não pelo conteúdo.
+ */
+.chips {
+  display: flex;
+  gap: var(--space-1);
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin: 0 calc(var(--space-4) * -1);
+  padding: 0 var(--space-4);
+}
+
+.chips::-webkit-scrollbar {
+  display: none;
+}
+
+/* Contagem à esquerda, alternador à direita: ele fica na mesma linha porque
+   muda a forma do que está logo abaixo, e um bloco próprio custaria altura
+   numa faixa que já é só de controle. */
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.viewToggle {
+  display: flex;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  overflow: hidden;
+}
+
+.viewOption {
+  min-height: var(--size-touch-target);
+  padding: var(--space-1) var(--space-4);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  white-space: nowrap;
+  color: var(--color-text-dim);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.viewOption:hover {
+  color: var(--color-chrome-strong);
+}
+
+.viewOption[aria-checked="true"] {
+  color: var(--color-on-chrome);
+  background: var(--color-chrome);
+}
+
+.viewOption:focus-visible {
+  outline: 2px solid var(--color-chrome-strong);
+  outline-offset: -2px;
+}
+
+/* ── lista ───────────────────────────────────────────────────────────────── */
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Faixa de domínio à esquerda: a cor identifica a carta. */
+.row {
+  background: var(--color-bg-elevated);
+  border-left: var(--domain-stripe-width) solid var(--domain-color, var(--color-chrome));
+}
+
+/*
+ * O Collapse da ronin-ui chega com moldura e canto próprios. Aqui a identidade
+ * é a faixa de domínio da `.row`, e as duas juntas viram caixa dentro de
+ * caixa — então o cartão fica transparente e sem borda.
+ *
+ * Descendente direto de propósito: `.rowCollapse` sozinho empata em
+ * especificidade com a classe da biblioteca, e quem venceria passaria a
+ * depender da ordem em que o bundler junta os CSS. `.row > x` ganha sempre.
+ */
+.row > .rowCollapse {
+  background: transparent;
+  border: none;
+  border-radius: var(--border-radius-none);
+}
+
+.rowMeta {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.rowName {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  letter-spacing: var(--tracking-normal);
+  color: var(--color-ink);
+}
+
+.rowRecall {
+  font-size: var(--text-2xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-dim);
+}
+
+/* Medida de leitura, não posicionamento: o texto de carta é serifado e longo,
+   e a linha inteira de uma tela larga passa do ponto em que o olho acha a
+   volta. Sem `margin: auto` — o bloco fica onde o contêiner o pôs. */
+.rowText {
+  max-width: var(--content-max-width);
+}
+
+/* ── grade ───────────────────────────────────────────────────────────────── */
+
+/*
+ * `auto-fill` com mínimo de 15rem: a coluna nasce e morre conforme a largura,
+ * sem ponto de quebra escrito à mão — uma no celular, várias no desktop, e é
+ * assim que a grade é mobile-first sem media query nenhuma.
+ *
+ * Sem `align-items: start`: a carta tem proporção fixa (ver `SkillCard`), e é
+ * dela que sai a altura da fileira.
+ */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/*
+ * Grade de uma célula: o item estica a carta até as bordas da coluna sem que a
+ * carta precise pedir tamanho nenhum.
+ *
+ * **É aqui que a altura da fileira é decidida**, e é de propósito. `aspect-ratio`
+ * é a proporção da carta física (5:7), então a altura sai da largura da coluna
+ * — nenhuma altura escrita à mão, que erraria em metade das quebras. E
+ * `min-height: 0` desliga o tamanho mínimo automático do item de grade, que
+ * de outro modo seria o do conteúdo e deixaria o texto mandar na altura. Com
+ * os dois, carta de 200 e carta de 1.400 caracteres ficam do mesmo tamanho, e
+ * o excedente rola dentro da própria carta.
+ */
+.gridItem {
+  display: grid;
+  aspect-ratio: 5 / 7;
+  min-width: 0;
+  min-height: 0;
+}
+
+.empty {
+  padding: var(--space-6) var(--space-4);
+  font-family: var(--font-serif);
+  font-size: var(--text-md);
+  text-align: center;
+  color: var(--color-text-dim);
+}

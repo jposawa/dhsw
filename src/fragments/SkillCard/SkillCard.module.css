@@ -1,0 +1,95 @@
+/*
+ * A carta.
+ *
+ * A altura vem do `aspect-ratio` do item da grade (`Cards.module.css`), que é
+ * a proporção da carta física — 5:7. Aqui ela só preenche o que recebeu.
+ *
+ * **`min-height: 0` é o que faz a proporção valer.** Item de grade nasce com
+ * tamanho mínimo automático igual ao do conteúdo: com ele, uma carta de texto
+ * longo estica a fileira inteira e a proporção vira sugestão. Era essa a
+ * distorção — carta de 1.400 caracteres ao lado de uma de 200, cada fileira
+ * com uma altura.
+ */
+.card {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  /* Item de grade nasce com `min-width: auto` e cresce para caber o conteúdo,
+     o que empurrava a coluna para fora da tela. Com 0, a trilha manda. */
+  min-width: 0;
+  padding: var(--space-3);
+  background: var(--color-bg-elevated);
+  border: var(--border-width) solid var(--color-border);
+  border-top: var(--domain-stripe-width) solid var(--domain-color, var(--color-chrome));
+}
+
+/* Nível à esquerda, domínio no meio, Recall à direita — a leitura de relance
+   da carta física, que é o que a grade imita. */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.level {
+  font-size: var(--text-lg);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--domain-color, var(--color-chrome));
+}
+
+.domain {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.recall {
+  font-size: var(--text-2xs);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-text-dim);
+}
+
+.name {
+  margin: var(--space-2) 0 var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  letter-spacing: var(--tracking-normal);
+  color: var(--color-ink);
+  /* Nome de duas linhas não pode empurrar o corpo para fora da carta. */
+  overflow-wrap: break-word;
+}
+
+/*
+ * `flex-grow` aqui é necessário e não conveniência: é o corpo que ocupa a
+ * sobra da carta e leva o rodapé para a base. Sem ele, carta de texto curto
+ * ficaria com a categoria flutuando no meio e a metade de baixo vazia.
+ *
+ * `auto` e não `hidden`: cortar esconderia efeito de carta, e `overflow:
+ * hidden` num contêiner rolável quebra o momentum do iOS — STYLING.md. O
+ * `min-height: 0` é o par obrigatório: item de flex não encolhe abaixo do
+ * conteúdo sem ele, e a rolagem nunca chegaria a acontecer.
+ */
+.text {
+  flex-grow: 1;
+  min-height: 0;
+  overflow-y: auto;
+  /* `contain` isola a rolagem: chegando ao fim do texto, o dedo não continua
+     rolando a grade atrás — o encadeamento faz a página saltar no celular. */
+  overscroll-behavior: contain;
+  padding-top: var(--space-2);
+  font-size: var(--text-xs);
+  /* Nome próprio longo e termo com hífen não cabem numa coluna de 15rem. */
+  overflow-wrap: break-word;
+  border-top: var(--border-width) solid var(--color-border-subtle);
+}
+
+.footer {
+  padding-top: var(--space-2);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+  border-top: var(--border-width) solid var(--color-border-subtle);
+}

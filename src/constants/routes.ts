@@ -1,4 +1,4 @@
-import type { CompendiumTabId, SheetTabId } from "@/types"
+import type { CompendiumTabId, GearKind, SheetTabId } from "@/types"
 
 /**
  * Rotas — dh-sw-arquitetura.md §7, com duas divergencias registradas.
@@ -16,6 +16,8 @@ export const ROUTES = {
   inventoryEntry: (sheetId = ":sheetId", entryId = ":entryId") =>
     `/ficha/${sheetId}/inventario/${entryId}`,
   compendium: "/compendio",
+  /** Um segmento do compêndio. As chaves são as de `COMPENDIUM_TABS`. */
+  compendiumTab: (tab: CompendiumTabId | ":tab" = ":tab") => `/compendio/${tab}`,
   compendiumEntry: (kind = ":kind", slug = ":slug") => `/compendio/${kind}/${slug}`,
   houseRules: "/regras",
   /** Alcancado pelo menu da conta, nao pela barra — fora do catalogo de `appNav`. */
@@ -41,6 +43,14 @@ export const SHEET_TABS: readonly { id: SheetTabId; label: string }[] = [
   { id: "historia", label: "História" },
 ]
 
+/**
+ * Os seis segmentos do compêndio, na ordem da régua.
+ *
+ * Cartas primeiro porque é o que se consulta em mesa; o resto é referência que
+ * se abre entre sessões. Equipamento agrupa armas, armaduras, itens e
+ * consumíveis — quatro formatos de dado diferentes que não valem quatro
+ * segmentos cada, e que a tela separa por chips.
+ */
 export const COMPENDIUM_TABS: readonly { id: CompendiumTabId; label: string }[] = [
   { id: "cartas", label: "Cartas" },
   { id: "classes", label: "Classes" },
@@ -48,4 +58,12 @@ export const COMPENDIUM_TABS: readonly { id: CompendiumTabId; label: string }[] 
   { id: "origens", label: "Origens" },
   { id: "dominios", label: "Domínios" },
   { id: "equipamento", label: "Equipamento" },
+]
+
+/** Os quatro chips de equipamento, na ordem em que a tela os mostra. */
+export const GEAR_KINDS: readonly { id: GearKind; label: string }[] = [
+  { id: "armas", label: "Armas" },
+  { id: "armaduras", label: "Armaduras" },
+  { id: "itens", label: "Itens" },
+  { id: "consumiveis", label: "Consumíveis" },
 ]

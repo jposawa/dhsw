@@ -1,0 +1,18 @@
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  font-variant-numeric: tabular-nums;
+  color: var(--domain-color, var(--color-chrome));
+}
+
+/* O emblema acompanha o texto, então a medida é `em` e não a escala global. */
+.symbol {
+  font-size: 1.15em;
+}
+
+.level {
+  font-size: var(--text-xs);
+}

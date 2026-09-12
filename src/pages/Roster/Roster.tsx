@@ -1,8 +1,9 @@
+import { Button, SectionLabel } from "@jposawa/ronin-ui"
 import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import { Link } from "react-router-dom"
 
 import { CLASSES_BY_NAME } from "@/compendium"
-import { Button, SectionLabel, StepRule } from "@/components"
+import { StepRule } from "@/components"
 import { ROUTES } from "@/constants"
 import { createCharacter, domainColorToken, duplicateCharacter } from "@/helpers"
 import { deleteSheet, leaveSheet } from "@/services"

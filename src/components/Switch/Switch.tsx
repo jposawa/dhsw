@@ -1,3 +1,5 @@
+import clsx from "clsx"
+
 import type { BaseComponent } from "@/types"
 
 import styles from "./Switch.module.css"
@@ -39,7 +41,7 @@ export const Switch = ({
     role="switch"
     aria-checked={isOn}
     disabled={disabled}
-    className={[styles.switch, className].filter(Boolean).join(" ")}
+    className={clsx(styles.switch, className)}
     style={style}
     data-testid="switch"
     onClick={onToggle}

@@ -30,7 +30,7 @@ type CombatEditProps = {
  */
 export const CombatEdit = ({ draft, derived, onChange }: CombatEditProps) => (
   <div className={styles.layout}>
-    <section className={styles.preview}>
+    <section className={styles.previewBlock}>
       <SectionLabel detail={`Tier ${derived.tier}`}>
         <h3>O QUE ISSO MUDA</h3>
       </SectionLabel>

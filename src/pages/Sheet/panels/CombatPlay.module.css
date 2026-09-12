@@ -1,21 +1,40 @@
 /*
  * A ficha em mesa.
  *
- * **Uma coluna no celular, duas no desktop.** Empilhado tudo, a ficha vira uma
- * fita de 2.000px em que Evasion e os atributos ficam abaixo da dobra — e são
- * justamente o que se consulta enquanto se marca dano. Com duas colunas, tudo
- * que a mesa pergunta cabe numa tela só.
+ * Uma coluna no celular; no desktop, uma grade de três colunas em que cada
+ * bloco encosta no que ele responde. A ordem das áreas é a ordem das perguntas
+ * da mesa — ver o comentário de `CombatPlay.tsx`.
  *
- * Os marcadores ficam na coluna larga porque as trilhas têm largura de verdade
- * (seis alvos de 44px), e passam a caber lado a lado com o próprio rótulo.
+ * `grid-template-areas` em vez de `grid-column` numerado: com seis blocos, a
+ * numeração vira aritmética que ninguém confere, e mover um bloco obriga a
+ * renumerar os vizinhos. Com nome, a planta está escrita aqui e se lê.
  */
-
-/* Base é celular: uma coluna, e o ritmo vertical é deste contêiner. */
 .layout {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
 }
+
+.identity,
+.defense,
+.traits,
+.vitals,
+.weapons,
+.hope {
+  min-width: 0;
+}
+
+.defense,
+.traits,
+.vitals,
+.weapons,
+.hope {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* ── identidade ──────────────────────────────────────────────────────────── */
 
 .identity {
   display: flex;
@@ -77,31 +96,70 @@
   color: var(--color-chrome-strong);
 }
 
-.marks,
-.attributes,
-.defense {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  min-width: 0;
+/* ── defesa ──────────────────────────────────────────────────────────────── */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-1);
 }
 
-/* ── marcadores ──────────────────────────────────────────────────────────── */
-
-.tracks {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
+/* Os Armor Slots moram na defesa e não com HP e Stress: gastá-los é reduzir
+   dano, e a pergunta é sempre "quanto eu aguento", não "quanto eu perdi". */
+.armorTrack {
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-bg-elevated);
 }
+
+/* ── atributos ───────────────────────────────────────────────────────────── */
 
 /*
- * `background` e `border` explícitos porque o elemento é um `<button>` nu: sem
- * eles o navegador pinta o próprio botão cinza, com moldura de sistema, e o
- * degrau de fundo do desenho vira uma caixa de formulário.
+ * Seis numa fileira quando há largura. É o bloco mais consultado da ficha —
+ * toda rolagem de ação passa por um deles —, e em duas colunas de três ele
+ * vira uma lista que se procura em vez de uma régua que se olha.
+ */
+.traitList {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.trait {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-bg-elevated);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+.traitName {
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-muted);
+}
+
+.traitValue {
+  font-size: var(--text-md);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-chrome-strong);
+}
+
+/* ── dano e vida ─────────────────────────────────────────────────────────── */
+
+/*
+ * `background` e `border` explícitos porque é um `<button>` nu: sem eles o
+ * navegador pinta o botão de sistema por cima do degrau de fundo.
  */
 .rest {
   width: 100%;
   min-height: var(--size-touch-target);
+  margin-top: var(--space-1);
   padding: var(--space-3);
   font-size: var(--text-xs);
   letter-spacing: var(--tracking-wide);
@@ -122,18 +180,82 @@
   cursor: not-allowed;
 }
 
-/* ── traços ──────────────────────────────────────────────────────────────── */
+/* ── armas ───────────────────────────────────────────────────────────────── */
 
-.traits {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+.weaponList {
+  display: flex;
+  flex-direction: column;
   gap: var(--space-1);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.trait {
+/*
+ * Nome à esquerda, dado de dano à direita, tudo numa grade de duas colunas: é
+ * o dado que se procura no meio de um ataque, e ele fica sempre na mesma
+ * posição, com o rótulo do slot acima.
+ */
+.weapon {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: baseline;
+  gap: var(--space-1) var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-bg-elevated);
+  border-left: var(--domain-stripe-width) solid var(--color-chrome-dim);
+}
+
+.weaponSlot {
+  grid-column: 1 / -1;
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-text-muted);
+}
+
+.weaponName {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-ink);
+  overflow-wrap: break-word;
+}
+
+.weaponDamage {
+  grid-row: 2 / span 2;
+  grid-column: 2;
+  align-self: center;
+  font-size: var(--text-md);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--color-chrome-strong);
+}
+
+.weaponMeta {
+  grid-column: 1;
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+}
+
+.weaponEmpty {
+  grid-column: 1 / -1;
+  font-size: var(--text-xs);
+  color: var(--color-text-dim);
+}
+
+/* ── hope e experiences ──────────────────────────────────────────────────── */
+
+.experiences {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.experience {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
@@ -142,93 +264,76 @@
   background: var(--color-bg-elevated);
 }
 
-.traitName {
+.experienceName {
   font-size: var(--text-xs);
-  letter-spacing: var(--tracking-wide);
-  color: var(--color-text-muted);
+  color: var(--color-ink);
+  overflow-wrap: break-word;
 }
 
-.traitValue {
-  font-size: var(--text-md);
-  font-weight: 500;
+.experienceBonus {
+  font-size: var(--text-sm);
   font-variant-numeric: tabular-nums;
   color: var(--color-chrome-strong);
 }
 
-/* ── defesa ──────────────────────────────────────────────────────────────── */
-
-.stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-1);
-}
-
-.thresholds {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: var(--space-1);
-}
-
-.thresholdCell {
-  min-width: 0;
-  padding: var(--space-3) var(--space-1);
-  font-size: var(--text-2xs);
-  letter-spacing: var(--tracking-wider);
-  text-align: center;
-  color: var(--color-text-dim);
-  background: var(--color-bg-elevated);
-  border-top: var(--border-width) solid var(--color-border);
-}
-
-.thresholdValue {
-  display: block;
-  margin-bottom: var(--space-1);
-  font-size: var(--text-lg);
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: var(--tracking-normal);
-  color: var(--color-ink);
-}
-
-.note {
+.note,
+.empty {
   margin: 0;
   font-size: var(--text-xs);
   line-height: 1.55;
   color: var(--color-text-dim);
 }
 
-
 @media (min-width: 900px) {
+  /*
+   * Três colunas, e a planta inteira está escrita nas áreas abaixo.
+   *
+   * Fileira 1: identidade atravessa.
+   * Fileira 2: defesa à esquerda, atributos ocupando as duas outras — eles são
+   *   seis, e seis numa fileira só é o que os torna uma régua.
+   * Fileira 3: dano e vida | armas | hope e experiences. As três coisas que se
+   *   tocam e se consultam durante um turno, lado a lado.
+   */
   .layout {
     display: grid;
-    grid-template-columns: 1.15fr 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-areas:
+      "identity identity identity"
+      "defense  traits   traits"
+      "vitals   weapons  hope"
+      "note     note     note";
     align-items: start;
   }
 
   .identity {
-    grid-column: 1 / -1;
-  }
-
-  /* Marcadores na coluna esquerda, ocupando as duas fileiras: eles são a
-     altura da tela, e defesa e atributos preenchem a direita. */
-  .marks {
-    grid-column: 1;
-    grid-row: 2 / span 2;
-  }
-
-  .attributes {
-    grid-column: 2;
-    grid-row: 2;
+    grid-area: identity;
   }
 
   .defense {
-    grid-column: 2;
-    grid-row: 3;
+    grid-area: defense;
   }
 
-  /* Com a coluna larga, rótulo e pips cabem na mesma linha: cada trilha
-     passa de duas linhas para uma, e as quatro cabem sem rolar. */
-  .tracks {
-    gap: var(--space-2);
+  .traits {
+    grid-area: traits;
+  }
+
+  .traitList {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .vitals {
+    grid-area: vitals;
+  }
+
+  .weapons {
+    grid-area: weapons;
+  }
+
+  .hope {
+    grid-area: hope;
+  }
+
+  .note {
+    grid-area: note;
   }
 }

@@ -12,7 +12,8 @@
     "build:compendium": "node --experimental-strip-types scripts/build-compendium.ts",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc -b"
+    "typecheck": "tsc -b",
+    "check:styles": "node --experimental-strip-types scripts/check-styles.ts"
   },
   "dependencies": {
     "@jposawa/ronin-ui": "^0.2.0",

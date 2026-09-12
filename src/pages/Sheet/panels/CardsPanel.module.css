@@ -45,6 +45,15 @@
   list-style: none;
 }
 
+/* Os dois botoes do vault — equipar e esquecer — na mesma linha, sem quebrar
+   a linha da carta. */
+.rowActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
 .known {
   font-size: var(--text-2xs);
   letter-spacing: var(--tracking-wider);

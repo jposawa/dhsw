@@ -13,6 +13,14 @@ export const BASE_STRESS = 6
 export const MAX_STRESS = 12
 export const MAX_HIT_POINTS = 12
 
+/**
+ * Hope vai de 0 a 6, fixo, para todo personagem e em todo nivel.
+ *
+ * Nao e derivado: nao ha advancement nem armadura que mexa nele, e por isso
+ * nao passa por `derive` — sairia de la identico ao que entrou.
+ */
+export const HOPE_MAX = 6
+
 export const TIER_BOUNDARIES: readonly {
   tier: Tier
   minLevel: number

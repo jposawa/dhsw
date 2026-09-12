@@ -156,7 +156,9 @@
  *
  * Dois eixos que a biblioteca não tem e que são a direção de arte daqui:
  * **chrome** (frio, a interface) e **ink** (quente, o conteúdo). O `--color-text`
- * da biblioteca recebe o ink; o `--color-primary` recebe o chrome.
+ * da biblioteca recebe o ink. O `--color-primary` é azul: a ação principal
+ * precisa se destacar do cromo, e cromo cheio sobre fundo escuro lia como botão
+ * desabilitado.
  * ───────────────────────────────────────────────────────────────────────── */
 
 .theme-dark {
@@ -184,10 +186,16 @@
   --color-text-dim: #7c8794;
   --color-text-disabled: #4c5878;
 
-  /* Intents da biblioteca. `primary` é o cromo — é a cor da interface aqui.
-     Os semânticos vêm da paleta escura da própria biblioteca, que já passou
-     pela verificação de contraste dela. */
-  --color-primary: #b9c4d0;
+  /* Intents da biblioteca. Os semânticos vêm da paleta escura dela, que já
+     passou pela verificação de contraste.
+
+     `primary` tem dois tons porque faz dois trabalhos. Como **texto e traço**
+     (aba ativa, botão contornado, foco) precisa ser claro sobre o fundo
+     escuro: 8,7:1. Como **preenchimento** (o botão cheio, SALVAR) é o azul
+     escuro, com texto claro por cima: 5,9:1. */
+  --color-primary: #8db4e2;
+  --color-primary-fill: #2e5e9e;
+  --color-on-primary-fill: #eef3f9;
   --color-secondary: #5e6b78;
   --color-success: #5cc08a;
   --color-warning: #e8934a;
@@ -253,7 +261,9 @@
   --color-text-dim: #5e6671;
   --color-text-disabled: #a7aec0;
 
-  --color-primary: #46545f;
+  --color-primary: #2e5e9e;
+  --color-primary-fill: #2e5e9e;
+  --color-on-primary-fill: #ffffff;
   --color-secondary: #78838d;
   --color-success: #1f7a4d;
   --color-warning: #8a4b12;
@@ -326,6 +336,21 @@ button,
 :focus-visible {
   outline: 2px solid var(--color-chrome-strong);
   outline-offset: 2px;
+}
+
+/*
+ * O botão cheio da biblioteca pinta o fundo com `--button-color`, que vem do
+ * mesmo `--color-primary` que a aba ativa usa como traço. Só esse token é
+ * redefinido, no escopo do botão cheio primário: nenhuma regra visual da
+ * biblioteca é reescrita. Os atributos `data-*` são a API pública do
+ * componente; a classe dele é gerada e muda a cada versão.
+ *
+ * A cor do texto é nossa e não da biblioteca: o reset acima dá `color: inherit`
+ * a todo botão, e no tema claro isso punha texto escuro sobre o azul escuro.
+ */
+button[data-variant="filled"][data-intent="primary"] {
+  --button-color: var(--color-primary-fill);
+  color: var(--color-on-primary-fill);
 }
 
 @media (prefers-reduced-motion: reduce) {

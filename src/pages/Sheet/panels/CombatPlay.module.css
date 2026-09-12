@@ -61,12 +61,28 @@
   color: var(--color-text-dim);
 }
 
+/* Nome longo encolhe; nível e descanso não. */
+.identitySide {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-1);
+  flex-shrink: 0;
+}
+
+/* Ação discreta: rótulo pequeno e apagado, com o alvo de toque inteiro. */
+.restButton {
+  min-height: var(--size-touch-target);
+  padding: 0 var(--space-1);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-text-muted);
+}
+
 .levelBadge {
   display: flex;
   gap: var(--space-1);
   margin: 0;
-  /* Nome longo encolhe; o nível não. */
-  flex-shrink: 0;
 }
 
 .levelCell {

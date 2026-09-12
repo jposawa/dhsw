@@ -91,16 +91,29 @@ export const CombatPlay = ({
           <p className={styles.lineage}>{lineage || "ficha em branco"}</p>
         </div>
 
-        <dl className={styles.levelBadge}>
-          <div className={styles.levelCell}>
-            <dt>NÍVEL</dt>
-            <dd>{derived.level}</dd>
-          </div>
-          <div className={styles.levelCell}>
-            <dt>TIER</dt>
-            <dd>{derived.tier}</dd>
-          </div>
-        </dl>
+        <div className={styles.identitySide}>
+          <dl className={styles.levelBadge}>
+            <div className={styles.levelCell}>
+              <dt>NÍVEL</dt>
+              <dd>{derived.level}</dd>
+            </div>
+            <div className={styles.levelCell}>
+              <dt>TIER</dt>
+              <dd>{derived.tier}</dd>
+            </div>
+          </dl>
+
+          {/* No cabeçalho e em texto: descanso acontece entre cenas, poucas vezes
+              por sessão, e não disputa espaço com os pips que se tocam no turno. */}
+          <Button
+            className={styles.restButton}
+            variant="text"
+            disabled={isReadOnly}
+            onClick={() => setIsResting(true)}
+          >
+            DESCANSAR
+          </Button>
+        </div>
       </header>
 
       {needsClass ? (
@@ -175,10 +188,6 @@ export const CombatPlay = ({
           color={domainColorToken("Essence")}
           onChange={(stress) => onMarksChange({ ...character.marks, stress })}
         />
-
-        <Button variant="outline" isFullWidth disabled={isReadOnly} onClick={() => setIsResting(true)}>
-          DESCANSAR
-        </Button>
       </section>
 
       <section className={styles.hope}>

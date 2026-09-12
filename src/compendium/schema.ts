@@ -59,7 +59,24 @@ const classDefinition = z.object({
   hopeFeature: z.string(),
 }) satisfies z.ZodType<ClassDefinition>
 
-const subclassFeature = z.object({ name, text: z.string() })
+const featureModifier = z.object({
+  target: z.enum([
+    "evasion",
+    "armorScore",
+    "majorThreshold",
+    "severeThreshold",
+    "hitPointsMax",
+    "stressMax",
+    "proficiency",
+  ]),
+  value: z.number().int(),
+})
+
+const subclassFeature = z.object({
+  name,
+  text: z.string(),
+  modifiers: z.array(featureModifier).optional(),
+})
 
 const subclass = z.object({
   name,
@@ -74,6 +91,7 @@ const ancestry = z.object({
   name,
   description: z.string(),
   features: z.array(z.string()),
+  modifiers: z.array(featureModifier.extend({ feature: name })).optional(),
 }) satisfies z.ZodType<Ancestry>
 
 const community = z.object({

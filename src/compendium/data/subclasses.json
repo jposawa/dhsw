@@ -197,7 +197,13 @@
     "mastery": [
       {
         "name": "Hardened",
-        "text": "When you take this Mastery, increase your **Severe Damage Threshold** by **+4**."
+        "text": "When you take this Mastery, increase your **Severe Damage Threshold** by **+4**.",
+        "modifiers": [
+          {
+            "target": "severeThreshold",
+            "value": 4
+          }
+        ]
       },
       {
         "name": "Accurate Trance",
@@ -340,7 +346,17 @@
     "foundation": [
       {
         "name": "Defensive Layer I",
-        "text": "When you take this foundation, increase all your Damage Thresholds by **+1**."
+        "text": "When you take this foundation, increase all your Damage Thresholds by **+1**.",
+        "modifiers": [
+          {
+            "target": "majorThreshold",
+            "value": 1
+          },
+          {
+            "target": "severeThreshold",
+            "value": 1
+          }
+        ]
       },
       {
         "name": "Bulk Endurance",
@@ -350,7 +366,17 @@
     "specialization": [
       {
         "name": "Defensive Layer II",
-        "text": "When you take this Specialization, raise all of your Damage Thresholds by **+2**."
+        "text": "When you take this Specialization, raise all of your Damage Thresholds by **+2**.",
+        "modifiers": [
+          {
+            "target": "majorThreshold",
+            "value": 2
+          },
+          {
+            "target": "severeThreshold",
+            "value": 2
+          }
+        ]
       },
       {
         "name": "Damage Catcher",
@@ -360,7 +386,17 @@
     "mastery": [
       {
         "name": "Defensive Layer III",
-        "text": "When you take this Specialization, raise all of your Damage Thresholds by **+3**."
+        "text": "When you take this Specialization, raise all of your Damage Thresholds by **+3**.",
+        "modifiers": [
+          {
+            "target": "majorThreshold",
+            "value": 3
+          },
+          {
+            "target": "severeThreshold",
+            "value": 3
+          }
+        ]
       },
       {
         "name": "Comeback",

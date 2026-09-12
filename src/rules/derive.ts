@@ -143,6 +143,7 @@ export const derive = (
   /* ── advancements: cada um com o nível em que foi comprado ───────── */
 
   let domainCardAdvancements = 0
+  let subclassUpgrades = 0
 
   for (const advancement of character.advancements) {
     const source = { kind: "advancement", level: advancement.level } as const
@@ -168,8 +169,48 @@ export const derive = (
       case "domainCard":
         domainCardAdvancements += 1
         break
+      case "subclass":
+        subclassUpgrades += 1
+        break
       default:
         break
+    }
+  }
+
+  /* ── features com efeito permanente ───────────────────────────────── */
+
+  const ancestry = compendium.ancestries.find((candidate) => candidate.name === character.ancestry)
+
+  for (const modifier of ancestry?.modifiers ?? []) {
+    collector.add({
+      target: modifier.target,
+      value: modifier.value,
+      source: { kind: "ancestry", name: ancestry?.name ?? "", feature: modifier.feature },
+    })
+  }
+
+  const subclass = compendium.subclasses.find(
+    (candidate) =>
+      candidate.name === character.subclass && candidate.className === character.className,
+  )
+
+  // Foundation vem com a subclasse; specialization e mastery, com o advancement
+  // "subclasse melhorada", na ordem. Core Rulebook, "Leveling Up" (p. 110).
+  const earnedSubclassFeatures = subclass
+    ? [
+        ...subclass.foundation,
+        ...(subclassUpgrades >= 1 ? subclass.specialization : []),
+        ...(subclassUpgrades >= 2 ? subclass.mastery : []),
+      ]
+    : []
+
+  for (const feature of earnedSubclassFeatures) {
+    for (const modifier of feature.modifiers ?? []) {
+      collector.add({
+        target: modifier.target,
+        value: modifier.value,
+        source: { kind: "subclass", name: subclass?.name ?? "", feature: feature.name },
+      })
     }
   }
 
@@ -291,8 +332,14 @@ export const derive = (
       MAX_HIT_POINTS,
     ),
     stressMax: clampStat(resolveStat(BASE_STRESS, collector.for("stressMax")), MAX_STRESS),
-    majorThreshold: resolveStat(majorBase, majorModifiers),
-    severeThreshold: resolveStat(severeBase, severeModifiers),
+    majorThreshold: resolveStat(majorBase, [
+      ...majorModifiers,
+      ...collector.for("majorThreshold"),
+    ]),
+    severeThreshold: resolveStat(severeBase, [
+      ...severeModifiers,
+      ...collector.for("severeThreshold"),
+    ]),
     loadoutMax: resolveStat(loadoutMaxFor(houseRules, tier), []),
     expectedCards: expectedCardsFor(level, houseRules, domainCardAdvancements),
     equippedArmor,

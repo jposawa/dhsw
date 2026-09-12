@@ -256,3 +256,34 @@ describe("derive — nada de derivado e guardado", () => {
     expect(derive(character, DEFAULT_HOUSE_RULES)).toEqual(derive(character, DEFAULT_HOUSE_RULES))
   })
 })
+
+describe("derive — features com efeito permanente", () => {
+  it("Human ganha um slot de Stress (High Stamina)", () => {
+    const derived = derive({ ...soldier(1), ancestry: "Human" }, DEFAULT_HOUSE_RULES)
+
+    expect(derived.stressMax.total).toBe(7)
+    expect(derived.stressMax.modifiers[0].source).toEqual({
+      kind: "ancestry",
+      name: "Human",
+      feature: "High Stamina",
+    })
+  })
+
+  it("Juggernaut soma Defensive Layer conforme as cartas de subclasse que tem", () => {
+    const juggernaut = withArmor({ ...soldier(5), subclass: "Juggernaut" }, "Trooper Plate")
+    const upgrade: Advancement = { level: 5, kind: "subclass", detail: "", slotsSpent: 1 }
+
+    // Trooper Plate 7/15 + nível 5 = 12/20, e a foundation dá +1.
+    expect(derive(juggernaut, DEFAULT_HOUSE_RULES).majorThreshold.total).toBe(13)
+
+    // Com a specialization, +2 a mais.
+    const specialized = { ...juggernaut, advancements: [upgrade] }
+    expect(derive(specialized, DEFAULT_HOUSE_RULES).severeThreshold.total).toBe(23)
+  })
+
+  it("subclasse de outra classe não vale", () => {
+    const derived = derive({ ...soldier(1), subclass: "Wayseeker" }, DEFAULT_HOUSE_RULES)
+
+    expect(derived.severeThreshold.modifiers).toHaveLength(1)
+  })
+})

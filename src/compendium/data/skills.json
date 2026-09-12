@@ -5,7 +5,7 @@
     "level": 1,
     "recallCost": 0,
     "category": "Ability",
-    "text": "While this card is in your Loadout, if you choose not to equipe armor, you have an Armor Score equal to 4 + your Level."
+    "text": "When you choose not to equip armor, your base **Armor Score** is 3 + your **Strength**, and you use these base damage thresholds (plus your level):\n- Tier 1: 9/19\n- Tier 2: 11/24\n- Tier 3: 13/31\n- Tier 4: 15/38"
   },
   {
     "name": "Heavy Bash",

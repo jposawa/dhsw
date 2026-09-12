@@ -27,9 +27,29 @@ export type ClassDefinition = {
   hopeFeature: string
 }
 
+/**
+ * Característica que uma feature muda para sempre — "+1 slot de Stress", "+2
+ * nos thresholds". Só entra onde o efeito é numérico e permanente; o resto da
+ * feature continua sendo texto, e a maioria é.
+ */
+export type PermanentStatTarget =
+  | "evasion"
+  | "armorScore"
+  | "majorThreshold"
+  | "severeThreshold"
+  | "hitPointsMax"
+  | "stressMax"
+  | "proficiency"
+
+export type FeatureModifier = {
+  target: PermanentStatTarget
+  value: number
+}
+
 export type SubclassFeature = {
   name: string
   text: string
+  modifiers?: readonly FeatureModifier[]
 }
 
 export type Subclass = {
@@ -46,6 +66,8 @@ export type Ancestry = {
   description: string
   /** Sempre duas, por padrão do SRD. */
   features: readonly string[]
+  /** Efeito numérico permanente, com o nome da feature que o dá. */
+  modifiers?: readonly (FeatureModifier & { feature: string })[]
 }
 
 export type Community = {

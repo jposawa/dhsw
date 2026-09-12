@@ -5,6 +5,13 @@
     "features": [
       "**High Stamina** — Ganhe um slot de **Stress** adicional na criação.",
       "**Adaptability** — Ao falhar numa rolagem que usou uma de suas **Experiences**, marque um **Stress** para rerrolar."
+    ],
+    "modifiers": [
+      {
+        "feature": "High Stamina",
+        "target": "stressMax",
+        "value": 1
+      }
     ]
   },
   {

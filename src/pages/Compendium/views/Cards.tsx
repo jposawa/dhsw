@@ -4,11 +4,11 @@ import React from "react"
 
 import { DomainLabel } from "@/components"
 import { DOMAIN_LIST } from "@/constants"
-import { RuleText, SkillCard } from "@/fragments"
+import { RuleText, SkillCard, SkillDetail } from "@/fragments"
 import { domainColorToken } from "@/helpers"
 import { useSkillSearch } from "@/hooks"
 import { compendiumViewAtom, openSkillsAtom } from "@/states"
-import type { Domain } from "@/types"
+import type { Domain, Skill } from "@/types"
 
 import styles from "./Cards.module.css"
 
@@ -33,6 +33,7 @@ export const CompendiumCards = () => {
   // que estava aberto. É estado de sessão, e some ao recarregar de propósito.
   const [openSkills, setOpenSkills] = useAtom(openSkillsAtom)
   const [view, setView] = useAtom(compendiumViewAtom)
+  const [openedSkill, setOpenedSkill] = React.useState<Skill | null>(null)
 
   const skills = useSkillSearch(query, domains)
 
@@ -119,7 +120,7 @@ export const CompendiumCards = () => {
         <ul className={styles.grid} data-testid="compendium-grid">
           {skills.map((skill) => (
             <li className={styles.gridItem} key={skill.name}>
-              <SkillCard skill={skill} />
+              <SkillCard skill={skill} onOpen={() => setOpenedSkill(skill)} />
             </li>
           ))}
         </ul>
@@ -155,6 +156,8 @@ export const CompendiumCards = () => {
           ))}
         </ul>
       )}
+
+      <SkillDetail skill={openedSkill} onClose={() => setOpenedSkill(null)} />
     </>
   )
 }

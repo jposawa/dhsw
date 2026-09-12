@@ -11,22 +11,25 @@ import styles from "./SkillCard.module.css"
 
 type SkillCardProps = BaseComponent & {
   skill: Skill
+  /** Abre a carta inteira. A carta toda é o alvo do toque. */
+  onOpen: () => void
 }
 
 /**
- * Uma carta de domínio desenhada como carta.
+ * Uma carta de domínio desenhada como carta, na grade do compêndio.
  *
- * **Proporção fixa, e é o ponto do componente.** Uma grade em que cada carta
- * tem a altura do próprio texto não é uma grade de cartas — é uma parede de
- * caixas de tamanhos diferentes. A carta física de Daggerheart é 5:7, e é
- * essa a forma aqui; o texto que não couber rola dentro da própria carta, que
- * mantém a grade regular sem esconder nada.
+ * **Proporção fixa** — a carta física é 5:7 — e o texto é **prévia**: corta com
+ * um esmaecido no fim, e o toque abre a carta inteira (`SkillDetail`).
  *
- * Sem ilustração porque o compêndio não tem arte, e imitar um layout que
- * depende dela daria caixa vazia. O emblema do domínio ocupa esse lugar: é o
- * que identifica a carta de longe, para o que a arte serviria.
+ * Sem rolagem dentro da carta, de propósito. Uma caixa rolável dentro da página
+ * rolável captura a roda do mouse e o dedo: passar por cima de uma carta
+ * travava a rolagem da grade. E rolar texto numa coluna de metade da tela do
+ * celular é pior que ler a carta aberta.
+ *
+ * O botão cobre a carta por cima em vez de embrulhá-la: `<button>` não pode
+ * conter `<h3>` nem o `<ul>` do texto da regra.
  */
-export const SkillCard = ({ skill, className, style }: SkillCardProps) => (
+export const SkillCard = ({ skill, onOpen, className, style }: SkillCardProps) => (
   <article
     className={clsx(styles.card, className)}
     style={{ "--domain-color": domainColorToken(skill.domain), ...style } as React.CSSProperties}
@@ -47,5 +50,12 @@ export const SkillCard = ({ skill, className, style }: SkillCardProps) => (
     <RuleText className={styles.text} text={skill.text} />
 
     <footer className={styles.footer}>{skill.category}</footer>
+
+    <button
+      type="button"
+      className={styles.open}
+      aria-label={`Abrir ${skill.name}`}
+      onClick={onOpen}
+    />
   </article>
 )

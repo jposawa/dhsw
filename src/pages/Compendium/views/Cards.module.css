@@ -138,16 +138,16 @@
 /* ── grade ───────────────────────────────────────────────────────────────── */
 
 /*
- * `auto-fill` com mínimo de 15rem: a coluna nasce e morre conforme a largura,
- * sem ponto de quebra escrito à mão — uma no celular, várias no desktop, e é
- * assim que a grade é mobile-first sem media query nenhuma.
+ * Duas por fileira no celular: a grade é para varrer, e a carta se lê aberta,
+ * no modal. Quem quer ler corrido no celular tem o modo Lista. No desktop a
+ * coluna nasce e morre conforme a largura.
  *
  * Sem `align-items: start`: a carta tem proporção fixa (ver `SkillCard`), e é
  * dela que sai a altura da fileira.
  */
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-2);
   margin: 0;
   padding: 0;
@@ -163,8 +163,7 @@
  * — nenhuma altura escrita à mão, que erraria em metade das quebras. E
  * `min-height: 0` desliga o tamanho mínimo automático do item de grade, que
  * de outro modo seria o do conteúdo e deixaria o texto mandar na altura. Com
- * os dois, carta de 200 e carta de 1.400 caracteres ficam do mesmo tamanho, e
- * o excedente rola dentro da própria carta.
+ * os dois, carta de 200 e carta de 1.400 caracteres ficam do mesmo tamanho.
  */
 .gridItem {
   display: grid;
@@ -179,4 +178,10 @@
   font-size: var(--text-md);
   text-align: center;
   color: var(--color-text-dim);
+}
+
+@media (min-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  }
 }

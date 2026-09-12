@@ -154,12 +154,7 @@ export const Sheet = () => {
 
     if (tabId === "inventario") {
       return (
-        <InventoryPanel
-          character={shown}
-          derived={derived}
-          isEditing={isEditing}
-          onApply={applyResult}
-        />
+        <InventoryPanel character={shown} derived={derived} onApply={applyResult} />
       )
     }
 

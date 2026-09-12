@@ -3,7 +3,15 @@ import { describe, expect, it } from "vitest"
 import { createCharacter, createInventoryEntry } from "@/helpers"
 import type { Character, InventoryEntry } from "@/types"
 
-import { addEntry, equip, removeEntry, setQuantity, unequip } from "./inventory"
+import {
+  addEntry,
+  candidatesForSlot,
+  equip,
+  equipInSlot,
+  removeEntry,
+  setQuantity,
+  unequip,
+} from "./inventory"
 
 const withInventory = (entries: InventoryEntry[]): Character => ({
   ...createCharacter("Rey"),
@@ -92,5 +100,71 @@ describe("equip", () => {
     const next = unwrap(equip(freed, other.id))
 
     expect(next.inventory.find((entry) => entry.id === other.id)?.isEquipped).toBe(true)
+  })
+})
+
+describe("equipInSlot", () => {
+  const worn = {
+    ...createInventoryEntry("armor", "Trooper Plate"),
+    isEquipped: true,
+    slot: "armor" as const,
+  }
+
+  /* Trocar de arma no meio de uma cena é o gesto normal da mesa: obrigar a
+     desequipar antes seria um passo a mais num momento sem paciência. */
+  it("troca com quem estava no slot, em uma operacao", () => {
+    const other = createInventoryEntry("armor", "Scout Mesh")
+    const next = unwrap(equipInSlot(withInventory([worn, other]), "armor", other.id))
+
+    expect(next.inventory.find((entry) => entry.id === other.id)?.isEquipped).toBe(true)
+    expect(next.inventory.find((entry) => entry.id === worn.id)?.isEquipped).toBe(false)
+  })
+
+  it("quem sai volta para a mochila em vez de sumir", () => {
+    const other = createInventoryEntry("armor", "Scout Mesh")
+    const next = unwrap(equipInSlot(withInventory([worn, other]), "armor", other.id))
+
+    expect(next.inventory).toHaveLength(2)
+    expect(next.inventory.find((entry) => entry.id === worn.id)?.slot).toBeNull()
+  })
+
+  it("id nulo esvazia o slot", () => {
+    const next = unwrap(equipInSlot(withInventory([worn]), "armor", null))
+
+    expect(next.inventory[0].isEquipped).toBe(false)
+  })
+
+  it("recusa id que nao esta no inventario", () => {
+    expect(equipInSlot(withInventory([worn]), "armor", "nao-existe").ok).toBe(false)
+  })
+
+  it("nao mexe nos outros slots", () => {
+    const blaster = {
+      ...createInventoryEntry("weapon", "Blaster"),
+      isEquipped: true,
+      slot: "primary" as const,
+    }
+    const other = createInventoryEntry("armor", "Scout Mesh")
+
+    const next = unwrap(equipInSlot(withInventory([worn, blaster, other]), "armor", other.id))
+
+    expect(next.inventory.find((entry) => entry.id === blaster.id)?.isEquipped).toBe(true)
+  })
+})
+
+describe("candidatesForSlot", () => {
+  it("armadura so lista armadura; arma so lista arma", () => {
+    const character = withInventory([
+      createInventoryEntry("armor", "Trooper Plate"),
+      createInventoryEntry("weapon", "Blaster"),
+      createInventoryEntry("item", "Corda"),
+    ])
+
+    expect(candidatesForSlot(character, "armor").map((entry) => entry.name)).toEqual([
+      "Trooper Plate",
+    ])
+    expect(candidatesForSlot(character, "primary").map((entry) => entry.name)).toEqual([
+      "Blaster",
+    ])
   })
 })

@@ -1,21 +1,89 @@
-.block {
+/*
+ * Duas colunas no desktop: o que está em uso à esquerda, a mochila à direita.
+ *
+ * Empilhado, "EM USO" são três linhas curtas e a mochila começa abaixo da
+ * dobra — e as duas são consultadas juntas, porque a pergunta é sempre "o que
+ * eu tenho e o que estou usando". No celular vira uma coluna, que é a única
+ * forma que cabe.
+ */
+.layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.equipped,
+.bag {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+  min-width: 0;
 }
 
-.chips {
-  display: flex;
+/* ── slots ───────────────────────────────────────────────────────────────── */
+
+.slots {
+  display: grid;
+  grid-template-columns: 1fr;
   gap: var(--space-1);
-  overflow-x: auto;
-  scrollbar-width: none;
-  margin: 0 calc(var(--space-4) * -1);
-  padding: 0 var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-.chips::-webkit-scrollbar {
-  display: none;
+/*
+ * O slot inteiro é o alvo, não um botão dentro dele: a área grande é o que
+ * torna a troca de arma um toque só no meio de uma cena.
+ *
+ * `background` e `border` explícitos porque é um `<button>` nu — sem eles o
+ * navegador pinta o botão de sistema por cima do degrau de fundo.
+ */
+.slot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  width: 100%;
+  min-height: var(--size-touch-target);
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  background: var(--color-bg-elevated);
+  border: none;
+  border-left: var(--domain-stripe-width) solid var(--color-chrome-dim);
+  border-radius: var(--border-radius-none);
+  cursor: pointer;
+  transition: border-color 0.15s ease;
 }
+
+.slot:hover {
+  border-left-color: var(--color-chrome);
+}
+
+.slot:focus-visible {
+  outline: 2px solid var(--color-chrome-strong);
+  outline-offset: -2px;
+}
+
+.slotLabel {
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.slotName {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-ink);
+  overflow-wrap: break-word;
+}
+
+.slotMeta {
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-dim);
+}
+
+/* ── mochila e catálogo ──────────────────────────────────────────────────── */
 
 .list {
   display: flex;
@@ -83,13 +151,38 @@
   flex-shrink: 0;
 }
 
+.catalogue {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.note,
 .empty {
   margin: 0;
+  font-size: var(--text-xs);
+  line-height: 1.55;
+  color: var(--color-text-dim);
+}
+
+.empty {
   padding: var(--space-4) var(--space-3);
   font-family: var(--font-serif);
   font-size: var(--text-sm);
-  line-height: 1.55;
   text-align: center;
-  color: var(--color-text-dim);
   background: var(--color-bg-elevated);
+}
+
+@media (min-width: 900px) {
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    align-items: start;
+  }
 }

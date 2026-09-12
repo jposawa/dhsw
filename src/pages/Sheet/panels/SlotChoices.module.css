@@ -1,0 +1,53 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: var(--size-touch-target);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-bg-elevated);
+}
+
+.text {
+  /* Necessário: é o bloco de identificação que ocupa a sobra e empurra o botão
+     para a direita. */
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.name {
+  margin: 0;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  letter-spacing: var(--tracking-normal);
+  color: var(--color-ink);
+  overflow-wrap: break-word;
+}
+
+.meta {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+}
+
+.empty {
+  margin: 0;
+  padding: var(--space-4) var(--space-3);
+  font-family: var(--font-serif);
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  text-align: center;
+  color: var(--color-text-dim);
+  background: var(--color-bg-elevated);
+}

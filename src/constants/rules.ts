@@ -1,4 +1,4 @@
-import type { ArmorLineName, Tier } from "@/types"
+import type { ArmorLineName, EquipSlot, Tier } from "@/types"
 
 /**
  * Constantes do SRD 2.0 conforme dh-sw-v2-spec.md.
@@ -60,3 +60,15 @@ export const DEFAULT_LOADOUT_SIZE = 5
 
 /** Slots de modulo por item: Tier + 1. §4.5 — a conta vive em `rules/`. */
 export const MODULE_SLOTS_OVER_TIER = 1
+
+/**
+ * Os tres slots de equipamento, na ordem em que a ficha os mostra.
+ *
+ * Armadura primeiro porque e a unica que muda numero derivado — Armor Score e
+ * os dois limiares saem dela. As armas mudam a rolagem, nao a ficha.
+ */
+export const EQUIP_SLOTS: readonly { id: EquipSlot; label: string }[] = [
+  { id: "armor", label: "Armadura" },
+  { id: "primary", label: "Primária" },
+  { id: "secondary", label: "Secundária" },
+]

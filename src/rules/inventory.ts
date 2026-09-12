@@ -183,3 +183,55 @@ export const setQuantity = (
     ),
   })
 }
+
+/**
+ * Pôr uma linha num slot, **trocando** com quem estiver lá.
+ *
+ * `equip` recusa o slot ocupado, e isso está certo para o caminho em que a
+ * pessoa mandou equipar uma arma qualquer: a recusa é a informação. Mas trocar
+ * de arma no meio de uma cena é o gesto normal da mesa, e obrigar a desequipar
+ * antes é um passo a mais num momento em que ninguém tem paciência.
+ *
+ * Os dois existem porque respondem a perguntas diferentes: `equip` é "cabe?",
+ * este é "põe esta aqui". Quem chama escolhe, e nenhuma das duas deduz a
+ * intenção da outra.
+ *
+ * `entryId` nulo esvazia o slot — é o "deixar vazio" da gaveta.
+ */
+export const equipInSlot = (
+  character: Character,
+  slot: EquipSlot,
+  entryId: string | null,
+): Result<Character> => {
+  if (entryId !== null && !character.inventory.some((entry) => entry.id === entryId)) {
+    return fail("entryNotFound", entryId)
+  }
+
+  return ok({
+    ...character,
+    inventory: character.inventory.map((entry) => {
+      if (entry.id === entryId) {
+        return { ...entry, isEquipped: true, slot }
+      }
+
+      // Quem ocupava o slot sai dele, e volta para a mochila em vez de sumir.
+      if (entry.isEquipped && entry.slot === slot) {
+        return { ...entry, isEquipped: false, slot: null }
+      }
+
+      return entry
+    }),
+  })
+}
+
+/** O que pode ocupar cada slot. A gaveta de troca lista exatamente isto. */
+export const candidatesForSlot = (
+  character: Character,
+  slot: EquipSlot,
+): readonly InventoryEntry[] => {
+  if (slot === "armor") {
+    return character.inventory.filter((entry) => entry.kind === "armor")
+  }
+
+  return character.inventory.filter((entry) => entry.kind === "weapon")
+}

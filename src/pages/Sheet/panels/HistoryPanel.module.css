@@ -1,7 +1,17 @@
-.block {
+/* Experiences à esquerda, anotações à direita: a lista é curta e o texto é
+   longo, e empilhados a caixa de anotação empurra tudo para fora da tela. */
+.layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.experiences,
+.notesBlock {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
+  min-width: 0;
 }
 
 .list {
@@ -93,4 +103,12 @@
   text-align: center;
   color: var(--color-text-dim);
   background: var(--color-bg-elevated);
+}
+
+@media (min-width: 900px) {
+  .layout {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    align-items: start;
+  }
 }

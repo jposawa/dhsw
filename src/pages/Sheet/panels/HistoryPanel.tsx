@@ -46,8 +46,8 @@ export const HistoryPanel = ({
   }
 
   return (
-    <>
-      <section className={styles.block}>
+    <div className={styles.layout}>
+      <section className={styles.experiences}>
         <SectionLabel detail={String(character.experiences.length)}>
           <h3>EXPERIENCES</h3>
         </SectionLabel>
@@ -114,7 +114,7 @@ export const HistoryPanel = ({
         ) : null}
       </section>
 
-      <section className={styles.block}>
+      <section className={styles.notesBlock}>
         <SectionLabel>
           <h3>ANOTAÇÕES</h3>
         </SectionLabel>
@@ -138,6 +138,6 @@ export const HistoryPanel = ({
           </p>
         )}
       </section>
-    </>
+    </div>
   )
 }

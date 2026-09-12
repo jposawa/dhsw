@@ -16,6 +16,9 @@
   padding: 0;
   background: none;
   border: 0;
+  /* O pip não parece clicável sem isto: é um quadrado sem moldura de botão,
+     e o cursor é o único sinal que resta no desktop. */
+  cursor: pointer;
 }
 
 .mark {

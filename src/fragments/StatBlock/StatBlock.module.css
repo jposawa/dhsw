@@ -13,6 +13,7 @@
   background: var(--color-bg-elevated);
   border: 0;
   border-top: 2px solid var(--color-chrome-dim);
+  cursor: pointer;
 }
 
 .block[aria-expanded='true'] {

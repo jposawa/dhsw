@@ -1,3 +1,10 @@
+/*
+ * Empilhado no celular, numa linha no desktop.
+ *
+ * Seis alvos de 44px dão 284px, e com o rótulo ao lado passa de 370px — não
+ * cabe numa tela de 375. Onde cabe, cada trilha passa de duas linhas para uma,
+ * e as quatro deixam de empurrar a defesa para fora da tela.
+ */
 .track {
   display: flex;
   flex-direction: column;
@@ -7,4 +14,24 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-1);
+}
+
+@media (min-width: 900px) {
+  .track {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+
+  /* O rótulo ocupa a sobra e os pips ficam no fim da linha: com largura fixa,
+     "ARMOR SLOTS" e "HOPE" alinhariam os pips em colunas diferentes. */
+  .track > :first-child {
+    flex-grow: 1;
+  }
+
+  .pips {
+    flex-wrap: nowrap;
+    flex-shrink: 0;
+  }
 }

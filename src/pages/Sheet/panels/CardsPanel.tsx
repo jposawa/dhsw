@@ -67,8 +67,8 @@ export const CardsPanel = ({ character, derived, isEditing, onApply }: CardsPane
   const vault = skillsOf(character.vault)
 
   return (
-    <>
-      <section className={styles.block}>
+    <div className={styles.layout}>
+      <section className={styles.loadout}>
         <SectionLabel detail={`${loadout.length}/${derived.loadoutMax.total}`}>
           <h3>LOADOUT</h3>
         </SectionLabel>
@@ -112,7 +112,7 @@ export const CardsPanel = ({ character, derived, isEditing, onApply }: CardsPane
         )}
       </section>
 
-      <section className={styles.block}>
+      <section className={styles.vault}>
         <SectionLabel detail={String(vault.length)}>
           <h3>VAULT</h3>
         </SectionLabel>
@@ -158,7 +158,7 @@ export const CardsPanel = ({ character, derived, isEditing, onApply }: CardsPane
       </section>
 
       {isEditing ? (
-        <section className={styles.block}>
+        <section className={styles.learn}>
           <SectionLabel detail={`${derived.expectedCards} esperadas no nível ${derived.level}`}>
             <h3>APRENDER CARTA</h3>
           </SectionLabel>
@@ -201,6 +201,6 @@ export const CardsPanel = ({ character, derived, isEditing, onApply }: CardsPane
           )}
         </section>
       ) : null}
-    </>
+    </div>
   )
 }

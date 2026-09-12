@@ -39,7 +39,7 @@ export const CombatPlay = ({
     .join(" · ")
 
   return (
-    <>
+    <div className={styles.layout}>
       <header className={styles.identity}>
         <div className={styles.identityText}>
           <h2 className={styles.name}>{character.name || "Sem nome"}</h2>
@@ -58,7 +58,7 @@ export const CombatPlay = ({
         </dl>
       </header>
 
-      <section className={styles.block}>
+      <section className={styles.marks}>
         <SectionLabel>
           <h3>MARCADORES</h3>
         </SectionLabel>
@@ -106,7 +106,7 @@ export const CombatPlay = ({
         </button>
       </section>
 
-      <section className={styles.block}>
+      <section className={styles.attributes}>
         <SectionLabel>
           <h3>ATRIBUTOS</h3>
         </SectionLabel>
@@ -122,7 +122,7 @@ export const CombatPlay = ({
         </ul>
       </section>
 
-      <section className={styles.block}>
+      <section className={styles.defense}>
         <SectionLabel>
           <h3>DEFESA</h3>
         </SectionLabel>
@@ -155,6 +155,6 @@ export const CombatPlay = ({
           </p>
         ) : null}
       </section>
-    </>
+    </div>
   )
 }

@@ -126,3 +126,15 @@
   font-size: var(--text-2xs);
   color: var(--color-text-dim);
 }
+
+@media (min-width: 900px) {
+  .layout {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    align-items: start;
+  }
+
+  .preview {
+    grid-column: 1 / -1;
+  }
+}

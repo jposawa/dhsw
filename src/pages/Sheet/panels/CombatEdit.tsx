@@ -29,8 +29,8 @@ type CombatEditProps = {
  * jogo e grava no toque.
  */
 export const CombatEdit = ({ draft, derived, onChange }: CombatEditProps) => (
-  <>
-    <section className={styles.block}>
+  <div className={styles.layout}>
+    <section className={styles.preview}>
       <SectionLabel detail={`Tier ${derived.tier}`}>
         <h3>O QUE ISSO MUDA</h3>
       </SectionLabel>
@@ -63,7 +63,7 @@ export const CombatEdit = ({ draft, derived, onChange }: CombatEditProps) => (
       </dl>
     </section>
 
-    <section className={styles.block}>
+    <section className={styles.identity}>
       <SectionLabel>
         <h3>IDENTIDADE</h3>
       </SectionLabel>
@@ -188,7 +188,7 @@ export const CombatEdit = ({ draft, derived, onChange }: CombatEditProps) => (
       </div>
     </section>
 
-    <section className={styles.block}>
+    <section className={styles.attributes}>
       <SectionLabel>
         <h3>ATRIBUTOS</h3>
       </SectionLabel>
@@ -229,5 +229,5 @@ export const CombatEdit = ({ draft, derived, onChange }: CombatEditProps) => (
       </ul>
     </section>
 
-  </>
+  </div>
 )

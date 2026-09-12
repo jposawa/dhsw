@@ -1,8 +1,16 @@
+/*
+ * A ficha é painel, não prosa: a medida é a larga.
+ *
+ * `--content-max-width` é coluna de leitura, e espremer um painel de mesa nos
+ * 640px dela trata o desktop como celular esticado. O que é leitura de verdade
+ * — o texto de carta, as anotações — leva o próprio `max-width` no bloco de
+ * texto, onde a medida importa. STYLING.md.
+ */
 .page {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-  max-width: var(--content-max-width);
+  max-width: var(--content-max-width-wide);
   margin: 0 auto;
   padding: var(--space-4) var(--space-4) var(--space-6);
 }

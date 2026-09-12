@@ -12,7 +12,7 @@ export type InventoryEntry = {
   isEquipped: boolean
   slot: EquipSlot | null
   quantity: number
-  /** Nomes de módulo instalados nesta instância — o sabre A com Kyber Bleed e o B sem. */
+  /** Reservado para módulos por instância. Nenhuma regra lê isto ainda. */
   installedModules: readonly string[]
   nickname: string | null
 }
@@ -71,13 +71,13 @@ export type Character = {
   vault: readonly string[]
   inventory: readonly InventoryEntry[]
 
-  /** Histórico, não resumo: dá para mostrar a progressão e desfazer o último nível. */
   /**
    * A party a que a ficha pertence, ou `null`. Campo, e nao entidade a parte,
    * porque a relacao e 1:N de verdade — ver `types/party.ts`.
    */
   partyId: string | null
 
+  /** Histórico, não resumo: dá para mostrar a progressão e desfazer o último nível. */
   advancements: readonly Advancement[]
   experiences: readonly Experience[]
   notes: string
@@ -124,6 +124,8 @@ export type DerivedStats = {
   /** Cartas esperadas no nível atual, conforme a regra da casa. */
   expectedCards: number
   equippedArmor: EquippedArmor | null
-  /** Sem armadura equipada: vale Bare Bones. Não é erro, é escolha de build. */
-  isBareBones: boolean
+  /** Sem armadura vestida: Armor Score 0, Major = nível, Severe = 2 × nível. */
+  isUnarmored: boolean
+  /** Sem armadura e com a carta Bare Bones no Loadout: vale a base da carta. */
+  hasBareBones: boolean
 }

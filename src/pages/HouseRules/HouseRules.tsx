@@ -44,7 +44,7 @@ export const HouseRules = () => {
       <Toggle
         isOn={houseRules.hasTwoCardsPerLevel}
         title="Duas cartas de domínio por nível"
-        description="Padrão é uma. No nível 10 você conhece 20 em vez de 10. O loadout segue limitando o que está em jogo, então o ganho é de vault, não de poder por cena."
+        description="O padrão é uma por nível, além das duas da criação. No nível 10 você conhece 20 em vez de 11. O loadout segue limitando o que está em jogo, então o ganho é de vault, não de poder por cena."
         onToggle={() =>
           setHouseRules({
             ...houseRules,

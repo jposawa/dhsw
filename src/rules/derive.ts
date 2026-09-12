@@ -1,14 +1,22 @@
 import { ARMOR_LINES, CLASSES, NAMED_ARMOR } from "@/compendium"
 import {
   ARMOR_LINE_MODIFIERS,
-  BARE_BONES_ARMOR_SCORE_BASE,
-  BARE_BONES_THRESHOLDS,
+  BARE_BONES,
   BASE_STRESS,
   DEFAULT_LOADOUT_SIZE,
+  DOMAIN_CARDS_PER_LEVEL,
+  LEVEL_ACHIEVEMENT_LEVELS,
+  MAX_ARMOR_SCORE,
+  MAX_HIT_POINTS,
   MAX_LEVEL,
+  MAX_PROFICIENCY,
+  MAX_STRESS,
   MIN_LEVEL,
+  STARTING_DOMAIN_CARDS,
+  STARTING_PROFICIENCY,
   TIER_BOUNDARIES,
   TRAIT_LIST,
+  UNARMORED,
 } from "@/constants"
 import type {
   Character,
@@ -21,7 +29,7 @@ import type {
   Trait,
 } from "@/types"
 
-import { createModifierCollector, resolveStat } from "./stat"
+import { clampStat, createModifierCollector, resolveStat } from "./stat"
 
 /** Tier é derivado do nível, sempre. Nunca guardado. */
 export const tierOf = (level: number): Tier => {
@@ -38,6 +46,8 @@ export const clampLevel = (level: number): number =>
 
 const findClass = (className: string | null): ClassDefinition | null =>
   CLASSES.find((candidate) => candidate.name === className) ?? null
+
+const isTrait = (value: string): value is Trait => TRAIT_LIST.includes(value as Trait)
 
 /** Resolve a armadura vestida contra a linha e o tier dela. */
 export const resolveEquippedArmor = (character: Character): EquippedArmor | null => {
@@ -78,26 +88,6 @@ export const resolveEquippedArmor = (character: Character): EquippedArmor | null
   }
 }
 
-/** Soma os advancements por tipo. Histórico → total, nunca o contrário. */
-const tallyAdvancements = (character: Character) => {
-  const tally = {
-    trait: 0,
-    hp: 0,
-    stress: 0,
-    evasion: 0,
-    proficiency: 0,
-    thresholds: 0,
-  }
-
-  for (const advancement of character.advancements) {
-    if (advancement.kind in tally) {
-      tally[advancement.kind as keyof typeof tally] += 1
-    }
-  }
-
-  return tally
-}
-
 const loadoutMaxFor = (houseRules: HouseRules, tier: Tier): number => {
   switch (houseRules.loadoutSize) {
     case "3+tier":
@@ -110,26 +100,73 @@ const loadoutMaxFor = (houseRules: HouseRules, tier: Tier): number => {
 }
 
 /**
+ * Cartas de domínio que o personagem deveria conhecer.
+ *
+ * Duas na criação e uma por nível a partir do 2 — ou duas, com a regra da
+ * casa. O advancement "carta adicional" soma uma a cada vez que foi comprado.
+ */
+const expectedCardsFor = (
+  level: number,
+  houseRules: HouseRules,
+  domainCardAdvancements: number,
+): number => {
+  const perLevel = houseRules.hasTwoCardsPerLevel ? 2 : DOMAIN_CARDS_PER_LEVEL
+
+  return STARTING_DOMAIN_CARDS + (level - 1) * perLevel + domainCardAdvancements
+}
+
+/**
  * Ficha + regras da casa → tudo que aparece na tela.
  *
  * Chamada em todo render. É O(nº de advancements) — no pior caso vinte
  * entradas. Sem memoização até aparecer no profiler.
  *
- * Nada do que sai daqui é gravado. Ver DOMAIN.md, "derivado nunca é guardado".
+ * Nada do que sai daqui é gravado: derivado nunca é guardado.
  */
 export const derive = (character: Character, houseRules: HouseRules): DerivedStats => {
   const level = clampLevel(character.level)
   const tier = tierOf(level)
   const classDefinition = findClass(character.className)
   const equippedArmor = resolveEquippedArmor(character)
-  const advancements = tallyAdvancements(character)
   const collector = createModifierCollector()
+
+  /* ── advancements: cada um com o nível em que foi comprado ───────── */
+
+  let domainCardAdvancements = 0
+
+  for (const advancement of character.advancements) {
+    const source = { kind: "advancement", level: advancement.level } as const
+
+    switch (advancement.kind) {
+      case "trait":
+        if (isTrait(advancement.detail)) {
+          collector.add({ target: `trait.${advancement.detail}`, value: 1, source })
+        }
+        break
+      case "hp":
+        collector.add({ target: "hitPointsMax", value: 1, source })
+        break
+      case "stress":
+        collector.add({ target: "stressMax", value: 1, source })
+        break
+      case "evasion":
+        collector.add({ target: "evasion", value: 1, source })
+        break
+      case "proficiency":
+        collector.add({ target: "proficiency", value: 1, source })
+        break
+      case "domainCard":
+        domainCardAdvancements += 1
+        break
+      default:
+        break
+    }
+  }
 
   /* ── traços ──────────────────────────────────────────────────────── */
 
-  // Very Heavy custa −1 de Agility. É o único modificador de traço vindo
-  // de equipamento hoje; módulos e features entram por aqui quando existirem.
-  if (equippedArmor && equippedArmor.agilityModifier !== 0) {
+  // Very Heavy custa −1 de Agility. Resolvido antes de tudo que lê traço.
+  if (equippedArmor) {
     collector.add({
       target: "trait.Agility",
       value: equippedArmor.agilityModifier,
@@ -147,17 +184,33 @@ export const derive = (character: Character, houseRules: HouseRules): DerivedSta
 
   /* ── armadura, Armor Score e thresholds ──────────────────────────── */
 
-  const isBareBones = equippedArmor === null
-  const bareBones = BARE_BONES_THRESHOLDS[tier]
+  const isUnarmored = equippedArmor === null
+  const hasBareBones = isUnarmored && character.loadout.includes(BARE_BONES.cardName)
 
-  // Bare Bones usa o Strength JÁ MODIFICADO. Sem armadura vestida não há
-  // penalidade de Agility, então na prática é o base — mas passar pelo
-  // total é o que mantém a regra correta se um módulo mexer em Strength.
-  const armorScoreBase = isBareBones
-    ? BARE_BONES_ARMOR_SCORE_BASE + traits.Strength.total
-    : equippedArmor.baseScore
+  const levelModifier = (
+    target: "majorThreshold" | "severeThreshold",
+    multiplier: number,
+  ): Modifier => ({
+    target,
+    value: level * multiplier,
+    source: { kind: "level", level, multiplier },
+  })
 
-  if (!isBareBones) {
+  let armorScoreBase: number = UNARMORED.armorScore
+  let majorBase = 0
+  let severeBase = 0
+  let majorModifiers: Modifier[] = [levelModifier("majorThreshold", UNARMORED.majorLevelMultiplier)]
+  let severeModifiers: Modifier[] = [
+    levelModifier("severeThreshold", UNARMORED.severeLevelMultiplier),
+  ]
+
+  if (equippedArmor) {
+    armorScoreBase = equippedArmor.baseScore
+    majorBase = equippedArmor.majorBase
+    severeBase = equippedArmor.severeBase
+    majorModifiers = [levelModifier("majorThreshold", 1)]
+    severeModifiers = [levelModifier("severeThreshold", 1)]
+
     collector.add({
       target: "evasion",
       value: equippedArmor.evasionModifier,
@@ -165,43 +218,26 @@ export const derive = (character: Character, houseRules: HouseRules): DerivedSta
     })
   }
 
-  // Thresholds: base da armadura + Level. dh-sw-v2-spec.md §1.1
-  const majorBase = isBareBones ? bareBones.majorBase : equippedArmor.majorBase
-  const severeBase = isBareBones ? bareBones.severeBase : equippedArmor.severeBase
+  if (hasBareBones) {
+    const bareBonesSource = { kind: "skill", name: BARE_BONES.cardName } as const
+    const thresholds = BARE_BONES.thresholdsByTier[tier]
 
-  const levelThresholdModifier = (): Modifier => ({
-    target: "majorThreshold",
-    value: level,
-    source: { kind: "advancement", level },
-  })
+    // Base da carta, e não modificador: Bare Bones **substitui** a base de
+    // quem está sem armadura. Strength já passou pelos modificadores.
+    armorScoreBase = BARE_BONES.armorScoreBase
+    majorBase = thresholds.majorBase
+    severeBase = thresholds.severeBase
+    majorModifiers = [levelModifier("majorThreshold", 1)]
+    severeModifiers = [levelModifier("severeThreshold", 1)]
 
-  const majorModifiers: Modifier[] = [levelThresholdModifier()]
-  const severeModifiers: Modifier[] = [
-    { ...levelThresholdModifier(), target: "severeThreshold" },
-  ]
-
-  if (advancements.thresholds > 0) {
-    majorModifiers.push({
-      target: "majorThreshold",
-      value: advancements.thresholds,
-      source: { kind: "advancement", level },
-    })
-    severeModifiers.push({
-      target: "severeThreshold",
-      value: advancements.thresholds,
-      source: { kind: "advancement", level },
+    collector.add({
+      target: "armorScore",
+      value: traits.Strength.total,
+      source: bareBonesSource,
     })
   }
 
   /* ── Evasion ─────────────────────────────────────────────────────── */
-
-  if (advancements.evasion > 0) {
-    collector.add({
-      target: "evasion",
-      value: advancements.evasion,
-      source: { kind: "advancement", level },
-    })
-  }
 
   // Regra da casa: Evasion escala com (Agility + Instinct) ÷ 2.
   if (houseRules.hasEvasionFromTraits) {
@@ -215,49 +251,42 @@ export const derive = (character: Character, houseRules: HouseRules): DerivedSta
     })
   }
 
-  /* ── HP, Stress, Proficiency ─────────────────────────────────────── */
+  /* ── Proficiency ─────────────────────────────────────────────────── */
 
-  if (advancements.hp > 0) {
-    collector.add({
-      target: "hitPointsMax",
-      value: advancements.hp,
-      source: { kind: "advancement", level },
-    })
-  }
-
-  if (advancements.stress > 0) {
-    collector.add({
-      target: "stressMax",
-      value: advancements.stress,
-      source: { kind: "advancement", level },
-    })
-  }
-
-  if (advancements.proficiency > 0) {
-    collector.add({
-      target: "proficiency",
-      value: advancements.proficiency,
-      source: { kind: "advancement", level },
-    })
+  for (const achievementLevel of LEVEL_ACHIEVEMENT_LEVELS) {
+    if (level >= achievementLevel) {
+      collector.add({
+        target: "proficiency",
+        value: 1,
+        source: { kind: "levelAchievement", level: achievementLevel },
+      })
+    }
   }
 
   return {
     level,
     tier,
     traits,
-    proficiency: resolveStat(tier, collector.for("proficiency")),
-    evasion: resolveStat(classDefinition?.evasion ?? 10, collector.for("evasion")),
-    armorScore: resolveStat(Math.max(0, armorScoreBase), collector.for("armorScore")),
-    hitPointsMax: resolveStat(
-      classDefinition?.hitPoints ?? 6,
-      collector.for("hitPointsMax"),
+    proficiency: clampStat(
+      resolveStat(STARTING_PROFICIENCY, collector.for("proficiency")),
+      MAX_PROFICIENCY,
     ),
-    stressMax: resolveStat(BASE_STRESS, collector.for("stressMax")),
+    evasion: resolveStat(classDefinition?.evasion ?? 0, collector.for("evasion")),
+    armorScore: clampStat(
+      resolveStat(armorScoreBase, collector.for("armorScore")),
+      MAX_ARMOR_SCORE,
+    ),
+    hitPointsMax: clampStat(
+      resolveStat(classDefinition?.hitPoints ?? 0, collector.for("hitPointsMax")),
+      MAX_HIT_POINTS,
+    ),
+    stressMax: clampStat(resolveStat(BASE_STRESS, collector.for("stressMax")), MAX_STRESS),
     majorThreshold: resolveStat(majorBase, majorModifiers),
     severeThreshold: resolveStat(severeBase, severeModifiers),
     loadoutMax: resolveStat(loadoutMaxFor(houseRules, tier), []),
-    expectedCards: level * (houseRules.hasTwoCardsPerLevel ? 2 : 1),
+    expectedCards: expectedCardsFor(level, houseRules, domainCardAdvancements),
     equippedArmor,
-    isBareBones,
+    isUnarmored,
+    hasBareBones,
   }
 }

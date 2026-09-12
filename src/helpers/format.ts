@@ -26,6 +26,10 @@ export const describeModifierSource = ({ source }: Modifier): string => {
       return `${source.name} — ${source.feature}`
     case "advancement":
       return `advancement, nível ${source.level}`
+    case "level":
+      return source.multiplier === 1 ? `nível ${source.level}` : `${source.multiplier} × nível ${source.level}`
+    case "levelAchievement":
+      return `level achievement, nível ${source.level}`
     case "module":
       return source.moduleName
     case "houseRule":

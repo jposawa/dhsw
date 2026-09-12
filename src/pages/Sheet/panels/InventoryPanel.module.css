@@ -163,19 +163,14 @@
   gap: var(--space-1);
 }
 
-.note,
 .empty {
   margin: 0;
-  font-size: var(--text-xs);
-  line-height: 1.55;
-  color: var(--color-text-dim);
-}
-
-.empty {
   padding: var(--space-4) var(--space-3);
   font-family: var(--font-serif);
   font-size: var(--text-sm);
+  line-height: 1.55;
   text-align: center;
+  color: var(--color-text-dim);
   background: var(--color-bg-elevated);
 }
 

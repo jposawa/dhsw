@@ -11,7 +11,6 @@ import styles from "./CombatPlay.module.css"
 type CombatPlayProps = {
   character: Character
   derived: DerivedStats
-  isReadOnly: boolean
   onMarksChange: (marks: Marks) => void
 }
 
@@ -34,13 +33,21 @@ type CombatPlayProps = {
  *
  * Nada aqui muda um máximo: marcar HP é estado de mesa e grava no toque. O que
  * *define* o máximo é modo edição, com Salvar.
+ *
+ * **Não há botão de descansar, e a ausência é deliberada.** Havia um, que
+ * limpava Stress e Armor Slots de uma vez — e isso não é a regra. Descanso é
+ * escolher **duas** ações de downtime de uma lista, e a lista e os valores
+ * mudam entre Rest e Long Rest. As próprias cartas do compêndio dizem isso:
+ * `Recovery` fala em "choose to do one of the *Long Rest* options instead",
+ * `Warm Words` em "use the **Tend to Wounds** downtime move" e `Armorer` em
+ * "if you choose to take the **Repair** Armor downtime action".
+ *
+ * A lista completa e os valores de cada ação não estão em `specs/` nem no dado
+ * gerado, então implementar isso seria inventá-los. Enquanto não estiverem
+ * escritos, limpar um marcador é tocar o pip — que já funciona e não mente
+ * sobre a regra.
  */
-export const CombatPlay = ({
-  character,
-  derived,
-  isReadOnly,
-  onMarksChange,
-}: CombatPlayProps) => {
+export const CombatPlay = ({ character, derived, onMarksChange }: CombatPlayProps) => {
   const lineage = [character.className, character.subclass, character.ancestry, character.community]
     .filter(Boolean)
     .join(" · ")
@@ -76,7 +83,7 @@ export const CombatPlay = ({
         </div>
 
         <p className={styles.wearing}>
-          {derived.equippedArmor ? derived.equippedArmor.name : "Sem armadura — Bare Bones"}
+          {derived.equippedArmor ? derived.equippedArmor.name : "Sem armadura"}
         </p>
 
         <MarkerTrack
@@ -128,14 +135,6 @@ export const CombatPlay = ({
           onChange={(stress) => onMarksChange({ ...character.marks, stress })}
         />
 
-        <button
-          type="button"
-          className={styles.rest}
-          disabled={isReadOnly}
-          onClick={() => onMarksChange({ ...character.marks, stress: 0, armor: 0 })}
-        >
-          DESCANSAR — LIMPAR STRESS E ARMOR SLOTS
-        </button>
       </section>
 
       <section className={styles.weapons}>

@@ -18,11 +18,11 @@ export const addExperience = (
   const name = experience.name.trim()
 
   if (!name) {
-    return fail("entryNotFound", "Experience sem nome")
+    return fail("experienceNameMissing")
   }
 
   if (character.experiences.some((candidate) => candidate.name === name)) {
-    return fail("entryNotFound", `Já existe uma Experience chamada ${name}`)
+    return fail("experienceDuplicate", name)
   }
 
   return ok({
@@ -33,7 +33,7 @@ export const addExperience = (
 
 export const removeExperience = (character: Character, name: string): Result<Character> => {
   if (!character.experiences.some((candidate) => candidate.name === name)) {
-    return fail("entryNotFound", name)
+    return fail("experienceNotFound", name)
   }
 
   return ok({
@@ -48,7 +48,7 @@ export const setExperienceBonus = (
   bonus: number,
 ): Result<Character> => {
   if (!character.experiences.some((candidate) => candidate.name === name)) {
-    return fail("entryNotFound", name)
+    return fail("experienceNotFound", name)
   }
 
   return ok({

@@ -34,6 +34,10 @@ export type ModifierSource =
   | { kind: "ancestry"; name: string; feature: string }
   | { kind: "community"; name: string; feature: string }
   | { kind: "advancement"; level: number }
+  /** O nível somado aos thresholds. `multiplier` 2 é o Severe de quem está sem armadura. */
+  | { kind: "level"; level: number; multiplier: number }
+  /** O +1 permanente de Proficiency dos níveis 2, 5 e 8. */
+  | { kind: "levelAchievement"; level: number }
   | { kind: "armor"; entryId: string; name: string }
   | { kind: "weapon"; entryId: string; name: string }
   | { kind: "module"; entryId: string; moduleName: string }

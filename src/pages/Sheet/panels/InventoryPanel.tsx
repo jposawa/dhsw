@@ -133,14 +133,6 @@ export const InventoryPanel = ({ character, derived, onApply }: InventoryPanelPr
             )
           })}
         </ul>
-
-        {derived.isBareBones ? (
-          <p className={styles.note}>
-            Sem armadura vestida vale Bare Bones: Armor Score {derived.armorScore.total} e
-            limiares {derived.majorThreshold.total}/{derived.severeThreshold.total}. Não é
-            erro — é escolha de build.
-          </p>
-        ) : null}
       </section>
 
       <section className={styles.bag}>

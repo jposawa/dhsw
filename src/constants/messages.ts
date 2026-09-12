@@ -8,8 +8,10 @@ export const RULE_ERROR_MESSAGES: Readonly<Record<RuleErrorCode, string>> = {
   skillAlreadyInLoadout: "Esta carta já está no loadout.",
   armorSlotTaken: "Já existe uma armadura vestida.",
   weaponSlotTaken: "Este slot de arma já está ocupado.",
-  moduleTierTooHigh: "Módulo de tier acima do seu não pode ser instalado.",
-  noModuleSlots: "Sem slots de módulo livres neste item.",
-  maxLevelReached: "Nível 10 é o máximo.",
+  handsFull: "As duas mãos já estão ocupadas por uma arma de duas mãos.",
   entryNotFound: "Item não encontrado no inventário.",
+  entryNotEquippable: "Este item não se equipa.",
+  experienceNameMissing: "Dê um nome à Experience.",
+  experienceDuplicate: "Já existe uma Experience com esse nome.",
+  experienceNotFound: "Experience não encontrada.",
 }

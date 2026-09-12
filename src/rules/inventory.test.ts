@@ -168,3 +168,44 @@ describe("candidatesForSlot", () => {
     ])
   })
 })
+
+describe("burden — arma de duas maos ocupa as duas (p. 113)", () => {
+  const equipped = (name: string, slot: "primary" | "secondary") => ({
+    ...createInventoryEntry("weapon", name),
+    isEquipped: true,
+    slot,
+  })
+
+  it("equip recusa secundaria com uma primaria de duas maos", () => {
+    const rifle = equipped("Blaster Rifle", "primary")
+    const knife = createInventoryEntry("weapon", "Vibroknife")
+    const result = equip(withInventory([rifle, knife]), knife.id, "secondary")
+
+    expect(result.ok).toBe(false)
+    expect(result.ok ? null : result.code).toBe("handsFull")
+  })
+
+  it("equipInSlot com duas maos na primaria manda a secundaria para a mochila", () => {
+    const knife = equipped("Vibroknife", "secondary")
+    const rifle = createInventoryEntry("weapon", "Blaster Rifle")
+    const next = unwrap(equipInSlot(withInventory([knife, rifle]), "primary", rifle.id))
+
+    expect(next.inventory.find((entry) => entry.id === rifle.id)?.slot).toBe("primary")
+    expect(next.inventory.find((entry) => entry.id === knife.id)?.isEquipped).toBe(false)
+  })
+
+  it("equipInSlot de secundaria tira a primaria de duas maos", () => {
+    const rifle = equipped("Blaster Rifle", "primary")
+    const knife = createInventoryEntry("weapon", "Vibroknife")
+    const next = unwrap(equipInSlot(withInventory([rifle, knife]), "secondary", knife.id))
+
+    expect(next.inventory.find((entry) => entry.id === rifle.id)?.isEquipped).toBe(false)
+  })
+
+  it("uma mao na primaria convive com a secundaria", () => {
+    const pistol = equipped("Blaster Pistol", "primary")
+    const knife = createInventoryEntry("weapon", "Vibroknife")
+
+    expect(equip(withInventory([pistol, knife]), knife.id, "secondary").ok).toBe(true)
+  })
+})

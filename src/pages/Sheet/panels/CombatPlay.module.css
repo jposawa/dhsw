@@ -150,36 +150,6 @@
   color: var(--color-chrome-strong);
 }
 
-/* ── dano e vida ─────────────────────────────────────────────────────────── */
-
-/*
- * `background` e `border` explícitos porque é um `<button>` nu: sem eles o
- * navegador pinta o botão de sistema por cima do degrau de fundo.
- */
-.rest {
-  width: 100%;
-  min-height: var(--size-touch-target);
-  margin-top: var(--space-1);
-  padding: var(--space-3);
-  font-size: var(--text-xs);
-  letter-spacing: var(--tracking-wide);
-  color: var(--color-chrome-strong);
-  background: var(--color-surface);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--border-radius-sm);
-  cursor: pointer;
-  transition: border-color 0.15s ease, color 0.15s ease;
-}
-
-.rest:hover:not(:disabled) {
-  border-color: var(--color-chrome);
-}
-
-.rest:disabled {
-  color: var(--color-text-disabled);
-  cursor: not-allowed;
-}
-
 /* ── armas ───────────────────────────────────────────────────────────────── */
 
 .weaponList {

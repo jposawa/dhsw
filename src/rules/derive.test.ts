@@ -2,9 +2,14 @@ import { describe, expect, it } from "vitest"
 
 import { DEFAULT_HOUSE_RULES } from "@/constants"
 import { createCharacter } from "@/helpers"
-import type { Character, HouseRules, InventoryEntry } from "@/types"
+import type { Advancement, Character, HouseRules, InventoryEntry } from "@/types"
 
 import { derive, tierOf } from "./derive"
+
+/*
+ * Os números esperados aqui saem do Daggerheart Core Rulebook — página citada
+ * em cada caso. Teste que diverge do livro está errado, não o livro.
+ */
 
 const withArmor = (character: Character, armorName: string): Character => {
   const entry: InventoryEntry = {
@@ -27,8 +32,13 @@ const soldier = (level: number): Character => ({
   level,
 })
 
+const withStrength = (character: Character, strength: number): Character => ({
+  ...character,
+  traits: { ...character.traits, Strength: strength },
+})
+
 describe("tierOf", () => {
-  it("segue as faixas do SRD: 1 / 2-4 / 5-7 / 8-10", () => {
+  it("segue as faixas do livro: 1 / 2-4 / 5-7 / 8-10 (p. 109)", () => {
     expect(tierOf(1)).toBe(1)
     expect(tierOf(2)).toBe(2)
     expect(tierOf(4)).toBe(2)
@@ -44,44 +54,142 @@ describe("tierOf", () => {
   })
 })
 
-describe("derive — thresholds", () => {
-  it("soma o nivel ao threshold base da armadura", () => {
-    // Trooper Plate e Heavy T1: base 7/15. dh-sw-v2-spec.md §4.4
-    const character = withArmor(soldier(1), "Trooper Plate")
-    const derived = derive(character, DEFAULT_HOUSE_RULES)
+describe("derive — com armadura", () => {
+  it("soma o nivel aos thresholds base: 7/15 no nivel 1 da 8/16 (p. 114)", () => {
+    // Trooper Plate e linha Heavy T1, a mesma do Chainmail Armor: 7/15, score 4.
+    const derived = derive(withArmor(soldier(1), "Trooper Plate"), DEFAULT_HOUSE_RULES)
 
     expect(derived.majorThreshold.total).toBe(8)
     expect(derived.severeThreshold.total).toBe(16)
+    expect(derived.armorScore.total).toBe(4)
   })
 
-  it("reproduz o Soldier da v1 no nivel 1 — 8/16, a ancora da spec", () => {
-    // "O Soldier da v1 (8/16 no Level 1) e exatamente a linha Heavy de Tier 1
-    // — 7/15 mais o Level." dh-sw-v2-spec.md §4.4
-    const derived = derive(withArmor(soldier(1), "Trooper Plate"), DEFAULT_HOUSE_RULES)
+  it("sobe um em cada threshold a cada nivel (p. 111)", () => {
+    const derived = derive(withArmor(soldier(4), "Trooper Plate"), DEFAULT_HOUSE_RULES)
 
-    expect([derived.majorThreshold.total, derived.severeThreshold.total]).toEqual([8, 16])
+    expect([derived.majorThreshold.total, derived.severeThreshold.total]).toEqual([11, 19])
+  })
+
+  it("ignora Bare Bones no Loadout quando ha armadura vestida", () => {
+    const character = { ...withArmor(soldier(1), "Trooper Plate"), loadout: ["Bare Bones"] }
+    const derived = derive(character, DEFAULT_HOUSE_RULES)
+
+    expect(derived.hasBareBones).toBe(false)
+    expect(derived.armorScore.total).toBe(4)
   })
 })
 
-describe("derive — Bare Bones", () => {
-  it("usa 3 + Strength e a tabela do SRD quando nao ha armadura", () => {
-    const character: Character = {
-      ...soldier(1),
-      traits: { ...soldier(1).traits, Strength: 2 },
-    }
-    const derived = derive(character, DEFAULT_HOUSE_RULES)
+describe("derive — sem armadura (p. 114)", () => {
+  it("Armor Score 0, sem importar o Strength", () => {
+    const derived = derive(withStrength(soldier(1), 2), DEFAULT_HOUSE_RULES)
 
-    expect(derived.isBareBones).toBe(true)
+    expect(derived.isUnarmored).toBe(true)
+    expect(derived.hasBareBones).toBe(false)
+    expect(derived.armorScore.total).toBe(0)
+  })
+
+  it("Major igual ao nivel e Severe igual ao dobro do nivel", () => {
+    expect(derive(soldier(1), DEFAULT_HOUSE_RULES).majorThreshold.total).toBe(1)
+    expect(derive(soldier(1), DEFAULT_HOUSE_RULES).severeThreshold.total).toBe(2)
+    expect(derive(soldier(6), DEFAULT_HOUSE_RULES).majorThreshold.total).toBe(6)
+    expect(derive(soldier(6), DEFAULT_HOUSE_RULES).severeThreshold.total).toBe(12)
+  })
+})
+
+describe("derive — Bare Bones no Loadout, sem armadura", () => {
+  const bareBones = (level: number, strength: number): Character => ({
+    ...withStrength(soldier(level), strength),
+    loadout: ["Bare Bones"],
+  })
+
+  it("Armor Score 3 + Strength", () => {
+    const derived = derive(bareBones(1, 2), DEFAULT_HOUSE_RULES)
+
+    expect(derived.hasBareBones).toBe(true)
+    expect(derived.armorScore.base).toBe(3)
     expect(derived.armorScore.total).toBe(5)
-    // Tier 1 base 9/19, mais o nivel 1.
-    expect(derived.majorThreshold.total).toBe(10)
-    expect(derived.severeThreshold.total).toBe(20)
+  })
+
+  it("usa a tabela da carta mais o nivel: 9/19 no Tier 1", () => {
+    const derived = derive(bareBones(1, 0), DEFAULT_HOUSE_RULES)
+
+    expect([derived.majorThreshold.total, derived.severeThreshold.total]).toEqual([10, 20])
+  })
+
+  it("Tier 4 e 15/38, nao 15/35", () => {
+    const derived = derive(bareBones(8, 0), DEFAULT_HOUSE_RULES)
+
+    expect([derived.majorThreshold.base, derived.severeThreshold.base]).toEqual([15, 38])
+    expect([derived.majorThreshold.total, derived.severeThreshold.total]).toEqual([23, 46])
+  })
+
+  it("so vale no Loadout: no vault a carta nao faz nada", () => {
+    const character = { ...withStrength(soldier(1), 2), vault: ["Bare Bones"] }
+
+    expect(derive(character, DEFAULT_HOUSE_RULES).armorScore.total).toBe(0)
+  })
+})
+
+describe("derive — Proficiency", () => {
+  it("comeca em 1 e ganha +1 nos niveis 2, 5 e 8 (p. 109)", () => {
+    expect(derive(soldier(1), DEFAULT_HOUSE_RULES).proficiency.total).toBe(1)
+    expect(derive(soldier(2), DEFAULT_HOUSE_RULES).proficiency.total).toBe(2)
+    expect(derive(soldier(4), DEFAULT_HOUSE_RULES).proficiency.total).toBe(2)
+    expect(derive(soldier(5), DEFAULT_HOUSE_RULES).proficiency.total).toBe(3)
+    expect(derive(soldier(8), DEFAULT_HOUSE_RULES).proficiency.total).toBe(4)
+  })
+
+  it("soma o advancement e nunca passa de 6", () => {
+    const advancements: Advancement[] = [5, 6, 7, 8, 9].map((level) => ({
+      level,
+      kind: "proficiency",
+      detail: "",
+      slotsSpent: 2,
+    }))
+
+    const derived = derive({ ...soldier(10), advancements }, DEFAULT_HOUSE_RULES)
+
+    expect(derived.proficiency.total).toBe(6)
+  })
+})
+
+describe("derive — cartas de dominio esperadas (p. 21, 111)", () => {
+  it("duas no nivel 1, e mais uma por nivel", () => {
+    expect(derive(soldier(1), DEFAULT_HOUSE_RULES).expectedCards).toBe(2)
+    expect(derive(soldier(10), DEFAULT_HOUSE_RULES).expectedCards).toBe(11)
+  })
+
+  it("duas por nivel com a regra da casa", () => {
+    const houseRules: HouseRules = { ...DEFAULT_HOUSE_RULES, hasTwoCardsPerLevel: true }
+
+    expect(derive(soldier(10), houseRules).expectedCards).toBe(20)
+  })
+})
+
+describe("derive — HP e Stress", () => {
+  it("HP da classe e 6 de Stress, mais advancements", () => {
+    const advancements: Advancement[] = [
+      { level: 2, kind: "hp", detail: "", slotsSpent: 1 },
+      { level: 3, kind: "stress", detail: "", slotsSpent: 1 },
+    ]
+    const derived = derive({ ...soldier(3), advancements }, DEFAULT_HOUSE_RULES)
+
+    expect(derived.hitPointsMax.total).toBe(8)
+    expect(derived.stressMax.total).toBe(7)
+  })
+
+  it("advancement guarda o nivel em que foi comprado", () => {
+    const advancements: Advancement[] = [{ level: 2, kind: "hp", detail: "", slotsSpent: 1 }]
+    const [modifier] = derive({ ...soldier(7), advancements }, DEFAULT_HOUSE_RULES)
+      .hitPointsMax.modifiers
+
+    expect(modifier.source).toEqual({ kind: "advancement", level: 2 })
   })
 })
 
 describe("derive — Evasion", () => {
-  it("parte da classe e aplica o modificador da linha de armadura", () => {
-    // Soldier tem Evasion 9 na v2; Heavy custa -1.
+  it("parte da classe e aplica o traco da armadura", () => {
+    // Soldier tem Evasion 9; Heavy custa -1.
     const derived = derive(withArmor(soldier(1), "Trooper Plate"), DEFAULT_HOUSE_RULES)
 
     expect(derived.evasion.base).toBe(9)
@@ -100,8 +208,7 @@ describe("derive — Evasion", () => {
     expect(modifier.value).toBe(-1)
   })
 
-  it("nao cria modificador para a linha Neutra, que soma zero", () => {
-    // Fonte sem efeito nao entra na lista: "Neutra: +0" e ruido.
+  it("nao cria modificador para a linha sem traco, que soma zero", () => {
     const derived = derive(withArmor(soldier(1), "Smuggler's Vest"), DEFAULT_HOUSE_RULES)
 
     expect(derived.evasion.modifiers).toHaveLength(0)
@@ -116,13 +223,8 @@ describe("derive — Evasion", () => {
       traits: { ...base.traits, Agility: 2, Instinct: 3 },
     }
 
-    // 2.5 arredondado para baixo = 2.
     expect(derive(character, houseRules).evasion.total).toBe(11)
-
-    // Para cima = 3.
-    expect(
-      derive(character, { ...houseRules, roundsEvasionUp: true }).evasion.total,
-    ).toBe(12)
+    expect(derive(character, { ...houseRules, roundsEvasionUp: true }).evasion.total).toBe(12)
   })
 })
 
@@ -145,10 +247,8 @@ describe("derive — Very Heavy modifica Agility, e o efeito propaga", () => {
 
 describe("derive — nada de derivado e guardado", () => {
   it("o mesmo personagem sempre produz o mesmo resultado", () => {
-    const character = withArmor(soldier(5), "Hunter’s Rig")
-    const first = derive(character, DEFAULT_HOUSE_RULES)
-    const second = derive(character, DEFAULT_HOUSE_RULES)
+    const character = withArmor(soldier(5), "Hunter's Rig")
 
-    expect(first).toEqual(second)
+    expect(derive(character, DEFAULT_HOUSE_RULES)).toEqual(derive(character, DEFAULT_HOUSE_RULES))
   })
 })

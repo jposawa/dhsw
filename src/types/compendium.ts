@@ -98,19 +98,3 @@ export type CompendiumEntry = {
   tier: Tier
   text: string
 }
-
-/**
- * Módulo de equipamento — dh-sw-v2-spec.md §4.5.
- *
- * As três tabelas (kyber, tech, armadura) existem na spec e NÃO existem no
- * dado do protótipo. O tipo entra agora para que `InventoryEntry.installedModules`
- * tenha destino; `partsCost` fica `null` até a §6 fechar o custo em partes.
- */
-export type EquipmentModule = {
-  name: string
-  track: "kyber" | "tech" | "armor"
-  tier: Tier
-  slots: number
-  effect: string
-  partsCost: string | null
-}

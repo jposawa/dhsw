@@ -18,7 +18,7 @@ export type Trait =
 
 export type Range = "Melee" | "Very Close" | "Close" | "Far" | "Very Far"
 
-/** `tech` no lugar de "magic" — regra oficial do SRD. dh-sw-v2-spec.md §1.4. */
+/** `tech` no lugar do `mag` do livro — escolha da conversão para Star Wars. */
 export type DamageType = "phy" | "tech"
 
 export type WeaponBurden = "Uma mão" | "Duas mãos" | "Secundária"

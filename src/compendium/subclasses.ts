@@ -94,7 +94,7 @@ export const SUBCLASSES: readonly Subclass[] = [
       },
       {
         "name": "Improvised Repair",
-        "text": "A number of times equal half your **Proficiency** (Rounded up) by *Short Rest*, you can spend a **Hope** to clear a number of **Armor Slots** equal to your **Knowledge** for you or an ally in your *Very Close* range."
+        "text": "A number of times equal half your **Proficiency** (Rounded up) by *Rest*, you can spend a **Hope** to clear a number of **Armor Slots** equal to your **Knowledge** for you or an ally in your *Very Close* range."
       }
     ],
     "mastery": [
@@ -115,7 +115,7 @@ export const SUBCLASSES: readonly Subclass[] = [
     "foundation": [
       {
         "name": "Target Mark",
-        "text": "You can make an **Instinct Roll (12)** against a target within *Close range.* On a success, you may mark a **Stress** to Mark the target until your next *Short Rest*. You have **Advantage** on all rolls against a **Marked** Target. You can have as many simultaneous **Marks** as your **Instinct** score. For each additional target you try to **Mark**, increase the **Roll Challenge** by **1**."
+        "text": "You can make an **Instinct Roll (12)** against a target within *Close range.* On a success, you may mark a **Stress** to Mark the target until your next *Rest*. You have **Advantage** on all rolls against a **Marked** Target. You can have as many simultaneous **Marks** as your **Instinct** score. For each additional target you try to **Mark**, increase the **Roll Challenge** by **1**."
       },
       {
         "name": "Martial Education",
@@ -125,7 +125,7 @@ export const SUBCLASSES: readonly Subclass[] = [
     "specialization": [
       {
         "name": "Martial Prowess",
-        "text": "A number of times equal your **Proficiency** per *Short Rest*, you can reroll any **1** or **2** from your **Martial Dice**."
+        "text": "A number of times equal your **Proficiency** per *Rest*, you can reroll any **1** or **2** from your **Martial Dice**."
       },
       {
         "name": "Following Strike",
@@ -164,7 +164,7 @@ export const SUBCLASSES: readonly Subclass[] = [
       },
       {
         "name": "Refreshing Touch",
-        "text": "Once per *Short Rest*, use an action and touch a being to clear **2 Hit Points** or **2 Stress** from them."
+        "text": "Once per *Rest*, use an action and touch a being to clear **2 Hit Points** or **2 Stress** from them."
       }
     ],
     "mastery": [
@@ -288,7 +288,7 @@ export const SUBCLASSES: readonly Subclass[] = [
       },
       {
         "name": "Making Charts",
-        "text": "Once per *Short Rest*, when doing a Roll related to any kind of Navigation, you can add your **Level** to the result."
+        "text": "Once per *Rest*, when doing a Roll related to any kind of Navigation, you can add your **Level** to the result."
       }
     ],
     "mastery": [

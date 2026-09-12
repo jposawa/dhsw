@@ -80,6 +80,28 @@ const stripNotionHeader = (text: string): string => {
   return summary ? summary.replace(/^Summary:\s*/i, "").trim() : text.trim()
 }
 
+/**
+ * Link de markdown do Notion vira só o rótulo.
+ *
+ * Seis cartas — uma por domínio — carregam o link do export inteiro no meio da
+ * frase: `from [Aegis](../Domains/Aegis%209e5ed7aa….md) domain:`. O renderizador
+ * do app não lê link (`helpers/markdown.ts` só faz negrito, ênfase e lista), e
+ * um caminho de arquivo com hash de 32 dígitos no corpo da regra é 55 caracteres
+ * de ruído que ainda por cima **não** apontam para lugar nenhum aqui.
+ *
+ * Some no gerador e não na renderização, pela mesma razão do cabeçalho: é
+ * sujeira do dado, e tratar sujeira de dado na tela espalha o conserto por
+ * todo componente que um dia mostrar aquele texto. DOMAIN.md.
+ */
+const stripMarkdownLinks = (text: string): string =>
+  text.replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+
+/** Espaço duplo que sobra quando um link sai do meio da frase. */
+const collapseSpaces = (text: string): string => text.replace(/[^\S\n]{2,}/g, " ")
+
+const cleanText = (text: string): string =>
+  collapseSpaces(stripMarkdownLinks(stripNotionHeader(text)))
+
 /* ── invariantes: quebram o build, não a mesa ─────────────────────────── */
 
 const assert = (condition: boolean, message: string) => {
@@ -190,7 +212,7 @@ const build = () => {
     level: skill.l,
     recallCost: skill.r,
     category: skill.c,
-    text: stripNotionHeader(skill.t),
+    text: cleanText(skill.t),
   }))
 
   emit("skills.ts", [

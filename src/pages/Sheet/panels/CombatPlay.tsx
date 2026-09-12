@@ -5,9 +5,9 @@ import { MarkerTrack, StatBlock } from "@/fragments"
 import { domainColorToken, formatSigned } from "@/helpers"
 import type { Character, DerivedStats } from "@/types"
 
-import styles from "./PlayPanel.module.css"
+import styles from "./CombatPlay.module.css"
 
-type PlayPanelProps = {
+type CombatPlayProps = {
   character: Character
   derived: DerivedStats
   isReadOnly: boolean
@@ -28,12 +28,12 @@ type PlayPanelProps = {
  * mudar o que *define* o máximo é modo edição, com Salvar. É a divisão que
  * separa o que não pode pedir confirmação do que não pode ser gravado sem ela.
  */
-export const PlayPanel = ({
+export const CombatPlay = ({
   character,
   derived,
   isReadOnly,
   onMarksChange,
-}: PlayPanelProps) => {
+}: CombatPlayProps) => {
   const lineage = [character.className, character.subclass, character.ancestry, character.community]
     .filter(Boolean)
     .join(" · ")
@@ -108,10 +108,10 @@ export const PlayPanel = ({
 
       <section className={styles.block}>
         <SectionLabel>
-          <h3>TRAÇOS</h3>
+          <h3>ATRIBUTOS</h3>
         </SectionLabel>
 
-        {/* Só leitura: traço é máximo, e máximo se muda no modo edição. */}
+        {/* Só leitura: atributo é máximo, e máximo se muda no modo edição. */}
         <ul className={styles.traits}>
           {TRAIT_LIST.map((trait) => (
             <li className={styles.trait} key={trait}>

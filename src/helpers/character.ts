@@ -106,9 +106,20 @@ const EDITED_FIELDS = [
   "subclass",
   "ancestry",
   "community",
+  "notes",
 ] as const
 
-/** O rascunho difere do que está salvo? É o que acende o botão de salvar. */
+/** As listas que o modo edição altera. Comparadas por conteúdo, não por referência. */
+const EDITED_LISTS = ["loadout", "vault", "inventory", "experiences"] as const
+
+/**
+ * O rascunho difere do que está salvo? É o que acende o botão de salvar.
+ *
+ * As listas entram por serialização e não campo a campo: `loadout` e `vault`
+ * são de string, `inventory` e `experiences` de objeto raso, e comparar por
+ * referência diria que mudou sempre — `rules/` devolve arrays novos a cada
+ * operação, inclusive quando o conteúdo é o mesmo.
+ */
 export const hasSheetEdits = (draft: Character, saved: Character): boolean => {
   const hasFieldChange = EDITED_FIELDS.some((field) => draft[field] !== saved[field])
 
@@ -116,5 +127,11 @@ export const hasSheetEdits = (draft: Character, saved: Character): boolean => {
     return true
   }
 
-  return TRAIT_LIST.some((trait) => draft.traits[trait] !== saved.traits[trait])
+  if (TRAIT_LIST.some((trait) => draft.traits[trait] !== saved.traits[trait])) {
+    return true
+  }
+
+  return EDITED_LISTS.some(
+    (field) => JSON.stringify(draft[field]) !== JSON.stringify(saved[field]),
+  )
 }

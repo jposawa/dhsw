@@ -44,8 +44,8 @@ export const CompendiumClasses = () => {
         <Input
           type="search"
           value={query}
-          placeholder="Buscar classe ou traço"
-          aria-label="Buscar classe ou traço"
+          placeholder="Buscar classe ou feature"
+          aria-label="Buscar classe ou feature"
           autoComplete="off"
           onValueChange={setQuery}
         />
@@ -91,7 +91,7 @@ export const CompendiumClasses = () => {
                   </div>
                 </dl>
 
-                <h4 className={styles.label}>TRAÇOS</h4>
+                <h4 className={styles.label}>FEATURES</h4>
                 <RuleText text={klass.baseFeatures} />
 
                 <h4 className={styles.label}>HOPE</h4>

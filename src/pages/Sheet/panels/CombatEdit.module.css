@@ -126,38 +126,3 @@
   font-size: var(--text-2xs);
   color: var(--color-text-dim);
 }
-
-/* ── salvar ──────────────────────────────────────────────────────────────── */
-
-/*
- * Grudada no fundo da janela.
- *
- * O formulário é mais alto que a tela; um Salvar no fim do documento só aparece
- * para quem rolar até lá, e quem não rolar conclui que ele não existe. O `z-index`
- * fica abaixo do `--z-nav` para a barra de navegação continuar por cima.
- */
-.saveBar {
-  position: sticky;
-  bottom: 0;
-  z-index: var(--z-header);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  padding: var(--space-3);
-  background: var(--color-bg-elevated);
-  border-top: var(--border-width) solid var(--color-chrome-dim);
-}
-
-.saveHint {
-  margin: 0;
-  font-size: var(--text-2xs);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
-  color: var(--color-text-dim);
-}
-
-.saveActions {
-  display: flex;
-  gap: var(--space-2);
-}

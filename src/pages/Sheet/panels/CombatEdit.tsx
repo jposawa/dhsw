@@ -1,19 +1,16 @@
-import { Button, SectionLabel, Stepper } from "@jposawa/ronin-ui"
+import { SectionLabel, Stepper } from "@jposawa/ronin-ui"
 
 import { ANCESTRIES, CLASSES, COMMUNITIES, SUBCLASSES } from "@/compendium"
 import { MAX_LEVEL, MIN_LEVEL, TRAIT_LIST } from "@/constants"
 import { formatSigned } from "@/helpers"
 import type { Character, DerivedStats } from "@/types"
 
-import styles from "./EditPanel.module.css"
+import styles from "./CombatEdit.module.css"
 
-type EditPanelProps = {
+type CombatEditProps = {
   draft: Character
   derived: DerivedStats
-  isDirty: boolean
   onChange: (mutate: (current: Character) => Character) => void
-  onSave: () => void
-  onDiscard: () => void
 }
 
 /**
@@ -31,14 +28,7 @@ type EditPanelProps = {
  * Marcador não aparece aqui de propósito — ele é estado de mesa, mora no modo
  * jogo e grava no toque.
  */
-export const EditPanel = ({
-  draft,
-  derived,
-  isDirty,
-  onChange,
-  onSave,
-  onDiscard,
-}: EditPanelProps) => (
+export const CombatEdit = ({ draft, derived, onChange }: CombatEditProps) => (
   <>
     <section className={styles.block}>
       <SectionLabel detail={`Tier ${derived.tier}`}>
@@ -200,7 +190,7 @@ export const EditPanel = ({
 
     <section className={styles.block}>
       <SectionLabel>
-        <h3>TRAÇOS</h3>
+        <h3>ATRIBUTOS</h3>
       </SectionLabel>
 
       <ul className={styles.traits}>
@@ -239,23 +229,5 @@ export const EditPanel = ({
       </ul>
     </section>
 
-    {/*
-      Grudada no fundo da janela: o formulário é mais alto que a tela, e um
-      Salvar no fim do documento obriga a rolar até o fim para descobrir que
-      ele existe — que é literalmente a queixa de "cadê o botão de salvar".
-    */}
-    <div className={styles.saveBar}>
-      <p className={styles.saveHint}>
-        {isDirty ? "Alterações não salvas" : "Nada para salvar"}
-      </p>
-      <div className={styles.saveActions}>
-        <Button variant="outline" disabled={!isDirty} onClick={onDiscard}>
-          DESCARTAR
-        </Button>
-        <Button disabled={!isDirty} onClick={onSave}>
-          SALVAR
-        </Button>
-      </div>
-    </div>
   </>
 )

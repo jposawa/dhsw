@@ -1,6 +1,7 @@
 export * from "./character"
 export * from "./domain"
 export * from "./format"
+export * from "./inventory"
 export * from "./markdown"
 export * from "./migrations"
 export * from "./navigation"

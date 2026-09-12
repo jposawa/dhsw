@@ -1,17 +1,17 @@
 import { Button, Modal, Tabs } from "@jposawa/ronin-ui"
-import { useAtom, useAtomValue } from "jotai"
+import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import React from "react"
 import { Navigate, useParams } from "react-router-dom"
 
 import { StepRule } from "@/components"
-import { ROUTES, SHEET_TABS } from "@/constants"
+import { ROUTES, RULE_ERROR_MESSAGES, SHEET_TABS } from "@/constants"
 import { SaveState } from "@/fragments"
 import { hasSheetEdits, touchCharacter } from "@/helpers"
 import { derive } from "@/rules"
-import { houseRulesAtom, rosterAtom, sheetRolesAtom } from "@/states"
-import type { Character, Marks, SheetMode, SheetTabId } from "@/types"
+import { houseRulesAtom, rosterAtom, sheetRolesAtom, toastAtom } from "@/states"
+import type { Character, Marks, Result, SheetTabId } from "@/types"
 
-import { EditPanel, PlayPanel } from "./panels"
+import { CardsPanel, CombatEdit, CombatPlay, HistoryPanel, InventoryPanel } from "./panels"
 
 import styles from "./Sheet.module.css"
 
@@ -21,27 +21,26 @@ import styles from "./Sheet.module.css"
  * Nenhum número aqui é guardado — todos saem de `derive`, e cada `StatBlock`
  * abre mostrando base + modificadores + total.
  *
- * **Dois modos, e a divisão é sobre quando se pode gravar.**
+ * **Editar ficha é um estado, não um interruptor.** Fora dele a ficha é de
+ * mesa: marcar HP, trocar carta do loadout, equipar arma — jogadas, que
+ * acontecem no meio de um turno e gravam no toque, porque pedir confirmação
+ * ali seria um passo em cima do gesto mais frequente do app.
  *
- * - **Jogo** grava no toque. Marcar Stress no meio de um turno não pode pedir
- *   confirmação, e o que se marca ali é estado de mesa: some no descanso.
- * - **Edição** não grava nada sem Salvar. Nome, nível, classe e traço *definem*
- *   os máximos e viajam para a mesa inteira; um deles reescrito por engano, e
- *   gravado sozinho, é um estrago que ninguém vê acontecer.
- *
- * O rascunho vive aqui e não no painel: sair da edição com alteração pendente
- * precisa ser barrado, e quem sabe que há pendência é quem guarda o rascunho.
+ * Dentro dele mexe-se no que **define** a ficha: nome, nível, classe, atributo,
+ * que cartas se sabe, o que se carrega, a história. Nada disso chega ao roster
+ * sem SALVAR, e CANCELAR devolve tudo ao que estava. É um rascunho só para as
+ * quatro abas — quem edita a classe e a mochila na mesma ida salva uma vez.
  */
 export const Sheet = () => {
   const { sheetId } = useParams<{ sheetId: string }>()
   const [roster, setRoster] = useAtom(rosterAtom)
   const houseRules = useAtomValue(houseRulesAtom)
   const sheetRoles = useAtomValue(sheetRolesAtom)
+  const setToast = useSetAtom(toastAtom)
 
   const [tab, setTab] = React.useState<SheetTabId>("combate")
-  const [mode, setMode] = React.useState<SheetMode>("play")
   const [draft, setDraft] = React.useState<Character | null>(null)
-  const [isConfirmingDiscard, setIsConfirmingDiscard] = React.useState(false)
+  const [isConfirmingCancel, setIsConfirmingCancel] = React.useState(false)
 
   const character = sheetId ? roster.characters[sheetId] : undefined
 
@@ -59,38 +58,44 @@ export const Sheet = () => {
     return <Navigate to={ROUTES.roster} replace />
   }
 
-  // O modo edição calcula sobre o rascunho: é o que faz Evasion e HP mudarem
-  // enquanto se escolhe a classe, antes de confirmar.
+  const isEditing = draft !== null
+  // Editando, tudo se calcula sobre o rascunho: é o que faz Evasion e HP
+  // mudarem enquanto se escolhe a classe, antes de confirmar.
   const shown = draft ?? character
   const derived = derive(shown, houseRules)
   const isDirty = draft !== null && hasSheetEdits(draft, character)
 
-  const enterEdit = () => {
-    setDraft(character)
-    setMode("edit")
-  }
-
-  const leaveEdit = () => {
-    setDraft(null)
-    setMode("play")
-  }
-
-  const requestPlayMode = () => {
-    if (isDirty) {
-      setIsConfirmingDiscard(true)
+  /**
+   * Aplica um `Result` de `rules/`.
+   *
+   * Recusa vira toast com a mensagem em pt-br do código — a tela nunca
+   * reimplementa a condição, só renderiza o que a regra permitiu.
+   * Editando, o resultado vai para o rascunho; em mesa, direto para o roster.
+   */
+  const applyResult = (result: Result<Character>) => {
+    if (!result.ok) {
+      setToast(RULE_ERROR_MESSAGES[result.code])
 
       return
     }
 
-    leaveEdit()
-  }
+    if (isReadOnly) {
+      setToast("Você é leitor desta ficha: nada aqui é salvo.")
 
-  const handleSave = () => {
-    if (draft) {
-      commit(draft)
+      return
     }
 
-    leaveEdit()
+    if (draft) {
+      setDraft(result.value)
+
+      return
+    }
+
+    commit(result.value)
+  }
+
+  const changeDraft = (mutate: (current: Character) => Character) => {
+    setDraft((current) => (current ? mutate(current) : current))
   }
 
   const handleMarksChange = (marks: Marks) => {
@@ -104,69 +109,91 @@ export const Sheet = () => {
     commit({ ...character, marks })
   }
 
-  const combatPanel = (
-    <>
-      <div className={styles.toolbar}>
-        {/* `radiogroup` e não dois botões soltos: os modos são exclusivos, e é
-            isso que faz o leitor anunciar "1 de 2". */}
-        <div className={styles.modeToggle} role="radiogroup" aria-label="Modo da ficha">
-          {(
-            [
-              ["play", "Jogo"],
-              ["edit", "Edição"],
-            ] as const
-          ).map(([option, label]) => (
-            <button
-              key={option}
-              type="button"
-              role="radio"
-              aria-checked={mode === option}
-              className={styles.modeOption}
-              disabled={isReadOnly && option === "edit"}
-              data-testid={`sheet-mode-${option}`}
-              onClick={() => (option === "edit" ? enterEdit() : requestPlayMode())}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+  const requestCancel = () => {
+    if (isDirty) {
+      setIsConfirmingCancel(true)
 
-        {isReadOnly ? (
-          <p className={styles.note}>Você é leitor: dá para ver tudo, nada é salvo.</p>
-        ) : (
-          <SaveState className={styles.saveState} sheetId={character.id} />
-        )}
-      </div>
+      return
+    }
 
-      <StepRule />
+    setDraft(null)
+  }
 
-      {mode === "edit" && draft ? (
-        <EditPanel
-          draft={draft}
-          derived={derived}
-          isDirty={isDirty}
-          onChange={(mutate) => setDraft((current) => (current ? mutate(current) : current))}
-          onSave={handleSave}
-          onDiscard={() => setIsConfirmingDiscard(true)}
-        />
+  const handleSave = () => {
+    if (draft) {
+      commit(draft)
+    }
+
+    setDraft(null)
+  }
+
+  const panelFor = (tabId: SheetTabId): React.ReactNode => {
+    if (tabId === "combate") {
+      return isEditing && draft ? (
+        <CombatEdit draft={draft} derived={derived} onChange={changeDraft} />
       ) : (
-        <PlayPanel
+        <CombatPlay
           character={character}
           derived={derived}
           isReadOnly={isReadOnly}
           onMarksChange={handleMarksChange}
         />
-      )}
-    </>
-  )
+      )
+    }
+
+    if (tabId === "cartas") {
+      return (
+        <CardsPanel
+          character={shown}
+          derived={derived}
+          isEditing={isEditing}
+          onApply={applyResult}
+        />
+      )
+    }
+
+    if (tabId === "inventario") {
+      return (
+        <InventoryPanel
+          character={shown}
+          derived={derived}
+          isEditing={isEditing}
+          onApply={applyResult}
+        />
+      )
+    }
+
+    return (
+      <HistoryPanel
+        character={shown}
+        isEditing={isEditing}
+        onApply={applyResult}
+        onChange={changeDraft}
+      />
+    )
+  }
 
   return (
     <main className={styles.page}>
-      {/*
-        As abas não construídas entram desabilitadas em vez de abrirem um aviso:
-        o aviso ocupa a tela inteira para dizer que não há nada, e uma aba
-        apagada já diz isso sem que se precise clicar.
-      */}
+      <div className={styles.toolbar}>
+        {isReadOnly ? (
+          <p className={styles.note}>Você é leitor: dá para ver tudo, nada é salvo.</p>
+        ) : (
+          <SaveState className={styles.saveState} sheetId={character.id} />
+        )}
+
+        {/* Um botão, e não um alternador de dois estados: editar é uma coisa
+            que se faz e se termina — com o resultado salvo ou cancelado —,
+            não um lugar em que se fica. */}
+        {isEditing ? null : (
+          <Button variant="outline" disabled={isReadOnly} onClick={() => setDraft(character)}>
+            EDITAR FICHA
+          </Button>
+        )}
+      </div>
+
+      <StepRule />
+
       <Tabs
         className={styles.tabs}
         hideArrows
@@ -176,28 +203,48 @@ export const Sheet = () => {
         tabs={SHEET_TABS.map((sheetTab) => ({
           id: sheetTab.id,
           label: sheetTab.label,
-          disabled: sheetTab.id !== "combate",
-          content: sheetTab.id === "combate" ? combatPanel : null,
+          content: panelFor(sheetTab.id),
         }))}
       />
 
-      {/* `isPersistent` porque descartar é irreversível: sair clicando no fundo
+      {/*
+        Grudada no fundo da janela enquanto se edita.
+        As quatro abas são mais altas que a tela, e um Salvar no fim do
+        documento só aparece para quem rolar até lá.
+      */}
+      {isEditing ? (
+        <div className={styles.saveBar}>
+          <p className={styles.saveHint}>
+            {isDirty ? "Alterações não salvas" : "Nada alterado"}
+          </p>
+          <div className={styles.saveActions}>
+            <Button variant="outline" onClick={requestCancel}>
+              CANCELAR
+            </Button>
+            <Button disabled={!isDirty} onClick={handleSave}>
+              SALVAR
+            </Button>
+          </div>
+        </div>
+      ) : null}
+
+      {/* `isPersistent` porque cancelar é irreversível: sair clicando no fundo
           é exatamente o acidente a evitar. */}
       <Modal
-        isOpen={isConfirmingDiscard}
+        isOpen={isConfirmingCancel}
         isPersistent
         title="Descartar as alterações?"
-        onClose={() => setIsConfirmingDiscard(false)}
+        onClose={() => setIsConfirmingCancel(false)}
         footer={
           <>
-            <Button variant="outline" onClick={() => setIsConfirmingDiscard(false)}>
+            <Button variant="outline" onClick={() => setIsConfirmingCancel(false)}>
               CONTINUAR EDITANDO
             </Button>
             <Button
               intent="danger"
               onClick={() => {
-                setIsConfirmingDiscard(false)
-                leaveEdit()
+                setIsConfirmingCancel(false)
+                setDraft(null)
               }}
             >
               DESCARTAR

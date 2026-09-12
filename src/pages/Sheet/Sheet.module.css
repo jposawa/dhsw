@@ -22,52 +22,6 @@
   gap: var(--space-3);
 }
 
-/*
- * O alternador de modo.
- *
- * `background` e `border` explícitos nos filhos porque são `<button>` nus: sem
- * eles o navegador pinta o botão de sistema, cinza e com moldura, que era
- * exatamente o aspecto das abas antigas.
- */
-.modeToggle {
-  display: flex;
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--border-radius-sm);
-  overflow: hidden;
-}
-
-.modeOption {
-  min-height: var(--size-touch-target);
-  padding: var(--space-1) var(--space-4);
-  font-size: var(--text-2xs);
-  letter-spacing: var(--tracking-wide);
-  white-space: nowrap;
-  color: var(--color-text-dim);
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  transition: color 0.15s ease, background-color 0.15s ease;
-}
-
-.modeOption:hover:not(:disabled) {
-  color: var(--color-chrome-strong);
-}
-
-.modeOption[aria-checked="true"] {
-  color: var(--color-on-chrome);
-  background: var(--color-chrome);
-}
-
-.modeOption:disabled {
-  color: var(--color-text-disabled);
-  cursor: not-allowed;
-}
-
-.modeOption:focus-visible {
-  outline: 2px solid var(--color-chrome-strong);
-  outline-offset: -2px;
-}
-
 .saveState {
   margin: 0;
   font-size: var(--text-xs);
@@ -81,4 +35,37 @@
   font-size: var(--text-xs);
   line-height: 1.55;
   color: var(--color-text-dim);
+}
+
+/*
+ * A barra de salvar, grudada no fundo da janela enquanto se edita.
+ *
+ * As quatro abas são mais altas que a tela, e um Salvar no fim do documento só
+ * aparece para quem rolar até lá — quem não rolar conclui que ele não existe.
+ * O `z-index` fica abaixo do `--z-nav` para o trilho continuar por cima.
+ */
+.saveBar {
+  position: sticky;
+  bottom: 0;
+  z-index: var(--z-header);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--color-bg-elevated);
+  border-top: var(--border-width) solid var(--color-chrome-dim);
+}
+
+.saveHint {
+  margin: 0;
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+}
+
+.saveActions {
+  display: flex;
+  gap: var(--space-2);
 }

@@ -116,3 +116,70 @@ export const consume = (character: Character, entryId: string): Result<Character
         : character.inventory.filter((candidate) => candidate.id !== entryId),
   })
 }
+
+/**
+ * Pôr uma linha no inventário.
+ *
+ * Consumível empilha: duas Medpacs viram quantidade 2, não duas linhas. Arma e
+ * armadura **não** empilham — cada instância carrega os próprios módulos, e o
+ * sabre com Kyber Bleed não é o mesmo objeto que o sabre sem.
+ */
+export const addEntry = (
+  character: Character,
+  entry: InventoryEntry,
+): Result<Character> => {
+  const stackable = entry.kind === "consumable" || entry.kind === "item"
+
+  const existing = stackable
+    ? character.inventory.find(
+        (candidate) => candidate.kind === entry.kind && candidate.name === entry.name,
+      )
+    : undefined
+
+  if (existing) {
+    return ok({
+      ...character,
+      inventory: character.inventory.map((candidate) =>
+        candidate.id === existing.id
+          ? { ...candidate, quantity: candidate.quantity + entry.quantity }
+          : candidate,
+      ),
+    })
+  }
+
+  return ok({ ...character, inventory: [...character.inventory, entry] })
+}
+
+/** Tirar uma linha do inventário. Some inteira, com a quantidade que tiver. */
+export const removeEntry = (character: Character, entryId: string): Result<Character> => {
+  if (!character.inventory.some((candidate) => candidate.id === entryId)) {
+    return fail("entryNotFound", entryId)
+  }
+
+  return ok({
+    ...character,
+    inventory: character.inventory.filter((candidate) => candidate.id !== entryId),
+  })
+}
+
+/** Mudar a quantidade. Zero remove a linha — item com quantidade 0 não existe. */
+export const setQuantity = (
+  character: Character,
+  entryId: string,
+  quantity: number,
+): Result<Character> => {
+  if (!character.inventory.some((candidate) => candidate.id === entryId)) {
+    return fail("entryNotFound", entryId)
+  }
+
+  if (quantity < 1) {
+    return removeEntry(character, entryId)
+  }
+
+  return ok({
+    ...character,
+    inventory: character.inventory.map((candidate) =>
+      candidate.id === entryId ? { ...candidate, quantity } : candidate,
+    ),
+  })
+}

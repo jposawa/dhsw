@@ -1,4 +1,5 @@
 export * from "./derive"
+export * from "./history"
 export * from "./inventory"
 export * from "./loadout"
 export * from "./module"

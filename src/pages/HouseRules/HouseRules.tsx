@@ -56,7 +56,7 @@ export const HouseRules = () => {
       <Toggle
         isOn={houseRules.hasEvasionFromTraits}
         title="Evasion escala com (Agility + Instinct) ÷ 2"
-        description="Sem esta regra a Evasion só sobe por advancement. Ligando, os dois traços valem dobrado e ficam quase obrigatórios — no fim pode somar +5 ou +6, mais que a distância entre a classe mais e a menos evasiva."
+        description="Sem esta regra a Evasion só sobe por advancement. Ligando, os dois atributos valem dobrado e ficam quase obrigatórios — no fim pode somar +5 ou +6, mais que a distância entre a classe mais e a menos evasiva."
         onToggle={() =>
           setHouseRules({
             ...houseRules,

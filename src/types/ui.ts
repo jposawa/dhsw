@@ -26,6 +26,9 @@ export type GearKind = "armas" | "armaduras" | "itens" | "consumiveis"
  */
 export type SheetMode = "play" | "edit"
 
+/** O que a ficha diz sobre a própria gravação. Ver `fragments/SaveState`. */
+export type SaveStateKind = "saved" | "saving" | "failed" | "local"
+
 /** Como as cartas do compêndio são apresentadas. */
 export type CompendiumViewMode = "list" | "grid"
 

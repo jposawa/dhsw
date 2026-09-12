@@ -23,6 +23,34 @@
   gap: var(--space-4);
 }
 
+/*
+ * A régua de abas gruda embaixo do brasão.
+ *
+ * A ficha é mais alta que qualquer tela, e trocar de aba no meio dela obrigava
+ * a rolar até o topo e voltar. Mobile-first de verdade: é no celular que a
+ * rolagem é longa, e no desktop o custo de manter é zero.
+ *
+ * O `top` é a altura do brasão mais o fio dele: `.top` do shell já é sticky em
+ * `top: 0`, e sem somar a borda a régua encosta um pixel acima e deixa passar
+ * uma listra do conteúdo.
+ *
+ * `background` opaco porque o conteúdo passa por baixo; sem ele a régua fica
+ * ilegível na primeira rolagem. `z-index` abaixo do `--z-header` do brasão,
+ * para as duas se empilharem na ordem em que aparecem.
+ *
+ * **Quem gruda é a faixa que contém a régua, não a régua.** Um elemento sticky
+ * só viaja dentro do pai, e a `ronin-ui` embrulha o `tablist` numa faixa da
+ * altura dele — grudar o `tablist` não sairia do lugar. `:has` nomeia o alvo
+ * pelo que ele contém, que é a única coisa estável: a classe daquela faixa é
+ * gerada pelo CSS module da biblioteca e muda a cada build dela.
+ */
+.tabs > :has(> [role="tablist"]) {
+  position: sticky;
+  top: calc(var(--header-height) + var(--border-width));
+  z-index: 1;
+  background: var(--color-bg);
+}
+
 .toolbar {
   display: flex;
   align-items: center;

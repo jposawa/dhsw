@@ -12,32 +12,35 @@ type ThresholdBarProps = BaseComponent & {
 /**
  * Quantos Hit Points marcar por um dano.
  *
- * **Fica colado no HP, e é a razão de existir.** O número sozinho — "Major 9" —
- * não responde a pergunta da mesa, que é "levei 11, marco quanto?". A régua
- * responde: abaixo de 9 marca 1, de 9 a 18 marca 2, de 19 para cima marca 3.
+ * **Cada degrau carrega a própria faixa.** A primeira versão punha os dois
+ * números soltos entre as células, e ali eles não pertenciam a nenhuma das
+ * duas: dava para ler "10" como o fim do minor ou como o começo do major. Com
+ * a faixa dentro da célula — `até 9`, `10 a 19`, `20+` — não há o que
+ * interpretar, e é a mesma frase que alguém diria na mesa.
  *
- * Os dois limiares vêm de `derive`: saem da armadura vestida mais o nível, e
- * mudam quando qualquer um dos dois muda.
+ * Fica colado no HP porque a pergunta real é "levei 11, marco quanto?". O
+ * número solto não responde isso.
  */
 export const ThresholdBar = ({ major, severe, className, style }: ThresholdBarProps) => (
   <dl className={clsx(styles.bar, className)} style={style}>
     <div className={styles.step}>
-      <dt>MINOR</dt>
-      <dd>1 HP</dd>
+      <dt className={styles.name}>MINOR</dt>
+      <dd className={styles.range}>até {major.total - 1}</dd>
+      <dd className={styles.cost}>1 HP</dd>
     </div>
 
-    <b className={styles.value}>{major.total}</b>
-
     <div className={styles.step}>
-      <dt>MAJOR</dt>
-      <dd>2 HP</dd>
+      <dt className={styles.name}>MAJOR</dt>
+      <dd className={styles.range}>
+        {major.total} a {severe.total - 1}
+      </dd>
+      <dd className={styles.cost}>2 HP</dd>
     </div>
 
-    <b className={styles.value}>{severe.total}</b>
-
-    <div className={styles.step}>
-      <dt>SEVERE</dt>
-      <dd>3 HP</dd>
+    <div className={clsx(styles.step, styles.severe)}>
+      <dt className={styles.name}>SEVERE</dt>
+      <dd className={styles.range}>{severe.total} ou mais</dd>
+      <dd className={styles.cost}>3 HP</dd>
     </div>
   </dl>
 )

@@ -276,7 +276,18 @@
   color: var(--color-chrome-strong);
 }
 
-.note,
+/* O que está vestido, como dado e não como frase: o efeito da armadura já
+   está em ARMOR e nos limiares, e explicá-lo em prosa era dizer duas vezes. */
+.wearing {
+  margin: 0;
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+  background: var(--color-bg-elevated);
+}
+
 .empty {
   margin: 0;
   font-size: var(--text-xs);
@@ -300,8 +311,7 @@
     grid-template-areas:
       "identity identity identity"
       "defense  traits   traits"
-      "vitals   weapons  hope"
-      "note     note     note";
+      "vitals   hope     weapons";
     align-items: start;
   }
 
@@ -333,7 +343,4 @@
     grid-area: hope;
   }
 
-  .note {
-    grid-area: note;
-  }
 }

@@ -26,9 +26,11 @@ type CombatPlayProps = {
  *    as duas coisas que mais se pergunta numa sessão, e estavam no rodapé.
  * 3. **Dano e vida juntos.** A régua de limiares encosta no HP porque a
  *    pergunta real é "levei 11, marco quanto?" — o número solto não responde.
- * 4. **Armas ativas na tela de combate**, não escondidas no inventário: o dado
+ * 4. **Hope encosta em HP e Stress**: são os três pips que se tocam durante um
+ *    turno, e separá-los obrigava a olhar para dois cantos da tela. Vem com as
+ *    Experiences porque é Hope que se gasta para somar uma.
+ * 5. **Armas ativas na tela de combate**, não escondidas no inventário: o dado
  *    de dano é consultado a cada ataque.
- * 5. **Hope junto de Experiences**, porque é Hope que se gasta para somar uma.
  *
  * Nada aqui muda um máximo: marcar HP é estado de mesa e grava no toque. O que
  * *define* o máximo é modo edição, com Salvar.
@@ -70,12 +72,17 @@ export const CombatPlay = ({
         <div className={styles.stats}>
           <StatBlock label="EVASION" stat={derived.evasion} />
           <StatBlock label="ARMOR" stat={derived.armorScore} />
-          <StatBlock label="PROF" stat={derived.proficiency} />
+          <StatBlock label="PROF" stat={derived.proficiency} pipCount={derived.proficiency.total} />
         </div>
+
+        <p className={styles.wearing}>
+          {derived.equippedArmor ? derived.equippedArmor.name : "Sem armadura — Bare Bones"}
+        </p>
 
         <MarkerTrack
           className={styles.armorTrack}
           label="ARMOR SLOTS"
+          hasCount
           marked={character.marks.armor}
           max={derived.armorScore.total}
           color={domainColorToken("Edge")}
@@ -198,14 +205,6 @@ export const CombatPlay = ({
           </ul>
         )}
       </section>
-
-      {derived.isBareBones ? (
-        <p className={styles.note}>
-          Sem armadura vestida vale Bare Bones: Armor Score {derived.armorScore.total} e
-          limiares {derived.majorThreshold.base}/{derived.severeThreshold.base} mais o nível.
-          Não é erro — é escolha de build.
-        </p>
-      ) : null}
     </div>
   )
 }

@@ -1,8 +1,9 @@
-/* Régua: degrau, número, degrau, número, degrau. O número fica ENTRE os dois
-   degraus que ele separa, que é o que faz a régua ser lida como faixa. */
+/* Três degraus de peso crescente: o custo sobe da esquerda para a direita, e a
+   escala de cinza acompanha para que a leitura de relance já diga qual é o
+   grave. */
 .bar {
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--space-1);
   margin: 0;
 }
@@ -10,35 +11,36 @@
 .step {
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 2px;
-  /* Necessário: os três degraus dividem a sobra em partes iguais, e é isso que
-     mantém os dois números nas posições de corte. */
-  flex-grow: 1;
-  flex-basis: 0;
-  padding: var(--space-2) var(--space-1);
-  text-align: center;
+  min-width: 0;
+  padding: var(--space-2);
   background: var(--color-bg-elevated);
   border-top: var(--border-width) solid var(--color-border);
 }
 
-.step dt {
+/* O último degrau é o que mata: borda de cromo para separá-lo dos outros dois
+   sem gastar uma das seis cores de domínio, que são de carta. STYLING.md. */
+.severe {
+  border-top-color: var(--color-chrome);
+}
+
+.name {
   font-size: var(--text-2xs);
   letter-spacing: var(--tracking-wider);
   color: var(--color-text-muted);
 }
 
-.step dd {
+.range {
   margin: 0;
-  font-size: var(--text-xs);
+  font-size: var(--text-md);
   font-variant-numeric: tabular-nums;
-  color: var(--color-ink);
+  line-height: 1.1;
+  color: var(--color-chrome-strong);
 }
 
-.value {
-  font-size: var(--text-lg);
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
-  color: var(--color-chrome-strong);
+.cost {
+  margin: 0;
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-dim);
 }

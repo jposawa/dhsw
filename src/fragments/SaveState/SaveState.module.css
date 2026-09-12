@@ -1,10 +1,25 @@
+.state {
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  /* Alvo de toque mesmo sem ser botão: o `title` é o que explica o ícone, e
+     no celular ele se alcança pelo toque longo. */
+  min-height: var(--size-touch-target);
+}
+
+.icon {
+  display: block;
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
 /* Estados semânticos saem do cromo e da escala de fundo, nunca das seis cores
    de domínio — elas identificam carta e mais nada. STYLING.md. */
 .saved {
   color: var(--color-text-muted);
 }
 
-.pending {
+.saving {
   color: var(--color-chrome-strong);
 }
 
@@ -14,4 +29,23 @@
 
 .local {
   color: var(--color-text-muted);
+}
+
+.saving .icon {
+  transform-origin: center;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* `prefers-reduced-motion` já desliga `transition` no reset global, mas não
+   `animation`: giro infinito é exatamente o que a preferência quer barrar. */
+@media (prefers-reduced-motion: reduce) {
+  .saving .icon {
+    animation: none;
+  }
 }

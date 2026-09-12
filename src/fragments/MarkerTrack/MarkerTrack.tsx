@@ -11,6 +11,14 @@ type MarkerTrackProps = BaseComponent & {
   marked: number
   max: number
   color: string
+  /**
+   * Mostra `2/6` ao lado do rótulo.
+   *
+   * Desligado por padrão: os pips **são** a contagem, e repeti-la em número
+   * é a mesma informação duas vezes na mesma linha. Fica ligado onde o máximo
+   * não é óbvio de olhar — Armor Slots, que muda com a armadura vestida.
+   */
+  hasCount?: boolean
   onChange: (next: number) => void
 }
 
@@ -25,12 +33,13 @@ export const MarkerTrack = ({
   marked,
   max,
   color,
+  hasCount = false,
   onChange,
   className,
   style,
 }: MarkerTrackProps) => (
   <div className={clsx(styles.track, className)} style={style}>
-    <SectionLabel detail={`${marked}/${max}`}>{label}</SectionLabel>
+    <SectionLabel detail={hasCount ? `${marked}/${max}` : undefined}>{label}</SectionLabel>
     <div className={styles.pips}>
       {Array.from({ length: max }, (_, index) => {
         const position = index + 1

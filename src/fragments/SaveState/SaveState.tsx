@@ -1,9 +1,20 @@
+import clsx from "clsx"
 import { useAtomValue } from "jotai"
 
 import { authAtom, syncStatusAtom, unsyncedSheetIdsAtom } from "@/states"
-import type { BaseComponent } from "@/types"
+import type { BaseComponent, SaveStateKind } from "@/types"
+
+import { SAVE_STATE_ART } from "./symbols"
 
 import styles from "./SaveState.module.css"
+
+/** O que cada estado diz. Vira `title` e nome acessível — o ícone não fala. */
+const SAVE_STATE_LABELS: Readonly<Record<SaveStateKind, string>> = {
+  saved: "Salvo",
+  saving: "Salvando…",
+  failed: "Não salvou no servidor. A ficha está inteira neste aparelho; o detalhe está no Perfil.",
+  local: "Salvo neste aparelho. Entre com uma conta para sincronizar.",
+}
 
 type SaveStateProps = BaseComponent & {
   sheetId: string
@@ -12,51 +23,58 @@ type SaveStateProps = BaseComponent & {
 /**
  * Se esta ficha já está salva.
  *
- * **Não existe botão de salvar, e isso é decisão de produto.** Marcar Stress no
- * meio de um turno e depois ter que confirmar seria um passo a mais em cima do
- * gesto mais frequente do app; a gravação é local e imediata, e o servidor
- * recebe logo atrás, com atraso. `dh-sw-arquitetura.md` §5.
+ * **Não existe botão de salvar para o que se marca em mesa, e isso é decisão
+ * de produto.** Marcar Stress no meio de um turno não pode pedir confirmação;
+ * a gravação é local e imediata, e o servidor recebe logo atrás, com atraso.
+ * O que faltava não era o botão — era o retorno.
  *
- * O que faltava não era o botão — era o retorno. Sem ele a escrita é
- * invisível, e "será que salvou?" vira motivo para não fechar o app. Esta
- * linha responde isso, e é o que um botão de salvar responderia.
+ * **Ícone, não frase.** Ele fica numa faixa que se passa os olhos mil vezes
+ * por sessão e nunca se lê; um símbolo estável ali é reconhecido de relance,
+ * e uma frase só ocupa a linha. O texto continua existindo para quem ouve e
+ * para quem passa o mouse, que é onde o ícone não chega.
  */
 export const SaveState = ({ sheetId, className, style }: SaveStateProps) => {
   const { status } = useAtomValue(authAtom)
   const syncStatus = useAtomValue(syncStatusAtom)
   const unsyncedSheetIds = useAtomValue(unsyncedSheetIdsAtom)
 
-  const isPending = unsyncedSheetIds.has(sheetId)
+  const kind = ((): SaveStateKind => {
+    // Sem conta não há para onde sincronizar, e prometer "salvo" sem dizer
+    // onde é a meia-verdade que faz alguém perder a ficha ao trocar de
+    // aparelho.
+    if (status !== "signed-in") {
+      return "local"
+    }
 
-  // Sem conta não há para onde sincronizar, e prometer "salvo" sem dizer onde
-  // seria a meia-verdade que faz alguém perder a ficha ao trocar de aparelho.
-  if (status !== "signed-in") {
-    return (
-      <p className={className} style={style} data-testid="sheet-save-state">
-        <span className={styles.local}>Salvo neste aparelho.</span> Entre com uma conta
-        para sincronizar.
-      </p>
-    )
-  }
+    // Erro antes de pendência: uma escrita que falhou devolve a ficha para a
+    // fila, e anunciar "salvando…" para sempre esconderia justamente a falha.
+    if (syncStatus === "error") {
+      return "failed"
+    }
 
-  // Erro antes de pendência: uma escrita que falhou devolve a ficha para a
-  // fila, e anunciar "salvando…" para sempre esconderia justamente a falha.
-  if (syncStatus === "error") {
-    return (
-      <p className={className} style={style} data-testid="sheet-save-state">
-        <span className={styles.failed}>Não salvou no servidor.</span> A ficha está
-        inteira neste aparelho; o detalhe está no Perfil.
-      </p>
-    )
-  }
+    return unsyncedSheetIds.has(sheetId) ? "saving" : "saved"
+  })()
 
   return (
-    <p className={className} style={style} data-testid="sheet-save-state">
-      {isPending ? (
-        <span className={styles.pending}>Salvando…</span>
-      ) : (
-        <span className={styles.saved}>Salvo</span>
-      )}
+    <p
+      className={clsx(styles.state, styles[kind], className)}
+      style={style}
+      title={SAVE_STATE_LABELS[kind]}
+      data-testid="sheet-save-state"
+    >
+      <svg
+        className={styles.icon}
+        viewBox="0 0 16 16"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        role="img"
+        aria-label={SAVE_STATE_LABELS[kind]}
+      >
+        {SAVE_STATE_ART[kind]}
+      </svg>
     </p>
   )
 }

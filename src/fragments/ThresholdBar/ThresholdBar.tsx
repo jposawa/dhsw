@@ -7,40 +7,47 @@ import styles from "./ThresholdBar.module.css"
 type ThresholdBarProps = BaseComponent & {
   major: ResolvedStat
   severe: ResolvedStat
+  /** De onde saíram os números, numa linha — "Trooper Plate 7/15 + nível 1". */
+  origin: string
 }
 
 /**
- * Quantos Hit Points marcar por um dano.
+ * Quantos Hit Points marcar por um dano — a régua da ficha do livro.
  *
- * **Cada degrau carrega a própria faixa.** A primeira versão punha os dois
- * números soltos entre as células, e ali eles não pertenciam a nenhuma das
- * duas: dava para ler "10" como o fim do minor ou como o começo do major. Com
- * a faixa dentro da célula — `até 9`, `10 a 19`, `20+` — não há o que
- * interpretar, e é a mesma frase que alguém diria na mesa.
+ * Três faixas com o custo e, **entre elas**, o número que muda de faixa: dano
+ * igual ou acima de 8 é Major. É a pergunta da mesa ("levei 11, marco
+ * quanto?") respondida sem conta, e é como a ficha impressa desenha.
  *
- * Fica colado no HP porque a pergunta real é "levei 11, marco quanto?". O
- * número solto não responde isso.
+ * Lista ordenada porque é uma sequência: a leitura por áudio sai "Minor,
+ * marca 1 HP; Major a partir de 8…", na ordem em que o dano cresce.
  */
-export const ThresholdBar = ({ major, severe, className, style }: ThresholdBarProps) => (
-  <dl className={clsx(styles.bar, className)} style={style}>
-    <div className={styles.step}>
-      <dt className={styles.name}>MINOR</dt>
-      <dd className={styles.range}>até {major.total - 1}</dd>
-      <dd className={styles.cost}>1 HP</dd>
-    </div>
+export const ThresholdBar = ({ major, severe, origin, className, style }: ThresholdBarProps) => (
+  <figure className={clsx(styles.figure, className)} style={style}>
+    <ol className={styles.bar}>
+      <li className={styles.step}>
+        <span className={styles.name}>MINOR</span>
+        <span className={styles.cost}>1 HP</span>
+      </li>
 
-    <div className={styles.step}>
-      <dt className={styles.name}>MAJOR</dt>
-      <dd className={styles.range}>
-        {major.total} a {severe.total - 1}
-      </dd>
-      <dd className={styles.cost}>2 HP</dd>
-    </div>
+      <li className={styles.mark} aria-label={`Major a partir de ${major.total}`}>
+        {major.total}
+      </li>
 
-    <div className={clsx(styles.step, styles.severe)}>
-      <dt className={styles.name}>SEVERE</dt>
-      <dd className={styles.range}>{severe.total} ou mais</dd>
-      <dd className={styles.cost}>3 HP</dd>
-    </div>
-  </dl>
+      <li className={styles.step}>
+        <span className={styles.name}>MAJOR</span>
+        <span className={styles.cost}>2 HP</span>
+      </li>
+
+      <li className={styles.mark} aria-label={`Severe a partir de ${severe.total}`}>
+        {severe.total}
+      </li>
+
+      <li className={clsx(styles.step, styles.severe)}>
+        <span className={styles.name}>SEVERE</span>
+        <span className={styles.cost}>3 HP</span>
+      </li>
+    </ol>
+
+    <figcaption className={styles.origin}>{origin}</figcaption>
+  </figure>
 )

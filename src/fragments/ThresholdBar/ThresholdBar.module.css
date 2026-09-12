@@ -1,27 +1,36 @@
-/* Três degraus de peso crescente: o custo sobe da esquerda para a direita, e a
-   escala de cinza acompanha para que a leitura de relance já diga qual é o
-   grave. */
-.bar {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+.figure {
+  display: flex;
+  flex-direction: column;
   gap: var(--space-1);
   margin: 0;
 }
 
+/*
+ * Uma faixa contínua: o fundo do pai é a cor do fio, e o `gap` de 1px deixa
+ * ele aparecer entre as partes. Cinco peças lidas como uma régua só.
+ */
+.bar {
+  display: flex;
+  align-items: stretch;
+  gap: var(--border-width);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: var(--color-border);
+  border: var(--border-width) solid var(--color-border);
+}
+
+/* As três faixas dividem a sobra igualmente; as marcas têm a largura do número. */
 .step {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 2px;
+  flex-grow: 1;
+  flex-basis: 0;
   min-width: 0;
   padding: var(--space-2);
   background: var(--color-bg-elevated);
-  border-top: var(--border-width) solid var(--color-border);
-}
-
-/* O último degrau é o que mata: borda de cromo para separá-lo dos outros dois
-   sem gastar uma das seis cores de domínio, que são de carta. STYLING.md. */
-.severe {
-  border-top-color: var(--color-chrome);
 }
 
 .name {
@@ -30,16 +39,33 @@
   color: var(--color-text-muted);
 }
 
-.range {
-  margin: 0;
-  font-size: var(--text-md);
-  font-variant-numeric: tabular-nums;
-  line-height: 1.1;
+.cost {
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-dim);
+}
+
+/* O degrau que mata leva o cromo no nome, sem gastar cor de domínio. */
+.severe .name {
   color: var(--color-chrome-strong);
 }
 
-.cost {
-  margin: 0;
+/* A marca fica sobre a divisa: fundo mais claro e peso de número. */
+.mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-width: 2.75rem;
+  padding: 0 var(--space-2);
+  font-size: var(--text-lg);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-chrome-strong);
+  background: var(--color-surface);
+}
+
+.origin {
   font-size: var(--text-2xs);
   letter-spacing: var(--tracking-wide);
   color: var(--color-text-dim);

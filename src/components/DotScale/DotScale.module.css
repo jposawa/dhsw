@@ -1,0 +1,17 @@
+.scale {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border: var(--border-width) solid var(--color-chrome-dim);
+  border-radius: 50%;
+}
+
+.filled {
+  background: var(--color-chrome-strong);
+  border-color: var(--color-chrome-strong);
+}

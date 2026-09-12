@@ -1,13 +1,9 @@
 /*
  * A ficha em mesa.
  *
- * Uma coluna no celular; no desktop, uma grade de três colunas em que cada
- * bloco encosta no que ele responde. A ordem das áreas é a ordem das perguntas
- * da mesa — ver o comentário de `CombatPlay.tsx`.
- *
- * `grid-template-areas` em vez de `grid-column` numerado: com seis blocos, a
- * numeração vira aritmética que ninguém confere, e mover um bloco obriga a
- * renumerar os vizinhos. Com nome, a planta está escrita aqui e se lê.
+ * Uma coluna no celular, na ordem das perguntas da mesa. No desktop, três
+ * colunas em que cada bloco encosta no que responde — a planta está escrita em
+ * `grid-template-areas`, que se lê, em vez de números de coluna, que se somam.
  */
 .layout {
   display: flex;
@@ -24,7 +20,6 @@
   min-width: 0;
 }
 
-.defense,
 .traits,
 .vitals,
 .weapons,
@@ -54,7 +49,6 @@
   margin: 0;
   font-size: var(--text-lg);
   font-weight: 500;
-  letter-spacing: var(--tracking-normal);
   color: var(--color-ink);
   overflow-wrap: break-word;
 }
@@ -71,12 +65,12 @@
   display: flex;
   gap: var(--space-1);
   margin: 0;
-  /* Nome longo encolhe; o nível não — é o segundo dado de identificação. */
+  /* Nome longo encolhe; o nível não. */
   flex-shrink: 0;
 }
 
 .levelCell {
-  min-width: 3.5rem;
+  min-width: 3.25rem;
   padding: var(--space-1) var(--space-2);
   text-align: center;
   background: var(--color-surface);
@@ -96,31 +90,56 @@
   color: var(--color-chrome-strong);
 }
 
+.notice {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--color-ink);
+  background: var(--color-surface);
+  border-left: var(--domain-stripe-width) solid var(--color-warning);
+}
+
 /* ── defesa ──────────────────────────────────────────────────────────────── */
 
-.stats {
+/* Evasion e Armor lado a lado, e a armadura vestida com os slots logo abaixo. */
+.defense {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr;
   gap: var(--space-1);
 }
 
-/* Os Armor Slots moram na defesa e não com HP e Stress: gastá-los é reduzir
-   dano, e a pergunta é sempre "quanto eu aguento", não "quanto eu perdi". */
-.armorTrack {
+.stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-1);
+}
+
+.armor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
   padding: var(--space-2) var(--space-3);
   background: var(--color-bg-elevated);
 }
 
+.wearing {
+  margin: 0;
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.armorFeature {
+  font-size: var(--text-sm);
+}
+
 /* ── atributos ───────────────────────────────────────────────────────────── */
 
-/*
- * Seis numa fileira quando há largura. É o bloco mais consultado da ficha —
- * toda rolagem de ação passa por um deles —, e em duas colunas de três ele
- * vira uma lista que se procura em vez de uma régua que se olha.
- */
 .traitList {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--space-1);
   margin: 0;
   padding: 0;
@@ -129,92 +148,52 @@
 
 .trait {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  padding: var(--space-2) var(--space-1);
+  text-align: center;
   background: var(--color-bg-elevated);
   border-top: var(--border-width) solid var(--color-border);
 }
 
 .traitName {
-  font-size: var(--text-xs);
-  letter-spacing: var(--tracking-wide);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
   color: var(--color-text-muted);
 }
 
 .traitValue {
-  font-size: var(--text-md);
+  font-size: var(--text-xl);
   font-weight: 500;
   font-variant-numeric: tabular-nums;
+  line-height: 1.1;
   color: var(--color-chrome-strong);
 }
 
-/* ── armas ───────────────────────────────────────────────────────────────── */
-
-.weaponList {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-/*
- * Nome à esquerda, dado de dano à direita, tudo numa grade de duas colunas: é
- * o dado que se procura no meio de um ataque, e ele fica sempre na mesma
- * posição, com o rótulo do slot acima.
- */
-.weapon {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: baseline;
-  gap: var(--space-1) var(--space-3);
-  padding: var(--space-2) var(--space-3);
-  background: var(--color-bg-elevated);
-  border-left: var(--domain-stripe-width) solid var(--color-chrome-dim);
-}
-
-.weaponSlot {
-  grid-column: 1 / -1;
+.traitVerbs {
   font-size: var(--text-2xs);
-  letter-spacing: var(--tracking-wider);
-  color: var(--color-text-muted);
-}
-
-.weaponName {
-  font-size: var(--text-sm);
-  font-weight: 500;
-  color: var(--color-ink);
-  overflow-wrap: break-word;
-}
-
-.weaponDamage {
-  grid-row: 2 / span 2;
-  grid-column: 2;
-  align-self: center;
-  font-size: var(--text-md);
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-  color: var(--color-chrome-strong);
-}
-
-.weaponMeta {
-  grid-column: 1;
-  font-size: var(--text-2xs);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
+  line-height: 1.35;
   color: var(--color-text-dim);
+  overflow-wrap: anywhere;
 }
 
-.weaponEmpty {
-  grid-column: 1 / -1;
+/* ── hope e experiences ──────────────────────────────────────────────────── */
+
+.hint {
+  margin: 0;
   font-size: var(--text-xs);
   color: var(--color-text-dim);
 }
 
-/* ── hope e experiences ──────────────────────────────────────────────────── */
+.hopeFeature {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  background: var(--color-bg-elevated);
+  border-left: var(--domain-stripe-width) solid var(--color-domain-aegis);
+}
 
 .experiences {
   display: flex;
@@ -235,7 +214,7 @@
 }
 
 .experienceName {
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   color: var(--color-ink);
   overflow-wrap: break-word;
 }
@@ -246,16 +225,21 @@
   color: var(--color-chrome-strong);
 }
 
-/* O que está vestido, como dado e não como frase: o efeito da armadura já
-   está em ARMOR e nos limiares, e explicá-lo em prosa era dizer duas vezes. */
-.wearing {
+/* ── armas ───────────────────────────────────────────────────────────────── */
+
+.proficiency {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.weaponList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
   margin: 0;
-  padding: var(--space-1) var(--space-3);
-  font-size: var(--text-2xs);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
-  color: var(--color-text-dim);
-  background: var(--color-bg-elevated);
+  padding: 0;
+  list-style: none;
 }
 
 .empty {
@@ -267,26 +251,28 @@
 
 @media (min-width: 900px) {
   /*
-   * Três colunas, e a planta inteira está escrita nas áreas abaixo.
-   *
    * Fileira 1: identidade atravessa.
-   * Fileira 2: defesa à esquerda, atributos ocupando as duas outras — eles são
-   *   seis, e seis numa fileira só é o que os torna uma régua.
-   * Fileira 3: dano e vida | armas | hope e experiences. As três coisas que se
-   *   tocam e se consultam durante um turno, lado a lado.
+   * Fileira 2: defesa | atributos nas duas outras — seis numa fileira é régua.
+   * Fileira 3: dano e vida | hope | armas. O que se toca e consulta num turno.
    */
   .layout {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     grid-template-areas:
       "identity identity identity"
+      "notice   notice   notice"
       "defense  traits   traits"
       "vitals   hope     weapons";
     align-items: start;
+    column-gap: var(--space-4);
   }
 
   .identity {
     grid-area: identity;
+  }
+
+  .notice {
+    grid-area: notice;
   }
 
   .defense {
@@ -298,19 +284,18 @@
   }
 
   .traitList {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 
   .vitals {
     grid-area: vitals;
   }
 
-  .weapons {
-    grid-area: weapons;
-  }
-
   .hope {
     grid-area: hope;
   }
 
+  .weapons {
+    grid-area: weapons;
+  }
 }

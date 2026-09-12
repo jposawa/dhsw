@@ -113,7 +113,12 @@ export const UserMenu = ({ isNavCollapsed = false }: { isNavCollapsed?: boolean 
         onClick={() => setIsOpen((open) => !open)}
       >
         <span className={styles.triggerSlot}>
-          <Avatar imageUrl={user.photoUrl ?? undefined} name={user.displayName} size="sm" />
+          <Avatar
+            className={styles.triggerAvatar}
+            imageUrl={user.photoUrl ?? undefined}
+            name={user.displayName}
+            size="sm"
+          />
         </span>
         <span className={styles.triggerLabel}>CONTA</span>
       </button>

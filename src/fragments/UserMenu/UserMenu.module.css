@@ -12,7 +12,10 @@
 .wrapper {
   position: relative;
   display: flex;
+  /* Mesma coluna dos destinos: ver `.item` em BottomNav. */
   flex-grow: 1;
+  flex-basis: 0;
+  min-width: 0;
 }
 
 .trigger {
@@ -40,8 +43,25 @@
   color: var(--color-chrome-strong);
 }
 
+/*
+ * A caixa do avatar tem a altura da caixa de ícone dos destinos. O avatar da
+ * biblioteca vem com 2rem; aqui ele desce para 1.5rem, senão empurra o rótulo
+ * CONTA para baixo dos outros quatro.
+ */
+.triggerSlot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.5rem;
+}
+
+.triggerAvatar {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
 .triggerIcon {
-  font-size: var(--text-sm);
+  font-size: var(--text-md);
   font-style: normal;
   letter-spacing: 0;
 }
@@ -190,6 +210,7 @@
 @media (min-width: 900px) {
   .wrapper {
     flex-grow: 0;
+    flex-basis: auto;
     margin-top: auto;
     border-top: var(--border-width) solid var(--color-border);
   }

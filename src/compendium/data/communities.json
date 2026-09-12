@@ -1,8 +1,4 @@
-// GERADO POR scripts/build-compendium.ts — NÃO EDITAR À MÃO.
-// Fonte: specs/dh-sw.html
-import type { Community } from "@/types"
-
-export const COMMUNITIES: readonly Community[] = [
+[
   {
     "name": "Coreborne",
     "description": "Mundos do Núcleo: burocracia, dinheiro antigo, regras que valem para os outros.",
@@ -33,4 +29,4 @@ export const COMMUNITIES: readonly Community[] = [
     "description": "Nascido a bordo. Gravidade é configuração, não fato.",
     "feature": "Ship Sense — Em qualquer nave, marque um Stress para achar rota de fuga, compartimento oculto ou acesso de manutenção."
   }
-] as const
+]

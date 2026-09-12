@@ -1,8 +1,7 @@
 import { Button, Chip, Input, SectionLabel } from "@jposawa/ronin-ui"
 import React from "react"
 
-import { CLASSES_BY_NAME, SKILLS_BY_NAME } from "@/compendium"
-import { useSkillSearch } from "@/hooks"
+import { useCompendium, useSkillSearch } from "@/hooks"
 import { forgetSkill, isKnown, learnSkill, moveToLoadout, moveToVault } from "@/rules"
 import type { Character, DerivedStats, Domain, Result, Skill } from "@/types"
 
@@ -39,6 +38,8 @@ type CardsPanelProps = {
  * lugares diverge no primeiro ajuste de regra da casa.
  */
 export const CardsPanel = ({ character, derived, isEditing, onApply }: CardsPanelProps) => {
+  const { compendium } = useCompendium()
+
   const [isFreeSwap, setIsFreeSwap] = React.useState(false)
   const [query, setQuery] = React.useState("")
 
@@ -49,7 +50,7 @@ export const CardsPanel = ({ character, derived, isEditing, onApply }: CardsPane
    * a ficha, e esconder tudo ali seria uma tela vazia sem explicação.
    */
   const classDomains = character.className
-    ? CLASSES_BY_NAME.get(character.className)?.domains
+    ? compendium.classes.find((candidate) => candidate.name === character.className)?.domains
     : undefined
   const searchDomains = React.useMemo(
     () => new Set<Domain>(classDomains ?? []),
@@ -60,7 +61,7 @@ export const CardsPanel = ({ character, derived, isEditing, onApply }: CardsPane
 
   const skillsOf = (names: readonly string[]): Skill[] =>
     names
-      .map((name) => SKILLS_BY_NAME.get(name))
+      .map((name) => compendium.skills.find((candidate) => candidate.name === name))
       .filter((skill): skill is Skill => skill !== undefined)
 
   const loadout = skillsOf(character.loadout)
@@ -134,7 +135,9 @@ export const CardsPanel = ({ character, derived, isEditing, onApply }: CardsPane
                       variant="outline"
                       aria-label={`Equipar ${skill.name}`}
                       onClick={() =>
-                        onApply(moveToLoadout(character, derived, skill.name, { isFreeSwap }))
+                        onApply(
+                          moveToLoadout(character, derived, skill.name, { isFreeSwap }, compendium),
+                        )
                       }
                     >
                       EQUIPAR
@@ -189,7 +192,7 @@ export const CardsPanel = ({ character, derived, isEditing, onApply }: CardsPane
                       <Button
                         variant="outline"
                         aria-label={`Aprender ${skill.name}`}
-                        onClick={() => onApply(learnSkill(character, skill.name))}
+                        onClick={() => onApply(learnSkill(character, skill.name, compendium))}
                       >
                         APRENDER
                       </Button>

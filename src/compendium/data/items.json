@@ -1,8 +1,4 @@
-// GERADO POR scripts/build-compendium.ts — NÃO EDITAR À MÃO.
-// Fonte: specs/dh-sw.html
-import type { CompendiumEntry } from "@/types"
-
-export const ITEMS: readonly CompendiumEntry[] = [
+[
   {
     "name": "Comlink",
     "tier": 1,
@@ -93,4 +89,4 @@ export const ITEMS: readonly CompendiumEntry[] = [
     "tier": 4,
     "text": "Vantagem em qualquer rolagem contra segurança imperial ou corporativa."
   }
-] as const
+]

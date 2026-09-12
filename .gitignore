@@ -10,6 +10,7 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+compendium-export.json
 *.local
 
 # Specs de trabalho — locais, não versionadas

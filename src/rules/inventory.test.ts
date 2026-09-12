@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest"
 
+import { FALLBACK_COMPENDIUM } from "@/compendium"
 import { createCharacter, createInventoryEntry } from "@/helpers"
 import type { Character, InventoryEntry } from "@/types"
 
@@ -84,7 +85,7 @@ describe("equip", () => {
     const worn = { ...createInventoryEntry("armor", "Trooper Plate"), isEquipped: true, slot: "armor" as const }
     const other = createInventoryEntry("armor", "Scout Mesh")
 
-    const result = equip(withInventory([worn, other]), other.id)
+    const result = equip(withInventory([worn, other]), other.id, FALLBACK_COMPENDIUM)
 
     expect(result.ok).toBe(false)
     expect(result.ok === false && result.code).toBe("armorSlotTaken")
@@ -97,7 +98,7 @@ describe("equip", () => {
     const character = withInventory([worn, other])
 
     const freed = unwrap(unequip(character, worn.id))
-    const next = unwrap(equip(freed, other.id))
+    const next = unwrap(equip(freed, other.id, FALLBACK_COMPENDIUM))
 
     expect(next.inventory.find((entry) => entry.id === other.id)?.isEquipped).toBe(true)
   })
@@ -114,7 +115,7 @@ describe("equipInSlot", () => {
      desequipar antes seria um passo a mais num momento sem paciência. */
   it("troca com quem estava no slot, em uma operacao", () => {
     const other = createInventoryEntry("armor", "Scout Mesh")
-    const next = unwrap(equipInSlot(withInventory([worn, other]), "armor", other.id))
+    const next = unwrap(equipInSlot(withInventory([worn, other]), "armor", other.id, FALLBACK_COMPENDIUM))
 
     expect(next.inventory.find((entry) => entry.id === other.id)?.isEquipped).toBe(true)
     expect(next.inventory.find((entry) => entry.id === worn.id)?.isEquipped).toBe(false)
@@ -122,20 +123,20 @@ describe("equipInSlot", () => {
 
   it("quem sai volta para a mochila em vez de sumir", () => {
     const other = createInventoryEntry("armor", "Scout Mesh")
-    const next = unwrap(equipInSlot(withInventory([worn, other]), "armor", other.id))
+    const next = unwrap(equipInSlot(withInventory([worn, other]), "armor", other.id, FALLBACK_COMPENDIUM))
 
     expect(next.inventory).toHaveLength(2)
     expect(next.inventory.find((entry) => entry.id === worn.id)?.slot).toBeNull()
   })
 
   it("id nulo esvazia o slot", () => {
-    const next = unwrap(equipInSlot(withInventory([worn]), "armor", null))
+    const next = unwrap(equipInSlot(withInventory([worn]), "armor", null, FALLBACK_COMPENDIUM))
 
     expect(next.inventory[0].isEquipped).toBe(false)
   })
 
   it("recusa id que nao esta no inventario", () => {
-    expect(equipInSlot(withInventory([worn]), "armor", "nao-existe").ok).toBe(false)
+    expect(equipInSlot(withInventory([worn]), "armor", "nao-existe", FALLBACK_COMPENDIUM).ok).toBe(false)
   })
 
   it("nao mexe nos outros slots", () => {
@@ -146,7 +147,7 @@ describe("equipInSlot", () => {
     }
     const other = createInventoryEntry("armor", "Scout Mesh")
 
-    const next = unwrap(equipInSlot(withInventory([worn, blaster, other]), "armor", other.id))
+    const next = unwrap(equipInSlot(withInventory([worn, blaster, other]), "armor", other.id, FALLBACK_COMPENDIUM))
 
     expect(next.inventory.find((entry) => entry.id === blaster.id)?.isEquipped).toBe(true)
   })
@@ -179,7 +180,7 @@ describe("burden — arma de duas maos ocupa as duas (p. 113)", () => {
   it("equip recusa secundaria com uma primaria de duas maos", () => {
     const rifle = equipped("Blaster Rifle", "primary")
     const knife = createInventoryEntry("weapon", "Vibroknife")
-    const result = equip(withInventory([rifle, knife]), knife.id, "secondary")
+    const result = equip(withInventory([rifle, knife]), knife.id, FALLBACK_COMPENDIUM, "secondary")
 
     expect(result.ok).toBe(false)
     expect(result.ok ? null : result.code).toBe("handsFull")
@@ -188,7 +189,7 @@ describe("burden — arma de duas maos ocupa as duas (p. 113)", () => {
   it("equipInSlot com duas maos na primaria manda a secundaria para a mochila", () => {
     const knife = equipped("Vibroknife", "secondary")
     const rifle = createInventoryEntry("weapon", "Blaster Rifle")
-    const next = unwrap(equipInSlot(withInventory([knife, rifle]), "primary", rifle.id))
+    const next = unwrap(equipInSlot(withInventory([knife, rifle]), "primary", rifle.id, FALLBACK_COMPENDIUM))
 
     expect(next.inventory.find((entry) => entry.id === rifle.id)?.slot).toBe("primary")
     expect(next.inventory.find((entry) => entry.id === knife.id)?.isEquipped).toBe(false)
@@ -197,7 +198,7 @@ describe("burden — arma de duas maos ocupa as duas (p. 113)", () => {
   it("equipInSlot de secundaria tira a primaria de duas maos", () => {
     const rifle = equipped("Blaster Rifle", "primary")
     const knife = createInventoryEntry("weapon", "Vibroknife")
-    const next = unwrap(equipInSlot(withInventory([rifle, knife]), "secondary", knife.id))
+    const next = unwrap(equipInSlot(withInventory([rifle, knife]), "secondary", knife.id, FALLBACK_COMPENDIUM))
 
     expect(next.inventory.find((entry) => entry.id === rifle.id)?.isEquipped).toBe(false)
   })
@@ -206,6 +207,6 @@ describe("burden — arma de duas maos ocupa as duas (p. 113)", () => {
     const pistol = equipped("Blaster Pistol", "primary")
     const knife = createInventoryEntry("weapon", "Vibroknife")
 
-    expect(equip(withInventory([pistol, knife]), knife.id, "secondary").ok).toBe(true)
+    expect(equip(withInventory([pistol, knife]), knife.id, FALLBACK_COMPENDIUM, "secondary").ok).toBe(true)
   })
 })

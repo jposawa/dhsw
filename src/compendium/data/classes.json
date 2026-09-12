@@ -1,8 +1,4 @@
-// GERADO POR scripts/build-compendium.ts — NÃO EDITAR À MÃO.
-// Fonte: specs/dh-sw.html
-import type { ClassDefinition } from "@/types"
-
-export const CLASSES: readonly ClassDefinition[] = [
+[
   {
     "name": "Adept",
     "evasion": 10,
@@ -93,4 +89,4 @@ export const CLASSES: readonly ClassDefinition[] = [
     "baseFeatures": "Implacable; Combat Training;",
     "hopeFeature": "**Frontline** — Gaste 3 Hope para limpar 2 Armor Slots."
   }
-] as const
+]

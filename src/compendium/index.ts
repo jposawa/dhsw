@@ -1,38 +1,45 @@
 /**
- * Compendio: dado imutavel, gerado. Nao vai para o Realtime Database — e
- * conteudo versionado com o codigo. Ver BACKEND.md.
+ * O compêndio embarcado: o JSON de `data/`, que é o fallback do banco.
  *
- * So dado e indice aqui. Funcao de busca vive em `helpers/search.ts`, e a
- * composicao das duas em `hooks/useSkillSearch.ts`.
+ * **A fonte editável é o JSON.** Carta, classe, espécie ou arma se muda lá, em
+ * um arquivo por coleção, e o mesmo arquivo é o que se importa no Realtime
+ * Database. Em runtime quem manda é o banco — `services/compendiumService.ts`
+ * lê `/dhsw/<env>/compendium` e só cai aqui na coleção que falta ou não valida.
+ *
+ * Por isso nada fora de `services/`, `states/` e dos testes importa daqui
+ * direto: tela lê de `useCompendium`, regra recebe o compêndio por parâmetro.
  */
-import { CLASSES } from "./classes"
-import { SKILLS } from "./skills"
-import { SUBCLASSES } from "./subclasses"
+import type { Compendium } from "@/types"
 
-export { ANCESTRIES } from "./ancestries"
-export { ARMOR_LINES, NAMED_ARMOR } from "./armor"
-export { CLASSES } from "./classes"
-export { COMMUNITIES } from "./communities"
-export { CONSUMABLES } from "./consumables"
-export { DOMAIN_DEFINITIONS } from "./domains"
-export { ITEMS } from "./items"
-export { SKILLS, SKILL_SEARCH_INDEX } from "./skills"
-export { SUBCLASSES } from "./subclasses"
-export { WEAPONS } from "./weapons"
+import ancestries from "./data/ancestries.json"
+import armorLines from "./data/armorLines.json"
+import classes from "./data/classes.json"
+import communities from "./data/communities.json"
+import consumables from "./data/consumables.json"
+import domains from "./data/domains.json"
+import items from "./data/items.json"
+import namedArmor from "./data/namedArmor.json"
+import skills from "./data/skills.json"
+import subclasses from "./data/subclasses.json"
+import weapons from "./data/weapons.json"
 
-/* Indices montados uma vez na importacao do modulo, nao a cada render. */
+export { COMPENDIUM_COLLECTIONS, COMPENDIUM_SCHEMAS } from "./schema"
 
-export const SKILLS_BY_NAME: ReadonlyMap<string, (typeof SKILLS)[number]> = new Map(
-  SKILLS.map((skill) => [skill.name, skill]),
-)
-
-export const CLASSES_BY_NAME: ReadonlyMap<string, (typeof CLASSES)[number]> = new Map(
-  CLASSES.map((klass) => [klass.name, klass]),
-)
-
-export const SUBCLASSES_BY_CLASS: ReadonlyMap<string, (typeof SUBCLASSES)[number][]> =
-  SUBCLASSES.reduce((byClass, subclass) => {
-    byClass.set(subclass.className, [...(byClass.get(subclass.className) ?? []), subclass])
-
-    return byClass
-  }, new Map<string, (typeof SUBCLASSES)[number][]>())
+/**
+ * `as Compendium` porque import de JSON não estreita união literal ("Aegis"
+ * vira `string`). A garantia não é o cast: é `compendium.test.ts`, que passa
+ * cada arquivo pelo mesmo schema do banco.
+ */
+export const FALLBACK_COMPENDIUM = {
+  skills,
+  domains,
+  classes,
+  subclasses,
+  ancestries,
+  communities,
+  armorLines,
+  namedArmor,
+  weapons,
+  items,
+  consumables,
+} as Compendium

@@ -1,4 +1,3 @@
-import { ARMOR_LINES, CLASSES, NAMED_ARMOR } from "@/compendium"
 import {
   ARMOR_LINE_MODIFIERS,
   BARE_BONES,
@@ -21,6 +20,7 @@ import {
 import type {
   Character,
   ClassDefinition,
+  Compendium,
   DerivedStats,
   EquippedArmor,
   HouseRules,
@@ -44,13 +44,16 @@ export const tierOf = (level: number): Tier => {
 export const clampLevel = (level: number): number =>
   Math.min(MAX_LEVEL, Math.max(MIN_LEVEL, Math.trunc(level) || MIN_LEVEL))
 
-const findClass = (className: string | null): ClassDefinition | null =>
-  CLASSES.find((candidate) => candidate.name === className) ?? null
+const findClass = (compendium: Compendium, className: string | null): ClassDefinition | null =>
+  compendium.classes.find((candidate) => candidate.name === className) ?? null
 
 const isTrait = (value: string): value is Trait => TRAIT_LIST.includes(value as Trait)
 
 /** Resolve a armadura vestida contra a linha e o tier dela. */
-export const resolveEquippedArmor = (character: Character): EquippedArmor | null => {
+export const resolveEquippedArmor = (
+  character: Character,
+  compendium: Compendium,
+): EquippedArmor | null => {
   const entry = character.inventory.find(
     (candidate) => candidate.kind === "armor" && candidate.isEquipped,
   )
@@ -59,13 +62,13 @@ export const resolveEquippedArmor = (character: Character): EquippedArmor | null
     return null
   }
 
-  const named = NAMED_ARMOR.find((candidate) => candidate.name === entry.name)
+  const named = compendium.namedArmor.find((candidate) => candidate.name === entry.name)
 
   if (!named) {
     return null
   }
 
-  const line = ARMOR_LINES.find((candidate) => candidate.name === named.line)
+  const line = compendium.armorLines.find((candidate) => candidate.name === named.line)
 
   if (!line) {
     return null
@@ -116,18 +119,25 @@ const expectedCardsFor = (
 }
 
 /**
- * Ficha + regras da casa → tudo que aparece na tela.
+ * Ficha + regras da casa + compêndio → tudo que aparece na tela.
+ *
+ * O compêndio vem por parâmetro porque é dado de runtime — pode ter vindo do
+ * banco. `rules/` continua puro: não sabe de onde ele veio.
  *
  * Chamada em todo render. É O(nº de advancements) — no pior caso vinte
  * entradas. Sem memoização até aparecer no profiler.
  *
  * Nada do que sai daqui é gravado: derivado nunca é guardado.
  */
-export const derive = (character: Character, houseRules: HouseRules): DerivedStats => {
+export const derive = (
+  character: Character,
+  houseRules: HouseRules,
+  compendium: Compendium,
+): DerivedStats => {
   const level = clampLevel(character.level)
   const tier = tierOf(level)
-  const classDefinition = findClass(character.className)
-  const equippedArmor = resolveEquippedArmor(character)
+  const classDefinition = findClass(compendium, character.className)
+  const equippedArmor = resolveEquippedArmor(character, compendium)
   const collector = createModifierCollector()
 
   /* ── advancements: cada um com o nível em que foi comprado ───────── */

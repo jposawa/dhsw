@@ -10,6 +10,11 @@
           ".write": false
         },
 
+        "compendium": {
+          ".read": true,
+          ".write": false
+        },
+
         "profiles": {
           "$uid": {
             ".read": "auth != null",

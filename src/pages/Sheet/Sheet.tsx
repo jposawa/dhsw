@@ -7,6 +7,7 @@ import { StepRule } from "@/components"
 import { ROUTES, RULE_ERROR_MESSAGES, SHEET_TABS } from "@/constants"
 import { SaveState } from "@/fragments"
 import { hasSheetEdits, touchCharacter } from "@/helpers"
+import { useCompendium } from "@/hooks"
 import { derive } from "@/rules"
 import { houseRulesAtom, rosterAtom, sheetRolesAtom, toastAtom } from "@/states"
 import type { Character, Marks, Result, SheetTabId } from "@/types"
@@ -37,6 +38,7 @@ export const Sheet = () => {
   const houseRules = useAtomValue(houseRulesAtom)
   const sheetRoles = useAtomValue(sheetRolesAtom)
   const setToast = useSetAtom(toastAtom)
+  const { compendium } = useCompendium()
 
   const [tab, setTab] = React.useState<SheetTabId>("combate")
   const [draft, setDraft] = React.useState<Character | null>(null)
@@ -62,7 +64,7 @@ export const Sheet = () => {
   // Editando, tudo se calcula sobre o rascunho: é o que faz Evasion e HP
   // mudarem enquanto se escolhe a classe, antes de confirmar.
   const shown = draft ?? character
-  const derived = derive(shown, houseRules)
+  const derived = derive(shown, houseRules, compendium)
   const isDirty = draft !== null && hasSheetEdits(draft, character)
 
   /**

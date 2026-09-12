@@ -1,10 +1,10 @@
 import { Collapse, Input, SectionLabel } from "@jposawa/ronin-ui"
 import React from "react"
 
-import { CLASSES, SUBCLASSES } from "@/compendium"
 import { DomainLabel } from "@/components"
 import { RuleText } from "@/fragments"
 import { domainColorToken, filterByText } from "@/helpers"
+import { useCompendium } from "@/hooks"
 
 import styles from "./Reference.module.css"
 
@@ -17,11 +17,13 @@ import styles from "./Reference.module.css"
  * segmento.
  */
 export const CompendiumClasses = () => {
+  const { compendium } = useCompendium()
+
   const [query, setQuery] = React.useState("")
   const [openClasses, setOpenClasses] = React.useState<ReadonlySet<string>>(new Set())
 
   const classes = filterByText(
-    CLASSES,
+    compendium.classes,
     (klass) => `${klass.name} ${klass.baseFeatures} ${klass.hopeFeature}`,
     query,
   )
@@ -50,7 +52,7 @@ export const CompendiumClasses = () => {
           onValueChange={setQuery}
         />
 
-        <SectionLabel detail={`${classes.length} de ${CLASSES.length}`}>
+        <SectionLabel detail={`${classes.length} de ${compendium.classes.length}`}>
           <h2>CLASSES</h2>
         </SectionLabel>
       </search>
@@ -99,7 +101,7 @@ export const CompendiumClasses = () => {
 
                 <h4 className={styles.label}>SUBCLASSES</h4>
                 <ul className={styles.subList}>
-                  {SUBCLASSES.filter((subclass) => subclass.className === klass.name).map(
+                  {compendium.subclasses.filter((subclass) => subclass.className === klass.name).map(
                     (subclass) => (
                       <li key={subclass.name} className={styles.subRow}>
                         <b className={styles.subName}>{subclass.name}</b>

@@ -2,10 +2,10 @@ import { Button, SectionLabel } from "@jposawa/ronin-ui"
 import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import { Link } from "react-router-dom"
 
-import { CLASSES_BY_NAME } from "@/compendium"
 import { StepRule } from "@/components"
 import { ROUTES } from "@/constants"
 import { createCharacter, domainColorToken, duplicateCharacter } from "@/helpers"
+import { useCompendium } from "@/hooks"
 import { deleteSheet, leaveSheet } from "@/services"
 import { authAtom, charactersAtom, rosterAtom, sheetRolesAtom, toastAtom } from "@/states"
 import type { Character } from "@/types"
@@ -23,6 +23,8 @@ const summaryOf = (character: Character): string =>
  * quando não é a que você quer. dh-sw-arquitetura.md §7.
  */
 export const Roster = () => {
+  const { compendium } = useCompendium()
+
   const characters = useAtomValue(charactersAtom)
   const [roster, setRoster] = useAtom(rosterAtom)
   const { user } = useAtomValue(authAtom)
@@ -93,7 +95,7 @@ export const Roster = () => {
         <ul className={styles.list}>
           {characters.map((character) => {
             const classDefinition = character.className
-              ? CLASSES_BY_NAME.get(character.className)
+              ? compendium.classes.find((candidate) => candidate.name === character.className)
               : undefined
             const color = classDefinition
               ? domainColorToken(classDefinition.domains[0])

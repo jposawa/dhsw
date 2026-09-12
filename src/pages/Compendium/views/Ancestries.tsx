@@ -1,9 +1,9 @@
 import { Input, SectionLabel } from "@jposawa/ronin-ui"
 import React from "react"
 
-import { ANCESTRIES } from "@/compendium"
 import { RuleText } from "@/fragments"
 import { filterByText } from "@/helpers"
+import { useCompendium } from "@/hooks"
 
 import styles from "./Reference.module.css"
 
@@ -14,10 +14,12 @@ import styles from "./Reference.module.css"
  * que traz uma só, está registrada em `types/compendium.ts` e não é engano.
  */
 export const CompendiumAncestries = () => {
+  const { compendium } = useCompendium()
+
   const [query, setQuery] = React.useState("")
 
   const ancestries = filterByText(
-    ANCESTRIES,
+    compendium.ancestries,
     (ancestry) => `${ancestry.name} ${ancestry.description} ${ancestry.features.join(" ")}`,
     query,
   )
@@ -34,7 +36,7 @@ export const CompendiumAncestries = () => {
           onValueChange={setQuery}
         />
 
-        <SectionLabel detail={`${ancestries.length} de ${ANCESTRIES.length}`}>
+        <SectionLabel detail={`${ancestries.length} de ${compendium.ancestries.length}`}>
           <h2>ESPÉCIES</h2>
         </SectionLabel>
       </search>

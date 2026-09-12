@@ -1,6 +1,5 @@
-import { SKILLS } from "@/compendium"
 import { fail, ok } from "@/helpers"
-import type { Character, DerivedStats, Result } from "@/types"
+import type { Character, Compendium, DerivedStats, Result } from "@/types"
 
 /**
  * Loadout e vault, conforme o SRD.
@@ -12,8 +11,8 @@ import type { Character, DerivedStats, Result } from "@/types"
  * mensagem e nunca reimplementa a condição. STANDARDS.md.
  */
 
-const findSkill = (skillName: string) =>
-  SKILLS.find((skill) => skill.name === skillName)
+const findSkill = (compendium: Compendium, skillName: string) =>
+  compendium.skills.find((skill) => skill.name === skillName)
 
 export const isKnown = (character: Character, skillName: string): boolean =>
   character.loadout.includes(skillName) || character.vault.includes(skillName)
@@ -24,8 +23,9 @@ export const moveToLoadout = (
   derived: DerivedStats,
   skillName: string,
   options: { isFreeSwap: boolean },
+  compendium: Compendium,
 ): Result<Character> => {
-  const skill = findSkill(skillName)
+  const skill = findSkill(compendium, skillName)
 
   if (!skill) {
     return fail("skillUnknown", skillName)
@@ -72,8 +72,12 @@ export const moveToVault = (character: Character, skillName: string): Result<Cha
 }
 
 /** Aprender carta nova: entra no vault. */
-export const learnSkill = (character: Character, skillName: string): Result<Character> => {
-  if (!findSkill(skillName)) {
+export const learnSkill = (
+  character: Character,
+  skillName: string,
+  compendium: Compendium,
+): Result<Character> => {
+  if (!findSkill(compendium, skillName)) {
     return fail("skillUnknown", skillName)
   }
 

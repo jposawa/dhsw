@@ -1,10 +1,14 @@
 import { describe, expect, it } from "vitest"
 
+import { FALLBACK_COMPENDIUM } from "@/compendium"
 import { DEFAULT_HOUSE_RULES } from "@/constants"
 import { createCharacter } from "@/helpers"
 import type { Advancement, Character, HouseRules, InventoryEntry } from "@/types"
 
-import { derive, tierOf } from "./derive"
+import { derive as deriveWith, tierOf } from "./derive"
+
+const derive = (character: Character, houseRules: HouseRules) =>
+  deriveWith(character, houseRules, FALLBACK_COMPENDIUM)
 
 /*
  * Os números esperados aqui saem do Daggerheart Core Rulebook — página citada

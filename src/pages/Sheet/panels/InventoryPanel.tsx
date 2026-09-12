@@ -1,10 +1,10 @@
 import { Button, Chip, Drawer, Input, SectionLabel } from "@jposawa/ronin-ui"
 import React from "react"
 
-import { CONSUMABLES, ITEMS, NAMED_ARMOR, WEAPONS } from "@/compendium"
 import { EQUIP_SLOTS, GEAR_KINDS } from "@/constants"
 import { RuleText } from "@/fragments"
 import { createInventoryEntry, filterByText } from "@/helpers"
+import { useCompendium } from "@/hooks"
 import { addEntry, candidatesForSlot, consume, equipInSlot, removeEntry } from "@/rules"
 import type {
   Character,
@@ -62,6 +62,8 @@ type InventoryPanelProps = {
  * recusa de slot ocupado no meio.
  */
 export const InventoryPanel = ({ character, derived, onApply }: InventoryPanelProps) => {
+  const { compendium } = useCompendium()
+
   const [slotDrawer, setSlotDrawer] = React.useState<EquipSlot | null>(null)
   const [isCatalogueOpen, setIsCatalogueOpen] = React.useState(false)
   const [gearKind, setGearKind] = React.useState<GearKind>("armas")
@@ -70,21 +72,21 @@ export const InventoryPanel = ({ character, derived, onApply }: InventoryPanelPr
   const carried = character.inventory.filter((entry) => !entry.isEquipped)
 
   const catalogue = {
-    armas: filterByText(WEAPONS, (weapon) => `${weapon.name} ${weapon.trait}`, query),
-    armaduras: filterByText(NAMED_ARMOR, (piece) => `${piece.name} ${piece.line}`, query),
-    itens: filterByText(ITEMS, (item) => `${item.name} ${item.text}`, query),
-    consumiveis: filterByText(CONSUMABLES, (item) => `${item.name} ${item.text}`, query),
+    armas: filterByText(compendium.weapons, (weapon) => `${weapon.name} ${weapon.trait}`, query),
+    armaduras: filterByText(compendium.namedArmor, (piece) => `${piece.name} ${piece.line}`, query),
+    itens: filterByText(compendium.items, (item) => `${item.name} ${item.text}`, query),
+    consumiveis: filterByText(compendium.consumables, (item) => `${item.name} ${item.text}`, query),
   }[gearKind]
 
   const describe = (entry: InventoryEntry): string => {
     if (entry.kind === "weapon") {
-      const weapon = WEAPONS.find((candidate) => candidate.name === entry.name)
+      const weapon = compendium.weapons.find((candidate) => candidate.name === entry.name)
 
       return weapon ? `${weapon.trait} · ${weapon.range} · ${weapon.damageDie}` : "arma"
     }
 
     if (entry.kind === "armor") {
-      const piece = NAMED_ARMOR.find((candidate) => candidate.name === entry.name)
+      const piece = compendium.namedArmor.find((candidate) => candidate.name === entry.name)
 
       return piece ? `${piece.line} · Tier ${piece.tier}` : "armadura"
     }
@@ -202,7 +204,7 @@ export const InventoryPanel = ({ character, derived, onApply }: InventoryPanelPr
             equippedId={equippedIn(slotDrawer)?.id ?? null}
             describe={describe}
             onChoose={(entryId) =>
-              applyAndCloseDrawer(equipInSlot(character, slotDrawer, entryId))
+              applyAndCloseDrawer(equipInSlot(character, slotDrawer, entryId, compendium))
             }
           />
         ) : null}

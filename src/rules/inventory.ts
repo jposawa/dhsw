@@ -1,6 +1,5 @@
-import { WEAPONS } from "@/compendium"
 import { fail, ok } from "@/helpers"
-import type { Character, EquipSlot, InventoryEntry, Result } from "@/types"
+import type { Character, Compendium, EquipSlot, InventoryEntry, Result } from "@/types"
 
 /**
  * Regras de equipar, aplicadas na hora e não depois.
@@ -11,11 +10,11 @@ import type { Character, EquipSlot, InventoryEntry, Result } from "@/types"
 
 const TWO_HANDED_BURDEN = "Duas mãos"
 
-const findWeapon = (entry: InventoryEntry | undefined) =>
-  entry ? WEAPONS.find((candidate) => candidate.name === entry.name) : undefined
+const findWeapon = (compendium: Compendium, entry: InventoryEntry | undefined) =>
+  entry ? compendium.weapons.find((candidate) => candidate.name === entry.name) : undefined
 
-const isTwoHanded = (entry: InventoryEntry | undefined): boolean =>
-  findWeapon(entry)?.burden === TWO_HANDED_BURDEN
+const isTwoHanded = (compendium: Compendium, entry: InventoryEntry | undefined): boolean =>
+  findWeapon(compendium, entry)?.burden === TWO_HANDED_BURDEN
 
 const equippedIn = (character: Character, slot: EquipSlot) =>
   character.inventory.find((candidate) => candidate.isEquipped && candidate.slot === slot)
@@ -27,24 +26,29 @@ const equippedIn = (character: Character, slot: EquipSlot) =>
  * duas mãos tira a primária. `null` quando não há conflito.
  */
 const handConflictFor = (
+  compendium: Compendium,
   character: Character,
   entry: InventoryEntry,
   slot: EquipSlot,
 ): InventoryEntry | null => {
-  if (slot === "primary" && isTwoHanded(entry)) {
+  if (slot === "primary" && isTwoHanded(compendium, entry)) {
     return equippedIn(character, "secondary") ?? null
   }
 
   const primary = equippedIn(character, "primary")
 
-  if (slot === "secondary" && primary && primary.id !== entry.id && isTwoHanded(primary)) {
+  if (slot === "secondary" && primary && primary.id !== entry.id && isTwoHanded(compendium, primary)) {
     return primary
   }
 
   return null
 }
 
-const slotForEntry = (entry: InventoryEntry, requested?: EquipSlot): EquipSlot | null => {
+const slotForEntry = (
+  compendium: Compendium,
+  entry: InventoryEntry,
+  requested?: EquipSlot,
+): EquipSlot | null => {
   if (entry.kind === "armor") {
     return "armor"
   }
@@ -57,12 +61,13 @@ const slotForEntry = (entry: InventoryEntry, requested?: EquipSlot): EquipSlot |
     return requested
   }
 
-  return findWeapon(entry)?.burden === "Secundária" ? "secondary" : "primary"
+  return findWeapon(compendium, entry)?.burden === "Secundária" ? "secondary" : "primary"
 }
 
 export const equip = (
   character: Character,
   entryId: string,
+  compendium: Compendium,
   requestedSlot?: EquipSlot,
 ): Result<Character> => {
   const entry = character.inventory.find((candidate) => candidate.id === entryId)
@@ -71,7 +76,7 @@ export const equip = (
     return fail("entryNotFound", entryId)
   }
 
-  const slot = slotForEntry(entry, requestedSlot)
+  const slot = slotForEntry(compendium, entry, requestedSlot)
 
   if (!slot) {
     return fail("entryNotEquippable", entry.name)
@@ -83,7 +88,7 @@ export const equip = (
     return fail(slot === "armor" ? "armorSlotTaken" : "weaponSlotTaken", occupant.name)
   }
 
-  const conflict = handConflictFor(character, entry, slot)
+  const conflict = handConflictFor(compendium, character, entry, slot)
 
   if (conflict) {
     return fail("handsFull", conflict.name)
@@ -223,6 +228,7 @@ export const equipInSlot = (
   character: Character,
   slot: EquipSlot,
   entryId: string | null,
+  compendium: Compendium,
 ): Result<Character> => {
   const incoming = character.inventory.find((entry) => entry.id === entryId)
 
@@ -231,7 +237,7 @@ export const equipInSlot = (
   }
 
   // A arma que as mãos não comportam volta para a mochila junto com o ocupante.
-  const conflict = incoming ? handConflictFor(character, incoming, slot) : null
+  const conflict = incoming ? handConflictFor(compendium, character, incoming, slot) : null
 
   return ok({
     ...character,

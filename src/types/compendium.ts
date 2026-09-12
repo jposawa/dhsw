@@ -2,7 +2,7 @@ import type { DamageType, Domain, Level, Range, Tier, Trait, WeaponBurden } from
 
 export type SkillCategory = "Ability" | "Force" | "Holocron"
 
-/** Carta de domínio. Referenciada por nome — ver DOMAIN.md. */
+/** Carta de domínio. A ficha referencia por nome. */
 export type Skill = {
   name: string
   domain: Domain
@@ -67,7 +67,7 @@ export type ArmorTier = {
 
 export type ArmorLine = {
   name: ArmorLineName
-  /** Rótulo cru do protótipo ("+1 Evasion", "—"). O número sai de ARMOR_LINE_EVASION. */
+  /** Rótulo para leitura ("+1 Evasion", "—"). O número sai de `ARMOR_LINE_MODIFIERS`. */
   evasionLabel: string
   tiers: readonly ArmorTier[]
 }
@@ -98,3 +98,32 @@ export type CompendiumEntry = {
   tier: Tier
   text: string
 }
+
+/**
+ * O compêndio inteiro, uma coleção por chave.
+ *
+ * Vem do Realtime Database quando existe lá, coleção a coleção, e cai no JSON
+ * de `compendium/data/` quando não existe ou não passa na validação. Ver
+ * `services/compendiumService.ts`.
+ */
+export type Compendium = {
+  skills: readonly Skill[]
+  domains: readonly DomainDefinition[]
+  classes: readonly ClassDefinition[]
+  subclasses: readonly Subclass[]
+  ancestries: readonly Ancestry[]
+  communities: readonly Community[]
+  armorLines: readonly ArmorLine[]
+  namedArmor: readonly NamedArmor[]
+  weapons: readonly Weapon[]
+  items: readonly CompendiumEntry[]
+  consumables: readonly CompendiumEntry[]
+}
+
+export type CompendiumCollection = keyof Compendium
+
+/**
+ * De onde veio cada coleção. `remote` é do banco; `fallback` é o JSON do
+ * repositório — porque o banco não tem, ou tem algo que não valida.
+ */
+export type CompendiumOrigin = Readonly<Record<CompendiumCollection, "remote" | "fallback">>

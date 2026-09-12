@@ -1,9 +1,9 @@
 import { SectionLabel } from "@jposawa/ronin-ui"
 
-import { WEAPONS } from "@/compendium"
 import { EQUIP_SLOTS, HOPE_MAX, TRAIT_LIST } from "@/constants"
 import { MarkerTrack, StatBlock, ThresholdBar } from "@/fragments"
 import { domainColorToken, formatSigned } from "@/helpers"
+import { useCompendium } from "@/hooks"
 import type { Character, DerivedStats, EquipSlot, Marks } from "@/types"
 
 import styles from "./CombatPlay.module.css"
@@ -48,6 +48,8 @@ type CombatPlayProps = {
  * sobre a regra.
  */
 export const CombatPlay = ({ character, derived, onMarksChange }: CombatPlayProps) => {
+  const { compendium } = useCompendium()
+
   const lineage = [character.className, character.subclass, character.ancestry, character.community]
     .filter(Boolean)
     .join(" · ")
@@ -148,7 +150,7 @@ export const CombatPlay = ({ character, derived, onMarksChange }: CombatPlayProp
           {EQUIP_SLOTS.filter((slot) => slot.id !== "armor").map((slot) => {
             const entry = equippedIn(slot.id)
             const weapon = entry
-              ? WEAPONS.find((candidate) => candidate.name === entry.name)
+              ? compendium.weapons.find((candidate) => candidate.name === entry.name)
               : undefined
 
             return (

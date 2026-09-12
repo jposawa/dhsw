@@ -1,10 +1,10 @@
 import { Chip, Input, SectionLabel } from "@jposawa/ronin-ui"
 import React from "react"
 
-import { CONSUMABLES, ITEMS, NAMED_ARMOR, WEAPONS } from "@/compendium"
 import { GEAR_KINDS } from "@/constants"
 import { RuleText } from "@/fragments"
 import { filterByText, formatSigned } from "@/helpers"
+import { useCompendium } from "@/hooks"
 import type { GearKind } from "@/types"
 
 import styles from "./Reference.module.css"
@@ -22,21 +22,23 @@ import styles from "./Reference.module.css"
  * dentro de uma tela — e o compêndio já tem uma régua acima, que confundiria.
  */
 export const CompendiumGear = () => {
+  const { compendium } = useCompendium()
+
   const [kind, setKind] = React.useState<GearKind>("armas")
   const [query, setQuery] = React.useState("")
 
   const weapons = filterByText(
-    WEAPONS,
+    compendium.weapons,
     (weapon) => `${weapon.name} ${weapon.trait} ${weapon.range} ${weapon.feature ?? ""}`,
     query,
   )
   const armor = filterByText(
-    NAMED_ARMOR,
+    compendium.namedArmor,
     (piece) => `${piece.name} ${piece.line} ${piece.feature ?? ""}`,
     query,
   )
-  const items = filterByText(ITEMS, (item) => `${item.name} ${item.text}`, query)
-  const consumables = filterByText(CONSUMABLES, (item) => `${item.name} ${item.text}`, query)
+  const items = filterByText(compendium.items, (item) => `${item.name} ${item.text}`, query)
+  const consumables = filterByText(compendium.consumables, (item) => `${item.name} ${item.text}`, query)
 
   const shownByKind = {
     armas: weapons,
@@ -45,10 +47,10 @@ export const CompendiumGear = () => {
     consumiveis: consumables,
   }
   const totalByKind = {
-    armas: WEAPONS,
-    armaduras: NAMED_ARMOR,
-    itens: ITEMS,
-    consumiveis: CONSUMABLES,
+    armas: compendium.weapons,
+    armaduras: compendium.namedArmor,
+    itens: compendium.items,
+    consumiveis: compendium.consumables,
   }
 
   const shown = shownByKind[kind]

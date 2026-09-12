@@ -1,8 +1,4 @@
-// GERADO POR scripts/build-compendium.ts — NÃO EDITAR À MÃO.
-// Fonte: specs/dh-sw.html
-import type { Ancestry } from "@/types"
-
-export const ANCESTRIES: readonly Ancestry[] = [
+[
   {
     "name": "Human",
     "description": "Espalhados por toda parte, adaptáveis a quase tudo, e por isso mesmo raramente notados como espécie.",
@@ -67,4 +63,4 @@ export const ANCESTRIES: readonly Ancestry[] = [
       "**Antiox Discipline** — Sua máscara filtra tudo: você é imune a gás, esporo e toxina inalada. Sem ela, você não respira em atmosfera de oxigênio."
     ]
   }
-] as const
+]

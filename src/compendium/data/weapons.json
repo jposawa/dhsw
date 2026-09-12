@@ -1,8 +1,4 @@
-// GERADO POR scripts/build-compendium.ts — NÃO EDITAR À MÃO.
-// Fonte: specs/dh-sw.html
-import type { Weapon } from "@/types"
-
-export const WEAPONS: readonly Weapon[] = [
+[
   {
     "name": "Lightsaber",
     "trait": "Forcewield",
@@ -435,4 +431,4 @@ export const WEAPONS: readonly Weapon[] = [
     "feature": "Ignora cobertura. Uso limitado por munição rara.",
     "isIconic": false
   }
-] as const
+]

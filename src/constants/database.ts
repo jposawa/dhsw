@@ -12,6 +12,7 @@ import type { DatabaseEnvironment } from "@/types"
  *   dhsw/
  *     stage/
  *       config/                        leitura pública
+       compendium/<coleção>           leitura pública — cartas, classes, equipamento
  *       profiles/<uid>
  *       sheets/<sheetId>
  *       sheetAccess/<sheetId>/<uid>    { roleId, level, grantedBy, grantedAt }
@@ -34,6 +35,12 @@ export const DATABASE_ENVIRONMENTS: Readonly<Record<"Stage" | "Prod", DatabaseEn
 export const DB_PATHS = {
   /** Leitura pública, escrita nunca pelo cliente. Ver CONFIG.md. */
   config: "config",
+
+  /**
+   * Leitura pública, escrita nunca pelo cliente. Uma chave por coleção
+   * (`compendium/skills`, `compendium/classes`…), no formato de `compendium/data/`.
+   */
+  compendium: "compendium",
 
   profile: (userId: string) => `profiles/${userId}`,
 

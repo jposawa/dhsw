@@ -84,7 +84,7 @@
 
   /* Um degrau abaixo do `--text-xs` da biblioteca, para os micro-rótulos
      muito espaçados do protótipo. Token só do DH-SW: não conflita. */
-  --text-2xs: 0.625rem;
+  --text-2xs: 0.6875rem;
 
   /* Entreletra: a assinatura deco. Bem mais larga que o padrão da biblioteca. */
   --tracking-wide: 0.09em;
@@ -178,12 +178,14 @@
   /* chrome: a interface, frio */
   --color-chrome: #b9c4d0;
   --color-chrome-strong: #dce4ec;
-  --color-chrome-dim: #5e6b78;
+  --color-chrome-dim: #6f7d8a;
   --color-text-strong: var(--color-chrome-strong);
 
-  --color-text-muted: #8d93a0;
+  /* Clareados em set/2026: os rótulos pequenos e espaçados ficavam no limite
+     da leitura. muted 8,6:1 e dim 6,7:1 sobre `--color-bg-elevated`. */
+  --color-text-muted: #b0b7c1;
   /* Clareado de #67707c: aquele dava 3,43:1 sobre `--color-bg-elevated`. */
-  --color-text-dim: #7c8794;
+  --color-text-dim: #98a2ad;
   --color-text-disabled: #4c5878;
 
   /* Intents da biblioteca. Os semânticos vêm da paleta escura dela, que já

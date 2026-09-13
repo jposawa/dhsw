@@ -23,8 +23,8 @@
 
 .mark {
   display: block;
-  width: 27px;
-  height: 27px;
+  width: 24px;
+  height: 24px;
   background: var(--color-bg-elevated);
   border: var(--border-width) solid var(--color-border);
   transition: background-color 0.15s ease, border-color 0.15s ease;

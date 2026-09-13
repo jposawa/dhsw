@@ -41,10 +41,10 @@ type CombatPlayProps = {
  *    slot é reduzir o dano que acabou de chegar.
  * 3. **Atributos** com os verbos da ficha do livro: "rola o quê para pular?"
  *    se responde olhando, sem decorar a lista.
- * 4. **Dano e vida juntos**: a régua de thresholds em cima do HP, porque a
- *    pergunta real é "levei 11, marco quanto?".
- * 5. **Hope** com a Hope feature da classe e as Experiences — é Hope que se
- *    gasta nas duas.
+ * 4. **Dano, vida e Hope juntos**: a régua de thresholds em cima do HP, porque
+ *    a pergunta real é "levei 11, marco quanto?", e Hope colado em HP e Stress
+ *    porque são os três marcadores tocados no mesmo turno.
+ * 5. **Hope feature e Experiences** — os dois jeitos de gastar Hope.
  * 6. **Armas** com Proficiency já nos dados e a feature à vista.
  *
  * Nada aqui muda um máximo: marcar é estado de mesa e grava no toque. O que
@@ -92,17 +92,6 @@ export const CombatPlay = ({
         </div>
 
         <div className={styles.identitySide}>
-          <dl className={styles.levelBadge}>
-            <div className={styles.levelCell}>
-              <dt>NÍVEL</dt>
-              <dd>{derived.level}</dd>
-            </div>
-            <div className={styles.levelCell}>
-              <dt>TIER</dt>
-              <dd>{derived.tier}</dd>
-            </div>
-          </dl>
-
           {/* No cabeçalho e em texto: descanso acontece entre cenas, poucas vezes
               por sessão, e não disputa espaço com os pips que se tocam no turno. */}
           <Button
@@ -113,6 +102,17 @@ export const CombatPlay = ({
           >
             DESCANSAR
           </Button>
+
+          <dl className={styles.levelBadge}>
+            <div className={styles.levelCell}>
+              <dt>NÍVEL</dt>
+              <dd>{derived.level}</dd>
+            </div>
+            <div className={styles.levelCell}>
+              <dt>TIER</dt>
+              <dd>{derived.tier}</dd>
+            </div>
+          </dl>
         </div>
       </header>
 
@@ -171,7 +171,7 @@ export const CombatPlay = ({
 
       <section className={styles.vitals}>
         <SectionLabel>
-          <h3>DANO E VIDA</h3>
+          <h3>DANO, VIDA E HOPE</h3>
         </SectionLabel>
 
         <ThresholdBar
@@ -197,9 +197,6 @@ export const CombatPlay = ({
           color={domainColorToken("Essence")}
           onChange={(stress) => onMarksChange({ ...character.marks, stress })}
         />
-      </section>
-
-      <section className={styles.hope}>
         <MarkerTrack
           label="HOPE"
           hasCount
@@ -208,11 +205,17 @@ export const CombatPlay = ({
           color={domainColorToken("Aegis")}
           onChange={(hope) => onMarksChange({ ...character.marks, hope })}
         />
-
         <p className={styles.hint}>Gaste uma Hope para usar uma Experience ou ajudar um aliado.</p>
+      </section>
 
+      <section className={styles.hope}>
         {classDefinition ? (
-          <RuleText className={styles.hopeFeature} text={classDefinition.hopeFeature} />
+          <>
+            <SectionLabel>
+              <h3>HOPE FEATURE</h3>
+            </SectionLabel>
+            <RuleText className={styles.hopeFeature} text={classDefinition.hopeFeature} />
+          </>
         ) : null}
 
         <SectionLabel detail={String(character.experiences.length)}>

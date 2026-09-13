@@ -8,13 +8,15 @@
 .track {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
 }
 
+/* Sem `gap`: o alvo de toque do pip já é 44px e o quadrado pintado é menor,
+   então a folga entre dois quadrados vem do próprio alvo. Somar um `gap` por
+   cima espalhava a trilha até ela parecer solta do rótulo. */
 .pips {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-1);
+  margin-left: calc((var(--size-touch-target) - 24px) / -2);
 }
 
 .empty {

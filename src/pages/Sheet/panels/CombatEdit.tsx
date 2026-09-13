@@ -1,7 +1,8 @@
 import { SectionLabel, Stepper } from "@jposawa/ronin-ui"
 
 import { MAX_LEVEL, MIN_LEVEL, TRAIT_LIST } from "@/constants"
-import { formatSigned } from "@/helpers"
+import { ThresholdBar } from "@/fragments"
+import { describeThresholdOrigin, formatSigned } from "@/helpers"
 import { useCompendium } from "@/hooks"
 import type { Character, DerivedStats } from "@/types"
 
@@ -44,26 +45,30 @@ export const CombatEdit = ({ draft, derived, onChange }: CombatEditProps) => {
             <dd>{derived.evasion.total}</dd>
           </div>
           <div className={styles.previewCell}>
-            <dt>HP MÁX</dt>
+            <dt>ARMOR</dt>
+            <dd>{derived.armorScore.total}</dd>
+          </div>
+          <div className={styles.previewCell}>
+            <dt>HP</dt>
             <dd>{derived.hitPointsMax.total}</dd>
           </div>
           <div className={styles.previewCell}>
-            <dt>STRESS MÁX</dt>
+            <dt>STRESS</dt>
             <dd>{derived.stressMax.total}</dd>
           </div>
           <div className={styles.previewCell}>
             <dt>PROF</dt>
             <dd>{derived.proficiency.total}</dd>
           </div>
-          <div className={styles.previewCell}>
-            <dt>MAJOR</dt>
-            <dd>{derived.majorThreshold.total}</dd>
-          </div>
-          <div className={styles.previewCell}>
-            <dt>SEVERE</dt>
-            <dd>{derived.severeThreshold.total}</dd>
-          </div>
         </dl>
+
+        {/* Os thresholds são a mesma régua do modo jogo: dois números soltos
+            em caixas diziam menos e não se pareciam com a ficha. */}
+        <ThresholdBar
+          major={derived.majorThreshold}
+          severe={derived.severeThreshold}
+          origin={describeThresholdOrigin(derived)}
+        />
       </section>
 
       <section className={styles.identity}>

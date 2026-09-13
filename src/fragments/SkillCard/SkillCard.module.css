@@ -1,25 +1,37 @@
 /*
- * A carta, nas duas variantes.
+ * A carta, nas duas variantes, com **uma** folha de medidas.
  *
- * A base é a fechada, a da grade: a altura vem do `aspect-ratio` do item da
- * grade (`Cards.module.css`). A aberta (`data-variant="open"`) preenche o
- * `<dialog>` de `SkillDetail`, que tem a mesma proporção, e só sobe a escala.
+ * `.card` é o contêiner de consulta (`container-type`), e tudo dentro de
+ * `.face` é medido em `cqi` — 1cqi é 1% da largura da carta. Por isso a aberta
+ * e a fechada não têm regra de tamanho próprias: a aberta só é mais larga, e o
+ * resto acompanha na mesma proporção. A altura vem de fora — do `aspect-ratio`
+ * do item da grade ou do `<dialog>` —, os dois em 5:7.
+ *
+ * O texto é a exceção: leva um piso com `max()`, porque 4cqi numa carta de
+ * 165px dá menos de 7px.
  */
 .card {
+  container-type: inline-size;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.face {
   position: relative;
   display: flex;
   flex-direction: column;
-  min-height: 0;
-  min-width: 0;
   height: 100%;
-  padding: var(--space-2);
+  padding: 5cqi;
   background: var(--color-bg-elevated);
   border: var(--border-width) solid var(--color-border);
-  border-top: var(--domain-stripe-width) solid var(--domain-color, var(--color-chrome));
+  border-top: 1.2cqi solid var(--domain-color, var(--color-chrome));
+  outline: var(--border-width) solid color-mix(in srgb, var(--domain-color) 30%, transparent);
+  outline-offset: -2cqi;
   transition: border-color 0.15s ease;
 }
 
-.card[data-variant="closed"]:hover {
+.card[data-variant="closed"] .face:hover {
   border-color: var(--color-chrome-dim);
   border-top-color: var(--domain-color, var(--color-chrome));
 }
@@ -28,41 +40,43 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-1);
+  gap: 2cqi;
 }
 
+/* Nível e emblema juntos: o emblema identifica o domínio sem ocupar a linha. */
 .level {
-  font-size: var(--text-lg);
+  display: inline-flex;
+  align-items: center;
+  gap: 1.5cqi;
+  font-size: max(1.125rem, 10cqi);
   font-variant-numeric: tabular-nums;
   line-height: 1;
   color: var(--domain-color, var(--color-chrome));
 }
 
-.domain {
-  min-width: 0;
-  overflow: hidden;
-  white-space: nowrap;
+/* Descendente de `.level`: o `DomainSymbol` tem 1em de lado na própria classe. */
+.level .levelSymbol {
+  width: 0.7em;
+  height: 0.7em;
+  vertical-align: middle;
 }
 
 .recall {
-  font-size: var(--text-xs);
+  font-size: max(0.75rem, 5cqi);
   font-variant-numeric: tabular-nums;
-  color: var(--color-text-dim);
+  color: var(--color-text-muted);
 }
 
 /*
- * A janela da arte, em 2:1. `flex-shrink: 0` porque é o texto que cede quando
- * falta altura, nunca a arte — é ela que dá cara de carta.
- *
- * Sem imagem, o emblema do domínio fica no centro, sobre um véu da cor do
- * domínio: a janela continua lendo como ilustração, não como buraco.
+ * A janela da arte, em 5:2 nas duas variantes. `flex-shrink: 0` porque é o
+ * texto que cede quando falta altura, nunca a arte.
  */
 .art {
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  aspect-ratio: 2 / 1;
-  margin: var(--space-2) 0 0;
+  aspect-ratio: 5 / 2;
+  margin: 3cqi 0 0;
   overflow: hidden;
   background: color-mix(in srgb, var(--domain-color) 10%, var(--color-bg));
   border: var(--border-width) solid color-mix(in srgb, var(--domain-color) 25%, transparent);
@@ -76,52 +90,70 @@
 
 /* Descendente de `.art`: o `DomainSymbol` tem 1em de lado na própria classe. */
 .art .emblem {
-  width: 45%;
-  height: 70%;
+  width: 22cqi;
+  height: 22cqi;
   opacity: 0.8;
 }
 
 .name {
-  margin: var(--space-2) 0;
-  font-size: var(--text-md);
+  margin: 3cqi 0;
+  font-size: max(0.9375rem, 6.5cqi);
   font-weight: 500;
-  line-height: 1.25;
+  line-height: 1.2;
+  text-align: center;
   color: var(--color-ink);
   overflow-wrap: break-word;
 }
 
 /*
- * Na fechada é prévia: ocupa a sobra, corta o excedente e esmaece o fim.
- * `overflow: hidden` aqui não é contêiner de rolagem — não quebra nada.
+ * O texto ocupa a sobra e rola quando não cabe. Fica acima do botão que abre a
+ * carta fechada (`z-index`), senão a roda cairia no botão e nunca no texto.
  *
- * Descendente de `.card` para vencer o `font-size` do `RuleText`, que tem a
- * mesma especificidade e dependeria da ordem em que o bundler junta os CSS.
+ * O tamanho vai no `.rule` descendente, e não no `RuleText` direto: a classe
+ * dele tem a mesma especificidade e dependeria da ordem dos CSS no bundle.
  */
-.card .text {
+.text {
+  position: relative;
+  z-index: 1;
   flex-grow: 1;
   min-height: 0;
-  overflow: hidden;
-  padding-top: var(--space-2);
-  font-size: var(--text-sm);
-  line-height: 1.45;
-  overflow-wrap: break-word;
+  overflow-y: auto;
+  padding-top: 3cqi;
   border-top: var(--border-width) solid var(--color-border-subtle);
-  mask-image: linear-gradient(to bottom, #000 70%, transparent);
+}
+
+.card[data-variant="closed"] .text {
+  cursor: pointer;
+}
+
+.text .rule {
+  font-size: max(0.75rem, 4.2cqi);
+  line-height: 1.5;
+  overflow-wrap: break-word;
 }
 
 .footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-2);
-  padding-top: var(--space-1);
-  font-size: var(--text-2xs);
+  gap: 2cqi;
+  padding-top: 2cqi;
+  font-size: max(0.625rem, 3.4cqi);
   letter-spacing: var(--tracking-wider);
   text-transform: uppercase;
   color: var(--color-text-dim);
+  border-top: var(--border-width) solid var(--color-border-subtle);
 }
 
-/* Fechada: cobre a carta inteira, tocar em qualquer lugar abre. */
+/* A ação fica acima do botão que abre a carta, senão o toque abriria a carta. */
+.action {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+}
+
+/* Fechada: cobre a carta inteira; tocar fora do texto abre. */
 .open {
   position: absolute;
   inset: 0;
@@ -138,60 +170,11 @@
 
 .close {
   min-height: var(--size-touch-target);
-  padding: 0 var(--space-2);
-  font-size: var(--text-xs);
+  padding: 0 2cqi;
+  font-size: inherit;
   letter-spacing: var(--tracking-wider);
   color: var(--color-chrome-strong);
   background: transparent;
   border: none;
   cursor: pointer;
-}
-
-/* ── aberta ──────────────────────────────────────────────────────────────── */
-
-/*
- * Moldura fina por dentro, como a borda impressa de uma carta. `outline` com
- * recuo negativo não ocupa espaço e não mexe no conteúdo.
- */
-.card[data-variant="open"] {
-  padding: var(--space-4);
-  border-top-width: var(--space-1);
-  outline: var(--border-width) solid color-mix(in srgb, var(--domain-color) 30%, transparent);
-  outline-offset: calc(var(--space-2) * -1);
-}
-
-/* Aberta, a carta é para ler: a arte baixa um pouco e o texto ganha a altura. */
-.card[data-variant="open"] .art {
-  aspect-ratio: 5 / 2;
-}
-
-.card[data-variant="open"] .level {
-  font-size: var(--text-2xl);
-}
-
-.card[data-variant="open"] .recall {
-  font-size: var(--text-md);
-  color: var(--color-text-muted);
-}
-
-.card[data-variant="open"] .name {
-  margin: var(--space-3) 0;
-  font-size: var(--text-xl);
-  line-height: 1.2;
-  text-align: center;
-}
-
-/* Aberta, o texto é leitura: inteiro, sem esmaecido, e rola se passar da carta. */
-.card[data-variant="open"] .text {
-  overflow-y: auto;
-  padding-top: var(--space-3);
-  font-size: var(--text-md);
-  line-height: 1.58;
-  mask-image: none;
-}
-
-.card[data-variant="open"] .footer {
-  padding-top: var(--space-2);
-  font-size: var(--text-xs);
-  border-top: var(--border-width) solid var(--color-border-subtle);
 }

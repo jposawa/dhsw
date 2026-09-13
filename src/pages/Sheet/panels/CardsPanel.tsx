@@ -1,6 +1,7 @@
 import { Button, Chip, Input, SectionLabel } from "@jposawa/ronin-ui"
 import React from "react"
 
+import { SkillCardGrid } from "@/fragments"
 import { useCompendium, useSkillSearch } from "@/hooks"
 import { forgetSkill, isKnown, learnSkill, moveToLoadout, moveToVault } from "@/rules"
 import type { Character, DerivedStats, Domain, Result, Skill } from "@/types"
@@ -180,27 +181,22 @@ export const CardsPanel = ({ character, derived, isEditing, onApply }: CardsPane
           {found.length === 0 ? (
             <p className={styles.empty}>Nada encontrado para “{query}”.</p>
           ) : (
-            <ul className={styles.list}>
-              {found.slice(0, LEARNABLE_SHOWN).map((skill) => (
-                <SkillRow
-                  key={skill.name}
-                  skill={skill}
-                  action={
-                    isKnown(character, skill.name) ? (
-                      <span className={styles.known}>JÁ SABE</span>
-                    ) : (
-                      <Button
-                        variant="outline"
-                        aria-label={`Aprender ${skill.name}`}
-                        onClick={() => onApply(learnSkill(character, skill.name, compendium))}
-                      >
-                        APRENDER
-                      </Button>
-                    )
-                  }
-                />
-              ))}
-            </ul>
+            <SkillCardGrid
+              skills={found.slice(0, LEARNABLE_SHOWN)}
+              actionFor={(skill) =>
+                isKnown(character, skill.name) ? (
+                  <span className={styles.known}>JÁ SABE</span>
+                ) : (
+                  <Button
+                    variant="outline"
+                    aria-label={`Aprender ${skill.name}`}
+                    onClick={() => onApply(learnSkill(character, skill.name, compendium))}
+                  >
+                    APRENDER
+                  </Button>
+                )
+              }
+            />
           )}
         </section>
       ) : null}

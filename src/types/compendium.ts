@@ -10,6 +10,8 @@ export type Skill = {
   recallCost: number
   category: SkillCategory
   text: string
+  /** Arte da carta. Sem ela, a carta mostra o emblema do domínio no lugar. */
+  imageUrl?: string
 }
 
 export type DomainDefinition = {

@@ -42,6 +42,7 @@ const skill = z.object({
   recallCost: z.number().int().min(0),
   category: z.enum(SKILL_CATEGORIES),
   text: z.string(),
+  imageUrl: z.url().optional(),
 }) satisfies z.ZodType<Skill>
 
 const domain = z.object({

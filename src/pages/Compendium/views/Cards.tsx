@@ -120,7 +120,7 @@ export const CompendiumCards = () => {
         <ul className={styles.grid} data-testid="compendium-grid">
           {skills.map((skill) => (
             <li className={styles.gridItem} key={skill.name}>
-              <SkillCard skill={skill} onOpen={() => setOpenedSkill(skill)} />
+              <SkillCard skill={skill} variant="closed" onOpen={() => setOpenedSkill(skill)} />
             </li>
           ))}
         </ul>

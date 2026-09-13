@@ -1,7 +1,9 @@
 /*
- * O <dialog> só posiciona e tamanha. A largura é a menor entre a medida de
- * carta, a tela menos a margem e o que a altura deixa: com `aspect-ratio`, é
- * a largura que decide a altura, e uma carta alta demais sairia da tela.
+ * O <dialog> só posiciona e tamanha — a carta é a `SkillCard` aberta.
+ *
+ * A largura é a menor entre a medida de carta, a tela menos a margem e o que a
+ * altura deixa: com `aspect-ratio`, é a largura que decide a altura, e uma
+ * carta alta demais sairia da tela.
  */
 .dialog {
   width: min(24rem, calc(100vw - var(--space-4) * 2), calc(88svh * 5 / 7));
@@ -17,87 +19,4 @@
 
 .dialog::backdrop {
   background: var(--color-overlay);
-}
-
-/*
- * A carta: fio de domínio grosso no topo e uma segunda moldura fina por dentro,
- * como a borda impressa de uma carta. A moldura interna é `outline` com recuo
- * negativo — não ocupa espaço e não mexe no conteúdo.
- */
-.card {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: var(--space-4);
-  background: var(--color-bg-elevated);
-  border: var(--border-width) solid var(--color-border);
-  border-top: var(--space-1) solid var(--domain-color, var(--color-chrome));
-  outline: var(--border-width) solid color-mix(in srgb, var(--domain-color) 30%, transparent);
-  outline-offset: calc(var(--space-2) * -1);
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2);
-}
-
-.level {
-  font-size: var(--text-2xl);
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
-  color: var(--domain-color, var(--color-chrome));
-}
-
-.recall {
-  font-size: var(--text-md);
-  font-variant-numeric: tabular-nums;
-  color: var(--color-text-muted);
-}
-
-.name {
-  margin: var(--space-3) 0;
-  font-size: var(--text-xl);
-  font-weight: 500;
-  line-height: 1.2;
-  text-align: center;
-  color: var(--color-ink);
-  overflow-wrap: break-word;
-}
-
-/* Descendente de `.card` para vencer o tamanho do `RuleText`, de mesma
-   especificidade. Rola se passar da carta — ver o componente. */
-.card .text {
-  flex-grow: 1;
-  min-height: 0;
-  overflow-y: auto;
-  padding-top: var(--space-3);
-  font-size: var(--text-md);
-  overflow-wrap: break-word;
-  border-top: var(--border-width) solid var(--color-border-subtle);
-}
-
-.footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-2);
-  padding-top: var(--space-2);
-  font-size: var(--text-xs);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
-  color: var(--color-text-dim);
-  border-top: var(--border-width) solid var(--color-border-subtle);
-}
-
-.close {
-  min-height: var(--size-touch-target);
-  padding: 0 var(--space-2);
-  font-size: var(--text-xs);
-  letter-spacing: var(--tracking-wider);
-  color: var(--color-chrome-strong);
-  background: transparent;
-  border: none;
-  cursor: pointer;
 }

@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
-  padding: var(--space-2) var(--space-3);
+  padding: var(--space-1) var(--space-2);
   background: var(--color-bg-elevated);
   border-left: var(--domain-stripe-width) solid var(--color-chrome-dim);
 }
@@ -22,6 +22,9 @@
 }
 
 .identity {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
   min-width: 0;
 }
 
@@ -34,7 +37,7 @@
 }
 
 .meta {
-  margin: 2px 0 0;
+  margin: 0;
   font-size: var(--text-2xs);
   letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
@@ -48,6 +51,13 @@
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
   color: var(--color-chrome-strong);
+}
+
+/* Unidade miúda depois do número — "5 score". */
+.unit {
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-text-dim);
 }
 
 .empty {

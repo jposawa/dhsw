@@ -111,7 +111,7 @@ export const Roster = () => {
               >
                 <Link className={styles.open} to={ROUTES.sheet(character.id)}>
                   <span className={styles.level}>{character.level}</span>
-                  <span>
+                  <span className={styles.nameBlock}>
                     <b className={styles.name}>{character.name || "Sem nome"}</b>
                     <span className={styles.summary}>{summaryOf(character)}</span>
                   </span>

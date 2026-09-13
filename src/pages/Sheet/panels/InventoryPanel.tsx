@@ -152,7 +152,7 @@ export const InventoryPanel = ({ character, derived, onApply }: InventoryPanelPr
           <ul className={styles.list}>
             {carried.map((entry) => (
               <li className={styles.row} key={entry.id}>
-                <div className={styles.rowText}>
+                <hgroup className={styles.rowText}>
                   <h4 className={styles.rowName}>
                     {entry.name}
                     {entry.quantity > 1 ? (
@@ -160,7 +160,7 @@ export const InventoryPanel = ({ character, derived, onApply }: InventoryPanelPr
                     ) : null}
                   </h4>
                   <p className={styles.rowMeta}>{describe(entry)}</p>
-                </div>
+                </hgroup>
 
                 <div className={styles.rowActions}>
                   {entry.kind === "consumable" ? (
@@ -250,10 +250,10 @@ export const InventoryPanel = ({ character, derived, onApply }: InventoryPanelPr
             <ul className={styles.list}>
               {catalogue.slice(0, CATALOGUE_SHOWN).map((option) => (
                 <li className={styles.row} key={option.name}>
-                  <div className={styles.rowText}>
+                  <article className={styles.rowText}>
                     <h4 className={styles.rowName}>{option.name}</h4>
                     <GearSummary kind={gearKind} name={option.name} />
-                  </div>
+                  </article>
 
                   <Button
                     variant="outline"

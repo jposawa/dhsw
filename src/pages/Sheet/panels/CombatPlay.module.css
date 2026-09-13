@@ -47,10 +47,6 @@
   border-top: var(--border-width) solid var(--color-border);
 }
 
-.identityText {
-  min-width: 0;
-}
-
 .name {
   margin: 0;
   font-size: var(--text-lg);
@@ -59,8 +55,15 @@
   overflow-wrap: break-word;
 }
 
+.identityText {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
 .lineage {
-  margin: var(--space-1) 0 0;
+  margin: 0;
   font-size: var(--text-2xs);
   letter-spacing: var(--tracking-wider);
   text-transform: uppercase;
@@ -75,13 +78,13 @@
   flex-shrink: 0;
 }
 
-/* Ação discreta: rótulo pequeno e apagado, com o alvo de toque inteiro. */
+/* Contornado e pequeno: acima de EDITAR FICHA, que é texto, e abaixo de uma
+   ação de turno. Descanso acontece entre cenas. */
 .restButton {
   min-height: var(--size-touch-target);
-  padding: 0 var(--space-1);
-  font-size: var(--text-2xs);
+  padding: 0 var(--space-3);
+  font-size: var(--text-xs);
   letter-spacing: var(--tracking-wider);
-  color: var(--color-text-muted);
 }
 
 .levelBadge {
@@ -105,7 +108,7 @@
 
 .levelCell dd {
   margin: 0;
-  font-size: var(--text-lg);
+  font-size: var(--text-md);
   font-variant-numeric: tabular-nums;
   line-height: 1.1;
   color: var(--color-chrome-strong);
@@ -122,34 +125,18 @@
 
 /* ── defesa ──────────────────────────────────────────────────────────────── */
 
-/* Evasion e Armor lado a lado, e a armadura vestida com os slots logo abaixo. */
+/* Evasion e os Armor Slots lado a lado, com a mesma altura: a célula mais alta
+   (três linhas de slots) dita a fileira, e a Evasion estica junto. */
 .defense {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-1);
-}
-
-.stats {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-1);
 }
 
-.armor {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  min-width: 0;
-  padding: var(--space-2) var(--space-3);
+.armorSlots {
+  padding: var(--space-1) var(--space-2);
   background: var(--color-bg-elevated);
-}
-
-.wearing {
-  margin: 0;
-  font-size: var(--text-2xs);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
-  color: var(--color-text-muted);
+  border-top: 2px solid var(--color-chrome-dim);
 }
 
 /* ── atributos ───────────────────────────────────────────────────────────── */
@@ -169,7 +156,7 @@
   align-items: center;
   gap: 2px;
   min-width: 0;
-  padding: var(--space-2) var(--space-1);
+  padding: var(--space-1);
   text-align: center;
   background: var(--color-bg-elevated);
   border-top: var(--border-width) solid var(--color-border);
@@ -195,7 +182,7 @@
 }
 
 .traitValue {
-  font-size: var(--text-xl);
+  font-size: var(--text-lg);
   font-weight: 500;
   font-variant-numeric: tabular-nums;
   line-height: 1.1;

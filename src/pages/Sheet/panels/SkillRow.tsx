@@ -30,11 +30,13 @@ export const SkillRow = ({ skill, action }: SkillRowProps) => (
     className={styles.row}
     style={{ "--domain-color": domainColorToken(skill.domain) } as React.CSSProperties}
   >
-    <div className={styles.head}>
-      <div className={styles.text}>
+    <header className={styles.head}>
+      <hgroup className={styles.text}>
         <h4 className={styles.name}>{skill.name}</h4>
-        <DomainLabel domain={skill.domain} level={skill.level} />
-      </div>
+        <p className={styles.domain}>
+          <DomainLabel domain={skill.domain} level={skill.level} />
+        </p>
+      </hgroup>
 
       <div className={styles.side}>
         <span className={styles.recall} title="Recall Cost">
@@ -42,7 +44,7 @@ export const SkillRow = ({ skill, action }: SkillRowProps) => (
         </span>
         {action}
       </div>
-    </div>
+    </header>
 
     <RuleText className={styles.body} text={skill.text} />
   </li>

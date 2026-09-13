@@ -40,10 +40,10 @@ export const SlotChoices = ({
     <ul className={styles.list}>
       {candidates.map((entry) => (
         <li className={styles.row} key={entry.id}>
-          <div className={styles.text}>
+          <hgroup className={styles.text}>
             <h4 className={styles.name}>{entry.name}</h4>
             <p className={styles.meta}>{describe(entry)}</p>
-          </div>
+          </hgroup>
 
           {entry.id === equippedId ? (
             <Button variant="outline" onClick={() => onChoose(null)}>

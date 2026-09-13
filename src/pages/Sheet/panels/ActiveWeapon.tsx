@@ -32,15 +32,15 @@ export const ActiveWeapon = ({
 
     {entry && weapon ? (
       <>
-        <div className={styles.head}>
-          <div className={styles.identity}>
+        <header className={styles.head}>
+          <hgroup className={styles.identity}>
             <h4 className={styles.name}>{entry.nickname ?? weapon.name}</h4>
             <p className={styles.meta}>
               {weapon.trait} · {weapon.range} · {weapon.burden}
             </p>
-          </div>
+          </hgroup>
           <b className={styles.damage}>{formatWeaponDamage(weapon, proficiency, tierIndex)}</b>
-        </div>
+        </header>
 
         {weapon.feature ? <FeatureText name={weapon.feature} /> : null}
       </>

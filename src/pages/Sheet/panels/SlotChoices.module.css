@@ -18,6 +18,9 @@
 }
 
 .text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
   /* Necessário: é o bloco de identificação que ocupa a sobra e empurra o botão
      para a direita. */
   flex-grow: 1;
@@ -34,7 +37,7 @@
 }
 
 .meta {
-  margin: var(--space-1) 0 0;
+  margin: 0;
   font-size: var(--text-2xs);
   letter-spacing: var(--tracking-wider);
   text-transform: uppercase;

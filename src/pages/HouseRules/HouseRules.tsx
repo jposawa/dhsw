@@ -59,23 +59,21 @@ export const HouseRules = () => {
         </div>
       ) : null}
 
-      <article className={styles.block}>
-        <div>
-          <h3 className={styles.title}>Tamanho do loadout</h3>
-          <p className={styles.note}>
-            O padrão é 5 fixo. <b>3 + Tier</b> dá 4/5/6/7: troca aperto no começo por folga
-            no fim. <b>4 + Tier</b> dá 5/6/7/8, nunca pior que o padrão — aumento puro.
-          </p>
-          <div className={styles.chips}>
-            {LOADOUT_SIZE_OPTIONS.map((option) => (
-              <Chip
-                key={option.value}
-                label={option.label}
-                isActive={houseRules.loadoutSize === option.value}
-                onToggle={() => setHouseRules({ ...houseRules, loadoutSize: option.value })}
-              />
-            ))}
-          </div>
+      <article className={styles.loadout}>
+        <h3 className={styles.title}>Tamanho do loadout</h3>
+        <p className={styles.note}>
+          O padrão é 5 fixo. <b>3 + Tier</b> dá 4/5/6/7: troca aperto no começo por folga
+          no fim. <b>4 + Tier</b> dá 5/6/7/8, nunca pior que o padrão — aumento puro.
+        </p>
+        <div className={styles.chips}>
+          {LOADOUT_SIZE_OPTIONS.map((option) => (
+            <Chip
+              key={option.value}
+              label={option.label}
+              isActive={houseRules.loadoutSize === option.value}
+              onToggle={() => setHouseRules({ ...houseRules, loadoutSize: option.value })}
+            />
+          ))}
         </div>
       </article>
     </main>

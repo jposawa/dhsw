@@ -8,6 +8,7 @@
 .block {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   padding: 0;
   text-align: center;
   background: var(--color-bg-elevated);
@@ -25,7 +26,7 @@
   flex-direction: column;
   align-items: center;
   gap: var(--space-1);
-  padding: var(--space-2) var(--space-1);
+  padding: var(--space-1);
 }
 
 .value {

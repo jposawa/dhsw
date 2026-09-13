@@ -114,7 +114,11 @@
   min-width: 0;
 }
 
+/* Quantidade ao lado do nome, separada pelo gap e não por margin. */
 .rowName {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
   margin: 0;
   font-size: var(--text-sm);
   font-weight: 500;
@@ -124,7 +128,6 @@
 }
 
 .quantity {
-  margin-left: var(--space-2);
   font-size: var(--text-xs);
   font-variant-numeric: tabular-nums;
   color: var(--color-chrome-strong);

@@ -141,10 +141,10 @@ export const RestDrawer = ({ isOpen, character, derived, onApply, onClose }: Res
           <ul className={styles.list}>
             {moves.map((move) => (
               <li className={styles.move} key={move.id}>
-                <div className={styles.moveText}>
+                <article className={styles.moveText}>
                   <h4 className={styles.moveName}>{move.name}</h4>
                   <RuleText className={styles.moveBody} text={move.text} />
-                </div>
+                </article>
                 <Button
                   variant="outline"
                   disabled={isFull}

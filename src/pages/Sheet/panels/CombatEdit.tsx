@@ -1,4 +1,4 @@
-import { SectionLabel, Stepper } from "@jposawa/ronin-ui"
+import { Stepper } from "@jposawa/ronin-ui"
 
 import { MAX_LEVEL, MIN_LEVEL, TRAIT_LIST } from "@/constants"
 import { ThresholdBar } from "@/fragments"
@@ -34,50 +34,9 @@ export const CombatEdit = ({ draft, derived, onChange }: CombatEditProps) => {
 
   return (
     <div className={styles.layout}>
-      <section className={styles.previewBlock}>
-        <SectionLabel detail={`Tier ${derived.tier}`}>
-          <h3>O QUE ISSO MUDA</h3>
-        </SectionLabel>
-
-        <dl className={styles.preview}>
-          <div className={styles.previewCell}>
-            <dt>EVASION</dt>
-            <dd>{derived.evasion.total}</dd>
-          </div>
-          <div className={styles.previewCell}>
-            <dt>ARMOR</dt>
-            <dd>{derived.armorScore.total}</dd>
-          </div>
-          <div className={styles.previewCell}>
-            <dt>HP</dt>
-            <dd>{derived.hitPointsMax.total}</dd>
-          </div>
-          <div className={styles.previewCell}>
-            <dt>STRESS</dt>
-            <dd>{derived.stressMax.total}</dd>
-          </div>
-          <div className={styles.previewCell}>
-            <dt>PROF</dt>
-            <dd>{derived.proficiency.total}</dd>
-          </div>
-        </dl>
-
-        {/* Os thresholds são a mesma régua do modo jogo: dois números soltos
-            em caixas diziam menos e não se pareciam com a ficha. */}
-        <ThresholdBar
-          major={derived.majorThreshold}
-          severe={derived.severeThreshold}
-          origin={describeThresholdOrigin(derived)}
-        />
-      </section>
-
-      <section className={styles.identity}>
-        <SectionLabel>
-          <h3>IDENTIDADE</h3>
-        </SectionLabel>
-
+      <section className={styles.identity} aria-label="Identidade">
         <fieldset className={styles.fields}>
-          <label className={styles.fieldWide}>
+          <label className={styles.nameField}>
             <span className={styles.label}>NOME</span>
             <input
               className={styles.input}
@@ -89,8 +48,8 @@ export const CombatEdit = ({ draft, derived, onChange }: CombatEditProps) => {
             />
           </label>
 
-          {/* Nível ao lado do nome, não no rodapé: Evasion, HP, Stress,
-              thresholds e Proficiency saem dele. É entrada, não resumo. */}
+          {/* Nível ao lado do nome e com a largura do stepper: é entrada, não
+              resumo, e um número de 1 a 10 não precisa de meia tela. */}
           <div className={styles.levelRow}>
             <span className={styles.label}>NÍVEL</span>
             <Stepper
@@ -129,7 +88,7 @@ export const CombatEdit = ({ draft, derived, onChange }: CombatEditProps) => {
             </select>
           </label>
 
-          <label className={styles.field}>
+          <label className={styles.fieldEnd}>
             <span className={styles.label}>SUBCLASSE</span>
             <select
               className={styles.input}
@@ -163,7 +122,7 @@ export const CombatEdit = ({ draft, derived, onChange }: CombatEditProps) => {
             </select>
           </label>
 
-          <label className={styles.field}>
+          <label className={styles.fieldEnd}>
             <span className={styles.label}>ORIGEM</span>
             <select
               className={styles.input}
@@ -181,11 +140,46 @@ export const CombatEdit = ({ draft, derived, onChange }: CombatEditProps) => {
         </fieldset>
       </section>
 
-      <section className={styles.attributes}>
-        <SectionLabel>
-          <h3>ATRIBUTOS</h3>
-        </SectionLabel>
+      {/* Sem título: os números mudando enquanto se escolhe já dizem o que a
+          seção é. O nome fica para quem ouve. */}
+      <section className={styles.previewBlock} aria-label="O que isso muda">
+        <dl className={styles.preview}>
+          <div className={styles.previewCell}>
+            <dt>TIER</dt>
+            <dd>{derived.tier}</dd>
+          </div>
+          <div className={styles.previewCell}>
+            <dt>EVASION</dt>
+            <dd>{derived.evasion.total}</dd>
+          </div>
+          <div className={styles.previewCell}>
+            <dt>ARMOR</dt>
+            <dd>{derived.armorScore.total}</dd>
+          </div>
+          <div className={styles.previewCell}>
+            <dt>HP</dt>
+            <dd>{derived.hitPointsMax.total}</dd>
+          </div>
+          <div className={styles.previewCell}>
+            <dt>STRESS</dt>
+            <dd>{derived.stressMax.total}</dd>
+          </div>
+          <div className={styles.previewCell}>
+            <dt>PROF</dt>
+            <dd>{derived.proficiency.total}</dd>
+          </div>
+        </dl>
 
+        {/* Os thresholds são a mesma régua do modo jogo: dois números soltos
+            em caixas diziam menos e não se pareciam com a ficha. */}
+        <ThresholdBar
+          major={derived.majorThreshold}
+          severe={derived.severeThreshold}
+          origin={describeThresholdOrigin(derived)}
+        />
+      </section>
+
+      <section className={styles.attributes} aria-label="Atributos">
         <ul className={styles.traits}>
           {TRAIT_LIST.map((trait) => {
             const stat = derived.traits[trait]

@@ -16,13 +16,13 @@
 /* ── prévia do que muda ──────────────────────────────────────────────────── */
 
 /*
- * Cinco números numa fileira só, acima do formulário: é o retorno de escolher
- * classe ou subir nível. Cinco colunas fixas, e não `auto-fit` — com ele os
- * seis de antes quebravam em quatro e dois, e a fileira deixava de ser uma.
+ * Seis números acima do formulário: é o retorno de escolher classe ou subir
+ * nível. No celular, três por fileira. No desktop, caixas da largura de dois
+ * dígitos e não da coluna — a sobra vai para os atributos ao lado.
  */
 .preview {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--space-1);
   margin: 0;
 }
@@ -62,14 +62,15 @@
 
 /* O rótulo envolve o campo: um toque no texto foca o campo, sem `htmlFor`. */
 .field,
-.fieldWide {
+.fieldEnd,
+.nameField {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
   min-width: 0;
 }
 
-.fieldWide {
+.nameField {
   grid-column: 1 / -1;
 }
 
@@ -81,7 +82,7 @@
   justify-content: space-between;
   gap: var(--space-3);
   grid-column: 1 / -1;
-  padding: var(--space-2) var(--space-3);
+  padding: var(--space-1) var(--space-3);
   background: var(--color-surface);
   border: var(--border-width) solid var(--color-border);
   border-radius: var(--border-radius-sm);
@@ -101,7 +102,7 @@
 .input {
   width: 100%;
   min-height: var(--size-touch-target);
-  padding: var(--space-3);
+  padding: var(--space-2) var(--space-3);
   font-size: var(--text-md);
   color: var(--color-ink);
   background: var(--color-bg-elevated);
@@ -170,14 +171,57 @@
 }
 
 @media (min-width: 900px) {
+  /*
+   * À esquerda o formulário e, embaixo dele, os números que ele move; à
+   * direita os atributos, começando na mesma altura do nome.
+   */
   .layout {
     display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(20rem, 24rem);
+    grid-template-areas:
+      "identity attributes"
+      "preview  attributes";
+    grid-template-rows: auto 1fr;
     column-gap: var(--space-4);
-    grid-template-columns: 1.2fr 1fr;
+    row-gap: var(--space-4);
     align-items: start;
   }
 
   .previewBlock {
-    grid-column: 1 / -1;
+    grid-area: preview;
+  }
+
+  .identity {
+    grid-area: identity;
+  }
+
+  .attributes {
+    grid-area: attributes;
+  }
+
+  .preview {
+    grid-template-columns: repeat(6, 4.75rem);
+  }
+
+  /*
+   * Três trilhas: o nome ocupa duas e o nível a terceira, na largura do
+   * stepper. Subclasse e origem vão da segunda até o fim, para a fileira de
+   * seleção fechar na mesma borda direita do nível.
+   */
+  .fields {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  }
+
+  .nameField {
+    grid-column: 1 / 3;
+  }
+
+  .levelRow {
+    grid-column: 3;
+    align-self: end;
+  }
+
+  .fieldEnd {
+    grid-column: 2 / -1;
   }
 }

@@ -13,10 +13,18 @@
   max-width: var(--content-max-width-wide);
   margin: 0 auto;
   padding: var(--space-2) var(--space-4) var(--space-6);
+  /* A página ocupa ao menos a altura útil da tela (menos brasão e barra
+     inferior): é o que deixa a barra de salvar no fim da tela em ficha curta. */
+  min-height: calc(100svh - var(--header-height) - var(--border-width) - var(--bottom-bar-height));
 }
 
 /* O painel das abas é quem carrega o ritmo vertical do conteúdo — as abas em si
    são só a régua acima dele. */
+/* As abas crescem e empurram a barra de salvar para o fim da página. */
+.tabs {
+  flex-grow: 1;
+}
+
 .tabs [role="tabpanel"] {
   display: flex;
   flex-direction: column;
@@ -109,7 +117,8 @@
  */
 .saveBar {
   position: sticky;
-  bottom: 0;
+  /* No celular a barra de navegação é fixa embaixo: a de salvar para acima dela. */
+  bottom: var(--bottom-bar-height);
   z-index: var(--z-header);
   display: flex;
   align-items: center;
@@ -130,3 +139,13 @@
   color: var(--color-text-dim);
 }
 
+@media (min-width: 900px) {
+  /* Sem barra inferior: a navegação é o trilho lateral. */
+  .page {
+    min-height: calc(100svh - var(--header-height) - var(--border-width));
+  }
+
+  .saveBar {
+    bottom: 0;
+  }
+}

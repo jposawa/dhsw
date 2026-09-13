@@ -153,10 +153,17 @@ export const CombatPlay = ({
 
         <ul className={styles.traitList}>
           {TRAIT_LIST.map((trait) => (
-            <li className={styles.trait} key={trait}>
+            <li
+              className={styles.trait}
+              key={trait}
+              data-spellcast={derived.spellcastTrait === trait || undefined}
+            >
               <span className={styles.traitName}>{trait}</span>
               <b className={styles.traitValue}>{formatSigned(derived.traits[trait].total)}</b>
               <span className={styles.traitVerbs}>{TRAIT_VERBS[trait].join(" · ")}</span>
+              {derived.spellcastTrait === trait ? (
+                <span className={styles.spellcast}>FORCEWIELDING</span>
+              ) : null}
             </li>
           ))}
         </ul>

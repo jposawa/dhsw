@@ -170,6 +170,18 @@
   border-top: var(--border-width) solid var(--color-border);
 }
 
+/* O atributo de Forcewielding: traço e rótulo no azul da interface, para ser
+   achado de relance na hora de rolar. */
+.trait[data-spellcast] {
+  border-top-color: var(--color-primary);
+}
+
+.spellcast {
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-primary);
+}
+
 .traitName {
   font-size: var(--text-2xs);
   letter-spacing: var(--tracking-wider);

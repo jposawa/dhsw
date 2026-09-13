@@ -331,3 +331,15 @@ describe("derive — features de equipamento (registro)", () => {
     })
   })
 })
+
+describe("derive — atributo de Forcewielding", () => {
+  it("vem da subclasse", () => {
+    const adept = { ...createCharacter("Jedi"), className: "Adept", subclass: "Warden" }
+
+    expect(derive(adept, DEFAULT_HOUSE_RULES).spellcastTrait).toBe("Knowledge")
+  })
+
+  it("subclasse sem Forcewielding não marca atributo", () => {
+    expect(derive({ ...soldier(1), subclass: "Juggernaut" }, DEFAULT_HOUSE_RULES).spellcastTrait).toBeNull()
+  })
+})

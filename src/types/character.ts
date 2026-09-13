@@ -127,4 +127,9 @@ export type DerivedStats = {
   isUnarmored: boolean
   /** Sem armadura e com a carta Bare Bones no Loadout: vale a base da carta. */
   hasBareBones: boolean
+  /**
+   * O atributo de Forcewielding (o Spellcast trait do livro), vindo da
+   * subclasse. `null` quando a subclasse não tem, ou não há subclasse.
+   */
+  spellcastTrait: Trait | null
 }

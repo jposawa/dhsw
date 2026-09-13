@@ -201,7 +201,11 @@ export const CombatEdit = ({ draft, derived, onChange }: CombatEditProps) => {
             const stat = derived.traits[trait]
 
             return (
-              <li className={styles.trait} key={trait}>
+              <li
+                className={styles.trait}
+                key={trait}
+                data-spellcast={derived.spellcastTrait === trait || undefined}
+              >
                 <span className={styles.traitName}>
                   {trait}
                   {stat.total === stat.base ? null : (
@@ -226,6 +230,9 @@ export const CombatEdit = ({ draft, derived, onChange }: CombatEditProps) => {
                     }))
                   }
                 />
+                {derived.spellcastTrait === trait ? (
+                  <span className={styles.spellcast}>FORCEWIELDING</span>
+                ) : null}
               </li>
             )
           })}

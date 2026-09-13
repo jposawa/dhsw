@@ -372,5 +372,6 @@ export const derive = (
     equippedArmor,
     isUnarmored,
     hasBareBones,
+    spellcastTrait: subclass && isTrait(subclass.spellcastTrait) ? subclass.spellcastTrait : null,
   }
 }

@@ -1,3 +1,9 @@
+.layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
 .previewBlock,
 .identity,
 .attributes {
@@ -10,19 +16,20 @@
 /* ── prévia do que muda ──────────────────────────────────────────────────── */
 
 /*
- * Seis números numa faixa, acima do formulário: é o retorno de escolher classe
- * ou subir nível, e sem ele a escolha é às cegas. `auto-fit` para caber em três
- * colunas no celular e em seis no desktop, sem media query.
+ * Cinco números numa fileira só, acima do formulário: é o retorno de escolher
+ * classe ou subir nível. Cinco colunas fixas, e não `auto-fit` — com ele os
+ * seis de antes quebravam em quatro e dois, e a fileira deixava de ser uma.
  */
 .preview {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(4.5rem, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: var(--space-1);
   margin: 0;
 }
 
 .previewCell {
-  padding: var(--space-2) var(--space-1);
+  min-width: 0;
+  padding: var(--space-1) 2px;
   text-align: center;
   background: var(--color-bg-elevated);
   border-top: var(--border-width) solid var(--color-border);
@@ -156,6 +163,7 @@
 @media (min-width: 900px) {
   .layout {
     display: grid;
+    column-gap: var(--space-4);
     grid-template-columns: 1.2fr 1fr;
     align-items: start;
   }

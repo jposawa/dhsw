@@ -1,0 +1,65 @@
+[
+  {
+    "id": "tendToWounds",
+    "name": "Tend to Wounds",
+    "rest": "short",
+    "text": "Descreva como você se remenda às pressas e limpe 1d4 + Tier Hit Points. Pode fazer isso por um aliado.",
+    "effect": { "kind": "clearRolled", "marker": "hp", "dice": "1d4", "canTargetAlly": true }
+  },
+  {
+    "id": "clearStress",
+    "name": "Clear Stress",
+    "rest": "short",
+    "text": "Descreva como você desabafa ou se recompõe e limpe 1d4 + Tier Stress.",
+    "effect": { "kind": "clearRolled", "marker": "stress", "dice": "1d4", "canTargetAlly": false }
+  },
+  {
+    "id": "repairArmor",
+    "name": "Repair Armor",
+    "rest": "short",
+    "text": "Descreva o conserto rápido e limpe 1d4 + Tier Armor Slots. Pode ser na armadura de um aliado.",
+    "effect": { "kind": "clearRolled", "marker": "armor", "dice": "1d4", "canTargetAlly": true }
+  },
+  {
+    "id": "prepareShort",
+    "name": "Prepare",
+    "rest": "short",
+    "text": "Descreva como você se prepara para o caminho e ganhe 1 Hope. Preparando junto com alguém do grupo, cada um ganha 2.",
+    "effect": { "kind": "gainHope", "amount": 1, "withPartyAmount": 2 }
+  },
+  {
+    "id": "tendToAllWounds",
+    "name": "Tend to All Wounds",
+    "rest": "long",
+    "text": "Descreva como você cuida dos ferimentos e limpe todos os Hit Points. Pode fazer isso por um aliado.",
+    "effect": { "kind": "clearAll", "marker": "hp", "canTargetAlly": true }
+  },
+  {
+    "id": "clearAllStress",
+    "name": "Clear All Stress",
+    "rest": "long",
+    "text": "Descreva como você desabafa ou se recompõe e limpe todo o Stress.",
+    "effect": { "kind": "clearAll", "marker": "stress", "canTargetAlly": false }
+  },
+  {
+    "id": "repairAllArmor",
+    "name": "Repair All Armor",
+    "rest": "long",
+    "text": "Descreva o tempo gasto consertando a armadura e limpe todos os Armor Slots. Pode ser na armadura de um aliado.",
+    "effect": { "kind": "clearAll", "marker": "armor", "canTargetAlly": true }
+  },
+  {
+    "id": "prepareLong",
+    "name": "Prepare",
+    "rest": "long",
+    "text": "Descreva como você se prepara para o dia seguinte e ganhe 1 Hope. Preparando junto com alguém do grupo, cada um ganha 2.",
+    "effect": { "kind": "gainHope", "amount": 1, "withPartyAmount": 2 }
+  },
+  {
+    "id": "workOnProject",
+    "name": "Work on a Project",
+    "rest": "long",
+    "text": "Comece ou avance um projeto combinado com o Narrador. Ele diz se o progresso é automático ou pede uma rolagem.",
+    "effect": { "kind": "narrative" }
+  }
+]

@@ -4,7 +4,7 @@ import { Outlet, useLocation } from "react-router-dom"
 
 import { NAV_ITEMS, ROUTES } from "@/constants"
 import { BottomNav } from "@/fragments"
-import { useAuth, useConfig, useSheetSync } from "@/hooks"
+import { useAuth, useCompendium, useConfig, useSheetSync } from "@/hooks"
 import { themeAtom, toastAtom, isNavCollapsedAtom } from "@/states"
 
 import styles from "./App.module.css"
@@ -127,6 +127,7 @@ export const App = () => {
   useAuth()
   // O unico lugar do app que busca a config. Todo o resto so le.
   useConfig({ initialFetch: true })
+  useCompendium({ initialFetch: true })
   useSheetSync()
 
   React.useEffect(() => {

@@ -1,10 +1,9 @@
 import { Button, Chip, Drawer, Input, SectionLabel } from "@jposawa/ronin-ui"
 import React from "react"
 
-import { CONSUMABLES, ITEMS, NAMED_ARMOR, WEAPONS } from "@/compendium"
 import { EQUIP_SLOTS, GEAR_KINDS } from "@/constants"
-import { RuleText } from "@/fragments"
-import { createInventoryEntry, filterByText } from "@/helpers"
+import { createInventoryEntry, describeNamedArmor, filterByText } from "@/helpers"
+import { useCompendium } from "@/hooks"
 import { addEntry, candidatesForSlot, consume, equipInSlot, removeEntry } from "@/rules"
 import type {
   Character,
@@ -16,6 +15,7 @@ import type {
   Result,
 } from "@/types"
 
+import { GearSummary } from "./GearSummary"
 import { SlotChoices } from "./SlotChoices"
 
 import styles from "./InventoryPanel.module.css"
@@ -30,16 +30,6 @@ const KIND_BY_GEAR: Readonly<Record<GearKind, InventoryEntryKind>> = {
 
 /** Mesmo corte da busca de cartas, pelo mesmo motivo: a lista de baixo some. */
 const CATALOGUE_SHOWN = 12
-
-/**
- * O texto de efeito de uma entrada do catálogo.
- *
- * Os quatro tipos guardam isso em campos diferentes: arma e armadura em
- * `feature`, item e consumível em `text` — e `feature` ainda pode ser nulo,
- * porque nem toda arma tem efeito.
- */
-const describeOption = (option: { feature?: string | null; text?: string }): string =>
-  option.text ?? option.feature ?? ""
 
 type InventoryPanelProps = {
   character: Character
@@ -62,6 +52,8 @@ type InventoryPanelProps = {
  * recusa de slot ocupado no meio.
  */
 export const InventoryPanel = ({ character, derived, onApply }: InventoryPanelProps) => {
+  const { compendium } = useCompendium()
+
   const [slotDrawer, setSlotDrawer] = React.useState<EquipSlot | null>(null)
   const [isCatalogueOpen, setIsCatalogueOpen] = React.useState(false)
   const [gearKind, setGearKind] = React.useState<GearKind>("armas")
@@ -70,23 +62,37 @@ export const InventoryPanel = ({ character, derived, onApply }: InventoryPanelPr
   const carried = character.inventory.filter((entry) => !entry.isEquipped)
 
   const catalogue = {
-    armas: filterByText(WEAPONS, (weapon) => `${weapon.name} ${weapon.trait}`, query),
-    armaduras: filterByText(NAMED_ARMOR, (piece) => `${piece.name} ${piece.line}`, query),
-    itens: filterByText(ITEMS, (item) => `${item.name} ${item.text}`, query),
-    consumiveis: filterByText(CONSUMABLES, (item) => `${item.name} ${item.text}`, query),
+    armas: filterByText(
+      compendium.weapons,
+      (weapon) => `${weapon.name} ${weapon.trait} ${weapon.feature ?? ""}`,
+      query,
+    ),
+    armaduras: filterByText(
+      compendium.namedArmor,
+      (piece) => `${piece.name} ${piece.line} ${piece.feature ?? ""}`,
+      query,
+    ),
+    itens: filterByText(compendium.items, (item) => `${item.name} ${item.text}`, query),
+    consumiveis: filterByText(compendium.consumables, (item) => `${item.name} ${item.text}`, query),
   }[gearKind]
 
   const describe = (entry: InventoryEntry): string => {
     if (entry.kind === "weapon") {
-      const weapon = WEAPONS.find((candidate) => candidate.name === entry.name)
+      const weapon = compendium.weapons.find((candidate) => candidate.name === entry.name)
 
       return weapon ? `${weapon.trait} · ${weapon.range} · ${weapon.damageDie}` : "arma"
     }
 
     if (entry.kind === "armor") {
-      const piece = NAMED_ARMOR.find((candidate) => candidate.name === entry.name)
+      const described = describeNamedArmor(compendium, entry.name)
 
-      return piece ? `${piece.line} · Tier ${piece.tier}` : "armadura"
+      if (!described) {
+        return "armadura"
+      }
+
+      const { armor, stats } = described
+
+      return `${armor.line} · Tier ${armor.tier} · Score ${stats.baseScore} · ${stats.majorBase}/${stats.severeBase}`
     }
 
     return entry.kind === "consumable" ? "consumível" : "item"
@@ -133,14 +139,6 @@ export const InventoryPanel = ({ character, derived, onApply }: InventoryPanelPr
             )
           })}
         </ul>
-
-        {derived.isBareBones ? (
-          <p className={styles.note}>
-            Sem armadura vestida vale Bare Bones: Armor Score {derived.armorScore.total} e
-            limiares {derived.majorThreshold.total}/{derived.severeThreshold.total}. Não é
-            erro — é escolha de build.
-          </p>
-        ) : null}
       </section>
 
       <section className={styles.bag}>
@@ -210,7 +208,7 @@ export const InventoryPanel = ({ character, derived, onApply }: InventoryPanelPr
             equippedId={equippedIn(slotDrawer)?.id ?? null}
             describe={describe}
             onChoose={(entryId) =>
-              applyAndCloseDrawer(equipInSlot(character, slotDrawer, entryId))
+              applyAndCloseDrawer(equipInSlot(character, slotDrawer, entryId, compendium))
             }
           />
         ) : null}
@@ -254,9 +252,7 @@ export const InventoryPanel = ({ character, derived, onApply }: InventoryPanelPr
                 <li className={styles.row} key={option.name}>
                   <div className={styles.rowText}>
                     <h4 className={styles.rowName}>{option.name}</h4>
-                    {describeOption(option) ? (
-                      <RuleText className={styles.rowBody} text={describeOption(option)} />
-                    ) : null}
+                    <GearSummary kind={gearKind} name={option.name} />
                   </div>
 
                   <Button

@@ -1,36 +1,38 @@
 import { Input, SectionLabel } from "@jposawa/ronin-ui"
 import React from "react"
 
-import { DOMAIN_DEFINITIONS, SKILLS } from "@/compendium"
 import { DomainSymbol } from "@/components"
 import { DOMAIN_LIST } from "@/constants"
 import { RuleText } from "@/fragments"
 import { domainColorToken, filterByText } from "@/helpers"
+import { useCompendium } from "@/hooks"
 
 import styles from "./Reference.module.css"
 
 /**
  * Os seis domínios: o que cada um cobre, e quantas cartas tem.
  *
- * A contagem sai de `SKILLS`, não de número escrito à mão: carta que troque de
+ * A contagem sai das cartas do compêndio, não de número escrito à mão: carta que troque de
  * domínio corrige o total sozinha, e um número datilografado envelheceria
  * calado.
  */
 export const CompendiumDomains = () => {
+  const { compendium } = useCompendium()
+
   const [query, setQuery] = React.useState("")
 
   const countByDomain = React.useMemo(() => {
     const counts = new Map(DOMAIN_LIST.map((domain) => [domain, 0]))
 
-    for (const skill of SKILLS) {
+    for (const skill of compendium.skills) {
       counts.set(skill.domain, (counts.get(skill.domain) ?? 0) + 1)
     }
 
     return counts
-  }, [])
+  }, [compendium.skills])
 
   const domains = filterByText(
-    DOMAIN_DEFINITIONS,
+    compendium.domains,
     (domain) => `${domain.name} ${domain.description}`,
     query,
   )
@@ -47,7 +49,7 @@ export const CompendiumDomains = () => {
           onValueChange={setQuery}
         />
 
-        <SectionLabel detail={`${domains.length} de ${DOMAIN_DEFINITIONS.length}`}>
+        <SectionLabel detail={`${domains.length} de ${compendium.domains.length}`}>
           <h2>DOMÍNIOS</h2>
         </SectionLabel>
       </search>

@@ -1,0 +1,22 @@
+/*
+ * O <dialog> só posiciona e tamanha — a carta é a `SkillCard` aberta.
+ *
+ * A largura é a menor entre a medida de carta, a tela menos a margem e o que a
+ * altura deixa: com `aspect-ratio`, é a largura que decide a altura, e uma
+ * carta alta demais sairia da tela.
+ */
+.dialog {
+  width: min(24rem, calc(100vw - var(--space-4) * 2), calc(88svh * 5 / 7));
+  max-width: none;
+  max-height: none;
+  aspect-ratio: 5 / 7;
+  margin: auto;
+  padding: 0;
+  color: var(--color-text);
+  background: transparent;
+  border: none;
+}
+
+.dialog::backdrop {
+  background: var(--color-overlay);
+}

@@ -1,16 +1,54 @@
-import { WEAPONS } from "@/compendium"
 import { fail, ok } from "@/helpers"
-import type { Character, EquipSlot, InventoryEntry, Result } from "@/types"
+import type { Character, Compendium, EquipSlot, InventoryEntry, Result } from "@/types"
 
 /**
  * Regras de equipar, aplicadas na hora e não depois.
  *
- * Uma armadura, uma arma primária, uma secundária. A Iconic Weapon ocupa o
- * slot primário, e o bônus de Bonded só vale enquanto ela for a única arma
- * ativa — divergência deliberada do SRD, dh-sw-v2-spec.md §4.3.
+ * Uma armadura, uma arma primária, uma secundária. Arma de duas mãos ocupa as
+ * duas: com ela empunhada não há secundária. Core Rulebook, "Burden" (p. 113).
  */
 
-const slotForEntry = (entry: InventoryEntry, requested?: EquipSlot): EquipSlot | null => {
+const TWO_HANDED_BURDEN = "Duas mãos"
+
+const findWeapon = (compendium: Compendium, entry: InventoryEntry | undefined) =>
+  entry ? compendium.weapons.find((candidate) => candidate.name === entry.name) : undefined
+
+const isTwoHanded = (compendium: Compendium, entry: InventoryEntry | undefined): boolean =>
+  findWeapon(compendium, entry)?.burden === TWO_HANDED_BURDEN
+
+const equippedIn = (character: Character, slot: EquipSlot) =>
+  character.inventory.find((candidate) => candidate.isEquipped && candidate.slot === slot)
+
+/**
+ * O slot que as mãos deixam de fora quando `entry` vai para `slot`.
+ *
+ * Duas mãos na primária tiram a secundária; uma secundária com a primária de
+ * duas mãos tira a primária. `null` quando não há conflito.
+ */
+const handConflictFor = (
+  compendium: Compendium,
+  character: Character,
+  entry: InventoryEntry,
+  slot: EquipSlot,
+): InventoryEntry | null => {
+  if (slot === "primary" && isTwoHanded(compendium, entry)) {
+    return equippedIn(character, "secondary") ?? null
+  }
+
+  const primary = equippedIn(character, "primary")
+
+  if (slot === "secondary" && primary && primary.id !== entry.id && isTwoHanded(compendium, primary)) {
+    return primary
+  }
+
+  return null
+}
+
+const slotForEntry = (
+  compendium: Compendium,
+  entry: InventoryEntry,
+  requested?: EquipSlot,
+): EquipSlot | null => {
   if (entry.kind === "armor") {
     return "armor"
   }
@@ -23,14 +61,13 @@ const slotForEntry = (entry: InventoryEntry, requested?: EquipSlot): EquipSlot |
     return requested
   }
 
-  const weapon = WEAPONS.find((candidate) => candidate.name === entry.name)
-
-  return weapon?.burden === "Secundária" ? "secondary" : "primary"
+  return findWeapon(compendium, entry)?.burden === "Secundária" ? "secondary" : "primary"
 }
 
 export const equip = (
   character: Character,
   entryId: string,
+  compendium: Compendium,
   requestedSlot?: EquipSlot,
 ): Result<Character> => {
   const entry = character.inventory.find((candidate) => candidate.id === entryId)
@@ -39,18 +76,22 @@ export const equip = (
     return fail("entryNotFound", entryId)
   }
 
-  const slot = slotForEntry(entry, requestedSlot)
+  const slot = slotForEntry(compendium, entry, requestedSlot)
 
   if (!slot) {
-    return fail("entryNotFound", "Item não é equipável")
+    return fail("entryNotEquippable", entry.name)
   }
 
-  const occupant = character.inventory.find(
-    (candidate) => candidate.isEquipped && candidate.slot === slot && candidate.id !== entryId,
-  )
+  const occupant = equippedIn(character, slot)
 
-  if (occupant) {
+  if (occupant && occupant.id !== entryId) {
     return fail(slot === "armor" ? "armorSlotTaken" : "weaponSlotTaken", occupant.name)
+  }
+
+  const conflict = handConflictFor(compendium, character, entry, slot)
+
+  if (conflict) {
+    return fail("handsFull", conflict.name)
   }
 
   return ok({
@@ -76,24 +117,6 @@ export const unequip = (character: Character, entryId: string): Result<Character
       candidate.id === entryId ? { ...candidate, isEquipped: false, slot: null } : candidate,
     ),
   })
-}
-
-/**
- * Bonded só vale se a Iconic Weapon for a única arma ativa.
- * Equipar uma secundária desliga o bônus — custo real, escolha real.
- */
-export const hasActiveBonded = (character: Character): boolean => {
-  const equippedWeapons = character.inventory.filter(
-    (entry) => entry.kind === "weapon" && entry.isEquipped,
-  )
-
-  if (equippedWeapons.length !== 1) {
-    return false
-  }
-
-  const weapon = WEAPONS.find((candidate) => candidate.name === equippedWeapons[0].name)
-
-  return Boolean(weapon?.isIconic)
 }
 
 /** Gastar um consumível. Some do inventário ao chegar a zero. */
@@ -196,16 +219,25 @@ export const setQuantity = (
  * este é "põe esta aqui". Quem chama escolhe, e nenhuma das duas deduz a
  * intenção da outra.
  *
+ * Arma de duas mãos também desequipa a secundária, e vice-versa: trocar é
+ * "põe esta aqui", e o que as mãos não comportam volta para a mochila.
+ *
  * `entryId` nulo esvazia o slot — é o "deixar vazio" da gaveta.
  */
 export const equipInSlot = (
   character: Character,
   slot: EquipSlot,
   entryId: string | null,
+  compendium: Compendium,
 ): Result<Character> => {
-  if (entryId !== null && !character.inventory.some((entry) => entry.id === entryId)) {
+  const incoming = character.inventory.find((entry) => entry.id === entryId)
+
+  if (entryId !== null && !incoming) {
     return fail("entryNotFound", entryId)
   }
+
+  // A arma que as mãos não comportam volta para a mochila junto com o ocupante.
+  const conflict = incoming ? handConflictFor(compendium, character, incoming, slot) : null
 
   return ok({
     ...character,
@@ -215,7 +247,7 @@ export const equipInSlot = (
       }
 
       // Quem ocupava o slot sai dele, e volta para a mochila em vez de sumir.
-      if (entry.isEquipped && entry.slot === slot) {
+      if ((entry.isEquipped && entry.slot === slot) || entry.id === conflict?.id) {
         return { ...entry, isEquipped: false, slot: null }
       }
 

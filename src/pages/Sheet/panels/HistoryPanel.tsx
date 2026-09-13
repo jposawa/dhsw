@@ -1,13 +1,11 @@
 import { Button, Input, SectionLabel, Stepper } from "@jposawa/ronin-ui"
 import React from "react"
 
+import { NEW_EXPERIENCE_BONUS } from "@/constants"
 import { addExperience, removeExperience, setExperienceBonus } from "@/rules"
 import type { Character, Result } from "@/types"
 
 import styles from "./HistoryPanel.module.css"
-
-/** Bônus que uma Experience nova nasce valendo. */
-const DEFAULT_EXPERIENCE_BONUS = 2
 
 type HistoryPanelProps = {
   character: Character
@@ -39,7 +37,7 @@ export const HistoryPanel = ({
     onApply(
       addExperience(character, {
         name: newExperience,
-        bonus: DEFAULT_EXPERIENCE_BONUS,
+        bonus: NEW_EXPERIENCE_BONUS,
       }),
     )
     setNewExperience("")

@@ -16,7 +16,11 @@
   flex-direction: column;
   align-items: center;
   gap: var(--space-1);
+  /* Colunas iguais: com base automática, COMPÊNDIO ficava mais largo que
+     GRUPOS e os ícones perdiam o espaçamento regular. */
   flex-grow: 1;
+  flex-basis: 0;
+  min-width: 0;
   padding: var(--space-2) 0 var(--space-3);
   font-size: var(--text-2xs);
   letter-spacing: var(--tracking-wider);
@@ -39,7 +43,13 @@
   display: inline;
 }
 
+/* Caixa de altura fixa, a mesma do avatar da conta: é o que põe os cinco
+   rótulos na mesma linha. */
 .icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 1.5rem;
   font-size: var(--text-md);
   font-style: normal;
   letter-spacing: 0;
@@ -116,6 +126,7 @@
     /* Sem `flex-grow`: em coluna ele repartiria a altura da tela entre os
        itens, e cada destino viraria uma faixa gigante. */
     flex-grow: 0;
+    flex-basis: auto;
     flex-direction: row;
     align-items: center;
     gap: var(--space-3);
@@ -145,6 +156,7 @@
        precisa ser reconhecível sozinho. `line-height: 1` porque a entrelinha
        do glifo é o que inflava o item — o respiro é o padding, que se enxerga
        e se ajusta. */
+    height: auto;
     font-size: var(--text-lg);
     line-height: 1;
     width: 1.5rem;

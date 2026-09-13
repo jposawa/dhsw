@@ -1,4 +1,5 @@
 export * from "./authService"
+export * from "./compendiumService"
 export * from "./configService"
 export * from "./partyService"
 export * from "./profileService"

@@ -1,4 +1,4 @@
-import { CHARACTER_SCHEMA_VERSION, TRAIT_LIST } from "@/constants"
+import { CHARACTER_SCHEMA_VERSION, STARTING_HOPE, TRAIT_LIST } from "@/constants"
 import type { Character, Trait } from "@/types"
 
 /** Fabrica de ficha em branco. Pura — o id vem de `crypto.randomUUID`. */
@@ -21,7 +21,7 @@ export const createCharacter = (name = ""): Character => {
       {} as Record<Trait, number>,
     ),
     partyId: null,
-    marks: { hp: 0, stress: 0, armor: 0, hope: 0 },
+    marks: { hp: 0, stress: 0, armor: 0, hope: STARTING_HOPE },
     loadout: [],
     vault: [],
     inventory: [],

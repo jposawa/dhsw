@@ -4,7 +4,7 @@ import React from "react"
 
 import { DomainLabel } from "@/components"
 import { DOMAIN_LIST } from "@/constants"
-import { RuleText, SkillCard } from "@/fragments"
+import { RuleText, SkillCardGrid } from "@/fragments"
 import { domainColorToken } from "@/helpers"
 import { useSkillSearch } from "@/hooks"
 import { compendiumViewAtom, openSkillsAtom } from "@/states"
@@ -116,13 +116,7 @@ export const CompendiumCards = () => {
       {skills.length === 0 ? (
         <p className={styles.empty}>Nada encontrado para “{query}”.</p>
       ) : view === "grid" ? (
-        <ul className={styles.grid} data-testid="compendium-grid">
-          {skills.map((skill) => (
-            <li className={styles.gridItem} key={skill.name}>
-              <SkillCard skill={skill} />
-            </li>
-          ))}
-        </ul>
+        <SkillCardGrid skills={skills} />
       ) : (
         <ul className={styles.list} data-testid="compendium-list">
           {skills.map((skill) => (

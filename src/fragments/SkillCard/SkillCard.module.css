@@ -1,95 +1,180 @@
 /*
- * A carta.
+ * A carta, nas duas variantes, com **uma** folha de medidas.
  *
- * A altura vem do `aspect-ratio` do item da grade (`Cards.module.css`), que é
- * a proporção da carta física — 5:7. Aqui ela só preenche o que recebeu.
+ * `.card` é o contêiner de consulta (`container-type`), e tudo dentro de
+ * `.face` é medido em `cqi` — 1cqi é 1% da largura da carta. Por isso a aberta
+ * e a fechada não têm regra de tamanho próprias: a aberta só é mais larga, e o
+ * resto acompanha na mesma proporção. A altura vem de fora — do `aspect-ratio`
+ * do item da grade ou do `<dialog>` —, os dois em 5:7.
  *
- * **`min-height: 0` é o que faz a proporção valer.** Item de grade nasce com
- * tamanho mínimo automático igual ao do conteúdo: com ele, uma carta de texto
- * longo estica a fileira inteira e a proporção vira sugestão. Era essa a
- * distorção — carta de 1.400 caracteres ao lado de uma de 200, cada fileira
- * com uma altura.
+ * O texto é a exceção: leva um piso com `max()`, porque 4cqi numa carta de
+ * 165px dá menos de 7px.
  */
 .card {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  /* Item de grade nasce com `min-width: auto` e cresce para caber o conteúdo,
-     o que empurrava a coluna para fora da tela. Com 0, a trilha manda. */
+  container-type: inline-size;
+  height: 100%;
   min-width: 0;
-  padding: var(--space-3);
-  background: var(--color-bg-elevated);
-  border: var(--border-width) solid var(--color-border);
-  border-top: var(--domain-stripe-width) solid var(--domain-color, var(--color-chrome));
+  min-height: 0;
 }
 
-/* Nível à esquerda, domínio no meio, Recall à direita — a leitura de relance
-   da carta física, que é o que a grade imita. */
+.face {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 5cqi;
+  background: var(--color-bg-elevated);
+  border: var(--border-width) solid var(--color-border);
+  border-top: 1.2cqi solid var(--domain-color, var(--color-chrome));
+  outline: var(--border-width) solid color-mix(in srgb, var(--domain-color) 30%, transparent);
+  outline-offset: -2cqi;
+  transition: border-color 0.15s ease;
+}
+
+.card[data-variant="closed"] .face:hover {
+  border-color: var(--color-chrome-dim);
+  border-top-color: var(--domain-color, var(--color-chrome));
+}
+
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-2);
+  gap: 2cqi;
 }
 
+/* Nível e emblema juntos: o emblema identifica o domínio sem ocupar a linha. */
 .level {
-  font-size: var(--text-lg);
+  display: inline-flex;
+  align-items: center;
+  gap: 1.5cqi;
+  font-size: max(1.125rem, 10cqi);
   font-variant-numeric: tabular-nums;
   line-height: 1;
   color: var(--domain-color, var(--color-chrome));
 }
 
-.domain {
-  min-width: 0;
-  overflow: hidden;
-  white-space: nowrap;
+/* Descendente de `.level`: o `DomainSymbol` tem 1em de lado na própria classe. */
+.level .levelSymbol {
+  width: 0.7em;
+  height: 0.7em;
+  vertical-align: middle;
 }
 
 .recall {
-  font-size: var(--text-2xs);
+  font-size: max(0.75rem, 5cqi);
   font-variant-numeric: tabular-nums;
-  color: var(--color-text-dim);
+  color: var(--color-text-muted);
+}
+
+/*
+ * A janela da arte, em 5:2 nas duas variantes. `flex-shrink: 0` porque é o
+ * texto que cede quando falta altura, nunca a arte.
+ */
+.art {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  aspect-ratio: 5 / 2;
+  margin: 3cqi 0 0;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--domain-color) 10%, var(--color-bg));
+  border: var(--border-width) solid color-mix(in srgb, var(--domain-color) 25%, transparent);
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Descendente de `.art`: o `DomainSymbol` tem 1em de lado na própria classe. */
+.art .emblem {
+  width: 22cqi;
+  height: 22cqi;
+  opacity: 0.8;
 }
 
 .name {
-  margin: var(--space-2) 0 var(--space-2);
-  font-size: var(--text-sm);
+  margin: 3cqi 0;
+  font-size: max(0.9375rem, 6.5cqi);
   font-weight: 500;
-  letter-spacing: var(--tracking-normal);
+  line-height: 1.2;
+  text-align: center;
   color: var(--color-ink);
-  /* Nome de duas linhas não pode empurrar o corpo para fora da carta. */
   overflow-wrap: break-word;
 }
 
 /*
- * `flex-grow` aqui é necessário e não conveniência: é o corpo que ocupa a
- * sobra da carta e leva o rodapé para a base. Sem ele, carta de texto curto
- * ficaria com a categoria flutuando no meio e a metade de baixo vazia.
+ * O texto ocupa a sobra e rola quando não cabe. Fica acima do botão que abre a
+ * carta fechada (`z-index`), senão a roda cairia no botão e nunca no texto.
  *
- * `auto` e não `hidden`: cortar esconderia efeito de carta, e `overflow:
- * hidden` num contêiner rolável quebra o momentum do iOS — STYLING.md. O
- * `min-height: 0` é o par obrigatório: item de flex não encolhe abaixo do
- * conteúdo sem ele, e a rolagem nunca chegaria a acontecer.
+ * O tamanho vai no `.rule` descendente, e não no `RuleText` direto: a classe
+ * dele tem a mesma especificidade e dependeria da ordem dos CSS no bundle.
  */
 .text {
+  position: relative;
+  z-index: 1;
   flex-grow: 1;
   min-height: 0;
   overflow-y: auto;
-  /* `contain` isola a rolagem: chegando ao fim do texto, o dedo não continua
-     rolando a grade atrás — o encadeamento faz a página saltar no celular. */
-  overscroll-behavior: contain;
-  padding-top: var(--space-2);
-  font-size: var(--text-xs);
-  /* Nome próprio longo e termo com hífen não cabem numa coluna de 15rem. */
-  overflow-wrap: break-word;
+  padding-top: 3cqi;
   border-top: var(--border-width) solid var(--color-border-subtle);
 }
 
+.card[data-variant="closed"] .text {
+  cursor: pointer;
+}
+
+.text .rule {
+  font-size: max(0.75rem, 4.2cqi);
+  line-height: 1.5;
+  overflow-wrap: break-word;
+}
+
 .footer {
-  padding-top: var(--space-2);
-  font-size: var(--text-2xs);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2cqi;
+  padding-top: 2cqi;
+  font-size: max(0.625rem, 3.4cqi);
   letter-spacing: var(--tracking-wider);
   text-transform: uppercase;
   color: var(--color-text-dim);
   border-top: var(--border-width) solid var(--color-border-subtle);
+}
+
+/* A ação fica acima do botão que abre a carta, senão o toque abriria a carta. */
+.action {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+}
+
+/* Fechada: cobre a carta inteira; tocar fora do texto abre. */
+.open {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.open:focus-visible {
+  outline: 2px solid var(--color-chrome-strong);
+  outline-offset: -2px;
+}
+
+.close {
+  min-height: var(--size-touch-target);
+  padding: 0 2cqi;
+  font-size: inherit;
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-chrome-strong);
+  background: transparent;
+  border: none;
+  cursor: pointer;
 }

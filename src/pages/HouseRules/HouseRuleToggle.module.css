@@ -1,0 +1,22 @@
+.block {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--color-bg-elevated);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-normal);
+  color: var(--color-ink);
+}
+
+.note {
+  margin: var(--space-1) 0 0;
+  font-size: var(--text-xs);
+  line-height: 1.55;
+  color: var(--color-text-dim);
+}

@@ -1,10 +1,10 @@
 import { Chip, Input, SectionLabel } from "@jposawa/ronin-ui"
 import React from "react"
 
-import { CONSUMABLES, ITEMS, NAMED_ARMOR, WEAPONS } from "@/compendium"
 import { GEAR_KINDS } from "@/constants"
-import { RuleText } from "@/fragments"
-import { filterByText, formatSigned } from "@/helpers"
+import { FeatureText, RuleText } from "@/fragments"
+import { describeNamedArmor, filterByText, formatSigned } from "@/helpers"
+import { useCompendium } from "@/hooks"
 import type { GearKind } from "@/types"
 
 import styles from "./Reference.module.css"
@@ -22,21 +22,23 @@ import styles from "./Reference.module.css"
  * dentro de uma tela — e o compêndio já tem uma régua acima, que confundiria.
  */
 export const CompendiumGear = () => {
+  const { compendium } = useCompendium()
+
   const [kind, setKind] = React.useState<GearKind>("armas")
   const [query, setQuery] = React.useState("")
 
   const weapons = filterByText(
-    WEAPONS,
+    compendium.weapons,
     (weapon) => `${weapon.name} ${weapon.trait} ${weapon.range} ${weapon.feature ?? ""}`,
     query,
   )
   const armor = filterByText(
-    NAMED_ARMOR,
+    compendium.namedArmor,
     (piece) => `${piece.name} ${piece.line} ${piece.feature ?? ""}`,
     query,
   )
-  const items = filterByText(ITEMS, (item) => `${item.name} ${item.text}`, query)
-  const consumables = filterByText(CONSUMABLES, (item) => `${item.name} ${item.text}`, query)
+  const items = filterByText(compendium.items, (item) => `${item.name} ${item.text}`, query)
+  const consumables = filterByText(compendium.consumables, (item) => `${item.name} ${item.text}`, query)
 
   const shownByKind = {
     armas: weapons,
@@ -45,10 +47,10 @@ export const CompendiumGear = () => {
     consumiveis: consumables,
   }
   const totalByKind = {
-    armas: WEAPONS,
-    armaduras: NAMED_ARMOR,
-    itens: ITEMS,
-    consumiveis: CONSUMABLES,
+    armas: compendium.weapons,
+    armaduras: compendium.namedArmor,
+    itens: compendium.items,
+    consumiveis: compendium.consumables,
   }
 
   const shown = shownByKind[kind]
@@ -92,10 +94,7 @@ export const CompendiumGear = () => {
               <article className={styles.entry}>
                 <header className={styles.head}>
                   <hgroup className={styles.headText}>
-                    <h3 className={styles.name}>
-                      {weapon.name}
-                      {weapon.isIconic ? <span className={styles.iconic}> ◆</span> : null}
-                    </h3>
+                    <h3 className={styles.name}>{weapon.name}</h3>
                     <p className={styles.meta}>
                       {weapon.trait} · {weapon.range} · {weapon.burden}
                     </p>
@@ -114,9 +113,7 @@ export const CompendiumGear = () => {
                   ))}
                 </p>
 
-                {weapon.feature ? (
-                  <RuleText className={styles.body} text={weapon.feature} />
-                ) : null}
+                {weapon.feature ? <FeatureText className={styles.body} name={weapon.feature} /> : null}
               </article>
             </li>
           ))}
@@ -125,24 +122,35 @@ export const CompendiumGear = () => {
 
       {kind === "armaduras" && armor.length > 0 ? (
         <ul className={styles.list}>
-          {armor.map((piece) => (
-            <li key={piece.name} className={styles.item}>
-              <article className={styles.entry}>
-                <header className={styles.head}>
-                  <hgroup className={styles.headText}>
-                    <h3 className={styles.name}>{piece.name}</h3>
-                    <p className={styles.meta}>
-                      {piece.line} · Tier {piece.tier}
-                    </p>
-                  </hgroup>
-                </header>
+          {armor.map((piece) => {
+            const described = describeNamedArmor(compendium, piece.name)
 
-                {piece.feature ? (
-                  <RuleText className={styles.body} text={piece.feature} />
-                ) : null}
-              </article>
-            </li>
-          ))}
+            return (
+              <li key={piece.name} className={styles.item}>
+                <article className={styles.entry}>
+                  <header className={styles.head}>
+                    <hgroup className={styles.headText}>
+                      <h3 className={styles.name}>{piece.name}</h3>
+                      <p className={styles.meta}>
+                        {piece.line} · Tier {piece.tier} · Armor Score{" "}
+                        {described?.stats.baseScore ?? "—"}
+                      </p>
+                    </hgroup>
+                    {described ? (
+                      <span className={styles.value}>
+                        {described.stats.majorBase}/{described.stats.severeBase}
+                        <span className={styles.unit}> thresholds</span>
+                      </span>
+                    ) : null}
+                  </header>
+
+                  {described?.features.map((feature) => (
+                    <FeatureText className={styles.body} key={feature} name={feature} />
+                  ))}
+                </article>
+              </li>
+            )
+          })}
         </ul>
       ) : null}
 

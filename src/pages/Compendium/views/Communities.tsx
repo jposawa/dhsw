@@ -1,18 +1,20 @@
 import { Input, SectionLabel } from "@jposawa/ronin-ui"
 import React from "react"
 
-import { COMMUNITIES } from "@/compendium"
 import { RuleText } from "@/fragments"
 import { filterByText } from "@/helpers"
+import { useCompendium } from "@/hooks"
 
 import styles from "./Reference.module.css"
 
 /** As seis origens. Uma feature cada, por padrão do SRD. */
 export const CompendiumCommunities = () => {
+  const { compendium } = useCompendium()
+
   const [query, setQuery] = React.useState("")
 
   const communities = filterByText(
-    COMMUNITIES,
+    compendium.communities,
     (community) => `${community.name} ${community.description} ${community.feature}`,
     query,
   )
@@ -29,7 +31,7 @@ export const CompendiumCommunities = () => {
           onValueChange={setQuery}
         />
 
-        <SectionLabel detail={`${communities.length} de ${COMMUNITIES.length}`}>
+        <SectionLabel detail={`${communities.length} de ${compendium.communities.length}`}>
           <h2>ORIGENS</h2>
         </SectionLabel>
       </search>

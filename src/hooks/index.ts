@@ -1,4 +1,5 @@
 export * from "./useAuth"
+export * from "./useCompendium"
 export * from "./useConfig"
 export * from "./useHomeRoute"
 export * from "./useNavItems"

@@ -3,9 +3,9 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import React from "react"
 import { Navigate, useNavigate, useParams } from "react-router-dom"
 
-import { CLASSES_BY_NAME } from "@/compendium"
 import { StepRule } from "@/components"
 import { PARTY_ROLES, ROUTES } from "@/constants"
+import { useCompendium } from "@/hooks"
 import {
   canLeaveParty,
   canRemoveSheetFromParty,
@@ -43,6 +43,8 @@ const labelForRole = (roleId: string): string =>
  * se fosse sua — e a regra de segurança recusaria, em silêncio, para sempre.
  */
 export const PartyDetail = () => {
+  const { compendium } = useCompendium()
+
   const { partyId } = useParams<{ partyId: string }>()
   const { user } = useAtomValue(authAtom)
   const [roster, setRoster] = useAtom(rosterAtom)
@@ -306,7 +308,7 @@ export const PartyDetail = () => {
         <ul className={styles.list}>
           {sheets.map((sheet) => {
             const classDefinition = sheet.className
-              ? CLASSES_BY_NAME.get(sheet.className)
+              ? compendium.classes.find((candidate) => candidate.name === sheet.className)
               : undefined
 
             return (

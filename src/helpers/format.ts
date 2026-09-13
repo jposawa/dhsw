@@ -1,4 +1,4 @@
-import type { Modifier } from "@/types"
+import type { DerivedStats, Modifier, Weapon } from "@/types"
 
 /** Sinal explicito: "+2" e "−1" leem melhor que "2" e "-1". */
 export const formatSigned = (value: number): string => {
@@ -14,9 +14,10 @@ export const describeModifierSource = ({ source }: Modifier): string => {
   switch (source.kind) {
     case "base":
       return "base"
-    case "class":
     case "armor":
     case "weapon":
+      return source.feature ? `${source.name} — ${source.feature}` : source.name
+    case "class":
     case "item":
     case "skill":
       return source.name
@@ -26,6 +27,10 @@ export const describeModifierSource = ({ source }: Modifier): string => {
       return `${source.name} — ${source.feature}`
     case "advancement":
       return `advancement, nível ${source.level}`
+    case "level":
+      return source.multiplier === 1 ? `nível ${source.level}` : `${source.multiplier} × nível ${source.level}`
+    case "levelAchievement":
+      return `level achievement, nível ${source.level}`
     case "module":
       return source.moduleName
     case "houseRule":
@@ -52,4 +57,36 @@ export const describeError = (error: unknown): string => {
   }
 
   return "Erro desconhecido"
+}
+
+/**
+ * Dados de dano como a ficha do livro escreve: Proficiency já no número de
+ * dados, bônus do tier depois — `2d8+3 phy`. Bônus zero não aparece.
+ */
+export const formatWeaponDamage = (weapon: Weapon, proficiency: number, tierIndex: number): string => {
+  const bonus = weapon.bonusByTier[tierIndex] ?? 0
+  const bonusText = bonus === 0 ? "" : formatSigned(bonus).replace("−", "-")
+
+  return `${proficiency}${weapon.damageDie}${bonusText} ${weapon.damageType}`
+}
+
+/**
+ * De onde saíram os dois thresholds, numa linha.
+ *
+ * É a resposta a "por que meu Major é 1?" sem abrir detalhamento: sem armadura
+ * é o nível, com armadura é a base dela mais o nível.
+ */
+export const describeThresholdOrigin = (derived: DerivedStats): string => {
+  const major = derived.majorThreshold.base
+  const severe = derived.severeThreshold.base
+
+  if (derived.equippedArmor) {
+    return `${derived.equippedArmor.name} ${major}/${severe} + nível ${derived.level}`
+  }
+
+  if (derived.hasBareBones) {
+    return `Bare Bones, Tier ${derived.tier}: ${major}/${severe} + nível ${derived.level}`
+  }
+
+  return "Sem armadura: Major = nível, Severe = 2 × nível"
 }

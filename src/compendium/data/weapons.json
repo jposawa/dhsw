@@ -1,8 +1,4 @@
-// GERADO POR scripts/build-compendium.ts — NÃO EDITAR À MÃO.
-// Fonte: specs/dh-sw.html
-import type { Weapon } from "@/types"
-
-export const WEAPONS: readonly Weapon[] = [
+[
   {
     "name": "Lightsaber",
     "trait": "Forcewield",
@@ -16,8 +12,7 @@ export const WEAPONS: readonly Weapon[] = [
     ],
     "damageType": "phy",
     "burden": "Uma mão",
-    "feature": "**Iconic.** Ignora Armor Slots contra alvos sem `Lightblade Resistant`. Bonded soma seu Tier ao dano.",
-    "isIconic": true
+    "feature": "Hot"
   },
   {
     "name": "Shoto Saber",
@@ -32,8 +27,7 @@ export const WEAPONS: readonly Weapon[] = [
     ],
     "damageType": "phy",
     "burden": "Uma mão",
-    "feature": "**Iconic.** +1 Evasion enquanto empunhada. Bonded soma seu Tier ao dano.",
-    "isIconic": true
+    "feature": "Guarding"
   },
   {
     "name": "Saberstaff",
@@ -48,8 +42,7 @@ export const WEAPONS: readonly Weapon[] = [
     ],
     "damageType": "phy",
     "burden": "Duas mãos",
-    "feature": "**Iconic.** Ao acertar, marque um **Stress** para atingir um segundo alvo em *Melee*.",
-    "isIconic": true
+    "feature": "Quick"
   },
   {
     "name": "Lightwhip",
@@ -64,8 +57,7 @@ export const WEAPONS: readonly Weapon[] = [
     ],
     "damageType": "phy",
     "burden": "Uma mão",
-    "feature": "**Iconic.** Alcance maior que o de um sabre comum, e o alvo não pode reagir com *Deflection*.",
-    "isIconic": true
+    "feature": "Startling"
   },
   {
     "name": "Vibroblade",
@@ -80,8 +72,7 @@ export const WEAPONS: readonly Weapon[] = [
     ],
     "damageType": "phy",
     "burden": "Uma mão",
-    "feature": null,
-    "isIconic": false
+    "feature": null
   },
   {
     "name": "Vibro-axe",
@@ -96,8 +87,7 @@ export const WEAPONS: readonly Weapon[] = [
     ],
     "damageType": "phy",
     "burden": "Duas mãos",
-    "feature": null,
-    "isIconic": false
+    "feature": null
   },
   {
     "name": "Force Pike",
@@ -112,8 +102,7 @@ export const WEAPONS: readonly Weapon[] = [
     ],
     "damageType": "phy",
     "burden": "Duas mãos",
-    "feature": "Alcance a mais que uma arma de *Melee*.",
-    "isIconic": false
+    "feature": null
   },
   {
     "name": "Shock Baton",
@@ -128,8 +117,7 @@ export const WEAPONS: readonly Weapon[] = [
     ],
     "damageType": "tech",
     "burden": "Uma mão",
-    "feature": "Ao acertar, marque um **Stress** para deixar o alvo *Vulnerable* até o fim do próximo turno dele.",
-    "isIconic": false
+    "feature": "Shocking"
   },
   {
     "name": "Combat Staff",
@@ -144,8 +132,7 @@ export const WEAPONS: readonly Weapon[] = [
     ],
     "damageType": "phy",
     "burden": "Duas mãos",
-    "feature": "+1 Evasion enquanto empunhado.",
-    "isIconic": false
+    "feature": "Guarding"
   },
   {
     "name": "Beskad",
@@ -160,8 +147,7 @@ export const WEAPONS: readonly Weapon[] = [
     ],
     "damageType": "phy",
     "burden": "Duas mãos",
-    "feature": "`Lightblade Resistant`. Não sofre dano de sabres.",
-    "isIconic": false
+    "feature": "Lightblade Resistant"
   },
   {
     "name": "Hold-out Blaster",
@@ -176,8 +162,7 @@ export const WEAPONS: readonly Weapon[] = [
     ],
     "damageType": "tech",
     "burden": "Uma mão",
-    "feature": "Cabe em qualquer lugar. Revistas casuais não encontram.",
-    "isIconic": false
+    "feature": "Concealable"
   },
   {
     "name": "Blaster Pistol",
@@ -192,8 +177,7 @@ export const WEAPONS: readonly Weapon[] = [
     ],
     "damageType": "tech",
     "burden": "Uma mão",
-    "feature": null,
-    "isIconic": false
+    "feature": null
   },
   {
     "name": "Heavy Blaster Pistol",
@@ -208,8 +192,7 @@ export const WEAPONS: readonly Weapon[] = [
     ],
     "damageType": "tech",
     "burden": "Uma mão",
-    "feature": null,
-    "isIconic": false
+    "feature": null
   },
   {
     "name": "Blaster Carbine",
@@ -224,8 +207,7 @@ export const WEAPONS: readonly Weapon[] = [
     ],
     "damageType": "tech",
     "burden": "Duas mãos",
-    "feature": null,
-    "isIconic": false
+    "feature": null
   },
   {
     "name": "Blaster Rifle",
@@ -240,8 +222,7 @@ export const WEAPONS: readonly Weapon[] = [
     ],
     "damageType": "tech",
     "burden": "Duas mãos",
-    "feature": null,
-    "isIconic": false
+    "feature": null
   },
   {
     "name": "Sporting Blaster",
@@ -256,8 +237,7 @@ export const WEAPONS: readonly Weapon[] = [
     ],
     "damageType": "tech",
     "burden": "Uma mão",
-    "feature": "Baixa assinatura: não dispara alarmes de energia.",
-    "isIconic": false
+    "feature": "Reliable"
   },
   {
     "name": "Slugthrower",
@@ -272,8 +252,7 @@ export const WEAPONS: readonly Weapon[] = [
     ],
     "damageType": "phy",
     "burden": "Duas mãos",
-    "feature": "Dano `phy`. Passa por defletores e escudos de energia.",
-    "isIconic": false
+    "feature": "Kinetic"
   },
   {
     "name": "Bowcaster",
@@ -288,8 +267,7 @@ export const WEAPONS: readonly Weapon[] = [
     ],
     "damageType": "phy",
     "burden": "Duas mãos",
-    "feature": "Requer **Strength** +1 para recarregar sem marcar **Stress**.",
-    "isIconic": false
+    "feature": "Reloading"
   },
   {
     "name": "Disruptor Pistol",
@@ -304,8 +282,7 @@ export const WEAPONS: readonly Weapon[] = [
     ],
     "damageType": "tech",
     "burden": "Uma mão",
-    "feature": "Dano direto: não pode ser reduzido com Armor Slots. Ilegal em quase toda jurisdição.",
-    "isIconic": false
+    "feature": "Deadly"
   },
   {
     "name": "Repeating Blaster",
@@ -320,8 +297,7 @@ export const WEAPONS: readonly Weapon[] = [
     ],
     "damageType": "tech",
     "burden": "Duas mãos",
-    "feature": "Marque um **Stress** para atingir todos os alvos em um grupo dentro do alcance.",
-    "isIconic": false
+    "feature": "Bouncing"
   },
   {
     "name": "Sniper Rifle",
@@ -336,8 +312,7 @@ export const WEAPONS: readonly Weapon[] = [
     ],
     "damageType": "tech",
     "burden": "Duas mãos",
-    "feature": "Se você não se moveu neste turno, role o dano duas vezes e fique com o melhor.",
-    "isIconic": false
+    "feature": "Powerful"
   },
   {
     "name": "Ion Blaster",
@@ -352,8 +327,7 @@ export const WEAPONS: readonly Weapon[] = [
     ],
     "damageType": "tech",
     "burden": "Uma mão",
-    "feature": "Contra droides e veículos: +3 no dano e ignora Armor Slots.",
-    "isIconic": false
+    "feature": "Ionizing"
   },
   {
     "name": "Vibroknife",
@@ -368,8 +342,7 @@ export const WEAPONS: readonly Weapon[] = [
     ],
     "damageType": "phy",
     "burden": "Secundária",
-    "feature": null,
-    "isIconic": false
+    "feature": "Paired"
   },
   {
     "name": "Wrist Launcher",
@@ -384,8 +357,7 @@ export const WEAPONS: readonly Weapon[] = [
     ],
     "damageType": "tech",
     "burden": "Secundária",
-    "feature": "Um disparo por cena, depois precisa recarregar em downtime.",
-    "isIconic": false
+    "feature": "Reloading"
   },
   {
     "name": "Riot Shield",
@@ -400,8 +372,7 @@ export const WEAPONS: readonly Weapon[] = [
     ],
     "damageType": "phy",
     "burden": "Secundária",
-    "feature": "+1 Armor Score enquanto equipado.",
-    "isIconic": false
+    "feature": "Protective"
   },
   {
     "name": "Grappling Spike",
@@ -416,8 +387,7 @@ export const WEAPONS: readonly Weapon[] = [
     ],
     "damageType": "phy",
     "burden": "Secundária",
-    "feature": "Ao acertar, puxe o alvo para *Melee* ou puxe a si mesmo até ele.",
-    "isIconic": false
+    "feature": "Hooked"
   },
   {
     "name": "Whistling Birds",
@@ -432,7 +402,6 @@ export const WEAPONS: readonly Weapon[] = [
     ],
     "damageType": "tech",
     "burden": "Secundária",
-    "feature": "Ignora cobertura. Uso limitado por munição rara.",
-    "isIconic": false
+    "feature": "Locked On"
   }
-] as const
+]

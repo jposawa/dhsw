@@ -1,14 +1,17 @@
-// GERADO POR scripts/build-compendium.ts — NÃO EDITAR À MÃO.
-// Fonte: specs/dh-sw.html
-import type { Ancestry } from "@/types"
-
-export const ANCESTRIES: readonly Ancestry[] = [
+[
   {
     "name": "Human",
     "description": "Espalhados por toda parte, adaptáveis a quase tudo, e por isso mesmo raramente notados como espécie.",
     "features": [
       "**High Stamina** — Ganhe um slot de **Stress** adicional na criação.",
       "**Adaptability** — Ao falhar numa rolagem que usou uma de suas **Experiences**, marque um **Stress** para rerrolar."
+    ],
+    "modifiers": [
+      {
+        "feature": "High Stamina",
+        "target": "stressMax",
+        "value": 1
+      }
     ]
   },
   {
@@ -67,4 +70,4 @@ export const ANCESTRIES: readonly Ancestry[] = [
       "**Antiox Discipline** — Sua máscara filtra tudo: você é imune a gás, esporo e toxina inalada. Sem ela, você não respira em atmosfera de oxigênio."
     ]
   }
-] as const
+]

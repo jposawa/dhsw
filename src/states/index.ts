@@ -1,4 +1,5 @@
 export * from "./authAtom"
+export * from "./compendiumAtom"
 export * from "./configAtom"
 export * from "./houseRulesAtom"
 export * from "./rosterAtom"

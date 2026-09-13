@@ -1,0 +1,106 @@
+[
+  {
+    "name": "Flexible",
+    "feature": "Flexible",
+    "tiers": [
+      {
+        "baseScore": 3,
+        "majorBase": 5,
+        "severeBase": 11
+      },
+      {
+        "baseScore": 4,
+        "majorBase": 7,
+        "severeBase": 16
+      },
+      {
+        "baseScore": 5,
+        "majorBase": 9,
+        "severeBase": 23
+      },
+      {
+        "baseScore": 6,
+        "majorBase": 11,
+        "severeBase": 32
+      }
+    ]
+  },
+  {
+    "name": "Neutra",
+    "feature": null,
+    "tiers": [
+      {
+        "baseScore": 3,
+        "majorBase": 6,
+        "severeBase": 13
+      },
+      {
+        "baseScore": 4,
+        "majorBase": 9,
+        "severeBase": 20
+      },
+      {
+        "baseScore": 5,
+        "majorBase": 11,
+        "severeBase": 27
+      },
+      {
+        "baseScore": 6,
+        "majorBase": 13,
+        "severeBase": 36
+      }
+    ]
+  },
+  {
+    "name": "Heavy",
+    "feature": "Heavy",
+    "tiers": [
+      {
+        "baseScore": 4,
+        "majorBase": 7,
+        "severeBase": 15
+      },
+      {
+        "baseScore": 5,
+        "majorBase": 11,
+        "severeBase": 24
+      },
+      {
+        "baseScore": 6,
+        "majorBase": 13,
+        "severeBase": 31
+      },
+      {
+        "baseScore": 7,
+        "majorBase": 15,
+        "severeBase": 40
+      }
+    ]
+  },
+  {
+    "name": "Very Heavy",
+    "feature": "Very Heavy",
+    "tiers": [
+      {
+        "baseScore": 4,
+        "majorBase": 8,
+        "severeBase": 17
+      },
+      {
+        "baseScore": 5,
+        "majorBase": 13,
+        "severeBase": 28
+      },
+      {
+        "baseScore": 6,
+        "majorBase": 15,
+        "severeBase": 35
+      },
+      {
+        "baseScore": 7,
+        "majorBase": 17,
+        "severeBase": 44
+      }
+    ]
+  }
+]

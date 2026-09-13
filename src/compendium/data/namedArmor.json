@@ -1,0 +1,122 @@
+[
+  {
+    "name": "Padded Flightsuit",
+    "line": "Flexible",
+    "tier": 1,
+    "feature": null
+  },
+  {
+    "name": "Reinforced Flightsuit",
+    "line": "Flexible",
+    "tier": 2,
+    "feature": null
+  },
+  {
+    "name": "Nightscale Weave",
+    "line": "Flexible",
+    "tier": 3,
+    "feature": null
+  },
+  {
+    "name": "Shadowsilk Weave",
+    "line": "Flexible",
+    "tier": 4,
+    "feature": null
+  },
+  {
+    "name": "Smuggler's Vest",
+    "line": "Neutra",
+    "tier": 1,
+    "feature": null
+  },
+  {
+    "name": "Scout Armor",
+    "line": "Neutra",
+    "tier": 2,
+    "feature": null
+  },
+  {
+    "name": "Hunter's Rig",
+    "line": "Neutra",
+    "tier": 3,
+    "feature": null
+  },
+  {
+    "name": "Vanguard Rig",
+    "line": "Neutra",
+    "tier": 4,
+    "feature": null
+  },
+  {
+    "name": "Trooper Plate",
+    "line": "Heavy",
+    "tier": 1,
+    "feature": null
+  },
+  {
+    "name": "Heavy Trooper Plate",
+    "line": "Heavy",
+    "tier": 2,
+    "feature": null
+  },
+  {
+    "name": "Assault Plate",
+    "line": "Heavy",
+    "tier": 3,
+    "feature": null
+  },
+  {
+    "name": "Siege Plate",
+    "line": "Heavy",
+    "tier": 4,
+    "feature": null
+  },
+  {
+    "name": "Siege Carapace",
+    "line": "Very Heavy",
+    "tier": 1,
+    "feature": null
+  },
+  {
+    "name": "Powered Carapace",
+    "line": "Very Heavy",
+    "tier": 2,
+    "feature": null
+  },
+  {
+    "name": "Exoframe",
+    "line": "Very Heavy",
+    "tier": 3,
+    "feature": null
+  },
+  {
+    "name": "Warframe Exoframe",
+    "line": "Very Heavy",
+    "tier": 4,
+    "feature": null
+  },
+  {
+    "name": "Jedi Robes",
+    "line": "Flexible",
+    "tier": 2,
+    "feature": "Unencumbering"
+  },
+  {
+    "name": "Beskar'gam",
+    "line": "Neutra",
+    "tier": 3,
+    "feature": "Lightblade Resistant"
+  },
+  {
+    "name": "Cortosis Plate",
+    "line": "Heavy",
+    "tier": 4,
+    "feature": "Lightblade Resistant"
+  },
+  {
+    "name": "Powered Exoskeleton",
+    "line": "Very Heavy",
+    "tier": 3,
+    "feature": "Powered"
+  }
+]

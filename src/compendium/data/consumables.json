@@ -1,8 +1,4 @@
-// GERADO POR scripts/build-compendium.ts — NÃO EDITAR À MÃO.
-// Fonte: specs/dh-sw.html
-import type { CompendiumEntry } from "@/types"
-
-export const CONSUMABLES: readonly CompendiumEntry[] = [
+[
   {
     "name": "Stimpack",
     "tier": 1,
@@ -93,4 +89,4 @@ export const CONSUMABLES: readonly CompendiumEntry[] = [
     "tier": 4,
     "text": "Sua próxima rolagem de dano com arma `tech` rola os dados duas vezes: fique com o melhor."
   }
-] as const
+]

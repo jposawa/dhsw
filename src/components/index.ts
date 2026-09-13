@@ -9,6 +9,7 @@
  * um barril que se apresenta como dono do que reexporta.
  */
 export { DomainLabel } from "./DomainLabel"
+export { DotScale } from "./DotScale"
 export { DomainSymbol } from "./DomainSymbol"
 export { NavIcon } from "./NavIcon"
 export { Pip } from "./Pip"

@@ -76,21 +76,18 @@ export const CombatEdit = ({ draft, derived, onChange }: CombatEditProps) => {
           <h3>IDENTIDADE</h3>
         </SectionLabel>
 
-        <div className={styles.fields}>
-          <div className={styles.fieldWide}>
-            <label className={styles.label} htmlFor="character-name">
-              NOME
-            </label>
+        <fieldset className={styles.fields}>
+          <label className={styles.fieldWide}>
+            <span className={styles.label}>NOME</span>
             <input
               className={styles.input}
-              id="character-name"
               value={draft.name}
               placeholder="Quem é o personagem"
               onChange={(event) =>
                 onChange((current) => ({ ...current, name: event.target.value }))
               }
             />
-          </div>
+          </label>
 
           {/* Nível ao lado do nome, não no rodapé: Evasion, HP, Stress,
               thresholds e Proficiency saem dele. É entrada, não resumo. */}
@@ -110,13 +107,10 @@ export const CombatEdit = ({ draft, derived, onChange }: CombatEditProps) => {
 
           {/* Classe antes de espécie: é ela que move os números. Espécie e origem
               trazem features, não a base de cálculo. */}
-          <div>
-            <label className={styles.label} htmlFor="character-class">
-              CLASSE
-            </label>
+          <label className={styles.field}>
+            <span className={styles.label}>CLASSE</span>
             <select
               className={styles.input}
-              id="character-class"
               value={draft.className ?? ""}
               onChange={(event) =>
                 onChange((current) => ({
@@ -133,15 +127,12 @@ export const CombatEdit = ({ draft, derived, onChange }: CombatEditProps) => {
                 <option key={classDefinition.name}>{classDefinition.name}</option>
               ))}
             </select>
-          </div>
+          </label>
 
-          <div>
-            <label className={styles.label} htmlFor="character-subclass">
-              SUBCLASSE
-            </label>
+          <label className={styles.field}>
+            <span className={styles.label}>SUBCLASSE</span>
             <select
               className={styles.input}
-              id="character-subclass"
               value={draft.subclass ?? ""}
               onChange={(event) =>
                 onChange((current) => ({ ...current, subclass: event.target.value || null }))
@@ -154,15 +145,12 @@ export const CombatEdit = ({ draft, derived, onChange }: CombatEditProps) => {
                 <option key={subclass.name}>{subclass.name}</option>
               ))}
             </select>
-          </div>
+          </label>
 
-          <div>
-            <label className={styles.label} htmlFor="character-ancestry">
-              ESPÉCIE
-            </label>
+          <label className={styles.field}>
+            <span className={styles.label}>ESPÉCIE</span>
             <select
               className={styles.input}
-              id="character-ancestry"
               value={draft.ancestry ?? ""}
               onChange={(event) =>
                 onChange((current) => ({ ...current, ancestry: event.target.value || null }))
@@ -173,15 +161,12 @@ export const CombatEdit = ({ draft, derived, onChange }: CombatEditProps) => {
                 <option key={ancestry.name}>{ancestry.name}</option>
               ))}
             </select>
-          </div>
+          </label>
 
-          <div>
-            <label className={styles.label} htmlFor="character-community">
-              ORIGEM
-            </label>
+          <label className={styles.field}>
+            <span className={styles.label}>ORIGEM</span>
             <select
               className={styles.input}
-              id="character-community"
               value={draft.community ?? ""}
               onChange={(event) =>
                 onChange((current) => ({ ...current, community: event.target.value || null }))
@@ -192,8 +177,8 @@ export const CombatEdit = ({ draft, derived, onChange }: CombatEditProps) => {
                 <option key={community.name}>{community.name}</option>
               ))}
             </select>
-          </div>
-        </div>
+          </label>
+        </fieldset>
       </section>
 
       <section className={styles.attributes}>

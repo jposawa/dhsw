@@ -21,6 +21,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  gap: 3cqi;
   height: 100%;
   padding: 5cqi;
   background: var(--color-bg-elevated);
@@ -76,7 +77,6 @@
   place-items: center;
   flex-shrink: 0;
   aspect-ratio: 5 / 2;
-  margin: 3cqi 0 0;
   overflow: hidden;
   background: color-mix(in srgb, var(--domain-color) 10%, var(--color-bg));
   border: var(--border-width) solid color-mix(in srgb, var(--domain-color) 25%, transparent);
@@ -96,7 +96,7 @@
 }
 
 .name {
-  margin: 3cqi 0;
+  margin: 0;
   font-size: max(0.9375rem, 6.5cqi);
   font-weight: 500;
   line-height: 1.2;

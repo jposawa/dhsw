@@ -1,6 +1,7 @@
-import { Button, Chip, Input, SectionLabel } from "@jposawa/ronin-ui"
+import { Button, Input, SectionLabel } from "@jposawa/ronin-ui"
 import React from "react"
 
+import { Switch } from "@/components"
 import { SkillCardGrid } from "@/fragments"
 import { useCompendium, useSkillSearch } from "@/hooks"
 import { forgetSkill, isKnown, learnSkill, moveToLoadout, moveToVault } from "@/rules"
@@ -78,18 +79,20 @@ export const CardsPanel = ({ character, derived, isEditing, onApply }: CardsPane
         {/* A troca livre é estado da mesa, não da ficha: vale enquanto durar o
             descanso e não sobrevive ao recarregar. Guardá-la na ficha faria
             alguém voltar no dia seguinte ainda em descanso. */}
-        <div className={styles.restSwitch}>
-          <Chip
-            label="Troca livre (descanso)"
-            isActive={isFreeSwap}
-            onToggle={() => setIsFreeSwap(!isFreeSwap)}
-          />
-          <p className={styles.hint}>
-            {isFreeSwap
-              ? "Trazer carta do vault não custa Stress."
-              : "Trazer carta do vault custa Stress igual ao Recall Cost."}
-          </p>
-        </div>
+        <Switch
+          className={styles.freeSwap}
+          isOn={isFreeSwap}
+          onToggle={() => setIsFreeSwap(!isFreeSwap)}
+        >
+          <span className={styles.freeSwapText}>
+            Troca livre
+            <span className={styles.hint}>
+              {isFreeSwap
+                ? "Descansando: trazer carta do vault não custa Stress."
+                : "Trazer carta do vault custa Stress igual ao Recall Cost."}
+            </span>
+          </span>
+        </Switch>
 
         {loadout.length === 0 ? (
           <p className={styles.empty}>Loadout vazio. Traga uma carta do vault.</p>

@@ -98,17 +98,23 @@ export const HistoryPanel = ({
         )}
 
         {isEditing ? (
-          <div className={styles.addRow}>
+          <form
+            className={styles.addRow}
+            onSubmit={(event) => {
+              event.preventDefault()
+              handleAdd()
+            }}
+          >
             <Input
               value={newExperience}
               placeholder="Piloto de corrida, Criado nas ruas…"
               aria-label="Nome da Experience"
               onValueChange={setNewExperience}
             />
-            <Button disabled={!newExperience.trim()} onClick={handleAdd}>
+            <Button type="submit" disabled={!newExperience.trim()}>
               ADICIONAR
             </Button>
-          </div>
+          </form>
         ) : null}
       </section>
 

@@ -3,25 +3,16 @@ import React from "react"
 
 import { DotScale } from "@/components"
 import { EQUIP_SLOTS, HOPE_MAX, MAX_PROFICIENCY, TRAIT_LIST, TRAIT_VERBS } from "@/constants"
-import { FeatureText, MarkerTrack, RuleText, StatBlock, ThresholdBar } from "@/fragments"
+import { MarkerTrack, RuleText, StatBlock, ThresholdBar } from "@/fragments"
 import { describeThresholdOrigin, domainColorToken, formatSigned } from "@/helpers"
 import { useCompendium } from "@/hooks"
 import type { Character, DerivedStats, EquipSlot, Marks, Result } from "@/types"
 
 import { ActiveWeapon } from "./ActiveWeapon"
+import { EquippedArmorCard } from "./EquippedArmorCard"
 import { RestDrawer } from "./RestDrawer"
 
 import styles from "./CombatPlay.module.css"
-
-const describeWearing = (derived: DerivedStats): string => {
-  const armor = derived.equippedArmor
-
-  if (armor) {
-    return `${armor.name} · ${armor.line} · Tier ${armor.tier}`
-  }
-
-  return derived.hasBareBones ? "Sem armadura · Bare Bones" : "Sem armadura"
-}
 
 type CombatPlayProps = {
   character: Character
@@ -37,15 +28,16 @@ type CombatPlayProps = {
  * **A ordem é a das perguntas da mesa**, e cada bloco encosta no que responde:
  *
  * 1. Quem é — nome, classe, nível. Uma faixa fina; identifica, não se usa.
- * 2. **Defesa**: Evasion e Armor, com os Armor Slots colados no Armor — gastar
- *    slot é reduzir o dano que acabou de chegar.
+ * 2. **Defesa**: Evasion e os Armor Slots lado a lado — gastar slot é reduzir
+ *    o dano que acabou de chegar. O Armor Score está em Equipamento.
  * 3. **Atributos** com os verbos da ficha do livro: "rola o quê para pular?"
  *    se responde olhando, sem decorar a lista.
  * 4. **Dano, vida e Hope juntos**: a régua de thresholds em cima do HP, porque
  *    a pergunta real é "levei 11, marco quanto?", e Hope colado em HP e Stress
  *    porque são os três marcadores tocados no mesmo turno.
  * 5. **Hope feature e Experiences** — os dois jeitos de gastar Hope.
- * 6. **Armas** com Proficiency já nos dados e a feature à vista.
+ * 6. **Equipamento**: armas com Proficiency já nos dados, e a armadura com o
+ *    Armor Score e as features.
  *
  * Nada aqui muda um máximo: marcar é estado de mesa e grava no toque. O que
  * define o máximo é modo edição, com Salvar. Descansar também é jogada: duas
@@ -79,24 +71,22 @@ export const CombatPlay = ({
 
   const isPrimaryTwoHanded = weaponOf("primary")?.burden === "Duas mãos"
 
-  const armor = derived.equippedArmor
-
   const needsClass = classDefinition === undefined
 
   return (
     <div className={styles.layout}>
       <header className={styles.identity}>
-        <div className={styles.identityText}>
+        <hgroup className={styles.identityText}>
           <h2 className={styles.name}>{character.name || "Sem nome"}</h2>
           <p className={styles.lineage}>{lineage || "ficha em branco"}</p>
-        </div>
+        </hgroup>
 
         <div className={styles.identitySide}>
           {/* No cabeçalho e em texto: descanso acontece entre cenas, poucas vezes
               por sessão, e não disputa espaço com os pips que se tocam no turno. */}
           <Button
             className={styles.restButton}
-            variant="text"
+            variant="outline"
             disabled={isReadOnly}
             onClick={() => setIsResting(true)}
           >
@@ -123,34 +113,24 @@ export const CombatPlay = ({
       ) : null}
 
       <section className={styles.defense} aria-label="Defesa">
-        <div className={styles.stats}>
-          <StatBlock label="EVASION" stat={derived.evasion} />
-          <StatBlock label="ARMOR" stat={derived.armorScore} />
-        </div>
+        <StatBlock label="EVASION" stat={derived.evasion} />
 
-        <div className={styles.armor}>
-          <p className={styles.wearing}>{describeWearing(derived)}</p>
-          {armor?.features.map((feature) => (
-            <FeatureText key={feature} name={feature} />
-          ))}
-
-          <MarkerTrack
-            label="ARMOR SLOTS"
-            hasCount
-            marked={character.marks.armor}
-            max={derived.armorScore.total}
-            color={domainColorToken("Edge")}
-            emptyText="Armor Score 0: não há slot para marcar."
-            onChange={(armorMarks) => onMarksChange({ ...character.marks, armor: armorMarks })}
-          />
-        </div>
+        {/* Os slots no lugar do número: o Armor Score está no card da armadura,
+            em Equipamento, e aqui fica o que se toca ao receber dano. */}
+        <MarkerTrack
+          className={styles.armorSlots}
+          label="ARMOR SLOTS"
+          hasCount
+          rows={3}
+          marked={character.marks.armor}
+          max={derived.armorScore.total}
+          color={domainColorToken("Edge")}
+          emptyText="Sem armadura: nenhum slot para marcar."
+          onChange={(armorMarks) => onMarksChange({ ...character.marks, armor: armorMarks })}
+        />
       </section>
 
-      <section className={styles.traits}>
-        <SectionLabel>
-          <h3>ATRIBUTOS</h3>
-        </SectionLabel>
-
+      <section className={styles.traits} aria-label="Atributos">
         <ul className={styles.traitList}>
           {TRAIT_LIST.map((trait) => (
             <li
@@ -169,11 +149,7 @@ export const CombatPlay = ({
         </ul>
       </section>
 
-      <section className={styles.vitals}>
-        <SectionLabel>
-          <h3>DANO, VIDA E HOPE</h3>
-        </SectionLabel>
-
+      <section className={styles.vitals} aria-label="Dano, vida e Hope">
         <ThresholdBar
           major={derived.majorThreshold}
           severe={derived.severeThreshold}
@@ -249,7 +225,7 @@ export const CombatPlay = ({
             </span>
           }
         >
-          <h3>ARMAS ATIVAS</h3>
+          <h3>EQUIPAMENTO</h3>
         </SectionLabel>
 
         <ul className={styles.weaponList}>
@@ -268,6 +244,7 @@ export const CombatPlay = ({
               }
             />
           ))}
+          <EquippedArmorCard derived={derived} />
         </ul>
       </section>
 

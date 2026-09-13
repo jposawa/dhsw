@@ -164,16 +164,22 @@
 .theme-dark {
   color-scheme: dark;
 
-  --color-bg: #0c1219;
-  --color-bg-elevated: #131c26;
-  --color-surface: #1a2431;
-  --color-border: #26333f;
-  --color-border-subtle: #1b262f;
+  /*
+   * Fundo escuro e pouco saturado: matiz azul de 212° com saturação entre 12% e
+   * 18%. Clarear o fundo (tentado em set/2026) deixou a tela esfumaçada e
+   * piorou o contraste; o caminho é o fundo descer e o texto ficar onde está.
+   * Texto secundário sobre `--color-bg-elevated`: 8,4:1.
+   */
+  --color-bg: #0a0d0f; /* hsl(212 18% 5%) */
+  --color-bg-elevated: #13171b; /* hsl(212 16% 9%) */
+  --color-surface: #1c2126; /* hsl(212 14% 13%) */
+  --color-border: #31383f; /* hsl(212 12% 22%) */
+  --color-border-subtle: #23282e; /* hsl(212 13% 16%) */
 
   /* ink: o conteúdo, quente */
   --color-text: #eae4d6;
   --color-ink: var(--color-text);
-  --color-ink-reading: #d5d0c4;
+  --color-ink-reading: #e0dbcf;
 
   /* chrome: a interface, frio */
   --color-chrome: #b9c4d0;
@@ -182,10 +188,10 @@
   --color-text-strong: var(--color-chrome-strong);
 
   /* Clareados em set/2026: os rótulos pequenos e espaçados ficavam no limite
-     da leitura. muted 8,6:1 e dim 6,7:1 sobre `--color-bg-elevated`. */
-  --color-text-muted: #b0b7c1;
+     da leitura. muted 10:1 e dim 8,4:1 sobre `--color-bg-elevated`. */
+  --color-text-muted: #bcc3cc;
   /* Clareado de #67707c: aquele dava 3,43:1 sobre `--color-bg-elevated`. */
-  --color-text-dim: #98a2ad;
+  --color-text-dim: #a9b2bc;
   --color-text-disabled: #4c5878;
 
   /* Intents da biblioteca. Os semânticos vêm da paleta escura dela, que já
@@ -219,8 +225,8 @@
 
   --color-on-accent: #0c1219;
   --color-on-chrome: var(--color-on-accent);
-  --color-overlay: rgba(12, 18, 25, 0.72);
-  --color-nav-bg: rgba(12, 18, 25, 0.96);
+  --color-overlay: rgba(10, 13, 15, 0.72);
+  --color-nav-bg: rgba(10, 13, 15, 0.96);
 
   background: var(--color-bg);
   color: var(--color-text);
@@ -318,6 +324,16 @@ select,
 textarea {
   font: inherit;
   color: inherit;
+}
+
+/* Entram no lugar de `div` como grupo de campos e bloco de título: sem a
+   moldura e o recuo que o navegador dá a eles. */
+fieldset,
+hgroup {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
 }
 
 h1,

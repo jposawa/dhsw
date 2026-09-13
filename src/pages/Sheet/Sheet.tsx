@@ -3,7 +3,6 @@ import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import React from "react"
 import { Navigate, useParams } from "react-router-dom"
 
-import { StepRule } from "@/components"
 import { ROUTES, RULE_ERROR_MESSAGES, SHEET_TABS } from "@/constants"
 import { SaveState } from "@/fragments"
 import { hasSheetEdits, touchCharacter } from "@/helpers"
@@ -173,7 +172,7 @@ export const Sheet = () => {
 
   return (
     <main className={styles.page}>
-      <div className={styles.toolbar}>
+      <header className={styles.toolbar}>
         {isReadOnly ? (
           <p className={styles.note}>Você é leitor: dá para ver tudo, nada é salvo.</p>
         ) : (
@@ -184,13 +183,16 @@ export const Sheet = () => {
             que se faz e se termina — com o resultado salvo ou cancelado —,
             não um lugar em que se fica. */}
         {isEditing ? null : (
-          <Button variant="outline" disabled={isReadOnly} onClick={() => setDraft(character)}>
+          <Button
+            className={styles.editButton}
+            variant="text"
+            disabled={isReadOnly}
+            onClick={() => setDraft(character)}
+          >
             EDITAR FICHA
           </Button>
         )}
-      </div>
-
-      <StepRule />
+      </header>
 
       <Tabs
         className={styles.tabs}
@@ -211,19 +213,17 @@ export const Sheet = () => {
         documento só aparece para quem rolar até lá.
       */}
       {isEditing ? (
-        <div className={styles.saveBar}>
+        <footer className={styles.saveBar}>
           <p className={styles.saveHint}>
             {isDirty ? "Alterações não salvas" : "Nada alterado"}
           </p>
-          <div className={styles.saveActions}>
-            <Button variant="outline" onClick={requestCancel}>
-              CANCELAR
-            </Button>
-            <Button disabled={!isDirty} onClick={handleSave}>
-              SALVAR
-            </Button>
-          </div>
-        </div>
+          <Button variant="outline" onClick={requestCancel}>
+            CANCELAR
+          </Button>
+          <Button disabled={!isDirty} onClick={handleSave}>
+            SALVAR
+          </Button>
+        </footer>
       ) : null}
 
       {/* `isPersistent` porque cancelar é irreversível: sair clicando no fundo

@@ -1,5 +1,6 @@
 import { SectionLabel } from "@jposawa/ronin-ui"
 import clsx from "clsx"
+import type React from "react"
 
 import { Pip } from "@/components"
 import type { BaseComponent } from "@/types"
@@ -21,6 +22,12 @@ type MarkerTrackProps = BaseComponent & {
   hasCount?: boolean
   /** O que mostrar quando o máximo é zero — sem armadura não há Armor Slot. */
   emptyText?: string
+  /**
+   * Arruma os pips em colunas com este número de linhas, em vez de uma fileira
+   * que quebra. É o que deixa os Armor Slots num bloco compacto ao lado da
+   * Evasion.
+   */
+  rows?: number
   onChange: (next: number) => void
 }
 
@@ -42,6 +49,7 @@ export const MarkerTrack = ({
   color,
   hasCount = false,
   emptyText,
+  rows,
   onChange,
   className,
   style,
@@ -49,7 +57,12 @@ export const MarkerTrack = ({
   const shown = Math.min(marked, max)
 
   return (
-    <div className={clsx(styles.track, className)} style={style}>
+    <section
+      className={clsx(styles.track, className)}
+      style={rows ? ({ ...style, "--track-rows": rows } as React.CSSProperties) : style}
+      aria-label={label}
+      data-columns={rows ? true : undefined}
+    >
       <SectionLabel detail={hasCount ? `${shown}/${max}` : undefined}>{label}</SectionLabel>
 
       {max === 0 && emptyText ? (
@@ -71,6 +84,6 @@ export const MarkerTrack = ({
           })}
         </div>
       )}
-    </div>
+    </section>
   )
 }

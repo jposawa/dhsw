@@ -9,7 +9,9 @@
 .pip {
   position: relative;
   display: grid;
-  place-items: center;
+  /* Quadrado no início do alvo e não no centro: a trilha começa alinhada ao
+     rótulo, e o resto do alvo de toque se estende para a direita. */
+  place-items: center start;
   width: var(--size-touch-target);
   height: var(--size-touch-target);
   min-height: var(--size-touch-target);

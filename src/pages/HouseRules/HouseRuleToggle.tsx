@@ -13,9 +13,9 @@ type HouseRuleToggleProps = {
 export const HouseRuleToggle = ({ isOn, title, description, onToggle }: HouseRuleToggleProps) => (
   <article className={styles.block}>
     <Pip isMarked={isOn} label={title} onToggle={onToggle} />
-    <div>
+    <hgroup className={styles.text}>
       <h3 className={styles.title}>{title}</h3>
       <p className={styles.note}>{description}</p>
-    </div>
+    </hgroup>
   </article>
 )

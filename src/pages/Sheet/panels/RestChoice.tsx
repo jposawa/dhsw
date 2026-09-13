@@ -68,12 +68,12 @@ export const RestChoice = ({ move, choice, tier, onChange, onRemove }: RestChoic
 
   return (
     <li className={styles.choice}>
-      <div className={styles.head}>
+      <header className={styles.head}>
         <h4 className={styles.name}>{move.name}</h4>
         <Button variant="text" intent="danger" aria-label={`Tirar ${move.name}`} onClick={onRemove}>
           TIRAR
         </Button>
-      </div>
+      </header>
 
       {renderDice()}
 

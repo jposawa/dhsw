@@ -9,10 +9,10 @@
 .page {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
+  gap: var(--space-2);
   max-width: var(--content-max-width-wide);
   margin: 0 auto;
-  padding: var(--space-4) var(--space-4) var(--space-6);
+  padding: var(--space-2) var(--space-4) var(--space-6);
 }
 
 /* O painel das abas é quem carrega o ritmo vertical do conteúdo — as abas em si
@@ -51,11 +51,38 @@
   background: var(--color-bg);
 }
 
+/* Uma faixa de 30px: o estado de gravação é um ícone e editar é texto — os
+   dois se consultam de passagem. */
 .toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
+  height: 30px;
+}
+
+.toolbar .saveState {
+  min-height: 0;
+}
+
+/*
+ * Ação de passagem: rótulo pequeno e apagado. A caixa tem os 30px da faixa, e
+ * o alvo de toque volta aos 44px por um pseudo-elemento que transborda para
+ * cima e para baixo — o dedo acerta, e a faixa não engorda.
+ */
+.editButton {
+  position: relative;
+  min-height: 30px;
+  padding: 0 var(--space-1);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-text-muted);
+}
+
+.editButton::after {
+  content: "";
+  position: absolute;
+  inset: calc((var(--size-touch-target) - 30px) / -2) 0;
 }
 
 .saveState {
@@ -93,7 +120,9 @@
   border-top: var(--border-width) solid var(--color-chrome-dim);
 }
 
+/* O aviso ocupa a sobra e empurra os dois botões para a direita. */
 .saveHint {
+  flex-grow: 1;
   margin: 0;
   font-size: var(--text-2xs);
   letter-spacing: var(--tracking-wide);
@@ -101,7 +130,3 @@
   color: var(--color-text-dim);
 }
 
-.saveActions {
-  display: flex;
-  gap: var(--space-2);
-}

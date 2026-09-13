@@ -54,3 +54,26 @@ export const resolveCompendium = (remote: unknown, fallback: Compendium): Resolv
 
   return { compendium, origin, rejected }
 }
+
+/** Feature de equipamento pelo nome, ou `undefined` se o registro não tem. */
+export const findEquipmentFeature = (compendium: Compendium, featureName: string | null) =>
+  featureName ? compendium.features.find((feature) => feature.name === featureName) : undefined
+
+/**
+ * Números e features de uma armadura nomeada: os da linha no tier da peça,
+ * e as features da linha e da peça, nessa ordem.
+ */
+export const describeNamedArmor = (compendium: Compendium, armorName: string) => {
+  const named = compendium.namedArmor.find((candidate) => candidate.name === armorName)
+  const line = named ? compendium.armorLines.find((candidate) => candidate.name === named.line) : undefined
+
+  if (!named || !line) {
+    return null
+  }
+
+  return {
+    armor: named,
+    stats: line.tiers[named.tier - 1],
+    features: [line.feature, named.feature].filter((feature): feature is string => feature !== null),
+  }
+}

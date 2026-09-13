@@ -1,0 +1,59 @@
+[
+  { "name": "Flexible", "text": "+1 em Evasion.", "modifiers": [{ "target": "evasion", "value": 1 }] },
+  { "name": "Heavy", "text": "−1 em Evasion.", "modifiers": [{ "target": "evasion", "value": -1 }] },
+  {
+    "name": "Very Heavy",
+    "text": "−2 em Evasion; −1 em Agility.",
+    "modifiers": [
+      { "target": "evasion", "value": -2 },
+      { "target": "trait.Agility", "value": -1 }
+    ]
+  },
+  { "name": "Cumbersome", "text": "−1 em Finesse.", "modifiers": [{ "target": "trait.Finesse", "value": -1 }] },
+  {
+    "name": "Massive",
+    "text": "−1 em Evasion; num ataque bem-sucedido, role um dado de dano a mais e descarte o menor.",
+    "modifiers": [{ "target": "evasion", "value": -1 }]
+  },
+  { "name": "Reliable", "text": "+1 em attack rolls." },
+  { "name": "Quick", "text": "Ao atacar, marque um Stress para mirar outra criatura dentro do alcance." },
+  { "name": "Powerful", "text": "Num ataque bem-sucedido, role um dado de dano a mais e descarte o menor." },
+  { "name": "Brutal", "text": "Quando um dado de dano tirar o valor máximo, role mais um dado de dano." },
+  { "name": "Scary", "text": "Num ataque bem-sucedido, o alvo marca um Stress." },
+  { "name": "Deadly", "text": "Quando você causar dano Severe, o alvo marca um HP a mais." },
+  { "name": "Reloading", "text": "Depois de atacar, role um d6. Num 1, marque um Stress para recarregar antes de disparar de novo." },
+  { "name": "Bouncing", "text": "Marque 1 ou mais Stress para atingir essa quantidade de alvos dentro do alcance do ataque." },
+  { "name": "Long", "text": "O ataque atinge todos os adversários numa linha dentro do alcance." },
+  { "name": "Locked On", "text": "Num ataque bem-sucedido, seu próximo ataque com a arma primária contra o mesmo alvo acerta automaticamente." },
+  { "name": "Hooked", "text": "Num ataque bem-sucedido, você pode puxar o alvo para o alcance Melee." },
+  { "name": "Startling", "text": "Marque um Stress para estalar o chicote e empurrar todos os adversários em Melee para o alcance Close." },
+  { "name": "Concussive", "text": "Num ataque bem-sucedido, gaste uma Hope para arremessar o alvo para o alcance Far." },
+  { "name": "Dueling", "text": "Sem outras criaturas em alcance Close do alvo, você tem vantagem no attack roll contra ele." },
+  { "name": "Hot", "text": "A arma corta material sólido." },
+  { "name": "Retractable", "text": "A lâmina se esconde no cabo e escapa de uma revista." },
+  { "name": "Paired", "text": "Some Tier + 1 ao dano da arma primária contra alvos em Melee." },
+  {
+    "name": "Protective",
+    "text": "+Tier em Armor Score.",
+    "modifiers": [{ "target": "armorScore", "valueByTier": [1, 2, 3, 4] }]
+  },
+  {
+    "name": "Barrier",
+    "text": "+Tier + 1 em Armor Score; −1 em Evasion.",
+    "modifiers": [
+      { "target": "armorScore", "valueByTier": [2, 3, 4, 5] },
+      { "target": "evasion", "value": -1 }
+    ]
+  },
+  { "name": "Resilient", "text": "Antes de marcar seu último Armor Slot, role um d6. Num 6, reduza a severidade em um threshold sem marcar o slot." },
+  { "name": "Fortified", "text": "Ao marcar um Armor Slot, reduza a severidade do ataque em dois thresholds em vez de um." },
+  { "name": "Channeling", "text": "+1 em Spellcast Rolls." },
+  { "name": "Guarding", "text": "+1 em Evasion.", "modifiers": [{ "target": "evasion", "value": 1 }] },
+  { "name": "Shocking", "text": "Num ataque bem-sucedido, marque um Stress para deixar o alvo temporariamente Vulnerable." },
+  { "name": "Concealable", "text": "Passa despercebida numa revista casual." },
+  { "name": "Kinetic", "text": "Projétil sólido: escudos e defletores de energia não o param." },
+  { "name": "Ionizing", "text": "Num ataque bem-sucedido contra droide ou máquina, o alvo marca um Stress." },
+  { "name": "Lightblade Resistant", "text": "Feita de beskar ou cortosis: armas com Hot não a atravessam." },
+  { "name": "Unencumbering", "text": "Conta como estar sem armadura para cartas e features que pedem isso." },
+  { "name": "Powered", "text": "Enquanto tiver energia, os servos anulam a penalidade de Evasion da armadura." }
+]

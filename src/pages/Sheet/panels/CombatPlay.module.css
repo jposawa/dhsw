@@ -147,10 +147,6 @@
   color: var(--color-text-muted);
 }
 
-.armorFeature {
-  font-size: var(--text-sm);
-}
-
 /* ── atributos ───────────────────────────────────────────────────────────── */
 
 .traitList {

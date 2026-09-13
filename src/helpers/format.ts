@@ -14,9 +14,10 @@ export const describeModifierSource = ({ source }: Modifier): string => {
   switch (source.kind) {
     case "base":
       return "base"
-    case "class":
     case "armor":
     case "weapon":
+      return source.feature ? `${source.name} — ${source.feature}` : source.name
+    case "class":
     case "item":
     case "skill":
       return source.name

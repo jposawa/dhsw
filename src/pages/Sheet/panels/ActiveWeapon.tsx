@@ -1,4 +1,4 @@
-import { RuleText } from "@/fragments"
+import { FeatureText } from "@/fragments"
 import { formatWeaponDamage } from "@/helpers"
 import type { InventoryEntry, Weapon } from "@/types"
 
@@ -42,7 +42,7 @@ export const ActiveWeapon = ({
           <b className={styles.damage}>{formatWeaponDamage(weapon, proficiency, tierIndex)}</b>
         </div>
 
-        {weapon.feature ? <RuleText className={styles.feature} text={weapon.feature} /> : null}
+        {weapon.feature ? <FeatureText name={weapon.feature} /> : null}
       </>
     ) : (
       <p className={styles.empty}>{emptyText}</p>

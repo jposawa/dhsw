@@ -1,7 +1,7 @@
 [
   {
     "name": "Flexible",
-    "evasionLabel": "+1 Evasion",
+    "feature": "Flexible",
     "tiers": [
       {
         "baseScore": 3,
@@ -27,7 +27,7 @@
   },
   {
     "name": "Neutra",
-    "evasionLabel": "—",
+    "feature": null,
     "tiers": [
       {
         "baseScore": 3,
@@ -53,7 +53,7 @@
   },
   {
     "name": "Heavy",
-    "evasionLabel": "−1 Evasion",
+    "feature": "Heavy",
     "tiers": [
       {
         "baseScore": 4,
@@ -79,7 +79,7 @@
   },
   {
     "name": "Very Heavy",
-    "evasionLabel": "−2 Evasion, −1 Agility",
+    "feature": "Very Heavy",
     "tiers": [
       {
         "baseScore": 4,

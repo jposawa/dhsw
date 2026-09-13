@@ -1,4 +1,4 @@
-import type { ArmorLineName, EquipSlot, Tier } from "@/types"
+import type { EquipSlot, Tier } from "@/types"
 
 /**
  * Armadura, sem armadura e Bare Bones. Só valores — a conta vive em `rules/`.
@@ -7,19 +7,6 @@ import type { ArmorLineName, EquipSlot, Tier } from "@/types"
  * "Armor Tables" (p. 126–127) e a carta Bare Bones, do domínio Valor — no
  * DH-SW ela está em Aegis.
  */
-
-/**
- * O traço de cada linha. É o `Flexible`, `Heavy` e `Very Heavy` das armaduras
- * base do livro; a linha sem traço é a do Leather Armor.
- */
-export const ARMOR_LINE_MODIFIERS: Readonly<
-  Record<ArmorLineName, { evasion: number; agility: number }>
-> = {
-  Flexible: { evasion: 1, agility: 0 },
-  Neutra: { evasion: 0, agility: 0 },
-  Heavy: { evasion: -1, agility: 0 },
-  "Very Heavy": { evasion: -2, agility: -1 },
-}
 
 /**
  * Sem armadura: Armor Score 0, Major igual ao nível e Severe igual ao dobro

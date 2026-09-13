@@ -1,5 +1,4 @@
 import {
-  ARMOR_LINE_MODIFIERS,
   BARE_BONES,
   BASE_STRESS,
   DEFAULT_LOADOUT_SIZE,
@@ -23,6 +22,7 @@ import type {
   Compendium,
   DerivedStats,
   EquippedArmor,
+  FeatureModifier,
   HouseRules,
   Modifier,
   Tier,
@@ -48,6 +48,14 @@ const findClass = (compendium: Compendium, className: string | null): ClassDefin
   compendium.classes.find((candidate) => candidate.name === className) ?? null
 
 const isTrait = (value: string): value is Trait => TRAIT_LIST.includes(value as Trait)
+
+/** O número de um modificador no tier do personagem. */
+export const featureModifierValue = (modifier: FeatureModifier, tier: Tier): number =>
+  modifier.valueByTier?.[tier - 1] ?? modifier.value ?? 0
+
+/** Os modificadores de uma feature de equipamento, pelo nome. Nome desconhecido não soma nada. */
+const equipmentFeatureModifiers = (compendium: Compendium, featureName: string) =>
+  compendium.features.find((feature) => feature.name === featureName)?.modifiers ?? []
 
 /** Resolve a armadura vestida contra a linha e o tier dela. */
 export const resolveEquippedArmor = (
@@ -75,7 +83,6 @@ export const resolveEquippedArmor = (
   }
 
   const tierRow = line.tiers[named.tier - 1]
-  const modifiers = ARMOR_LINE_MODIFIERS[named.line]
 
   return {
     entryId: entry.id,
@@ -85,9 +92,9 @@ export const resolveEquippedArmor = (
     baseScore: tierRow.baseScore,
     majorBase: tierRow.majorBase,
     severeBase: tierRow.severeBase,
-    evasionModifier: modifiers.evasion,
-    agilityModifier: modifiers.agility,
-    feature: named.feature,
+    features: [line.feature, named.feature].filter(
+      (feature): feature is string => feature !== null,
+    ),
   }
 }
 
@@ -184,7 +191,7 @@ export const derive = (
   for (const modifier of ancestry?.modifiers ?? []) {
     collector.add({
       target: modifier.target,
-      value: modifier.value,
+      value: featureModifierValue(modifier, tier),
       source: { kind: "ancestry", name: ancestry?.name ?? "", feature: modifier.feature },
     })
   }
@@ -208,22 +215,48 @@ export const derive = (
     for (const modifier of feature.modifiers ?? []) {
       collector.add({
         target: modifier.target,
-        value: modifier.value,
+        value: featureModifierValue(modifier, tier),
         source: { kind: "subclass", name: subclass?.name ?? "", feature: feature.name },
       })
     }
   }
 
-  /* ── traços ──────────────────────────────────────────────────────── */
+  /* ── features do que está equipado ───────────────────────────────── */
 
-  // Very Heavy custa −1 de Agility. Resolvido antes de tudo que lê traço.
-  if (equippedArmor) {
-    collector.add({
-      target: "trait.Agility",
-      value: equippedArmor.agilityModifier,
-      source: { kind: "armor", entryId: equippedArmor.entryId, name: equippedArmor.name },
-    })
+  // Feature de equipamento só vale enquanto ele está equipado (Core Rulebook,
+  // p. 113–114). Vem antes dos traços: Very Heavy e Cumbersome mexem neles.
+  for (const featureName of equippedArmor?.features ?? []) {
+    for (const modifier of equipmentFeatureModifiers(compendium, featureName)) {
+      collector.add({
+        target: modifier.target,
+        value: featureModifierValue(modifier, tier),
+        source: {
+          kind: "armor",
+          entryId: equippedArmor?.entryId ?? "",
+          name: equippedArmor?.name ?? "",
+          feature: featureName,
+        },
+      })
+    }
   }
+
+  for (const entry of character.inventory) {
+    if (entry.kind !== "weapon" || !entry.isEquipped) {
+      continue
+    }
+
+    const weapon = compendium.weapons.find((candidate) => candidate.name === entry.name)
+
+    for (const modifier of weapon?.feature ? equipmentFeatureModifiers(compendium, weapon.feature) : []) {
+      collector.add({
+        target: modifier.target,
+        value: featureModifierValue(modifier, tier),
+        source: { kind: "weapon", entryId: entry.id, name: entry.name, feature: weapon?.feature ?? "" },
+      })
+    }
+  }
+
+  /* ── traços ──────────────────────────────────────────────────────── */
 
   const traits = TRAIT_LIST.reduce(
     (resolved, trait) => ({
@@ -261,12 +294,6 @@ export const derive = (
     severeBase = equippedArmor.severeBase
     majorModifiers = [levelModifier("majorThreshold", 1)]
     severeModifiers = [levelModifier("severeThreshold", 1)]
-
-    collector.add({
-      target: "evasion",
-      value: equippedArmor.evasionModifier,
-      source: { kind: "armor", entryId: equippedArmor.entryId, name: equippedArmor.name },
-    })
   }
 
   if (hasBareBones) {

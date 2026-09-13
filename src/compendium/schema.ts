@@ -11,6 +11,7 @@ import type {
   CompendiumEntry,
   DomainDefinition,
   DowntimeMove,
+  EquipmentFeature,
   NamedArmor,
   Skill,
   SkillCategory,
@@ -62,6 +63,7 @@ const classDefinition = z.object({
 
 const featureModifier = z.object({
   target: z.enum([
+    ...TRAIT_LIST.map((trait) => `trait.${trait}` as const),
     "evasion",
     "armorScore",
     "majorThreshold",
@@ -70,8 +72,17 @@ const featureModifier = z.object({
     "stressMax",
     "proficiency",
   ]),
-  value: z.number().int(),
+  value: z.number().int().optional(),
+  valueByTier: z.array(z.number().int()).length(4).optional(),
+}).refine((modifier) => (modifier.value === undefined) !== (modifier.valueByTier === undefined), {
+  message: "modificador tem value ou valueByTier, um dos dois",
 })
+
+const equipmentFeature = z.object({
+  name,
+  text: z.string().min(1),
+  modifiers: z.array(featureModifier).optional(),
+}) satisfies z.ZodType<EquipmentFeature>
 
 const subclassFeature = z.object({
   name,
@@ -92,7 +103,9 @@ const ancestry = z.object({
   name,
   description: z.string(),
   features: z.array(z.string()),
-  modifiers: z.array(featureModifier.extend({ feature: name })).optional(),
+  modifiers: z
+    .array(z.intersection(featureModifier, z.object({ feature: name })))
+    .optional(),
 }) satisfies z.ZodType<Ancestry>
 
 const community = z.object({
@@ -103,7 +116,7 @@ const community = z.object({
 
 const armorLine = z.object({
   name: z.enum(ARMOR_LINE_NAMES),
-  evasionLabel: z.string(),
+  feature: z.string().nullable(),
   tiers: z
     .array(
       z.object({
@@ -131,7 +144,6 @@ const weapon = z.object({
   damageType: z.enum(DAMAGE_TYPE_LIST),
   burden: z.string(),
   feature: z.string().nullable(),
-  isIconic: z.boolean(),
 }) satisfies z.ZodType<Weapon>
 
 const entry = z.object({
@@ -176,6 +188,7 @@ export const COMPENDIUM_SCHEMAS = {
   weapons: z.array(weapon),
   items: z.array(entry),
   consumables: z.array(entry),
+  features: z.array(equipmentFeature),
   downtimeMoves: z.array(downtimeMove),
 } satisfies Record<CompendiumCollection, z.ZodType>
 

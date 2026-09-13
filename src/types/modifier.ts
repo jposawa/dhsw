@@ -38,8 +38,8 @@ export type ModifierSource =
   | { kind: "level"; level: number; multiplier: number }
   /** O +1 permanente de Proficiency dos níveis 2, 5 e 8. */
   | { kind: "levelAchievement"; level: number }
-  | { kind: "armor"; entryId: string; name: string }
-  | { kind: "weapon"; entryId: string; name: string }
+  | { kind: "armor"; entryId: string; name: string; feature?: string }
+  | { kind: "weapon"; entryId: string; name: string; feature?: string }
   | { kind: "module"; entryId: string; moduleName: string }
   | { kind: "item"; entryId: string; name: string }
   | { kind: "skill"; name: string }

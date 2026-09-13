@@ -50,10 +50,6 @@
   color: var(--color-chrome-strong);
 }
 
-.feature {
-  font-size: var(--text-sm);
-}
-
 .empty {
   margin: 0;
   font-size: var(--text-xs);

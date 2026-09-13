@@ -100,9 +100,8 @@ export type EquippedArmor = {
   baseScore: number
   majorBase: number
   severeBase: number
-  evasionModifier: number
-  agilityModifier: number
-  feature: string | null
+  /** Nomes em `features`: o da linha e o da peça, quando existem. */
+  features: readonly string[]
 }
 
 /**

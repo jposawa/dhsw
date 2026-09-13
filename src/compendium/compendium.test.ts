@@ -71,6 +71,17 @@ describe("compêndio embarcado", () => {
     expect(namesOf(orphans)).toEqual([])
   })
 
+  it("toda feature citada por arma e armadura existe no registro", () => {
+    const registered = namesOf(FALLBACK_COMPENDIUM.features)
+    const cited = [
+      ...FALLBACK_COMPENDIUM.weapons.map((weapon) => weapon.feature),
+      ...FALLBACK_COMPENDIUM.namedArmor.map((armor) => armor.feature),
+      ...FALLBACK_COMPENDIUM.armorLines.map((line) => line.feature),
+    ].filter((feature): feature is string => feature !== null)
+
+    expect(cited.filter((feature) => !registered.includes(feature))).toEqual([])
+  })
+
   it("armadura nomeada aponta para linha que existe", () => {
     const lines = namesOf(FALLBACK_COMPENDIUM.armorLines)
     const orphans = FALLBACK_COMPENDIUM.namedArmor.filter((armor) => !lines.includes(armor.line))

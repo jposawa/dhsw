@@ -35,6 +35,7 @@ export type ClassDefinition = {
  * feature continua sendo texto, e a maioria é.
  */
 export type PermanentStatTarget =
+  | `trait.${Trait}`
   | "evasion"
   | "armorScore"
   | "majorThreshold"
@@ -43,9 +44,29 @@ export type PermanentStatTarget =
   | "stressMax"
   | "proficiency"
 
+/**
+ * `value` fixo, ou `valueByTier` quando a feature escala — "Protective: +Tier
+ * em Armor Score". Índice 0 é o Tier 1, como em `Weapon.bonusByTier`.
+ */
 export type FeatureModifier = {
   target: PermanentStatTarget
-  value: number
+  value?: number
+  valueByTier?: readonly number[]
+}
+
+/**
+ * Feature de equipamento, num registro só: `Heavy` é a mesma coisa numa
+ * armadura e numa arma. Arma, armadura nomeada e linha de armadura apontam
+ * para uma pelo nome, e o texto e o efeito moram aqui uma vez.
+ *
+ * É a propriedade do objeto, não de quem empunha: "a arma corta material
+ * sólido", não "você sabe usar sabres". Uma frase ou duas, uma por item —
+ * o kit de homebrew do Daggerheart pede as duas coisas.
+ */
+export type EquipmentFeature = {
+  name: string
+  text: string
+  modifiers?: readonly FeatureModifier[]
 }
 
 export type SubclassFeature = {
@@ -91,8 +112,8 @@ export type ArmorTier = {
 
 export type ArmorLine = {
   name: ArmorLineName
-  /** Rótulo para leitura ("+1 Evasion", "—"). O número sai de `ARMOR_LINE_MODIFIERS`. */
-  evasionLabel: string
+  /** Nome em `features` — Flexible, Heavy, Very Heavy. A linha sem traço não tem. */
+  feature: string | null
   tiers: readonly ArmorTier[]
 }
 
@@ -100,6 +121,7 @@ export type NamedArmor = {
   name: string
   line: ArmorLineName
   tier: Tier
+  /** Nome em `features`, além da feature da linha. */
   feature: string | null
 }
 
@@ -112,8 +134,8 @@ export type Weapon = {
   bonusByTier: readonly number[]
   damageType: DamageType
   burden: WeaponBurden | string
+  /** Nome em `features`. No máximo uma por arma. */
   feature: string | null
-  isIconic: boolean
 }
 
 /** Itens e consumíveis compartilham a forma. */
@@ -179,6 +201,7 @@ export type Compendium = {
   weapons: readonly Weapon[]
   items: readonly CompendiumEntry[]
   consumables: readonly CompendiumEntry[]
+  features: readonly EquipmentFeature[]
   downtimeMoves: readonly DowntimeMove[]
 }
 

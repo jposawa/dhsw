@@ -138,12 +138,6 @@
   color: var(--color-text-dim);
 }
 
-.rowBody {
-  max-width: var(--content-max-width);
-  font-size: var(--text-xs);
-  overflow-wrap: break-word;
-}
-
 .rowActions {
   display: flex;
   align-items: center;

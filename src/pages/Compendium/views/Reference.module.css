@@ -243,10 +243,6 @@
   color: var(--color-text-dim);
 }
 
-.iconic {
-  color: var(--color-chrome);
-}
-
 .empty {
   padding: var(--space-6) var(--space-4);
   font-family: var(--font-serif);

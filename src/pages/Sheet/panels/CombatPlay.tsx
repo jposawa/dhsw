@@ -3,7 +3,7 @@ import React from "react"
 
 import { DotScale } from "@/components"
 import { EQUIP_SLOTS, HOPE_MAX, MAX_PROFICIENCY, TRAIT_LIST, TRAIT_VERBS } from "@/constants"
-import { MarkerTrack, RuleText, StatBlock, ThresholdBar } from "@/fragments"
+import { FeatureText, MarkerTrack, RuleText, StatBlock, ThresholdBar } from "@/fragments"
 import { describeThresholdOrigin, domainColorToken, formatSigned } from "@/helpers"
 import { useCompendium } from "@/hooks"
 import type { Character, DerivedStats, EquipSlot, Marks, Result } from "@/types"
@@ -130,7 +130,9 @@ export const CombatPlay = ({
 
         <div className={styles.armor}>
           <p className={styles.wearing}>{describeWearing(derived)}</p>
-          {armor?.feature ? <RuleText className={styles.armorFeature} text={armor.feature} /> : null}
+          {armor?.features.map((feature) => (
+            <FeatureText key={feature} name={feature} />
+          ))}
 
           <MarkerTrack
             label="ARMOR SLOTS"

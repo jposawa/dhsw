@@ -99,24 +99,24 @@
     "name": "Jedi Robes",
     "line": "Flexible",
     "tier": 2,
-    "feature": "Não conta como armadura para efeitos que exigem estar sem armadura."
+    "feature": "Unencumbering"
   },
   {
     "name": "Beskar'gam",
     "line": "Neutra",
     "tier": 3,
-    "feature": "`Lightblade Resistant`."
+    "feature": "Lightblade Resistant"
   },
   {
     "name": "Cortosis Plate",
     "line": "Heavy",
     "tier": 4,
-    "feature": "`Lightblade Resistant`. Uma vez por rest, anule o dano de um ataque de sabre."
+    "feature": "Lightblade Resistant"
   },
   {
     "name": "Powered Exoskeleton",
     "line": "Very Heavy",
     "tier": 3,
-    "feature": "Sem a penalidade de Evasion enquanto houver célula de energia."
+    "feature": "Powered"
   }
 ]

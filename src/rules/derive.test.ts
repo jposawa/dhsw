@@ -208,6 +208,7 @@ describe("derive — Evasion", () => {
       kind: "armor",
       entryId: "armor-entry",
       name: "Trooper Plate",
+      feature: "Heavy",
     })
     expect(modifier.value).toBe(-1)
   })
@@ -285,5 +286,48 @@ describe("derive — features com efeito permanente", () => {
     const derived = derive({ ...soldier(1), subclass: "Wayseeker" }, DEFAULT_HOUSE_RULES)
 
     expect(derived.severeThreshold.modifiers).toHaveLength(1)
+  })
+})
+
+describe("derive — features de equipamento (registro)", () => {
+  const weaponEntry = (name: string, isEquipped: boolean): InventoryEntry => ({
+    id: `weapon-${name}`,
+    kind: "weapon",
+    name,
+    isEquipped,
+    slot: isEquipped ? "secondary" : null,
+    quantity: 1,
+    installedModules: [],
+    nickname: null,
+  })
+
+  it("Protective escala com o Tier do personagem", () => {
+    const shielded = (level: number) => ({
+      ...withArmor(soldier(level), "Trooper Plate"),
+      inventory: [...withArmor(soldier(level), "Trooper Plate").inventory, weaponEntry("Riot Shield", true)],
+    })
+
+    // Trooper Plate T1 tem score 4; Protective soma o Tier.
+    expect(derive(shielded(1), DEFAULT_HOUSE_RULES).armorScore.total).toBe(5)
+    expect(derive(shielded(5), DEFAULT_HOUSE_RULES).armorScore.total).toBe(7)
+  })
+
+  it("feature de arma na mochila não vale", () => {
+    const character = { ...soldier(1), inventory: [weaponEntry("Combat Staff", false)] }
+
+    expect(derive(character, DEFAULT_HOUSE_RULES).evasion.total).toBe(9)
+  })
+
+  it("Guarding empunhada soma Evasion, com a arma e a feature nomeadas", () => {
+    const character = { ...soldier(1), inventory: [weaponEntry("Combat Staff", true)] }
+    const derived = derive(character, DEFAULT_HOUSE_RULES)
+
+    expect(derived.evasion.total).toBe(10)
+    expect(derived.evasion.modifiers[0].source).toEqual({
+      kind: "weapon",
+      entryId: "weapon-Combat Staff",
+      name: "Combat Staff",
+      feature: "Guarding",
+    })
   })
 })

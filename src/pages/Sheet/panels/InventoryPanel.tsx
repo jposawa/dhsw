@@ -2,8 +2,7 @@ import { Button, Chip, Drawer, Input, SectionLabel } from "@jposawa/ronin-ui"
 import React from "react"
 
 import { EQUIP_SLOTS, GEAR_KINDS } from "@/constants"
-import { RuleText } from "@/fragments"
-import { createInventoryEntry, filterByText } from "@/helpers"
+import { createInventoryEntry, describeNamedArmor, filterByText } from "@/helpers"
 import { useCompendium } from "@/hooks"
 import { addEntry, candidatesForSlot, consume, equipInSlot, removeEntry } from "@/rules"
 import type {
@@ -16,6 +15,7 @@ import type {
   Result,
 } from "@/types"
 
+import { GearSummary } from "./GearSummary"
 import { SlotChoices } from "./SlotChoices"
 
 import styles from "./InventoryPanel.module.css"
@@ -30,16 +30,6 @@ const KIND_BY_GEAR: Readonly<Record<GearKind, InventoryEntryKind>> = {
 
 /** Mesmo corte da busca de cartas, pelo mesmo motivo: a lista de baixo some. */
 const CATALOGUE_SHOWN = 12
-
-/**
- * O texto de efeito de uma entrada do catálogo.
- *
- * Os quatro tipos guardam isso em campos diferentes: arma e armadura em
- * `feature`, item e consumível em `text` — e `feature` ainda pode ser nulo,
- * porque nem toda arma tem efeito.
- */
-const describeOption = (option: { feature?: string | null; text?: string }): string =>
-  option.text ?? option.feature ?? ""
 
 type InventoryPanelProps = {
   character: Character
@@ -72,8 +62,16 @@ export const InventoryPanel = ({ character, derived, onApply }: InventoryPanelPr
   const carried = character.inventory.filter((entry) => !entry.isEquipped)
 
   const catalogue = {
-    armas: filterByText(compendium.weapons, (weapon) => `${weapon.name} ${weapon.trait}`, query),
-    armaduras: filterByText(compendium.namedArmor, (piece) => `${piece.name} ${piece.line}`, query),
+    armas: filterByText(
+      compendium.weapons,
+      (weapon) => `${weapon.name} ${weapon.trait} ${weapon.feature ?? ""}`,
+      query,
+    ),
+    armaduras: filterByText(
+      compendium.namedArmor,
+      (piece) => `${piece.name} ${piece.line} ${piece.feature ?? ""}`,
+      query,
+    ),
     itens: filterByText(compendium.items, (item) => `${item.name} ${item.text}`, query),
     consumiveis: filterByText(compendium.consumables, (item) => `${item.name} ${item.text}`, query),
   }[gearKind]
@@ -86,9 +84,15 @@ export const InventoryPanel = ({ character, derived, onApply }: InventoryPanelPr
     }
 
     if (entry.kind === "armor") {
-      const piece = compendium.namedArmor.find((candidate) => candidate.name === entry.name)
+      const described = describeNamedArmor(compendium, entry.name)
 
-      return piece ? `${piece.line} · Tier ${piece.tier}` : "armadura"
+      if (!described) {
+        return "armadura"
+      }
+
+      const { armor, stats } = described
+
+      return `${armor.line} · Tier ${armor.tier} · Score ${stats.baseScore} · ${stats.majorBase}/${stats.severeBase}`
     }
 
     return entry.kind === "consumable" ? "consumível" : "item"
@@ -248,9 +252,7 @@ export const InventoryPanel = ({ character, derived, onApply }: InventoryPanelPr
                 <li className={styles.row} key={option.name}>
                   <div className={styles.rowText}>
                     <h4 className={styles.rowName}>{option.name}</h4>
-                    {describeOption(option) ? (
-                      <RuleText className={styles.rowBody} text={describeOption(option)} />
-                    ) : null}
+                    <GearSummary kind={gearKind} name={option.name} />
                   </div>
 
                   <Button

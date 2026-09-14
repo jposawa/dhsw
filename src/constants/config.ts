@@ -15,7 +15,6 @@ export const DEFAULT_CONFIG: RemoteConfig = {
   home: DEFAULT_HOME,
 }
 
-/** Escolha da mesa, nao config remota. Viaja no codigo de compartilhamento. */
 /** As três opções de tamanho de loadout da tela de regras da casa. */
 export const LOADOUT_SIZE_OPTIONS: readonly { value: HouseRules["loadoutSize"]; label: string }[] = [
   { value: "5", label: "5 fixo" },
@@ -23,9 +22,13 @@ export const LOADOUT_SIZE_OPTIONS: readonly { value: HouseRules["loadoutSize"]; 
   { value: "4+tier", label: "4 + Tier" },
 ]
 
+/** Escolha da mesa, não config remota. Viaja no código de compartilhamento. */
 export const DEFAULT_HOUSE_RULES: HouseRules = {
   hasTwoCardsPerLevel: false,
   hasEvasionFromTraits: false,
   roundsEvasionUp: false,
   loadoutSize: "5",
+  allowsEarlyMulticlass: false,
+  hasGranularDamageTypes: false,
+  hasCustomWeapons: false,
 }

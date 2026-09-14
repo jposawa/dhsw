@@ -12,7 +12,7 @@
       "Augur"
     ],
     "baseFeatures": "Determination Dice; Force Patterns;",
-    "hopeFeature": "**Force Absorption** — Gaste 3 Hope para reduzir em um degrau a severidade de um dano recebido, sem marcar Armor Slot."
+    "hopeFeature": "**Force Absorption** — Gaste 3 Hope para reduzir em 1 nível a severidade de um dano recebido, sem marcar Armor Slot."
   },
   {
     "name": "Agent",

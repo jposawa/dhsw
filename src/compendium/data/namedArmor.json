@@ -105,13 +105,13 @@
     "name": "Beskar'gam",
     "line": "Neutra",
     "tier": 3,
-    "feature": "Lightblade Resistant"
+    "feature": "Plasma Resistant"
   },
   {
     "name": "Cortosis Plate",
     "line": "Heavy",
     "tier": 4,
-    "feature": "Lightblade Resistant"
+    "feature": "Plasma Resistant"
   },
   {
     "name": "Powered Exoskeleton",

@@ -1,4 +1,4 @@
-import type { DamageType, Domain, Level, Range, Tier, Trait, WeaponBurden } from "./domain"
+import type { DamageKind, DamageType, Domain, Level, Range, Tier, Trait, WeaponBurden } from "./domain"
 
 export type SkillCategory = "Ability" | "Force" | "Holocron"
 
@@ -133,9 +133,34 @@ export type Weapon = {
   /** Bônus de dano por tier, índice 0 = Tier 1. */
   bonusByTier: readonly number[]
   damageType: DamageType
+  /** Usado só com a regra da casa de tipos de dano granulares. */
+  damageKind: DamageKind
   burden: WeaponBurden | string
   /** Nome em `features`. No máximo uma por arma. */
   feature: string | null
+  /**
+   * `Customizable (n)`: a arma aceita n + 1 augments com a regra da casa de
+   * armas customizáveis. `null` é arma que não se customiza. É propriedade da
+   * arma e não conta como a feature dela.
+   */
+  customizable: number | null
+}
+
+/**
+ * Augment: melhoria instalada numa arma, da regra da casa "Armas customizáveis".
+ *
+ * Adaptado dos augments do Ikonis (Core Rulebook, campanha Motherboard, p. 300):
+ * os slots vêm da arma (`Customizable (n)`, n + 1 slots), o augment exige um
+ * Tier mínimo do personagem, e instalado ele vale como feature a mais da arma. `damageBonus` e `attackBonus` somam na
+ * rolagem; `modifiers` mexem na ficha enquanto a arma está equipada.
+ */
+export type Augment = {
+  name: string
+  tier: Tier
+  text: string
+  modifiers?: readonly FeatureModifier[]
+  damageBonus?: number
+  attackBonus?: number
 }
 
 /** Itens e consumíveis compartilham a forma. */
@@ -202,6 +227,7 @@ export type Compendium = {
   items: readonly CompendiumEntry[]
   consumables: readonly CompendiumEntry[]
   features: readonly EquipmentFeature[]
+  augments: readonly Augment[]
   downtimeMoves: readonly DowntimeMove[]
 }
 

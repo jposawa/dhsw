@@ -21,6 +21,13 @@ export type Range = "Melee" | "Very Close" | "Close" | "Far" | "Very Far"
 /** `tech` no lugar do `mag` do livro — escolha da conversão para Star Wars. */
 export type DamageType = "phy" | "tech"
 
+/**
+ * Tipo de dano granular, da regra da casa "Tipos de dano": físico, energético
+ * (blaster, plasma, eletricidade) e térmico (fogo, explosivo). Com a regra
+ * desligada vale só `phy`/`tech`.
+ */
+export type DamageKind = "physical" | "energy" | "thermal"
+
 export type WeaponBurden = "Uma mão" | "Duas mãos" | "Secundária"
 
 /** Nivel de carta e de personagem: 1–10. */

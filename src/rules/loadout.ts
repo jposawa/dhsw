@@ -1,6 +1,8 @@
 import { fail, ok } from "@/helpers"
 import type { Character, Compendium, DerivedStats, Result } from "@/types"
 
+import { learnableSkills } from "./domainAccess"
+
 /**
  * Loadout e vault, conforme o SRD.
  *
@@ -79,6 +81,10 @@ export const learnSkill = (
 ): Result<Character> => {
   if (!findSkill(compendium, skillName)) {
     return fail("skillUnknown", skillName)
+  }
+
+  if (!learnableSkills(character, compendium).some((skill) => skill.name === skillName)) {
+    return fail("skillNotLearnable", skillName)
   }
 
   if (isKnown(character, skillName)) {

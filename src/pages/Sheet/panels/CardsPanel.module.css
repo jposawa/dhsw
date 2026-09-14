@@ -39,6 +39,11 @@
   color: var(--color-text-dim);
 }
 
+/* Dentro da gaveta a grade é estreita: sempre duas cartas por fileira. */
+.learnGrid.learnGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
 .list {
   display: flex;
   flex-direction: column;
@@ -84,7 +89,7 @@
 
   /* O acervo atravessa: a busca dele é uma tela inteira de resultados, e
      espremida em meia largura o texto de carta fica ilegível. */
-  .learn {
+  .learnButton {
     grid-column: 1 / -1;
   }
 }

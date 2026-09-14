@@ -1,0 +1,28 @@
+[
+  { "name": "Overcharged Cell", "tier": 1, "text": "+1 no dano.", "damageBonus": 1 },
+  { "name": "Guard Plating", "tier": 1, "text": "+1 em Armor Score.", "modifiers": [{ "target": "armorScore", "value": 1 }] },
+  { "name": "Targeting Array", "tier": 1, "text": "+1 em attack rolls.", "attackBonus": 1 },
+  { "name": "Amplifier", "tier": 1, "text": "Num ataque bem-sucedido, role um dado de dano a mais e descarte o menor." },
+  { "name": "Extended Barrel", "tier": 1, "text": "O alcance sobe um degrau (Melee para Very Close, Close para Far…)." },
+  { "name": "Deflector Emitter", "tier": 1, "text": "+2 em Armor Score.", "modifiers": [{ "target": "armorScore", "value": 2 }] },
+  { "name": "Advanced Targeting", "tier": 1, "text": "+2 em attack rolls.", "attackBonus": 2 },
+  { "name": "Split Emitter", "tier": 1, "text": "Ao atacar, marque um Stress para mirar outra criatura dentro do alcance." },
+  { "name": "Bacta Feed", "tier": 1, "text": "Quando você causar dano Severe, limpe um Hit Point." },
+  { "name": "Intimidating Profile", "tier": 1, "text": "Num sucesso crítico de ataque, o alvo marca um Stress." },
+  { "name": "Superheated Core", "tier": 2, "text": "+2 no dano.", "damageBonus": 2 },
+  { "name": "Energy Sink", "tier": 2, "text": "Você pode marcar um Armor Slot a mais contra um dano recebido." },
+  { "name": "Recoil Kick", "tier": 2, "text": "Num ataque bem-sucedido, marque 2 Stress para o alvo marcar um Hit Point a mais." },
+  {
+    "name": "Shield Projector",
+    "tier": 3,
+    "text": "+3 em Armor Score; −1 em Evasion.",
+    "modifiers": [
+      { "target": "armorScore", "value": 3 },
+      { "target": "evasion", "value": -1 }
+    ]
+  },
+  { "name": "Jet Assist", "tier": 3, "text": "Mova-se até o alcance Far como parte de um ataque." },
+  { "name": "Kyber Focus", "tier": 3, "text": "+3 no dano.", "damageBonus": 3 },
+  { "name": "Predictive Tracking", "tier": 4, "text": "Marque 2 Stress para rerrolar seu ataque." },
+  { "name": "Combat Computer", "tier": 4, "text": "Seus attack rolls com esta arma têm vantagem." }
+]

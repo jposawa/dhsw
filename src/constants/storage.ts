@@ -12,7 +12,8 @@ export const STORAGE_KEYS = {
 export const STORAGE_VERSIONS = {
   /** v2: `Character.partyId`. */
   roster: 2,
-  houseRules: 1,
+  /** v2: multiclasse no Tier 2, tipos de dano granulares, armas customizáveis. */
+  houseRules: 2,
 } as const
 
 /** Versao do formato de uma ficha. Toda escrita — local ou remota — carrega isto. */

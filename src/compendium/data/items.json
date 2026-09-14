@@ -62,7 +62,7 @@
   {
     "name": "Personal Shield",
     "tier": 3,
-    "text": "Uma vez por rest, ao sofrer dano `tech`, reduza a severidade em um degrau sem marcar Armor Slot."
+    "text": "Uma vez por rest, ao receber dano energético, reduza a severidade em 1 nível sem marcar Armor Slot."
   },
   {
     "name": "Jetpack",
@@ -80,9 +80,9 @@
     "text": "Uma vez por long rest, gaste 2 **Hope** para consultar o fragmento: o Mestre responde uma pergunta sobre a Força ou sobre o passado."
   },
   {
-    "name": "Beskar Amulet",
+    "name": "Beskar Vambraces",
     "tier": 4,
-    "text": "`Lightblade Resistant`. Um golpe de sabre por long rest não te atinge."
+    "text": "`Plasma Resistant`."
   },
   {
     "name": "Codebreaker",

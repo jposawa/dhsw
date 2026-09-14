@@ -254,6 +254,21 @@ export const derive = (
         source: { kind: "weapon", entryId: entry.id, name: entry.name, feature: weapon?.feature ?? "" },
       })
     }
+
+    // Augments valem como feature da arma — só com a regra da casa ligada.
+    const installed = houseRules.hasCustomWeapons ? entry.installedModules : []
+
+    for (const augmentName of installed) {
+      const augment = compendium.augments.find((candidate) => candidate.name === augmentName)
+
+      for (const modifier of augment?.modifiers ?? []) {
+        collector.add({
+          target: modifier.target,
+          value: featureModifierValue(modifier, tier),
+          source: { kind: "weapon", entryId: entry.id, name: entry.name, feature: augmentName },
+        })
+      }
+    }
   }
 
   /* ── traços ──────────────────────────────────────────────────────── */

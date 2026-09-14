@@ -1,10 +1,12 @@
 import { Chip, Input, SectionLabel } from "@jposawa/ronin-ui"
+import { useAtomValue } from "jotai"
 import React from "react"
 
 import { GEAR_KINDS } from "@/constants"
 import { FeatureText, RuleText } from "@/fragments"
-import { describeNamedArmor, filterByText, formatSigned } from "@/helpers"
+import { describeNamedArmor, filterByText, formatDamageType, formatSigned } from "@/helpers"
 import { useCompendium } from "@/hooks"
+import { houseRulesAtom } from "@/states"
 import type { GearKind } from "@/types"
 
 import styles from "./Reference.module.css"
@@ -23,6 +25,7 @@ import styles from "./Reference.module.css"
  */
 export const CompendiumGear = () => {
   const { compendium } = useCompendium()
+  const houseRules = useAtomValue(houseRulesAtom)
 
   const [kind, setKind] = React.useState<GearKind>("armas")
   const [query, setQuery] = React.useState("")
@@ -101,7 +104,9 @@ export const CompendiumGear = () => {
                   </hgroup>
                   <span className={styles.value}>
                     {weapon.damageDie}
-                    <span className={styles.unit}>{weapon.damageType}</span>
+                    <span className={styles.unit}>
+                      {formatDamageType(weapon, houseRules.hasGranularDamageTypes)}
+                    </span>
                   </span>
                 </header>
 

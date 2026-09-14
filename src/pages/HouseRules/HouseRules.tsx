@@ -76,6 +76,31 @@ export const HouseRules = () => {
           ))}
         </div>
       </article>
+
+      <HouseRuleToggle
+        isOn={houseRules.allowsEarlyMulticlass}
+        title="Multiclasse já no Tier 2"
+        description="Pela regra, multiclasse abre no nível 5. Ligando, abre no nível 2 — e continua custando os dois advancements do nível. O domínio novo segue limitado a metade do nível."
+        onToggle={() =>
+          setHouseRules({ ...houseRules, allowsEarlyMulticlass: !houseRules.allowsEarlyMulticlass })
+        }
+      />
+
+      <HouseRuleToggle
+        isOn={houseRules.hasGranularDamageTypes}
+        title="Tipos de dano: físico, energético e térmico"
+        description="No lugar de phy e tech. Blaster e lâmina de plasma são energéticos; lâmina, projétil e punho, físicos; fogo e explosivo, térmicos. Serve para resistências como Plasma Resistant."
+        onToggle={() =>
+          setHouseRules({ ...houseRules, hasGranularDamageTypes: !houseRules.hasGranularDamageTypes })
+        }
+      />
+
+      <HouseRuleToggle
+        isOn={houseRules.hasCustomWeapons}
+        title="Armas customizáveis"
+        description="Arma com Customizable (n) aceita n + 1 augments, no molde do Ikonis. Cada augment exige um Tier mínimo do personagem e, instalado, vale como feature a mais da arma."
+        onToggle={() => setHouseRules({ ...houseRules, hasCustomWeapons: !houseRules.hasCustomWeapons })}
+      />
     </main>
   )
 }

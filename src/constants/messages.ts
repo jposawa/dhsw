@@ -6,6 +6,7 @@ export const RULE_ERROR_MESSAGES: Readonly<Record<RuleErrorCode, string>> = {
   notEnoughStress: "Stress insuficiente para pagar o Recall Cost.",
   skillUnknown: "Esta carta não é conhecida por este personagem.",
   skillAlreadyInLoadout: "Esta carta já está no loadout.",
+  skillNotLearnable: "Carta fora dos seus domínios ou acima do nível que você alcança.",
   armorSlotTaken: "Já existe uma armadura vestida.",
   weaponSlotTaken: "Este slot de arma já está ocupado.",
   handsFull: "As duas mãos já estão ocupadas por uma arma de duas mãos.",
@@ -17,4 +18,10 @@ export const RULE_ERROR_MESSAGES: Readonly<Record<RuleErrorCode, string>> = {
   downtimeNeedsTwoMoves: "Escolha duas ações de descanso — pode ser a mesma duas vezes.",
   downtimeMoveUnknown: "Essa ação não pertence a este descanso.",
   downtimeRollMissing: "Falta o resultado do dado de uma das ações.",
+  customWeaponsOff: "Augments só existem com a regra da casa de armas customizáveis.",
+  weaponNotCustomizable: "Esta arma não é Customizable.",
+  augmentUnknown: "Augment desconhecido.",
+  augmentTierTooHigh: "Este augment exige um Tier maior que o seu.",
+  augmentSlotsFull: "Sem slot livre nesta arma. Tire um augment antes.",
+  augmentAlreadyInstalled: "Este augment já está instalado nesta arma.",
 }

@@ -1,23 +1,15 @@
-import { Button, Input, SectionLabel } from "@jposawa/ronin-ui"
+import { Button, SectionLabel } from "@jposawa/ronin-ui"
 import React from "react"
 
 import { Switch } from "@/components"
-import { SkillCardGrid } from "@/fragments"
-import { useCompendium, useSkillSearch } from "@/hooks"
-import { forgetSkill, isKnown, learnSkill, moveToLoadout, moveToVault } from "@/rules"
-import type { Character, DerivedStats, Domain, Result, Skill } from "@/types"
+import { useCompendium } from "@/hooks"
+import { forgetSkill, moveToLoadout, moveToVault } from "@/rules"
+import type { Character, DerivedStats, Result, Skill } from "@/types"
 
+import { LearnDrawer } from "./LearnDrawer"
 import { SkillRow } from "./SkillRow"
 
 import styles from "./CardsPanel.module.css"
-
-/**
- * Quantas cartas a busca mostra de uma vez.
- *
- * Sem corte, uma busca vazia despeja as 42 cartas dos dois domínios da classe
- * e a lista de baixo some da tela. Quem procura uma carta específica digita.
- */
-const LEARNABLE_SHOWN = 12
 
 type CardsPanelProps = {
   character: Character
@@ -43,23 +35,7 @@ export const CardsPanel = ({ character, derived, isEditing, onApply }: CardsPane
   const { compendium } = useCompendium()
 
   const [isFreeSwap, setIsFreeSwap] = React.useState(false)
-  const [query, setQuery] = React.useState("")
-
-  /**
-   * A busca do acervo nasce filtrada pelos domínios da classe.
-   *
-   * Sem classe escolhida, mostra os seis: é o caso de quem ainda está montando
-   * a ficha, e esconder tudo ali seria uma tela vazia sem explicação.
-   */
-  const classDomains = character.className
-    ? compendium.classes.find((candidate) => candidate.name === character.className)?.domains
-    : undefined
-  const searchDomains = React.useMemo(
-    () => new Set<Domain>(classDomains ?? []),
-    [classDomains],
-  )
-
-  const found = useSkillSearch(query, searchDomains)
+  const [isLearning, setIsLearning] = React.useState(false)
 
   const skillsOf = (names: readonly string[]): Skill[] =>
     names
@@ -164,45 +140,21 @@ export const CardsPanel = ({ character, derived, isEditing, onApply }: CardsPane
         )}
       </section>
 
+      {/* Aprender só aparece editando, e abre uma gaveta: a lista de cartas é
+          consulta de um momento, não parte da tela. */}
       {isEditing ? (
-        <section className={styles.learn}>
-          <SectionLabel detail={`${derived.expectedCards} esperadas no nível ${derived.level}`}>
-            <h3>APRENDER CARTA</h3>
-          </SectionLabel>
-
-          <search>
-            <Input
-              type="search"
-              value={query}
-              placeholder="Buscar carta ou efeito"
-              aria-label="Buscar carta para aprender"
-              autoComplete="off"
-              onValueChange={setQuery}
-            />
-          </search>
-
-          {found.length === 0 ? (
-            <p className={styles.empty}>Nada encontrado para “{query}”.</p>
-          ) : (
-            <SkillCardGrid
-              skills={found.slice(0, LEARNABLE_SHOWN)}
-              actionFor={(skill) =>
-                isKnown(character, skill.name) ? (
-                  <span className={styles.known}>JÁ SABE</span>
-                ) : (
-                  <Button
-                    variant="outline"
-                    aria-label={`Aprender ${skill.name}`}
-                    onClick={() => onApply(learnSkill(character, skill.name, compendium))}
-                  >
-                    APRENDER
-                  </Button>
-                )
-              }
-            />
-          )}
-        </section>
+        <Button className={styles.learnButton} variant="outline" onClick={() => setIsLearning(true)}>
+          + APRENDER CARTA
+        </Button>
       ) : null}
+
+      <LearnDrawer
+        isOpen={isLearning}
+        character={character}
+        derived={derived}
+        onApply={onApply}
+        onClose={() => setIsLearning(false)}
+      />
     </div>
   )
 }

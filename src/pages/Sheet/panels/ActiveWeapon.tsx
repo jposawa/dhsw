@@ -1,5 +1,10 @@
-import { FeatureText } from "@/fragments"
-import { formatWeaponDamage } from "@/helpers"
+import { useAtomValue } from "jotai"
+
+import { FeatureText, RuleText } from "@/fragments"
+import { formatSigned, formatWeaponDamage } from "@/helpers"
+import { useCompendium } from "@/hooks"
+import { augmentRollBonuses, augmentsOf } from "@/rules"
+import { houseRulesAtom } from "@/states"
 import type { InventoryEntry, Weapon } from "@/types"
 
 import styles from "./ActiveWeapon.module.css"
@@ -16,8 +21,9 @@ type ActiveWeaponProps = {
 
 /**
  * Uma arma empunhada, como se consulta no meio de um ataque: nome, atributo e
- * alcance, os dados de dano já com a Proficiency, e a feature — que é regra
- * que vale a cada ataque e por isso não pode ficar escondida no inventário.
+ * alcance, os dados de dano já com a Proficiency e os augments, e a feature —
+ * que é regra que vale a cada ataque e por isso não pode ficar escondida no
+ * inventário.
  */
 export const ActiveWeapon = ({
   slotLabel,
@@ -26,26 +32,47 @@ export const ActiveWeapon = ({
   proficiency,
   tierIndex,
   emptyText,
-}: ActiveWeaponProps) => (
-  <li className={styles.weapon}>
-    <span className={styles.slot}>{slotLabel}</span>
+}: ActiveWeaponProps) => {
+  const { compendium } = useCompendium()
+  const houseRules = useAtomValue(houseRulesAtom)
 
-    {entry && weapon ? (
-      <>
-        <header className={styles.head}>
-          <hgroup className={styles.identity}>
-            <h4 className={styles.name}>{entry.nickname ?? weapon.name}</h4>
-            <p className={styles.meta}>
-              {weapon.trait} · {weapon.range} · {weapon.burden}
-            </p>
-          </hgroup>
-          <b className={styles.damage}>{formatWeaponDamage(weapon, proficiency, tierIndex)}</b>
-        </header>
+  if (!entry || !weapon) {
+    return (
+      <li className={styles.weapon}>
+        <span className={styles.slot}>{slotLabel}</span>
+        <p className={styles.empty}>{emptyText}</p>
+      </li>
+    )
+  }
 
-        {weapon.feature ? <FeatureText name={weapon.feature} /> : null}
-      </>
-    ) : (
-      <p className={styles.empty}>{emptyText}</p>
-    )}
-  </li>
-)
+  const { damageBonus, attackBonus } = augmentRollBonuses(entry, houseRules, compendium)
+  const augments = houseRules.hasCustomWeapons ? augmentsOf(entry, compendium) : []
+
+  return (
+    <li className={styles.weapon}>
+      <span className={styles.slot}>{slotLabel}</span>
+
+      <header className={styles.head}>
+        <hgroup className={styles.identity}>
+          <h4 className={styles.name}>{entry.nickname ?? weapon.name}</h4>
+          <p className={styles.meta}>
+            {weapon.trait} · {weapon.range} · {weapon.burden}
+            {attackBonus === 0 ? null : ` · ${formatSigned(attackBonus)} ataque`}
+          </p>
+        </hgroup>
+        <b className={styles.damage}>
+          {formatWeaponDamage(weapon, proficiency, tierIndex, {
+            extraBonus: damageBonus,
+            hasGranularDamageTypes: houseRules.hasGranularDamageTypes,
+          })}
+        </b>
+      </header>
+
+      {weapon.feature ? <FeatureText name={weapon.feature} /> : null}
+
+      {augments.map((augment) => (
+        <RuleText key={augment.name} text={`**${augment.name}:** ${augment.text}`} />
+      ))}
+    </li>
+  )
+}

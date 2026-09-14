@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest"
 import { CHARACTER_SCHEMA_VERSION } from "@/constants"
 import type { Character, RosterState } from "@/types"
 
-import { rosterV1ToV2 } from "./migrations"
+import { houseRulesV1ToV2, rosterV1ToV2 } from "./migrations"
 
 /**
  * Fixture do formato v1: ficha **sem** `partyId` e com `schema: 1`. Escrita à
@@ -97,5 +97,15 @@ describe("formato v2 atual", () => {
 
     // Rodar de novo nao pode mudar mais nada: a migracao e idempotente.
     expect(rosterV1ToV2(roster)).toEqual(roster)
+  })
+})
+
+describe("houseRulesV1ToV2", () => {
+  it("mantém o que a mesa escolheu e liga as regras novas desligadas", () => {
+    const migrated = houseRulesV1ToV2({ hasTwoCardsPerLevel: true, loadoutSize: "4+tier" })
+
+    expect(migrated.hasTwoCardsPerLevel).toBe(true)
+    expect(migrated.loadoutSize).toBe("4+tier")
+    expect(migrated.hasCustomWeapons).toBe(false)
   })
 })

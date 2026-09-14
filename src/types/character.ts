@@ -12,7 +12,10 @@ export type InventoryEntry = {
   isEquipped: boolean
   slot: EquipSlot | null
   quantity: number
-  /** Reservado para módulos por instância. Nenhuma regra lê isto ainda. */
+  /**
+   * Augments instalados nesta arma, por nome — só com a regra da casa "Armas
+   * customizáveis". Por instância: o blaster A com Scope e o B sem.
+   */
   installedModules: readonly string[]
   nickname: string | null
 }
@@ -89,6 +92,12 @@ export type HouseRules = {
   hasEvasionFromTraits: boolean
   roundsEvasionUp: boolean
   loadoutSize: "5" | "3+tier" | "4+tier"
+  /** Multiclasse já no Tier 2, gastando os dois advancements do nível. */
+  allowsEarlyMulticlass: boolean
+  /** Dano físico, energético e térmico no lugar de `phy`/`tech`. */
+  hasGranularDamageTypes: boolean
+  /** Toda arma aceita augments em Tier + 1 slots. */
+  hasCustomWeapons: boolean
 }
 
 /** Armadura equipada, já resolvida contra a linha e o tier. */

@@ -1,5 +1,5 @@
-import { CHARACTER_SCHEMA_VERSION } from "@/constants"
-import type { Character, RosterState } from "@/types"
+import { CHARACTER_SCHEMA_VERSION, DEFAULT_HOUSE_RULES } from "@/constants"
+import type { Character, HouseRules, RosterState } from "@/types"
 
 /**
  * Migrações do formato salvo. Puras, e **acumulativas: nenhuma é apagada**.
@@ -41,3 +41,9 @@ export const rosterV1ToV2 = (value: unknown): RosterState => {
 
   return { characters, order: roster?.order ?? [] }
 }
+
+/** Regras da casa v1 → v2: as três regras novas entram desligadas. */
+export const houseRulesV1ToV2 = (value: unknown): HouseRules => ({
+  ...DEFAULT_HOUSE_RULES,
+  ...((value as Partial<HouseRules> | null) ?? {}),
+})

@@ -12,7 +12,9 @@
     ],
     "damageType": "phy",
     "burden": "Uma mão",
-    "feature": "Hot"
+    "feature": "Plasma Blade",
+    "damageKind": "energy",
+    "customizable": 1
   },
   {
     "name": "Shoto Saber",
@@ -27,7 +29,9 @@
     ],
     "damageType": "phy",
     "burden": "Uma mão",
-    "feature": "Guarding"
+    "feature": "Plasma Blade",
+    "damageKind": "energy",
+    "customizable": 1
   },
   {
     "name": "Saberstaff",
@@ -42,7 +46,9 @@
     ],
     "damageType": "phy",
     "burden": "Duas mãos",
-    "feature": "Quick"
+    "feature": "Plasma Blade",
+    "damageKind": "energy",
+    "customizable": 1
   },
   {
     "name": "Lightwhip",
@@ -57,7 +63,9 @@
     ],
     "damageType": "phy",
     "burden": "Uma mão",
-    "feature": "Startling"
+    "feature": "Plasma Blade",
+    "damageKind": "energy",
+    "customizable": 1
   },
   {
     "name": "Vibroblade",
@@ -72,7 +80,9 @@
     ],
     "damageType": "phy",
     "burden": "Uma mão",
-    "feature": null
+    "feature": "Vibroedge",
+    "damageKind": "physical",
+    "customizable": 1
   },
   {
     "name": "Vibro-axe",
@@ -87,7 +97,9 @@
     ],
     "damageType": "phy",
     "burden": "Duas mãos",
-    "feature": null
+    "feature": "Vibroedge",
+    "damageKind": "physical",
+    "customizable": 1
   },
   {
     "name": "Force Pike",
@@ -102,7 +114,9 @@
     ],
     "damageType": "phy",
     "burden": "Duas mãos",
-    "feature": null
+    "feature": null,
+    "damageKind": "energy",
+    "customizable": 1
   },
   {
     "name": "Shock Baton",
@@ -117,7 +131,9 @@
     ],
     "damageType": "tech",
     "burden": "Uma mão",
-    "feature": "Shocking"
+    "feature": "Shocking",
+    "damageKind": "energy",
+    "customizable": 1
   },
   {
     "name": "Combat Staff",
@@ -132,7 +148,9 @@
     ],
     "damageType": "phy",
     "burden": "Duas mãos",
-    "feature": "Guarding"
+    "feature": "Guarding",
+    "damageKind": "physical",
+    "customizable": 1
   },
   {
     "name": "Beskad",
@@ -147,7 +165,9 @@
     ],
     "damageType": "phy",
     "burden": "Duas mãos",
-    "feature": "Lightblade Resistant"
+    "feature": "Plasma Resistant",
+    "damageKind": "physical",
+    "customizable": 1
   },
   {
     "name": "Hold-out Blaster",
@@ -162,7 +182,9 @@
     ],
     "damageType": "tech",
     "burden": "Uma mão",
-    "feature": "Concealable"
+    "feature": "Concealable",
+    "damageKind": "energy",
+    "customizable": 1
   },
   {
     "name": "Blaster Pistol",
@@ -177,7 +199,9 @@
     ],
     "damageType": "tech",
     "burden": "Uma mão",
-    "feature": null
+    "feature": null,
+    "damageKind": "energy",
+    "customizable": 1
   },
   {
     "name": "Heavy Blaster Pistol",
@@ -192,7 +216,9 @@
     ],
     "damageType": "tech",
     "burden": "Uma mão",
-    "feature": null
+    "feature": null,
+    "damageKind": "energy",
+    "customizable": 1
   },
   {
     "name": "Blaster Carbine",
@@ -207,7 +233,9 @@
     ],
     "damageType": "tech",
     "burden": "Duas mãos",
-    "feature": null
+    "feature": null,
+    "damageKind": "energy",
+    "customizable": 1
   },
   {
     "name": "Blaster Rifle",
@@ -222,7 +250,9 @@
     ],
     "damageType": "tech",
     "burden": "Duas mãos",
-    "feature": null
+    "feature": null,
+    "damageKind": "energy",
+    "customizable": 1
   },
   {
     "name": "Sporting Blaster",
@@ -237,7 +267,9 @@
     ],
     "damageType": "tech",
     "burden": "Uma mão",
-    "feature": "Reliable"
+    "feature": "Reliable",
+    "damageKind": "energy",
+    "customizable": 1
   },
   {
     "name": "Slugthrower",
@@ -252,7 +284,9 @@
     ],
     "damageType": "phy",
     "burden": "Duas mãos",
-    "feature": "Kinetic"
+    "feature": "Kinetic",
+    "damageKind": "physical",
+    "customizable": 1
   },
   {
     "name": "Bowcaster",
@@ -267,7 +301,9 @@
     ],
     "damageType": "phy",
     "burden": "Duas mãos",
-    "feature": "Reloading"
+    "feature": "Reloading",
+    "damageKind": "energy",
+    "customizable": 1
   },
   {
     "name": "Disruptor Pistol",
@@ -282,7 +318,9 @@
     ],
     "damageType": "tech",
     "burden": "Uma mão",
-    "feature": "Deadly"
+    "feature": "Deadly",
+    "damageKind": "energy",
+    "customizable": 1
   },
   {
     "name": "Repeating Blaster",
@@ -297,7 +335,9 @@
     ],
     "damageType": "tech",
     "burden": "Duas mãos",
-    "feature": "Bouncing"
+    "feature": "Bouncing",
+    "damageKind": "energy",
+    "customizable": 1
   },
   {
     "name": "Sniper Rifle",
@@ -312,7 +352,9 @@
     ],
     "damageType": "tech",
     "burden": "Duas mãos",
-    "feature": "Powerful"
+    "feature": "Powerful",
+    "damageKind": "energy",
+    "customizable": 1
   },
   {
     "name": "Ion Blaster",
@@ -327,7 +369,9 @@
     ],
     "damageType": "tech",
     "burden": "Uma mão",
-    "feature": "Ionizing"
+    "feature": "Ionizing",
+    "damageKind": "energy",
+    "customizable": 1
   },
   {
     "name": "Vibroknife",
@@ -342,7 +386,9 @@
     ],
     "damageType": "phy",
     "burden": "Secundária",
-    "feature": "Paired"
+    "feature": "Paired",
+    "damageKind": "physical",
+    "customizable": 1
   },
   {
     "name": "Wrist Launcher",
@@ -357,7 +403,9 @@
     ],
     "damageType": "tech",
     "burden": "Secundária",
-    "feature": "Reloading"
+    "feature": "Reloading",
+    "damageKind": "thermal",
+    "customizable": 1
   },
   {
     "name": "Riot Shield",
@@ -372,7 +420,9 @@
     ],
     "damageType": "phy",
     "burden": "Secundária",
-    "feature": "Protective"
+    "feature": "Protective",
+    "damageKind": "physical",
+    "customizable": 1
   },
   {
     "name": "Grappling Spike",
@@ -387,7 +437,9 @@
     ],
     "damageType": "phy",
     "burden": "Secundária",
-    "feature": "Hooked"
+    "feature": "Hooked",
+    "damageKind": "physical",
+    "customizable": 1
   },
   {
     "name": "Whistling Birds",
@@ -402,6 +454,8 @@
     ],
     "damageType": "tech",
     "burden": "Secundária",
-    "feature": "Locked On"
+    "feature": "Locked On",
+    "damageKind": "thermal",
+    "customizable": 1
   }
 ]

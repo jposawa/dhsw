@@ -10,7 +10,10 @@
  * O texto é a exceção: leva um piso com `max()`, porque 4cqi numa carta de
  * 165px dá menos de 7px.
  */
+/* `isolation` fecha um contexto de empilhamento: o z-index do texto e do botão
+   fica dentro da carta e não passa por cima da régua de abas grudada. */
 .card {
+  isolation: isolate;
   container-type: inline-size;
   height: 100%;
   min-width: 0;

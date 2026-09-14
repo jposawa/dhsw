@@ -13,6 +13,7 @@ import type { Compendium } from "@/types"
 
 import ancestries from "./data/ancestries.json"
 import armorLines from "./data/armorLines.json"
+import augments from "./data/augments.json"
 import classes from "./data/classes.json"
 import communities from "./data/communities.json"
 import consumables from "./data/consumables.json"
@@ -45,5 +46,6 @@ export const FALLBACK_COMPENDIUM = {
   items,
   consumables,
   features,
+  augments,
   downtimeMoves,
 } as Compendium

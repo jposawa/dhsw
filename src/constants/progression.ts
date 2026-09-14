@@ -45,3 +45,15 @@ export const NEW_EXPERIENCE_BONUS = 2
 
 /** Duas ações de downtime por descanso; a mesma pode ser escolhida duas vezes. */
 export const DOWNTIME_MOVES_PER_REST = 2
+
+/** Multiclasse abre no Tier 3 (nível 5). Core Rulebook, "Multiclassing" (p. 111). */
+export const MULTICLASS_MIN_TIER = 3
+
+/** Com a regra da casa, abre um tier antes. */
+export const EARLY_MULTICLASS_MIN_TIER = 2
+
+/**
+ * `Customizable (n)` dá n + 1 slots de augment: a arma customizável começa com
+ * dois, como o Ikonis no Tier 1 (Core Rulebook, Motherboard, p. 300).
+ */
+export const CUSTOMIZABLE_EXTRA_SLOTS = 1

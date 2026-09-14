@@ -1,6 +1,10 @@
+import { useAtomValue } from "jotai"
+
 import { FeatureText, RuleText } from "@/fragments"
-import { describeNamedArmor } from "@/helpers"
+import { describeNamedArmor, formatDamageType } from "@/helpers"
 import { useCompendium } from "@/hooks"
+import { augmentSlotsFor } from "@/rules"
+import { houseRulesAtom } from "@/states"
 import type { GearKind } from "@/types"
 
 import styles from "./GearSummary.module.css"
@@ -19,6 +23,7 @@ type GearSummaryProps = {
  */
 export const GearSummary = ({ kind, name }: GearSummaryProps) => {
   const { compendium } = useCompendium()
+  const houseRules = useAtomValue(houseRulesAtom)
 
   if (kind === "armas") {
     const weapon = compendium.weapons.find((candidate) => candidate.name === name)
@@ -30,9 +35,14 @@ export const GearSummary = ({ kind, name }: GearSummaryProps) => {
     return (
       <>
         <p className={styles.meta}>
-          {weapon.trait} · {weapon.range} · {weapon.damageDie} {weapon.damageType} · {weapon.burden}
+          {weapon.trait} · {weapon.range} · {weapon.damageDie} {formatDamageType(weapon, houseRules.hasGranularDamageTypes)} · {weapon.burden}
         </p>
         {weapon.feature ? <FeatureText className={styles.body} name={weapon.feature} /> : null}
+        {houseRules.hasCustomWeapons && weapon.customizable !== null ? (
+          <p className={styles.meta}>
+            Customizable ({weapon.customizable}) · {augmentSlotsFor(weapon)} slots
+          </p>
+        ) : null}
       </>
     )
   }

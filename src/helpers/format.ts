@@ -1,3 +1,4 @@
+import { DAMAGE_KIND_LABELS } from "@/constants"
 import type { DerivedStats, Modifier, Weapon } from "@/types"
 
 /** Sinal explicito: "+2" e "−1" leem melhor que "2" e "-1". */
@@ -63,12 +64,21 @@ export const describeError = (error: unknown): string => {
  * Dados de dano como a ficha do livro escreve: Proficiency já no número de
  * dados, bônus do tier depois — `2d8+3 phy`. Bônus zero não aparece.
  */
-export const formatWeaponDamage = (weapon: Weapon, proficiency: number, tierIndex: number): string => {
-  const bonus = weapon.bonusByTier[tierIndex] ?? 0
+export const formatWeaponDamage = (
+  weapon: Weapon,
+  proficiency: number,
+  tierIndex: number,
+  options: { extraBonus?: number; hasGranularDamageTypes?: boolean } = {},
+): string => {
+  const bonus = (weapon.bonusByTier[tierIndex] ?? 0) + (options.extraBonus ?? 0)
   const bonusText = bonus === 0 ? "" : formatSigned(bonus).replace("−", "-")
 
-  return `${proficiency}${weapon.damageDie}${bonusText} ${weapon.damageType}`
+  return `${proficiency}${weapon.damageDie}${bonusText} ${formatDamageType(weapon, options.hasGranularDamageTypes)}`
 }
+
+/** `phy`/`tech` do livro, ou o tipo granular com a regra da casa ligada. */
+export const formatDamageType = (weapon: Weapon, hasGranularDamageTypes = false): string =>
+  hasGranularDamageTypes ? DAMAGE_KIND_LABELS[weapon.damageKind] : weapon.damageType
 
 /**
  * De onde saíram os dois thresholds, numa linha.

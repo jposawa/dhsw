@@ -1,8 +1,9 @@
 import { z } from "zod"
 
-import { DAMAGE_TYPE_LIST, DOMAIN_LIST, RANGE_LIST, TRAIT_LIST } from "@/constants"
+import { DAMAGE_KIND_LIST, DAMAGE_TYPE_LIST, DOMAIN_LIST, RANGE_LIST, TRAIT_LIST } from "@/constants"
 import type {
   Ancestry,
+  Augment,
   ArmorLine,
   ArmorLineName,
   ClassDefinition,
@@ -142,9 +143,20 @@ const weapon = z.object({
   damageDie: z.string().regex(/^d\d+$/),
   bonusByTier: z.array(z.number().int()).length(4),
   damageType: z.enum(DAMAGE_TYPE_LIST),
+  damageKind: z.enum(DAMAGE_KIND_LIST),
   burden: z.string(),
   feature: z.string().nullable(),
+  customizable: z.number().int().min(0).nullable(),
 }) satisfies z.ZodType<Weapon>
+
+const augment = z.object({
+  name,
+  tier,
+  text: z.string().min(1),
+  modifiers: z.array(featureModifier).optional(),
+  damageBonus: z.number().int().optional(),
+  attackBonus: z.number().int().optional(),
+}) satisfies z.ZodType<Augment>
 
 const entry = z.object({
   name,
@@ -189,6 +201,7 @@ export const COMPENDIUM_SCHEMAS = {
   items: z.array(entry),
   consumables: z.array(entry),
   features: z.array(equipmentFeature),
+  augments: z.array(augment),
   downtimeMoves: z.array(downtimeMove),
 } satisfies Record<CompendiumCollection, z.ZodType>
 

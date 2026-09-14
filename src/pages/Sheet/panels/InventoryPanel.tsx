@@ -1,35 +1,19 @@
-import { Button, Chip, Drawer, Input, SectionLabel } from "@jposawa/ronin-ui"
+import { Button, Drawer, SectionLabel } from "@jposawa/ronin-ui"
+import { useAtomValue } from "jotai"
 import React from "react"
 
 import { EQUIP_SLOTS, GEAR_KINDS } from "@/constants"
-import { createInventoryEntry, describeNamedArmor, filterByText } from "@/helpers"
+import { describeNamedArmor } from "@/helpers"
 import { useCompendium } from "@/hooks"
-import { addEntry, candidatesForSlot, consume, equipInSlot, removeEntry } from "@/rules"
-import type {
-  Character,
-  DerivedStats,
-  EquipSlot,
-  GearKind,
-  InventoryEntry,
-  InventoryEntryKind,
-  Result,
-} from "@/types"
+import { augmentSlotsFor, candidatesForSlot, consume, equipInSlot, removeEntry } from "@/rules"
+import { houseRulesAtom } from "@/states"
+import type { Character, DerivedStats, EquipSlot, GearKind, InventoryEntry, Result } from "@/types"
 
-import { GearSummary } from "./GearSummary"
+import { AugmentDrawer } from "./AugmentDrawer"
+import { CatalogueDrawer } from "./CatalogueDrawer"
 import { SlotChoices } from "./SlotChoices"
 
 import styles from "./InventoryPanel.module.css"
-
-/** Chip do catálogo → tipo de linha do inventário. */
-const KIND_BY_GEAR: Readonly<Record<GearKind, InventoryEntryKind>> = {
-  armas: "weapon",
-  armaduras: "armor",
-  itens: "item",
-  consumiveis: "consumable",
-}
-
-/** Mesmo corte da busca de cartas, pelo mesmo motivo: a lista de baixo some. */
-const CATALOGUE_SHOWN = 12
 
 type InventoryPanelProps = {
   character: Character
@@ -47,34 +31,20 @@ type InventoryPanelProps = {
  *
  * **A troca do que está empunhando é uma gaveta, não uma lista de botões.**
  * Três slots — armadura, primária, secundária —, cada um abrindo o que cabe
- * nele. É o gesto certo para "estou com o blaster, quero o sabre": um toque no
- * slot, um na arma. A alternativa era desequipar e procurar, dois passos e uma
- * recusa de slot ocupado no meio.
+ * nele. Pegar equipamento novo é uma gaveta por tipo.
+ *
+ * Com a regra da casa de armas customizáveis, cada arma ganha o botão dos
+ * augments dela.
  */
 export const InventoryPanel = ({ character, derived, onApply }: InventoryPanelProps) => {
   const { compendium } = useCompendium()
+  const houseRules = useAtomValue(houseRulesAtom)
 
   const [slotDrawer, setSlotDrawer] = React.useState<EquipSlot | null>(null)
-  const [isCatalogueOpen, setIsCatalogueOpen] = React.useState(false)
-  const [gearKind, setGearKind] = React.useState<GearKind>("armas")
-  const [query, setQuery] = React.useState("")
+  const [catalogueKind, setCatalogueKind] = React.useState<GearKind | null>(null)
+  const [augmentEntryId, setAugmentEntryId] = React.useState<string | null>(null)
 
   const carried = character.inventory.filter((entry) => !entry.isEquipped)
-
-  const catalogue = {
-    armas: filterByText(
-      compendium.weapons,
-      (weapon) => `${weapon.name} ${weapon.trait} ${weapon.feature ?? ""}`,
-      query,
-    ),
-    armaduras: filterByText(
-      compendium.namedArmor,
-      (piece) => `${piece.name} ${piece.line} ${piece.feature ?? ""}`,
-      query,
-    ),
-    itens: filterByText(compendium.items, (item) => `${item.name} ${item.text}`, query),
-    consumiveis: filterByText(compendium.consumables, (item) => `${item.name} ${item.text}`, query),
-  }[gearKind]
 
   const describe = (entry: InventoryEntry): string => {
     if (entry.kind === "weapon") {
@@ -106,6 +76,21 @@ export const InventoryPanel = ({ character, derived, onApply }: InventoryPanelPr
     setSlotDrawer(null)
   }
 
+  const slotsOf = (entry: InventoryEntry) =>
+    augmentSlotsFor(compendium.weapons.find((weapon) => weapon.name === entry.name))
+
+  const augmentButtonFor = (entry: InventoryEntry | undefined) =>
+    houseRules.hasCustomWeapons && entry?.kind === "weapon" && slotsOf(entry) > 0 ? (
+      <Button
+        className={styles.augmentButton}
+        variant="text"
+        aria-label={`Augments de ${entry.name}`}
+        onClick={() => setAugmentEntryId(entry.id)}
+      >
+        AUGMENTS {entry.installedModules.length}/{slotsOf(entry)}
+      </Button>
+    ) : null
+
   return (
     <div className={styles.layout}>
       <section className={styles.equipped}>
@@ -115,14 +100,13 @@ export const InventoryPanel = ({ character, derived, onApply }: InventoryPanelPr
 
         {/* Os três slots aparecem sempre, vazios inclusive: um slot vazio é a
             informação de que ele existe e está livre, e é onde se toca para
-            preencher. Escondê-lo faria a armadura sumir da tela justamente
-            para quem ainda não vestiu nenhuma. */}
+            preencher. */}
         <ul className={styles.slots}>
           {EQUIP_SLOTS.map((slot) => {
             const entry = equippedIn(slot.id)
 
             return (
-              <li key={slot.id}>
+              <li className={styles.slotItem} key={slot.id}>
                 <button
                   type="button"
                   className={styles.slot}
@@ -135,6 +119,7 @@ export const InventoryPanel = ({ character, derived, onApply }: InventoryPanelPr
                     {entry ? describe(entry) : "tocar para escolher"}
                   </span>
                 </button>
+                {augmentButtonFor(entry)}
               </li>
             )
           })}
@@ -162,7 +147,9 @@ export const InventoryPanel = ({ character, derived, onApply }: InventoryPanelPr
                   <p className={styles.rowMeta}>{describe(entry)}</p>
                 </hgroup>
 
-                <div className={styles.rowActions}>
+                <menu className={styles.rowActions}>
+                  {augmentButtonFor(entry)}
+
                   {entry.kind === "consumable" ? (
                     <Button
                       variant="outline"
@@ -181,15 +168,20 @@ export const InventoryPanel = ({ character, derived, onApply }: InventoryPanelPr
                   >
                     LARGAR
                   </Button>
-                </div>
+                </menu>
               </li>
             ))}
           </ul>
         )}
 
-        <Button isFullWidth variant="outline" onClick={() => setIsCatalogueOpen(true)}>
-          + &nbsp;PEGAR EQUIPAMENTO
-        </Button>
+        {/* Um botão por tipo, e cada um abre só aquele catálogo. */}
+        <menu className={styles.pickButtons}>
+          {GEAR_KINDS.map((option) => (
+            <Button key={option.id} variant="outline" onClick={() => setCatalogueKind(option.id)}>
+              + {option.label.toUpperCase()}
+            </Button>
+          ))}
+        </menu>
       </section>
 
       {/* Gaveta de slot: o que cabe aqui, e a opção de esvaziar. */}
@@ -214,67 +206,21 @@ export const InventoryPanel = ({ character, derived, onApply }: InventoryPanelPr
         ) : null}
       </Drawer>
 
-      {/* Gaveta do catálogo: a lista inteira do compêndio fora da página, que é
-          o que impede a ficha de virar um formulário de mil linhas. */}
-      <Drawer
-        isOpen={isCatalogueOpen}
-        title="Pegar equipamento"
-        onClose={() => setIsCatalogueOpen(false)}
-      >
-        <div className={styles.catalogue}>
-          <div className={styles.chips}>
-            {GEAR_KINDS.map((option) => (
-              <Chip
-                key={option.id}
-                label={option.label}
-                isActive={gearKind === option.id}
-                onToggle={() => setGearKind(option.id)}
-              />
-            ))}
-          </div>
+      <CatalogueDrawer
+        kind={catalogueKind}
+        character={character}
+        onApply={onApply}
+        onClose={() => setCatalogueKind(null)}
+      />
 
-          <search>
-            <Input
-              type="search"
-              value={query}
-              placeholder="Buscar equipamento"
-              aria-label="Buscar equipamento"
-              autoComplete="off"
-              onValueChange={setQuery}
-            />
-          </search>
-
-          {catalogue.length === 0 ? (
-            <p className={styles.empty}>Nada encontrado para “{query}”.</p>
-          ) : (
-            <ul className={styles.list}>
-              {catalogue.slice(0, CATALOGUE_SHOWN).map((option) => (
-                <li className={styles.row} key={option.name}>
-                  <article className={styles.rowText}>
-                    <h4 className={styles.rowName}>{option.name}</h4>
-                    <GearSummary kind={gearKind} name={option.name} />
-                  </article>
-
-                  <Button
-                    variant="outline"
-                    aria-label={`Pegar ${option.name}`}
-                    onClick={() =>
-                      onApply(
-                        addEntry(
-                          character,
-                          createInventoryEntry(KIND_BY_GEAR[gearKind], option.name),
-                        ),
-                      )
-                    }
-                  >
-                    PEGAR
-                  </Button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </Drawer>
+      <AugmentDrawer
+        entryId={augmentEntryId}
+        character={character}
+        derived={derived}
+        houseRules={houseRules}
+        onApply={onApply}
+        onClose={() => setAugmentEntryId(null)}
+      />
     </div>
   )
 }

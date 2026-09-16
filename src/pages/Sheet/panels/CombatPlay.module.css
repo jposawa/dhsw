@@ -270,6 +270,7 @@
    * Fileira 1: identidade atravessa.
    * Fileira 2: defesa | atributos nas duas outras — seis numa fileira é régua.
    * Fileira 3: dano e vida | hope | armas. O que se toca e consulta num turno.
+   * Fileira 4: features, atravessando — consulta, e o texto precisa de largura.
    */
   .layout {
     display: grid;
@@ -278,7 +279,8 @@
       "identity identity identity"
       "notice   notice   notice"
       "defense  traits   traits"
-      "vitals   weapons  hope";
+      "vitals   weapons  hope"
+      "features features features";
     align-items: start;
     column-gap: var(--space-4);
   }
@@ -313,5 +315,9 @@
 
   .weapons {
     grid-area: weapons;
+  }
+
+  .features {
+    grid-area: features;
   }
 }

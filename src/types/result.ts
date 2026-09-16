@@ -35,3 +35,6 @@ export type RuleErrorCode =
   | "augmentTierTooHigh"
   | "augmentSlotsFull"
   | "augmentAlreadyInstalled"
+  | "classUnknown"
+  | "subclassNotOfClass"
+  | "tokenPoolUnknown"

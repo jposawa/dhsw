@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest"
 import { CHARACTER_SCHEMA_VERSION } from "@/constants"
 import type { Character, RosterState } from "@/types"
 
-import { houseRulesV1ToV2, rosterV1ToV2 } from "./migrations"
+import { houseRulesV1ToV2, rosterV1ToV2, rosterV2ToV3 } from "./migrations"
 
 /**
  * Fixture do formato v1: ficha **sem** `partyId` e com `schema: 1`. Escrita à
@@ -53,7 +53,7 @@ describe("rosterV1ToV2", () => {
   it("sobe o schema da ficha junto, nao so o do pacote", () => {
     const migrated = rosterV1ToV2(V1_ROSTER)
 
-    expect(migrated.characters["sheet-1"].schema).toBe(CHARACTER_SCHEMA_VERSION)
+    expect(migrated.characters["sheet-1"].schema).toBe(2)
   })
 
   it("preserva o resto da ficha intacto", () => {
@@ -107,5 +107,23 @@ describe("houseRulesV1ToV2", () => {
     expect(migrated.hasTwoCardsPerLevel).toBe(true)
     expect(migrated.loadoutSize).toBe("4+tier")
     expect(migrated.hasCustomWeapons).toBe(false)
+  })
+})
+
+describe("rosterV2ToV3", () => {
+  const v2 = rosterV1ToV2(V1_ROSTER)
+
+  it("acrescenta tokens vazio e sobe o schema", () => {
+    const character = rosterV2ToV3(v2).characters["sheet-1"]
+
+    expect(character.tokens).toEqual([])
+    expect(character.schema).toBe(CHARACTER_SCHEMA_VERSION)
+  })
+
+  it("preserva o resto da ficha", () => {
+    const character = rosterV2ToV3(v2).characters["sheet-1"]
+
+    expect(character.marks).toEqual({ hp: 1, stress: 2, armor: 0, hope: 3 })
+    expect(character.partyId).toBeNull()
   })
 })

@@ -1,5 +1,29 @@
 import type { DamageKind, DamageType, Domain, Level, Range, Tier, Trait, WeaponBurden } from "./domain"
 
+/** De onde sai o número de tokens que a reposição põe. `forcewield` é o atributo de Forcewielding da subclasse. */
+export type TokenScale = "tier" | "proficiency" | "forcewield" | Trait
+
+/**
+ * Quando os tokens voltam. `rest` é qualquer descanso, curto ou longo;
+ * `manual` nunca volta sozinho — a carta diz quando, e a mesa repõe na mão.
+ */
+export type TokenRefill = "rest" | "longRest" | "manual"
+
+/**
+ * Contador de tokens de uma feature ou carta. O texto continua sendo a regra;
+ * isto só diz à ficha quantos tokens cabem e quando eles voltam.
+ *
+ * Sem `scale` é um **acumulador**: a ficha junta tokens sem teto ("place a
+ * token for each…"), e a reposição zera em vez de encher.
+ */
+export type TokenPool = {
+  scale?: TokenScale
+  /** Metade da escala, arredondada para cima. */
+  isHalved?: boolean
+  minimum?: number
+  refill: TokenRefill
+}
+
 export type SkillCategory = "Ability" | "Force" | "Holocron"
 
 /** Carta de domínio. A ficha referencia por nome. */
@@ -12,11 +36,18 @@ export type Skill = {
   text: string
   /** Arte da carta. Sem ela, a carta mostra o emblema do domínio no lugar. */
   imageUrl?: string
+  tokens?: TokenPool
 }
 
 export type DomainDefinition = {
   name: Domain
   description: string
+}
+
+export type ClassFeature = {
+  name: string
+  text: string
+  tokens?: TokenPool
 }
 
 export type ClassDefinition = {
@@ -25,7 +56,8 @@ export type ClassDefinition = {
   hitPoints: number
   domains: readonly Domain[]
   subclasses: readonly string[]
-  baseFeatures: string
+  /** As features que toda ficha da classe tem, desde o nível 1. */
+  features: readonly ClassFeature[]
   hopeFeature: string
 }
 
@@ -73,6 +105,7 @@ export type SubclassFeature = {
   name: string
   text: string
   modifiers?: readonly FeatureModifier[]
+  tokens?: TokenPool
 }
 
 export type Subclass = {

@@ -18,6 +18,7 @@ import type {
   SkillCategory,
   Subclass,
   Tier,
+  TokenPool,
   Weapon,
 } from "@/types"
 
@@ -37,6 +38,13 @@ const name = z.string().trim().min(1)
 const level = z.number().int().min(1).max(10)
 const tier = z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4)]) satisfies z.ZodType<Tier>
 
+const tokenPool = z.object({
+  scale: z.enum(["tier", "proficiency", "forcewield", ...TRAIT_LIST]).optional(),
+  isHalved: z.boolean().optional(),
+  minimum: z.number().int().min(0).optional(),
+  refill: z.enum(["rest", "longRest", "manual"]),
+}) satisfies z.ZodType<TokenPool>
+
 const skill = z.object({
   name,
   domain: z.enum(DOMAIN_LIST),
@@ -45,6 +53,7 @@ const skill = z.object({
   category: z.enum(SKILL_CATEGORIES),
   text: z.string(),
   imageUrl: z.url().optional(),
+  tokens: tokenPool.optional(),
 }) satisfies z.ZodType<Skill>
 
 const domain = z.object({
@@ -58,7 +67,7 @@ const classDefinition = z.object({
   hitPoints: z.number().int().min(1),
   domains: z.array(z.enum(DOMAIN_LIST)),
   subclasses: z.array(name),
-  baseFeatures: z.string(),
+  features: z.array(z.object({ name, text: z.string(), tokens: tokenPool.optional() })).default([]),
   hopeFeature: z.string(),
 }) satisfies z.ZodType<ClassDefinition>
 
@@ -89,21 +98,22 @@ const subclassFeature = z.object({
   name,
   text: z.string(),
   modifiers: z.array(featureModifier).optional(),
+  tokens: tokenPool.optional(),
 })
 
 const subclass = z.object({
   name,
   className: name,
   spellcastTrait: z.string(),
-  foundation: z.array(subclassFeature),
-  specialization: z.array(subclassFeature),
-  mastery: z.array(subclassFeature),
+  foundation: z.array(subclassFeature).default([]),
+  specialization: z.array(subclassFeature).default([]),
+  mastery: z.array(subclassFeature).default([]),
 }) satisfies z.ZodType<Subclass>
 
 const ancestry = z.object({
   name,
   description: z.string(),
-  features: z.array(z.string()),
+  features: z.array(z.string()).default([]),
   modifiers: z
     .array(z.intersection(featureModifier, z.object({ feature: name })))
     .optional(),
@@ -117,7 +127,7 @@ const community = z.object({
 
 const armorLine = z.object({
   name: z.enum(ARMOR_LINE_NAMES),
-  feature: z.string().nullable(),
+  feature: z.string().nullable().default(null),
   tiers: z
     .array(
       z.object({
@@ -133,7 +143,7 @@ const namedArmor = z.object({
   name,
   line: z.enum(ARMOR_LINE_NAMES),
   tier,
-  feature: z.string().nullable(),
+  feature: z.string().nullable().default(null),
 }) satisfies z.ZodType<NamedArmor>
 
 const weapon = z.object({
@@ -145,8 +155,8 @@ const weapon = z.object({
   damageType: z.enum(DAMAGE_TYPE_LIST),
   damageKind: z.enum(DAMAGE_KIND_LIST),
   burden: z.string(),
-  feature: z.string().nullable(),
-  customizable: z.number().int().min(0).nullable(),
+  feature: z.string().nullable().default(null),
+  customizable: z.number().int().min(0).nullable().default(null),
 }) satisfies z.ZodType<Weapon>
 
 const augment = z.object({

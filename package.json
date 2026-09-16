@@ -16,7 +16,7 @@
     "export:compendium": "node --experimental-strip-types scripts/export-compendium.ts"
   },
   "dependencies": {
-    "@jposawa/ronin-ui": "^0.2.0",
+    "@jposawa/ronin-ui": "^0.2.1",
     "clsx": "^2.1.1",
     "firebase": "^12.18.0",
     "jotai": "^2.20.3",

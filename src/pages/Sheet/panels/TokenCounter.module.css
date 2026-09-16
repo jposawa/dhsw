@@ -1,0 +1,31 @@
+/*
+ * Contador de tokens embaixo do texto da feature ou da carta: faixa fina, com
+ * o traço de cima separando o que é regra do que é estado de mesa.
+ */
+.counter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding-top: var(--space-2);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+.accumulator {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.label {
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-text-muted);
+}
+
+.hint {
+  margin: 0;
+  font-size: var(--text-2xs);
+  color: var(--color-text-dim);
+}

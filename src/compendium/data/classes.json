@@ -11,7 +11,21 @@
       "Warden",
       "Augur"
     ],
-    "baseFeatures": "Determination Dice; Force Patterns;",
+    "features": [
+      {
+        "name": "Determination Dice",
+        "text": "After a *Long Rest*, roll a number of **D4** dice equal to your **Forcewield trait**, with a minimum of **1**, and place them on your character sheet. Clear any unspent dice before rolling.\nYou can spend any number of these dice at any time to aid yourself or an ally within *Far* range, using each die's value to do one of the following:\n- Reduce incoming damage.\n- Add to a roll's result, after the roll.\n- Give that many **Hope** to a character in range.",
+        "tokens": {
+          "scale": "forcewield",
+          "minimum": 1,
+          "refill": "longRest"
+        }
+      },
+      {
+        "name": "Force Patterns",
+        "text": "When you finish a *Long Rest*, choose a number from **1** to **12**. Whenever you roll that number on a **Duality Die**, gain a **Hope** or clear a **Stress**."
+      }
+    ],
     "hopeFeature": "**Force Absorption** — Gaste 3 Hope para reduzir em 1 nível a severidade de um dano recebido, sem marcar Armor Slot."
   },
   {
@@ -26,7 +40,16 @@
       "Operative",
       "Infiltrator"
     ],
-    "baseFeatures": "Hide; Flank Attack;",
+    "features": [
+      {
+        "name": "Hide",
+        "text": "When you move into a location where you aren’t seen by any enemy, you can use an action to become **Hidden** (Any roll against you have disadvantage). As an Agent, when you are Hidden, targets also can’t normally see you, even if they move into line of sight. You are no longer Hidden after you move or attack."
+      },
+      {
+        "name": "Flank Attack",
+        "text": "When you succeed on an attack while you are **Hidden**, or while an ally is within *Melee* range of your target, add a number of **D6** equal to your **Tier** to your damage roll."
+      }
+    ],
     "hopeFeature": "**Opening** — Gaste 3 Hope ao acertar um Flank Attack para somar 3D6 ao dano desse ataque."
   },
   {
@@ -41,7 +64,25 @@
       "Keeper",
       "Wayseeker"
     ],
-    "baseFeatures": "Combat Maneuvers; Raw Channel;",
+    "features": [
+      {
+        "name": "Combat Maneuvers",
+        "text": "After a successful attack roll, you can describe how you outmaneuver your target, then mark a **Stress** to deal them as much **Stress** as **Hit Point** you dealt."
+      },
+      {
+        "name": "Raw Channel",
+        "text": "After a *Long Rest*, place a number of tokens equal to half your **Tier** (rounded up) on your character sheet. Spend a token to move a Domain card from your Loadout into your Vault and choose one:\n- Gain **Hope** equal to the level of the card.\n- Add twice the level of the card to the damage of an attack, as the same damage type.",
+        "tokens": {
+          "scale": "tier",
+          "isHalved": true,
+          "refill": "longRest"
+        }
+      },
+      {
+        "name": "Reflex Attack",
+        "text": "If an adversary attempts to leave your *Melee* range, make an **Agility** Reaction roll against them. On a success, choose one effect below. On a critical success, choose 2:\n- Keep them from moving\n- Deal your used weapon damage\n- Move with them"
+      }
+    ],
     "hopeFeature": "**Volatile Force** — Gaste 3 Hope para rerrolar quantos dados de dano quiser num ataque que cause dano de Força ou `tech`."
   },
   {
@@ -56,7 +97,25 @@
       "Conciliator",
       "Investigator"
     ],
-    "baseFeatures": "Kindle; Holding Gaze;",
+    "features": [
+      {
+        "name": "Kindle",
+        "text": "After a *Long Rest*, place a number of tokens equal to half your **Tier** (rounded up) on your character sheet. Spend a token and describe how you incite your party to give yourself and each of your allies a Kindle die: a **D6**, or a **D8** from level 5.\nAnyone with a Kindle die can roll it and add the result to an *Action Roll*, *Reaction Roll* or *Damage Roll*, or clear that many **Stress**.\nUnspent Kindle dice are cleared when you take a *Long Rest*.",
+        "tokens": {
+          "scale": "tier",
+          "isHalved": true,
+          "refill": "longRest"
+        }
+      },
+      {
+        "name": "Holding Gaze",
+        "text": "After you finish a *Rest*, place a number of tokens equal to your **Tier** on your character sheet. When you fail a **Presence Roll**, you can spend a token and mark a **Stress** to reroll your **Duality Dice** and take the new result.",
+        "tokens": {
+          "scale": "tier",
+          "refill": "rest"
+        }
+      }
+    ],
     "hopeFeature": "**Leverage** — Gaste 3 Hope para dar vantagem na próxima rolagem de um aliado dentro de Close e limpar um Stress dele."
   },
   {
@@ -71,7 +130,16 @@
       "Tracker",
       "Pathfinder"
     ],
-    "baseFeatures": "Target Lock; Ship Expertise;",
+    "features": [
+      {
+        "name": "Target Lock",
+        "text": "Spend a **Hope** and make an attack. On a success, you temporarily make that target your Lock, along with doing damage from the attack. Until your Lock ends or you make a different being your Lock, you gain these benefits:\n- You know what direction they are in.\n- All Damage Rolls you make against them also deal a **Stress**.\n- When you miss an attack against them, you can end your Lock to reroll your Attack and take the new result."
+      },
+      {
+        "name": "Ship Expertise",
+        "text": "You are more used to use Space ships than most of people. You are able to make a ship excel by using your own features with the Ship. While being part of a Ship Crew, consider the following:\n- When using a Ship Weapon, the **Potency** will be the same as your **Proficiency**, instead of half of it\n- Whenever you make a **Handling** **roll**, add your **Finesse score** into it\n- Whenever you make a **Sensor roll**, add your **Instinct score**.\n- Whenever you make a **Processing roll**, add your **Knowledge score**.\n- Whenever you are piloting a Ship, add the ship’s **Handling** to its **Evasion**."
+      }
+    ],
     "hopeFeature": "**Evasive Line** — Gaste 3 Hope para ganhar +2 de Evasion — sua ou da nave que você pilota — até o próximo ataque acertar você, ou até o próximo rest."
   },
   {
@@ -86,7 +154,21 @@
       "Juggernaut",
       "Marshal"
     ],
-    "baseFeatures": "Implacable; Combat Training;",
+    "features": [
+      {
+        "name": "Implacable",
+        "text": "After a *Long Rest*, place a number of tokens equal to half your **Tier** (rounded up) on your character sheet. Spend a token to become **Implacable**: gain an **Implacable** die, a **D4** (a **D6** from level 5), placed with the **1** facing up.\nWhenever you deal one or more **Hit Points** to an adversary, increase the die's value by one. When it would go above its highest number, when the scene ends or when you fall unconscious, remove the die and drop out of **Implacable**.\nWhile **Implacable**, you have the following:\n- Reduce the severity of **Physical Damage** by one threshold (Severe to Major, Major to Minor, Minor to none).\n- Add the current value of the **Implacable** die to your damage rolls.\n- You can't be *Restrained* or *Vulnerable*.",
+        "tokens": {
+          "scale": "tier",
+          "isHalved": true,
+          "refill": "longRest"
+        }
+      },
+      {
+        "name": "Combat Training",
+        "text": "Ignore burden when equipping weapons.\nWhenever you deal Physical Damage, add your level to its value."
+      }
+    ],
     "hopeFeature": "**Frontline** — Gaste 3 Hope para limpar 2 Armor Slots."
   }
 ]

@@ -22,6 +22,7 @@ export const createCharacter = (name = ""): Character => {
     ),
     partyId: null,
     marks: { hp: 0, stress: 0, armor: 0, hope: STARTING_HOPE },
+    tokens: [],
     loadout: [],
     vault: [],
     inventory: [],
@@ -82,6 +83,8 @@ export const normalizeCharacter = (stored: Character): Character => {
       armor: stored.marks?.armor ?? 0,
       hope: stored.marks?.hope ?? 0,
     },
+    // O banco apaga lista vazia: ficha sem token gasto volta sem o campo.
+    tokens: stored.tokens ?? [],
     loadout: stored.loadout ?? [],
     vault: stored.vault ?? [],
     inventory: stored.inventory ?? [],

@@ -10,6 +10,8 @@ import type {
   RestKind,
 } from "@/types"
 
+import { refillTokens } from "./tokens"
+
 /**
  * Descanso: duas ações de downtime da lista do descanso escolhido.
  *
@@ -85,5 +87,7 @@ export const takeRest = (
     }
   }
 
-  return ok({ ...character, marks })
+  // Tokens voltam em todo descanso que os repõe, independente das ações
+  // escolhidas: é o que "After a Rest, place tokens…" diz.
+  return ok(refillTokens({ ...character, marks }, rest, compendium))
 }

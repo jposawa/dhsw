@@ -117,6 +117,17 @@
   color: var(--color-text-dim);
 }
 
+/* Deslogado: no lugar da identidade, o que a conta destrava. */
+.guestNote {
+  margin: 0;
+  padding: var(--space-3);
+  font-size: var(--text-2xs);
+  line-height: 1.5;
+  letter-spacing: var(--tracking-normal);
+  color: var(--color-text-dim);
+  border-bottom: var(--border-width) solid var(--color-border);
+}
+
 /* Prévia: o que a conta está fazendo agora. */
 .preview {
   display: flex;

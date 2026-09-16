@@ -96,7 +96,7 @@
     "mastery": [
       {
         "name": "Flank Exploit",
-        "text": "Your Flank Attack Die becomes **D10**."
+        "text": "Your **Flank Attack** dice become **D10**."
       },
       {
         "name": "Induced Hallucination",

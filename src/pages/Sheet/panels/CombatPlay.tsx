@@ -6,11 +6,14 @@ import { EQUIP_SLOTS, HOPE_MAX, MAX_PROFICIENCY, TRAIT_LIST, TRAIT_VERBS } from 
 import { MarkerTrack, RuleText, StatBlock, ThresholdBar } from "@/fragments"
 import { describeThresholdOrigin, domainColorToken, formatSigned } from "@/helpers"
 import { useCompendium } from "@/hooks"
+import { activeTokenPools, setTokenCount, tokenCount } from "@/rules"
 import type { Character, DerivedStats, EquipSlot, Marks, Result } from "@/types"
 
 import { ActiveWeapon } from "./ActiveWeapon"
 import { EquippedArmorCard } from "./EquippedArmorCard"
+import { IdentityFeatures } from "./IdentityFeatures"
 import { RestDrawer } from "./RestDrawer"
+import { TokenCounter } from "./TokenCounter"
 
 import styles from "./CombatPlay.module.css"
 
@@ -38,6 +41,8 @@ type CombatPlayProps = {
  * 5. **Hope feature e Experiences** — os dois jeitos de gastar Hope.
  * 6. **Equipamento**: armas com Proficiency já nos dados, e a armadura com o
  *    Armor Score e as features.
+ * 7. **Features** de classe, subclasse, espécie e origem — consulta, não toque,
+ *    por isso por último e na largura inteira.
  *
  * Nada aqui muda um máximo: marcar é estado de mesa e grava no toque. O que
  * define o máximo é modo edição, com Salvar. Descansar também é jogada: duas
@@ -72,6 +77,19 @@ export const CombatPlay = ({
   const isPrimaryTwoHanded = weaponOf("primary")?.burden === "Duas mãos"
 
   const needsClass = classDefinition === undefined
+
+  const tokenPools = activeTokenPools(character, derived, compendium)
+  const renderTokens = (key: string) => {
+    const active = tokenPools.find((candidate) => candidate.key === key)
+
+    return active ? (
+      <TokenCounter
+        active={active}
+        count={tokenCount(character, active)}
+        onChange={(next) => onApply(setTokenCount(character, key, next, derived, compendium))}
+      />
+    ) : null
+  }
 
   return (
     <div className={styles.layout}>
@@ -247,6 +265,12 @@ export const CombatPlay = ({
           <EquippedArmorCard derived={derived} />
         </ul>
       </section>
+
+      <IdentityFeatures
+        className={styles.features}
+        character={character}
+        renderTokens={renderTokens}
+      />
 
       <RestDrawer
         isOpen={isResting}

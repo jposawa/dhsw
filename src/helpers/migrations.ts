@@ -33,8 +33,26 @@ export const rosterV1ToV2 = (value: unknown): RosterState => {
         {
           ...character,
           partyId: character.partyId ?? null,
-          schema: CHARACTER_SCHEMA_VERSION,
+          schema: 2,
         },
+      ]
+    }),
+  )
+
+  return { characters, order: roster?.order ?? [] }
+}
+
+/** v2 → v3: `Character.tokens`. Ficha existente começa com todos os contadores no inicial. */
+export const rosterV2ToV3 = (value: unknown): RosterState => {
+  const roster = value as RosterState | null
+
+  const characters = Object.fromEntries(
+    Object.entries(roster?.characters ?? {}).map(([id, stored]) => {
+      const character = stored as Character
+
+      return [
+        id,
+        { ...character, tokens: character.tokens ?? [], schema: CHARACTER_SCHEMA_VERSION },
       ]
     }),
   )

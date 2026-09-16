@@ -11,6 +11,8 @@ type SkillRowProps = {
   skill: Skill
   /** O que se faz com esta carta aqui: guardar, equipar, aprender, esquecer. */
   action: React.ReactNode
+  /** Embaixo do texto: o contador de tokens, quando a carta tem. */
+  children?: React.ReactNode
 }
 
 /**
@@ -25,7 +27,7 @@ type SkillRowProps = {
  * três listas — replicar a linha três vezes por causa de um botão faria as três
  * divergirem no primeiro ajuste.
  */
-export const SkillRow = ({ skill, action }: SkillRowProps) => (
+export const SkillRow = ({ skill, action, children }: SkillRowProps) => (
   <li
     className={styles.row}
     style={{ "--domain-color": domainColorToken(skill.domain) } as React.CSSProperties}
@@ -47,5 +49,6 @@ export const SkillRow = ({ skill, action }: SkillRowProps) => (
     </header>
 
     <RuleText className={styles.body} text={skill.text} />
+    {children}
   </li>
 )

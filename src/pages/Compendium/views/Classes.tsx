@@ -24,7 +24,8 @@ export const CompendiumClasses = () => {
 
   const classes = filterByText(
     compendium.classes,
-    (klass) => `${klass.name} ${klass.baseFeatures} ${klass.hopeFeature}`,
+    (klass) =>
+      `${klass.name} ${klass.features.map((feature) => `${feature.name} ${feature.text}`).join(" ")} ${klass.hopeFeature}`,
     query,
   )
 
@@ -94,7 +95,13 @@ export const CompendiumClasses = () => {
                 </dl>
 
                 <h4 className={styles.label}>FEATURES</h4>
-                <RuleText text={klass.baseFeatures} />
+                <ul className={styles.featureList}>
+                  {klass.features.map((feature) => (
+                    <li key={feature.name} className={styles.feature}>
+                      <RuleText text={`**${feature.name}** — ${feature.text}`} />
+                    </li>
+                  ))}
+                </ul>
 
                 <h4 className={styles.label}>HOPE</h4>
                 <RuleText text={klass.hopeFeature} />

@@ -3,11 +3,20 @@ import React from "react"
 
 import { Switch } from "@/components"
 import { useCompendium } from "@/hooks"
-import { forgetSkill, moveToLoadout, moveToVault } from "@/rules"
+import {
+  activeTokenPools,
+  forgetSkill,
+  moveToLoadout,
+  moveToVault,
+  setTokenCount,
+  tokenCount,
+  tokenPoolKey,
+} from "@/rules"
 import type { Character, DerivedStats, Result, Skill } from "@/types"
 
 import { LearnDrawer } from "./LearnDrawer"
 import { SkillRow } from "./SkillRow"
+import { TokenCounter } from "./TokenCounter"
 
 import styles from "./CardsPanel.module.css"
 
@@ -44,6 +53,22 @@ export const CardsPanel = ({ character, derived, isEditing, onApply }: CardsPane
 
   const loadout = skillsOf(character.loadout)
   const vault = skillsOf(character.vault)
+
+  // Tokens são jogada, gravada no toque: editando, a ficha é rascunho e o
+  // contador sai, para um toque não ir parar no que o Salvar vai sobrescrever.
+  const tokenPools = isEditing ? [] : activeTokenPools(character, derived, compendium)
+  const tokensOf = (skill: Skill) => {
+    const key = tokenPoolKey("card", skill.name, skill.name)
+    const active = tokenPools.find((candidate) => candidate.key === key)
+
+    return active ? (
+      <TokenCounter
+        active={active}
+        count={tokenCount(character, active)}
+        onChange={(next) => onApply(setTokenCount(character, key, next, derived, compendium))}
+      />
+    ) : null
+  }
 
   return (
     <div className={styles.layout}>
@@ -87,7 +112,9 @@ export const CardsPanel = ({ character, derived, isEditing, onApply }: CardsPane
                     GUARDAR
                   </Button>
                 }
-              />
+              >
+                {tokensOf(skill)}
+              </SkillRow>
             ))}
           </ul>
         )}

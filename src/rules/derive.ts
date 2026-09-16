@@ -29,6 +29,7 @@ import type {
   Trait,
 } from "@/types"
 
+import { subclassUpgradesOf } from "./identity"
 import { clampStat, createModifierCollector, resolveStat } from "./stat"
 
 /** Tier é derivado do nível, sempre. Nunca guardado. */
@@ -150,7 +151,6 @@ export const derive = (
   /* ── advancements: cada um com o nível em que foi comprado ───────── */
 
   let domainCardAdvancements = 0
-  let subclassUpgrades = 0
 
   for (const advancement of character.advancements) {
     const source = { kind: "advancement", level: advancement.level } as const
@@ -176,9 +176,6 @@ export const derive = (
       case "domainCard":
         domainCardAdvancements += 1
         break
-      case "subclass":
-        subclassUpgrades += 1
-        break
       default:
         break
     }
@@ -203,6 +200,7 @@ export const derive = (
 
   // Foundation vem com a subclasse; specialization e mastery, com o advancement
   // "subclasse melhorada", na ordem. Core Rulebook, "Leveling Up" (p. 110).
+  const subclassUpgrades = subclassUpgradesOf(character)
   const earnedSubclassFeatures = subclass
     ? [
         ...subclass.foundation,

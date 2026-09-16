@@ -1,0 +1,318 @@
+/*
+ * Classe, subclasse, espécie e origem: o campo que abre a gaveta, as opções
+ * dentro dela, e as features na ficha em mesa.
+ *
+ * Um arquivo para as peças porque é a mesma leitura em três lugares — nome,
+ * meta, texto de regra —, e três cópias divergiriam no primeiro ajuste.
+ */
+
+/* ── campo ───────────────────────────────────────────────────────────────── */
+
+/*
+ * Tem cara de campo e não de botão: mesma caixa do input de nome ao lado.
+ * Reset de fundo, borda e cursor local — ver `STYLING.md` sobre `@layer`.
+ */
+.choiceField {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-1);
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.choiceField:disabled {
+  cursor: not-allowed;
+}
+
+.choiceLabel {
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-text-muted);
+}
+
+.choiceValue {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  min-height: var(--size-touch-target);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-md);
+  color: var(--color-ink);
+  background: var(--color-bg-elevated);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  transition: border-color 0.15s ease;
+}
+
+.choiceValue[data-empty] {
+  color: var(--color-text-dim);
+}
+
+.choiceField:hover:not(:disabled) .choiceValue {
+  border-color: var(--color-chrome);
+}
+
+.choiceField:focus-visible {
+  outline: none;
+}
+
+.choiceField:focus-visible .choiceValue {
+  outline: 2px solid var(--color-chrome-strong);
+  outline-offset: -2px;
+}
+
+.choiceField:disabled .choiceValue {
+  color: var(--color-text-disabled);
+}
+
+.choiceChevron {
+  font-style: normal;
+  color: var(--color-chrome-dim);
+}
+
+.choiceDetail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-dim);
+}
+
+/* ── gaveta ──────────────────────────────────────────────────────────────── */
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* A faixa cai no cromo sem `--domain-color`: espécie não tem domínio. */
+.option,
+.featureCard {
+  min-width: 0;
+  background: var(--color-bg-elevated);
+  border-left: var(--domain-stripe-width) solid var(--domain-color, var(--color-chrome-dim));
+}
+
+.option[data-current] {
+  outline: var(--border-width) solid var(--color-chrome);
+  outline-offset: -1px;
+}
+
+.optionBody,
+.featureCardBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+}
+
+.optionHead {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.optionTitle {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  margin: 0;
+}
+
+.optionName {
+  margin: 0;
+  font-size: var(--text-md);
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.optionMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+}
+
+.currentTag {
+  flex-shrink: 0;
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-chrome-strong);
+  border: var(--border-width) solid var(--color-chrome-dim);
+  border-radius: var(--border-radius-sm);
+}
+
+/* ── resumo ──────────────────────────────────────────────────────────────── */
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.description {
+  font-size: var(--text-sm);
+  color: var(--color-text-dim);
+}
+
+.stats {
+  display: flex;
+  gap: var(--space-1);
+  margin: 0;
+}
+
+.stat {
+  min-width: 5.5rem;
+  padding: var(--space-1) var(--space-2);
+  text-align: center;
+  background: var(--color-surface);
+}
+
+.stat dt {
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-text-muted);
+}
+
+.stat dd {
+  margin: 0;
+  font-size: var(--text-md);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-chrome-strong);
+}
+
+.featureList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Texto e, quando há, o contador de tokens embaixo dele. */
+.featureList > li {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.featureText {
+  font-size: var(--text-sm);
+}
+
+/* ── subclasse ───────────────────────────────────────────────────────────── */
+
+.tiers {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tier {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+/* Ainda não obtida: legível, porque é o que vem, mas claramente atrás. */
+.tier[data-locked] {
+  opacity: 0.5;
+}
+
+.tierLabel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2);
+  margin: 0;
+  font-size: var(--text-2xs);
+  font-weight: 500;
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-chrome-strong);
+}
+
+.tierWhen {
+  font-weight: 400;
+  letter-spacing: var(--tracking-wide);
+  text-transform: none;
+  color: var(--color-text-dim);
+}
+
+/* ── ficha em mesa ───────────────────────────────────────────────────────── */
+
+.identityFeatures {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+/*
+ * Colunas de pelo menos 17rem: uma no celular, até quatro no desktop largo. O
+ * `start` impede a subclasse, mais alta, de esticar os cartões vizinhos.
+ */
+.featureGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  align-items: start;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.empty {
+  margin: 0;
+  font-size: var(--text-xs);
+  color: var(--color-text-dim);
+}
+
+/* ── aviso de troca de classe ────────────────────────────────────────────── */
+
+.confirm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.confirmText {
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--color-text);
+}
+
+.lossList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  padding-left: var(--space-4);
+  font-size: var(--text-sm);
+  color: var(--color-ink);
+}

@@ -14,6 +14,36 @@ const toList = (stored: unknown): unknown => {
   return stored
 }
 
+const isIndexKey = (key: string) => /^\d+$/.test(key)
+
+/**
+ * Desfaz o que o banco faz com listas **dentro** de um registro: um import de
+ * JSON volta com `domains` como `{ "0": …, "1": … }`. Objeto cujas chaves são
+ * todas índices vira lista de novo, na ordem dos índices.
+ *
+ * O outro estrago do banco — `null` e lista vazia somem — é resolvido no
+ * schema, com `default` nos campos que podem chegar assim.
+ */
+const fromStored = (stored: unknown): unknown => {
+  if (Array.isArray(stored)) {
+    return stored.filter((item) => item !== null && item !== undefined).map(fromStored)
+  }
+
+  if (!stored || typeof stored !== "object") {
+    return stored
+  }
+
+  const entries = Object.entries(stored)
+
+  if (entries.length > 0 && entries.every(([key]) => isIndexKey(key))) {
+    return entries
+      .sort(([left], [right]) => Number(left) - Number(right))
+      .map(([, item]) => fromStored(item))
+  }
+
+  return Object.fromEntries(entries.map(([key, item]) => [key, fromStored(item)]))
+}
+
 export type ResolvedCompendium = {
   compendium: Compendium
   origin: CompendiumOrigin
@@ -41,7 +71,7 @@ export const resolveCompendium = (remote: unknown, fallback: Compendium): Resolv
       continue
     }
 
-    const parsed = COMPENDIUM_SCHEMAS[collection].safeParse(toList(stored[collection]))
+    const parsed = COMPENDIUM_SCHEMAS[collection].safeParse(fromStored(toList(stored[collection])))
 
     if (!parsed.success || parsed.data.length === 0) {
       rejected.push(collection)

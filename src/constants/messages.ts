@@ -24,4 +24,7 @@ export const RULE_ERROR_MESSAGES: Readonly<Record<RuleErrorCode, string>> = {
   augmentTierTooHigh: "Este augment exige um Tier maior que o seu.",
   augmentSlotsFull: "Sem slot livre nesta arma. Tire um augment antes.",
   augmentAlreadyInstalled: "Este augment já está instalado nesta arma.",
+  classUnknown: "Classe desconhecida.",
+  subclassNotOfClass: "Esta subclasse não pertence à classe escolhida.",
+  tokenPoolUnknown: "Esta ficha não tem esse contador de tokens.",
 }

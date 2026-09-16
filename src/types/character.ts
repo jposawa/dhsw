@@ -52,6 +52,19 @@ export type Marks = {
   hope: number
 }
 
+/**
+ * Tokens disponíveis agora numa fonte — feature de classe, de subclasse ou
+ * carta. Por ficha: o Implacable da ficha A não é o da ficha B.
+ *
+ * Fonte sem entrada está no valor inicial: cheia, ou zerada se for acumulador.
+ * É o que a reposição faz — apaga a entrada.
+ */
+export type TokenCount = {
+  /** Chave da fonte, de `tokenPoolKey` em `rules/tokens.ts`. */
+  pool: string
+  count: number
+}
+
 export type Character = {
   id: string
   schema: number
@@ -69,6 +82,7 @@ export type Character = {
   traits: Record<Trait, number>
 
   marks: Marks
+  tokens: readonly TokenCount[]
 
   loadout: readonly string[]
   vault: readonly string[]

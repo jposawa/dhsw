@@ -1,17 +1,30 @@
 import { Stepper } from "@jposawa/ronin-ui"
+import React from "react"
 
+import { DomainLabel } from "@/components"
 import { MAX_LEVEL, MIN_LEVEL, TRAIT_LIST } from "@/constants"
 import { ThresholdBar } from "@/fragments"
-import { describeThresholdOrigin, formatSigned } from "@/helpers"
+import { describeThresholdOrigin, domainColorToken, formatSigned } from "@/helpers"
 import { useCompendium } from "@/hooks"
-import type { Character, DerivedStats } from "@/types"
+import { changeClass, changeSubclass, classChangeLoss } from "@/rules"
+import type { Character, DerivedStats, Result } from "@/types"
+
+import { ChoiceDrawer, type ChoiceOption } from "./ChoiceDrawer"
+import { ChoiceField } from "./ChoiceField"
+import { ClassChangeConfirm } from "./ClassChangeConfirm"
+import { ClassSummary } from "./ClassSummary"
+import { OriginFeatures } from "./OriginFeatures"
+import { SubclassTiers } from "./SubclassTiers"
 
 import styles from "./CombatEdit.module.css"
+
+type Picker = "class" | "subclass" | "ancestry" | "community"
 
 type CombatEditProps = {
   draft: Character
   derived: DerivedStats
   onChange: (mutate: (current: Character) => Character) => void
+  onApply: (result: Result<Character>) => void
 }
 
 /**
@@ -26,11 +39,89 @@ type CombatEditProps = {
  * a pessoa vê Evasion e HP mudarem **antes** de confirmar, que é a única razão
  * de se estar nesta tela. Sem isso, escolher classe seria escolher às cegas.
  *
+ * Classe, subclasse, espécie e origem abrem gaveta, com as features de cada
+ * opção: o nome sozinho não diz o que se está escolhendo. Trocar de classe
+ * pede confirmação quando há subclasse ou carta a perder.
+ *
  * Marcador não aparece aqui de propósito — ele é estado de mesa, mora no modo
  * jogo e grava no toque.
  */
-export const CombatEdit = ({ draft, derived, onChange }: CombatEditProps) => {
+export const CombatEdit = ({ draft, derived, onChange, onApply }: CombatEditProps) => {
   const { compendium } = useCompendium()
+
+  const [picker, setPicker] = React.useState<Picker | null>(null)
+  const [pendingClass, setPendingClass] = React.useState<string | null>(null)
+
+  const classDefinition = compendium.classes.find((candidate) => candidate.name === draft.className)
+  const subclass = compendium.subclasses.find(
+    (candidate) => candidate.name === draft.subclass && candidate.className === draft.className,
+  )
+
+  const closePicker = () => {
+    setPicker(null)
+  }
+
+  const chooseClass = (className: string) => {
+    closePicker()
+    const loss = classChangeLoss(draft, className)
+
+    if (loss.subclass !== null || loss.cardCount > 0) {
+      setPendingClass(className)
+
+      return
+    }
+
+    onApply(changeClass(draft, className, compendium))
+  }
+
+  const confirmClass = () => {
+    if (pendingClass) {
+      onApply(changeClass(draft, pendingClass, compendium))
+    }
+
+    setPendingClass(null)
+  }
+
+  const chooseSubclass = (subclassName: string) => {
+    closePicker()
+    onApply(changeSubclass(draft, subclassName, compendium))
+  }
+
+  const chooseAncestry = (ancestry: string) => {
+    closePicker()
+    onChange((current) => ({ ...current, ancestry }))
+  }
+
+  const chooseCommunity = (community: string) => {
+    closePicker()
+    onChange((current) => ({ ...current, community }))
+  }
+
+  const classOptions: ChoiceOption[] = compendium.classes.map((option) => ({
+    name: option.name,
+    stripeColor: domainColorToken(option.domains[0]),
+    meta: option.domains.map((domain) => <DomainLabel key={domain} domain={domain} />),
+    body: <ClassSummary classDefinition={option} isPreview />,
+  }))
+
+  const subclassOptions: ChoiceOption[] = compendium.subclasses
+    .filter((option) => option.className === draft.className)
+    .map((option) => ({
+      name: option.name,
+      stripeColor: classDefinition ? domainColorToken(classDefinition.domains[0]) : undefined,
+      meta: `FORCEWIELDING · ${option.spellcastTrait}`,
+      body: <SubclassTiers subclass={option} />,
+    }))
+
+  const ancestryOptions: ChoiceOption[] = compendium.ancestries.map((option) => ({
+    name: option.name,
+    body: <OriginFeatures description={option.description} features={option.features} />,
+  }))
+
+  const communityOptions: ChoiceOption[] = compendium.communities.map((option) => ({
+    name: option.name,
+    body: <OriginFeatures description={option.description} features={[option.feature]} />,
+  }))
 
   return (
     <div className={styles.layout}>
@@ -43,7 +134,10 @@ export const CombatEdit = ({ draft, derived, onChange }: CombatEditProps) => {
               value={draft.name}
               placeholder="Quem é o personagem"
               onChange={(event) =>
-                onChange((current) => ({ ...current, name: event.target.value }))
+                onChange((current) => ({
+                  ...current,
+                  name: event.target.value,
+                }))
               }
             />
           </label>
@@ -59,84 +153,59 @@ export const CombatEdit = ({ draft, derived, onChange }: CombatEditProps) => {
               value={String(draft.level)}
               canDecrease={draft.level > MIN_LEVEL}
               canIncrease={draft.level < MAX_LEVEL}
-              onDecrease={() => onChange((current) => ({ ...current, level: current.level - 1 }))}
-              onIncrease={() => onChange((current) => ({ ...current, level: current.level + 1 }))}
+              onDecrease={() =>
+                onChange((current) => ({
+                  ...current,
+                  level: current.level - 1,
+                }))
+              }
+              onIncrease={() =>
+                onChange((current) => ({
+                  ...current,
+                  level: current.level + 1,
+                }))
+              }
             />
           </div>
 
           {/* Classe antes de espécie: é ela que move os números. Espécie e origem
               trazem features, não a base de cálculo. */}
-          <label className={styles.field}>
-            <span className={styles.label}>CLASSE</span>
-            <select
-              className={styles.input}
-              value={draft.className ?? ""}
-              onChange={(event) =>
-                onChange((current) => ({
-                  ...current,
-                  className: event.target.value || null,
-                  // Subclasse só vale se pertencer à classe: trocar a classe
-                  // limpa a escolha em vez de deixar um par inválido.
-                  subclass: null,
-                }))
-              }
-            >
-              <option value="">—</option>
-              {compendium.classes.map((classDefinition) => (
-                <option key={classDefinition.name}>{classDefinition.name}</option>
-              ))}
-            </select>
-          </label>
+          <ChoiceField
+            className={styles.field}
+            label="CLASSE"
+            value={draft.className}
+            placeholder="Escolher classe"
+            detail={classDefinition?.domains.map((domain) => (
+              <DomainLabel key={domain} domain={domain} />
+            ))}
+            onOpen={() => setPicker("class")}
+          />
 
-          <label className={styles.fieldEnd}>
-            <span className={styles.label}>SUBCLASSE</span>
-            <select
-              className={styles.input}
-              value={draft.subclass ?? ""}
-              onChange={(event) =>
-                onChange((current) => ({ ...current, subclass: event.target.value || null }))
-              }
-            >
-              <option value="">—</option>
-              {compendium.subclasses.filter(
-                (subclass) => !draft.className || subclass.className === draft.className,
-              ).map((subclass) => (
-                <option key={subclass.name}>{subclass.name}</option>
-              ))}
-            </select>
-          </label>
+          <ChoiceField
+            className={styles.fieldEnd}
+            label="SUBCLASSE"
+            value={draft.subclass}
+            placeholder={draft.className ? "Escolher subclasse" : "Escolha a classe antes"}
+            detail={subclass ? `FORCEWIELDING · ${subclass.spellcastTrait}` : null}
+            isDisabled={!draft.className}
+            onOpen={() => setPicker("subclass")}
+          />
 
-          <label className={styles.field}>
-            <span className={styles.label}>ESPÉCIE</span>
-            <select
-              className={styles.input}
-              value={draft.ancestry ?? ""}
-              onChange={(event) =>
-                onChange((current) => ({ ...current, ancestry: event.target.value || null }))
-              }
-            >
-              <option value="">—</option>
-              {compendium.ancestries.map((ancestry) => (
-                <option key={ancestry.name}>{ancestry.name}</option>
-              ))}
-            </select>
-          </label>
+          <ChoiceField
+            className={styles.field}
+            label="ESPÉCIE"
+            value={draft.ancestry}
+            placeholder="Escolher espécie"
+            onOpen={() => setPicker("ancestry")}
+          />
 
-          <label className={styles.fieldEnd}>
-            <span className={styles.label}>ORIGEM</span>
-            <select
-              className={styles.input}
-              value={draft.community ?? ""}
-              onChange={(event) =>
-                onChange((current) => ({ ...current, community: event.target.value || null }))
-              }
-            >
-              <option value="">—</option>
-              {compendium.communities.map((community) => (
-                <option key={community.name}>{community.name}</option>
-              ))}
-            </select>
-          </label>
+          <ChoiceField
+            className={styles.fieldEnd}
+            label="ORIGEM"
+            value={draft.community}
+            placeholder="Escolher origem"
+            onOpen={() => setPicker("community")}
+          />
         </fieldset>
       </section>
 
@@ -204,13 +273,19 @@ export const CombatEdit = ({ draft, derived, onChange }: CombatEditProps) => {
                   onDecrease={() =>
                     onChange((current) => ({
                       ...current,
-                      traits: { ...current.traits, [trait]: current.traits[trait] - 1 },
+                      traits: {
+                        ...current.traits,
+                        [trait]: current.traits[trait] - 1,
+                      },
                     }))
                   }
                   onIncrease={() =>
                     onChange((current) => ({
                       ...current,
-                      traits: { ...current.traits, [trait]: current.traits[trait] + 1 },
+                      traits: {
+                        ...current.traits,
+                        [trait]: current.traits[trait] + 1,
+                      },
                     }))
                   }
                 />
@@ -223,6 +298,47 @@ export const CombatEdit = ({ draft, derived, onChange }: CombatEditProps) => {
         </ul>
       </section>
 
+      <ChoiceDrawer
+        isOpen={picker === "class"}
+        title="Escolher classe"
+        options={classOptions}
+        current={draft.className}
+        onChoose={chooseClass}
+        onClose={closePicker}
+      />
+      <ChoiceDrawer
+        isOpen={picker === "subclass"}
+        title={`Subclasse de ${draft.className ?? ""}`}
+        options={subclassOptions}
+        current={draft.subclass}
+        onChoose={chooseSubclass}
+        onClose={closePicker}
+      />
+      <ChoiceDrawer
+        isOpen={picker === "ancestry"}
+        title="Escolher espécie"
+        options={ancestryOptions}
+        current={draft.ancestry}
+        onChoose={chooseAncestry}
+        onClose={closePicker}
+      />
+      <ChoiceDrawer
+        isOpen={picker === "community"}
+        title="Escolher origem"
+        options={communityOptions}
+        current={draft.community}
+        onChoose={chooseCommunity}
+        onClose={closePicker}
+      />
+
+      <ClassChangeConfirm
+        targetClass={pendingClass}
+        loss={
+          pendingClass ? classChangeLoss(draft, pendingClass) : { subclass: null, cardCount: 0 }
+        }
+        onConfirm={confirmClass}
+        onCancel={() => setPendingClass(null)}
+      />
     </div>
   )
 }

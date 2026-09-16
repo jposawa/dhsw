@@ -2,7 +2,7 @@ import { atom } from "jotai"
 import { atomWithStorage } from "jotai/utils"
 
 import { STORAGE_KEYS, STORAGE_VERSIONS } from "@/constants"
-import { rosterV1ToV2 } from "@/helpers"
+import { rosterV1ToV2, rosterV2ToV3 } from "@/helpers"
 import { createVersionedStorage } from "@/services"
 import type { Character, RosterState } from "@/types"
 
@@ -13,6 +13,7 @@ const rosterStorage = createVersionedStorage<RosterState>({
   migrations: {
     // Indice = versao de origem. Acumulativas: nenhuma sai daqui depois.
     1: rosterV1ToV2,
+    2: rosterV2ToV3,
   },
 })
 

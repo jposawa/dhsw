@@ -1,8 +1,8 @@
-import type { Level, Tier, Trait } from './domain'
-import type { ResolvedStat } from './modifier'
+import type { Level, Tier, Trait } from "./domain"
+import type { ResolvedStat } from "./modifier"
 
-export type InventoryEntryKind = 'weapon' | 'armor' | 'item' | 'consumable'
-export type EquipSlot = 'primary' | 'secondary' | 'armor'
+export type InventoryEntryKind = "weapon" | "armor" | "item" | "consumable"
+export type EquipSlot = "primary" | "secondary" | "armor"
 
 export type InventoryEntry = {
   id: string
@@ -12,21 +12,24 @@ export type InventoryEntry = {
   isEquipped: boolean
   slot: EquipSlot | null
   quantity: number
-  /** Nomes de módulo instalados nesta instância — o sabre A com Kyber Bleed e o B sem. */
+  /**
+   * Augments instalados nesta arma, por nome — só com a regra da casa "Armas
+   * customizáveis". Por instância: o blaster A com Scope e o B sem.
+   */
   installedModules: readonly string[]
   nickname: string | null
 }
 
 export type AdvancementKind =
-  | 'trait'
-  | 'hp'
-  | 'stress'
-  | 'evasion'
-  | 'proficiency'
-  | 'subclass'
-  | 'multiclass'
-  | 'domainCard'
-  | 'experience'
+  | "trait"
+  | "hp"
+  | "stress"
+  | "evasion"
+  | "proficiency"
+  | "subclass"
+  | "multiclass"
+  | "domainCard"
+  | "experience"
 
 export type Advancement = {
   level: Level
@@ -49,6 +52,19 @@ export type Marks = {
   hope: number
 }
 
+/**
+ * Tokens disponíveis agora numa fonte — feature de classe, de subclasse ou
+ * carta. Por ficha: o Implacable da ficha A não é o da ficha B.
+ *
+ * Fonte sem entrada está no valor inicial: cheia, ou zerada se for acumulador.
+ * É o que a reposição faz — apaga a entrada.
+ */
+export type TokenCount = {
+  /** Chave da fonte, de `tokenPoolKey` em `rules/tokens.ts`. */
+  pool: string
+  count: number
+}
+
 export type Character = {
   id: string
   schema: number
@@ -66,10 +82,17 @@ export type Character = {
   traits: Record<Trait, number>
 
   marks: Marks
+  tokens: readonly TokenCount[]
 
   loadout: readonly string[]
   vault: readonly string[]
   inventory: readonly InventoryEntry[]
+
+  /**
+   * A party a que a ficha pertence, ou `null`. Campo, e nao entidade a parte,
+   * porque a relacao e 1:N de verdade — ver `types/party.ts`.
+   */
+  partyId: string | null
 
   /** Histórico, não resumo: dá para mostrar a progressão e desfazer o último nível. */
   advancements: readonly Advancement[]
@@ -82,7 +105,13 @@ export type HouseRules = {
   hasTwoCardsPerLevel: boolean
   hasEvasionFromTraits: boolean
   roundsEvasionUp: boolean
-  loadoutSize: '5' | '3+tier' | '4+tier'
+  loadoutSize: "5" | "3+tier" | "4+tier"
+  /** Multiclasse já no Tier 2, gastando os dois advancements do nível. */
+  allowsEarlyMulticlass: boolean
+  /** Dano físico, energético e térmico no lugar de `phy`/`tech`. */
+  hasGranularDamageTypes: boolean
+  /** Toda arma aceita augments em Tier + 1 slots. */
+  hasCustomWeapons: boolean
 }
 
 /** Armadura equipada, já resolvida contra a linha e o tier. */
@@ -94,9 +123,8 @@ export type EquippedArmor = {
   baseScore: number
   majorBase: number
   severeBase: number
-  evasionModifier: number
-  agilityModifier: number
-  feature: string | null
+  /** Nomes em `features`: o da linha e o da peça, quando existem. */
+  features: readonly string[]
 }
 
 /**
@@ -118,6 +146,13 @@ export type DerivedStats = {
   /** Cartas esperadas no nível atual, conforme a regra da casa. */
   expectedCards: number
   equippedArmor: EquippedArmor | null
-  /** Sem armadura equipada: vale Bare Bones. Não é erro, é escolha de build. */
-  isBareBones: boolean
+  /** Sem armadura vestida: Armor Score 0, Major = nível, Severe = 2 × nível. */
+  isUnarmored: boolean
+  /** Sem armadura e com a carta Bare Bones no Loadout: vale a base da carta. */
+  hasBareBones: boolean
+  /**
+   * O atributo de Forcewielding (o Spellcast trait do livro), vindo da
+   * subclasse. `null` quando a subclasse não tem, ou não há subclasse.
+   */
+  spellcastTrait: Trait | null
 }

@@ -1,0 +1,72 @@
+.figure {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+}
+
+/*
+ * Uma faixa contínua: o fundo do pai é a cor do fio, e o `gap` de 1px deixa
+ * ele aparecer entre as partes. Cinco peças lidas como uma régua só.
+ */
+.bar {
+  display: flex;
+  align-items: stretch;
+  gap: var(--border-width);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: var(--color-border);
+  border: var(--border-width) solid var(--color-border);
+}
+
+/* As três faixas dividem a sobra igualmente; as marcas têm a largura do número. */
+.step {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  flex-grow: 1;
+  flex-basis: 0;
+  min-width: 0;
+  padding: var(--space-2);
+  background: var(--color-bg-elevated);
+}
+
+.name {
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-text-muted);
+}
+
+.cost {
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-dim);
+}
+
+/* O degrau que mata leva o cromo no nome, sem gastar cor de domínio. */
+.severe .name {
+  color: var(--color-chrome-strong);
+}
+
+/* A marca fica sobre a divisa: fundo mais claro e peso de número. */
+.mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  min-width: 2.75rem;
+  padding: 0 var(--space-2);
+  font-size: var(--text-lg);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-chrome-strong);
+  background: var(--color-surface);
+}
+
+.origin {
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-dim);
+}

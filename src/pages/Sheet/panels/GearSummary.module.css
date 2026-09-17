@@ -1,0 +1,15 @@
+.meta {
+  margin: 0;
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+}
+
+/* Classe dobrada: o RuleText tem o próprio tamanho numa classe de mesma
+   especificidade, e quem venceria dependeria da ordem dos CSS no bundle. */
+.body.body {
+  max-width: var(--content-max-width);
+  font-size: var(--text-xs);
+  overflow-wrap: break-word;
+}

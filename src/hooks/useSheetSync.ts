@@ -1,10 +1,17 @@
-import { useAtom, useAtomValue, useSetAtom, useStore } from 'jotai'
-import React from 'react'
+import { useAtom, useAtomValue, useSetAtom, useStore } from "jotai"
+import React from "react"
 
-import { findUnsyncedCharacters, mergeRosters } from '@/helpers'
-import { createSheet, fetchSheetsForUser, saveSheet } from '@/services'
-import { authAtom, rosterAtom, sheetRolesAtom, syncStatusAtom } from '@/states'
-import type { SheetRoleId } from '@/types'
+import { describeError, findUnsyncedCharacters, mergeRosters } from "@/helpers"
+import { createSheet, fetchSheetsForUser, saveSheet } from "@/services"
+import {
+  authAtom,
+  rosterAtom,
+  sheetRolesAtom,
+  syncErrorAtom,
+  syncStatusAtom,
+  unsyncedSheetIdsAtom,
+} from "@/states"
+import type { SheetRoleId } from "@/types"
 
 /**
  * Escrita segura no dedo. Segurar um stepper dispara vinte mudanças de estado;
@@ -19,43 +26,88 @@ const WRITE_DEBOUNCE_MS = 800
  * app funciona inteiro sem rede, que é a premissa do produto: mesa, celular,
  * sala mal iluminada, internet ruim.
  *
- * Por isso o fluxo é: puxa no login, mescla, adota o que só existia local, e
- * daí em diante empurra o que mudar, com debounce. Nunca o contrário — o
- * remoto não manda na sessão.
+ * Fluxo: puxa no login, mescla, adota o que só existia local, e daí em diante
+ * empurra o que mudar, com debounce. Nunca o contrário — o remoto não manda
+ * na sessão em andamento.
  */
 export const useSheetSync = () => {
   const { status, user } = useAtomValue(authAtom)
   const [roster, setRoster] = useAtom(rosterAtom)
   const [syncStatus, setSyncStatus] = useAtom(syncStatusAtom)
   const setSheetRoles = useSetAtom(sheetRolesAtom)
+  const setSyncError = useSetAtom(syncErrorAtom)
+  const setUnsyncedSheetIds = useSetAtom(unsyncedSheetIdsAtom)
 
   // O store lê o roster atual dentro do efeito sem assiná-lo. Assinar faria
   // o pull depender do roster e criaria um laço: puxa, mescla, muda o
   // roster, puxa de novo.
   const store = useStore()
 
-  /** O que o servidor já tem, e em que versão. Evita reescrever o que não mudou. */
+  /**
+   * Três estados de sincronização, e eles são independentes de propósito.
+   *
+   * `syncStatus` é **só para a UI** e vale "como foi a última operação". Ele
+   * não pode ser a condição de empurrar: era, e bastava uma falha — de pull
+   * ou de uma escrita qualquer — para o app parar de salvar em silêncio pelo
+   * resto da sessão. Quem libera a escrita é `pulledFor`.
+   */
+  const pulledFor = React.useRef<string | null>(null)
+  /** O que o servidor já conhece. Decide entre `createSheet` e `saveSheet`. */
+  const remoteIds = React.useRef<Set<string>>(new Set())
+  /** Última versão cuja escrita foi despachada. Evita reescrever o que não mudou. */
   const pushedAt = React.useRef<Record<string, number>>({})
-  const syncedUserId = React.useRef<string | null>(null)
+  /** Ids com escrita no ar. Uma ficha só sai de "salvando" quando volta. */
+  const inFlight = React.useRef<Set<string>>(new Set())
+
+  /**
+   * Publica quais fichas ainda não chegaram ao servidor.
+   *
+   * Lê o roster pelo store em vez de assiná-lo: quem chama já roda dentro do
+   * efeito de escrita, que depende do roster — assinar aqui só acrescentaria
+   * uma identidade nova a cada mudança e remontaria o efeito à toa.
+   */
+  const publishUnsynced = React.useCallback(() => {
+    const pending = new Set<string>()
+
+    for (const character of Object.values(store.get(rosterAtom).characters)) {
+      const isDispatched = pushedAt.current[character.id] === character.updatedAt
+
+      if (!isDispatched || inFlight.current.has(character.id)) {
+        pending.add(character.id)
+      }
+    }
+
+    // Só troca o atom quando o conjunto muda de verdade — um Set novo a cada
+    // tecla digitada rerenderizaria toda tela que lê daqui.
+    setUnsyncedSheetIds((current) => {
+      const isSame =
+        current.size === pending.size && [...pending].every((id) => current.has(id))
+
+      return isSame ? current : pending
+    })
+  }, [store, setUnsyncedSheetIds])
 
   /* ── 1. Puxar e adotar, uma vez por login ────────────────────────────── */
 
   React.useEffect(() => {
-    if (status !== 'signed-in' || !user) {
-      syncedUserId.current = null
+    if (status !== "signed-in" || !user) {
+      pulledFor.current = null
+      remoteIds.current = new Set()
+      pushedAt.current = {}
+      inFlight.current = new Set()
+      setUnsyncedSheetIds(new Set())
 
       return
     }
 
-    if (syncedUserId.current === user.userId) {
+    if (pulledFor.current === user.userId) {
       return
     }
 
-    syncedUserId.current = user.userId
     let isCancelled = false
 
     const pull = async () => {
-      setSyncStatus('pulling')
+      setSyncStatus("pulling")
 
       try {
         const remote = await fetchSheetsForUser(user.userId)
@@ -67,6 +119,7 @@ export const useSheetSync = () => {
         const roles: Record<string, SheetRoleId> = {}
         for (const entry of remote) {
           roles[entry.character.id] = entry.roleId
+          remoteIds.current.add(entry.character.id)
           pushedAt.current[entry.character.id] = entry.character.updatedAt
         }
 
@@ -78,11 +131,12 @@ export const useSheetSync = () => {
         // Fichas criadas antes do login — ou offline — não têm linha de
         // acesso, e sem ela a regra de segurança recusa a escrita. Adotar é
         // criá-las como se fossem novas, com esta conta como autora.
-        const orphans = findUnsyncedCharacters(merged, new Set(Object.keys(roles)))
+        const orphans = findUnsyncedCharacters(merged, remoteIds.current)
 
         for (const orphan of orphans) {
           await createSheet(orphan, user.userId)
-          roles[orphan.id] = 'author'
+          roles[orphan.id] = "author"
+          remoteIds.current.add(orphan.id)
           pushedAt.current[orphan.id] = orphan.updatedAt
         }
 
@@ -92,11 +146,20 @@ export const useSheetSync = () => {
 
         setRoster(merged)
         setSheetRoles(roles)
-        setSyncStatus('ready')
-      } catch {
+        setSyncError(null)
+        setSyncStatus("ready")
+      } catch (error) {
         if (!isCancelled) {
-          // Falhar aqui não bloqueia nada: o roster local continua servindo.
-          setSyncStatus('error')
+          // Não bloqueia nada: o roster local continua servindo, e o que já
+          // se sabe do servidor continua valendo para as escritas seguintes.
+          setSyncError(`leitura: ${describeError(error)}`)
+          setSyncStatus("error")
+        }
+      } finally {
+        // Marcado mesmo em falha: sem isto, um pull que falhou tentaria de
+        // novo a cada render, e a escrita nunca destravaria.
+        if (!isCancelled) {
+          pulledFor.current = user.userId
         }
       }
     }
@@ -106,38 +169,72 @@ export const useSheetSync = () => {
     return () => {
       isCancelled = true
     }
-  }, [status, user, store, setRoster, setSheetRoles, setSyncStatus])
+  }, [
+    status,
+    user,
+    store,
+    setRoster,
+    setSheetRoles,
+    setSyncError,
+    setSyncStatus,
+    setUnsyncedSheetIds,
+  ])
 
   /* ── 2. Empurrar o que mudou, com debounce ───────────────────────────── */
 
   React.useEffect(() => {
-    if (syncStatus !== 'ready' || !user) {
+    if (!user || pulledFor.current !== user.userId) {
       return
     }
 
+    publishUnsynced()
+
     const timer = window.setTimeout(() => {
       for (const character of Object.values(roster.characters)) {
-        const lastPushed = pushedAt.current[character.id]
-
-        if (lastPushed === character.updatedAt) {
+        if (pushedAt.current[character.id] === character.updatedAt) {
           continue
         }
 
         // Ficha que o servidor nunca viu precisa de `createSheet`: é ela que
         // escreve a linha de acesso, e sem linha de acesso a regra de
         // segurança recusa qualquer escrita depois.
-        const isNew = lastPushed === undefined
+        const isNew = !remoteIds.current.has(character.id)
+        const previousPush = pushedAt.current[character.id]
 
-        // Marcado antes de resolver: se a escrita falhar, a próxima mudança
-        // reenvia. Marcar depois abriria janela para empurrar duas vezes.
+        // Marcado antes de resolver, para o debounce seguinte não despachar a
+        // mesma versão de novo enquanto esta ainda está no ar.
         pushedAt.current[character.id] = character.updatedAt
+        inFlight.current.add(character.id)
 
-        void (isNew ? createSheet(character, user.userId) : saveSheet(character)).catch(
-          () => setSyncStatus('error'),
-        )
+        const write = isNew
+          ? createSheet(character, user.userId).then(() => {
+              remoteIds.current.add(character.id)
+            })
+          : saveSheet(character)
+
+        void write
+          .catch((error: unknown) => {
+            // Desfaz a marca para a próxima mudança reenviar. Sem isto, uma
+            // escrita perdida só voltaria a ser tentada na sessão seguinte.
+            if (previousPush === undefined) {
+              delete pushedAt.current[character.id]
+            } else {
+              pushedAt.current[character.id] = previousPush
+            }
+
+            setSyncError(`escrita: ${describeError(error)}`)
+            setSyncStatus("error")
+          })
+          .finally(() => {
+            inFlight.current.delete(character.id)
+            publishUnsynced()
+          })
       }
     }, WRITE_DEBOUNCE_MS)
 
     return () => window.clearTimeout(timer)
-  }, [roster, syncStatus, user, setSyncStatus])
+    // `syncStatus` entra como dependencia, nao como trava: e o que faz o
+    // efeito rodar de novo quando o pull termina. Quem libera a escrita
+    // continua sendo `pulledFor`.
+  }, [roster, syncStatus, user, publishUnsynced, setSyncError, setSyncStatus])
 }

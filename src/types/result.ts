@@ -13,13 +13,28 @@ export type Result<TValue> =
   | { ok: false; code: RuleErrorCode; detail?: string }
 
 export type RuleErrorCode =
-  | 'loadout_full'
-  | 'not_enough_stress'
-  | 'skill_unknown'
-  | 'skill_already_in_loadout'
-  | 'armor_slot_taken'
-  | 'weapon_slot_taken'
-  | 'module_tier_too_high'
-  | 'no_module_slots'
-  | 'max_level_reached'
-  | 'entry_not_found'
+  | "loadoutFull"
+  | "notEnoughStress"
+  | "skillUnknown"
+  | "skillAlreadyInLoadout"
+  | "skillNotLearnable"
+  | "armorSlotTaken"
+  | "weaponSlotTaken"
+  | "handsFull"
+  | "entryNotFound"
+  | "entryNotEquippable"
+  | "experienceNameMissing"
+  | "experienceDuplicate"
+  | "experienceNotFound"
+  | "downtimeNeedsTwoMoves"
+  | "downtimeMoveUnknown"
+  | "downtimeRollMissing"
+  | "customWeaponsOff"
+  | "weaponNotCustomizable"
+  | "augmentUnknown"
+  | "augmentTierTooHigh"
+  | "augmentSlotsFull"
+  | "augmentAlreadyInstalled"
+  | "classUnknown"
+  | "subclassNotOfClass"
+  | "tokenPoolUnknown"

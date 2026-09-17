@@ -1,16 +1,20 @@
 /** Chaves e versoes do armazenamento local. A implementacao vive em `services/`. */
 
 export const STORAGE_KEYS = {
-  roster: 'dhsw:roster',
-  houseRules: 'dhsw:houseRules',
-  theme: 'dhsw:theme',
+  roster: "dhsw:roster",
+  houseRules: "dhsw:houseRules",
+  theme: "dhsw:theme",
+  navCollapsed: "dhsw:navCollapsed",
+  compendiumView: "dhsw:compendiumView",
 } as const
 
 /** Versao do formato de cada chave. Sobe junto com a migracao correspondente. */
 export const STORAGE_VERSIONS = {
-  roster: 1,
-  houseRules: 1,
+  /** v2: `Character.partyId`. v3: `Character.tokens`. */
+  roster: 3,
+  /** v2: multiclasse no Tier 2, tipos de dano granulares, armas customizáveis. */
+  houseRules: 2,
 } as const
 
 /** Versao do formato de uma ficha. Toda escrita — local ou remota — carrega isto. */
-export const CHARACTER_SCHEMA_VERSION = 1
+export const CHARACTER_SCHEMA_VERSION = 3

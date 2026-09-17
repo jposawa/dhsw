@@ -1,8 +1,8 @@
-import { get } from 'firebase/database'
+import { get } from "firebase/database"
 
-import { DB_PATHS, DEFAULT_CONFIG } from '@/constants'
-import { dhswRef } from '@/lib/firebase'
-import type { RemoteConfig } from '@/types'
+import { DB_PATHS, DEFAULT_CONFIG } from "@/constants"
+import { dhswRef } from "@/lib/firebase"
+import type { RemoteConfig } from "@/types"
 
 /**
  * Config remota, de `/dhsw/<env>/config`.

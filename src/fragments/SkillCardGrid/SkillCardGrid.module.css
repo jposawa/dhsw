@@ -1,0 +1,30 @@
+/*
+ * Duas por fileira no celular: a grade é para varrer, e a carta se lê aberta.
+ * No desktop a coluna nasce e morre conforme a largura.
+ */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/*
+ * A proporção da carta física (5:7) é decidida aqui, no item: a altura sai da
+ * largura da coluna. `min-height: 0` desliga o tamanho mínimo automático do
+ * item de grade, que deixaria o texto mandar na altura da fileira.
+ */
+.item {
+  display: grid;
+  aspect-ratio: 5 / 7;
+  min-width: 0;
+  min-height: 0;
+}
+
+@media (min-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(14rem, 1fr));
+  }
+}

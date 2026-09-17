@@ -1,10 +1,42 @@
+/*
+ * Rótulo e contagem em cima, pips embaixo.
+ *
+ * Tentei pôr os dois na mesma linha no desktop e foi pior: o rótulo comia a
+ * largura e os pips caíam um por linha. A trilha vive numa coluna estreita
+ * agora — a decisão de largura é de quem a posiciona, não dela.
+ */
 .track {
   display: flex;
   flex-direction: column;
 }
 
+/* Sem `gap`: o alvo de toque do pip já é 44px e o quadrado pintado é menor,
+   então a folga entre dois quadrados vem do próprio alvo. Somar um `gap` por
+   cima espalhava a trilha até ela parecer solta do rótulo. O quadrado fica no
+   início do alvo (ver `Pip`), então a trilha alinha com o rótulo. */
 .pips {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-1);
+}
+
+.empty {
+  margin: 0;
+  font-size: var(--text-xs);
+  color: var(--color-text-dim);
+}
+
+/*
+ * Em colunas: N linhas fixas e as colunas nascendo conforme o máximo. O pip
+ * perde largura (40px) para doze caberem em quatro colunas numa célula de meia
+ * tela; a altura de toque continua 44px, que é o que o dedo precisa.
+ */
+.track[data-columns] .pips {
+  display: grid;
+  grid-template-rows: repeat(var(--track-rows), auto);
+  grid-auto-flow: column;
+  justify-content: start;
+}
+
+.track[data-columns] .pips > * {
+  width: 40px;
 }

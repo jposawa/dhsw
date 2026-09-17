@@ -1,9 +1,9 @@
-import { initializeApp, type FirebaseApp } from 'firebase/app'
-import { getAuth, type Auth } from 'firebase/auth'
-import { getDatabase, ref, type DatabaseReference } from 'firebase/database'
+import { initializeApp, type FirebaseApp } from "firebase/app"
+import { getAuth, type Auth } from "firebase/auth"
+import { getDatabase, ref, type DatabaseReference } from "firebase/database"
 
-import { DATABASE_ENVIRONMENTS, DATABASE_ROOT } from '@/constants'
-import type { DatabaseEnvironment } from '@/types'
+import { DATABASE_ENVIRONMENTS, DATABASE_ROOT } from "@/constants"
+import type { DatabaseEnvironment } from "@/types"
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -15,7 +15,7 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 }
 
-const EXPECTED_PROJECT_ID = 'jpdh-88a6c'
+const EXPECTED_PROJECT_ID = "jpdh-88a6c"
 
 const resolveEnvironment = (): DatabaseEnvironment => {
   const configured = import.meta.env.VITE_DATABASE_TARGET_ENV
@@ -57,14 +57,14 @@ if (import.meta.env.DEV && firebaseConfig.projectId !== EXPECTED_PROJECT_ID) {
   console.warn(
     [
       `Firebase apontando para "${firebaseConfig.projectId}", esperado "${EXPECTED_PROJECT_ID}".`,
-      'Um .env copiado do ficha-pet aponta para outra instância. Ver CONFIG.md.',
-    ].join(' '),
+      "Um .env copiado do ficha-pet aponta para outra instância. Ver CONFIG.md.",
+    ].join(" "),
   )
 }
 
 /** Única forma de obter uma ref. Sempre ancorada em /dhsw/<env>. */
 export const dhswRef = (path: string): DatabaseReference => {
-  if (path.startsWith('/')) {
+  if (path.startsWith("/")) {
     throw new Error(
       `Caminho deve ser relativo à raiz ${DATABASE_PREFIX}, recebido "${path}"`,
     )

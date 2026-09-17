@@ -1,4 +1,4 @@
-import type { HomeConfig, NavItemOverride } from './navigation'
+import type { HomeConfig, NavItemOverride } from "./navigation"
 
 /**
  * Config remota, lida de `/dhsw/<env>/config`. Ver CONFIG.md.
@@ -26,4 +26,4 @@ export type RemoteConfig = {
  * `default` nao e "vazio": e o padrao do codigo, que ja e config valida.
  * O app abre e funciona nele — o remoto e override, nao requisito.
  */
-export type ConfigStatus = 'default' | 'loading' | 'loaded' | 'error'
+export type ConfigStatus = "default" | "loading" | "loaded" | "error"

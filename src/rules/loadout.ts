@@ -1,6 +1,7 @@
-import { SKILLS } from '@/compendium'
-import { fail, ok } from '@/helpers'
-import type { Character, DerivedStats, Result } from '@/types'
+import { fail, ok } from "@/helpers"
+import type { Character, Compendium, DerivedStats, Result } from "@/types"
+
+import { learnableSkills } from "./domainAccess"
 
 /**
  * Loadout e vault, conforme o SRD.
@@ -12,8 +13,8 @@ import type { Character, DerivedStats, Result } from '@/types'
  * mensagem e nunca reimplementa a condição. STANDARDS.md.
  */
 
-const findSkill = (skillName: string) =>
-  SKILLS.find((skill) => skill.name === skillName)
+const findSkill = (compendium: Compendium, skillName: string) =>
+  compendium.skills.find((skill) => skill.name === skillName)
 
 export const isKnown = (character: Character, skillName: string): boolean =>
   character.loadout.includes(skillName) || character.vault.includes(skillName)
@@ -24,30 +25,31 @@ export const moveToLoadout = (
   derived: DerivedStats,
   skillName: string,
   options: { isFreeSwap: boolean },
+  compendium: Compendium,
 ): Result<Character> => {
-  const skill = findSkill(skillName)
+  const skill = findSkill(compendium, skillName)
 
   if (!skill) {
-    return fail('skill_unknown', skillName)
+    return fail("skillUnknown", skillName)
   }
 
   if (character.loadout.includes(skillName)) {
-    return fail('skill_already_in_loadout', skillName)
+    return fail("skillAlreadyInLoadout", skillName)
   }
 
   if (!character.vault.includes(skillName)) {
-    return fail('skill_unknown', skillName)
+    return fail("skillUnknown", skillName)
   }
 
   if (character.loadout.length >= derived.loadoutMax.total) {
-    return fail('loadout_full')
+    return fail("loadoutFull")
   }
 
   const stressCost = options.isFreeSwap ? 0 : skill.recallCost
   const availableStress = derived.stressMax.total - character.marks.stress
 
   if (stressCost > availableStress) {
-    return fail('not_enough_stress', `Recall Cost ${skill.recallCost}`)
+    return fail("notEnoughStress", `Recall Cost ${skill.recallCost}`)
   }
 
   return ok({
@@ -61,7 +63,7 @@ export const moveToLoadout = (
 /** Loadout → vault. Sempre livre: guardar carta não custa nada no SRD. */
 export const moveToVault = (character: Character, skillName: string): Result<Character> => {
   if (!character.loadout.includes(skillName)) {
-    return fail('skill_unknown', skillName)
+    return fail("skillUnknown", skillName)
   }
 
   return ok({
@@ -72,9 +74,17 @@ export const moveToVault = (character: Character, skillName: string): Result<Cha
 }
 
 /** Aprender carta nova: entra no vault. */
-export const learnSkill = (character: Character, skillName: string): Result<Character> => {
-  if (!findSkill(skillName)) {
-    return fail('skill_unknown', skillName)
+export const learnSkill = (
+  character: Character,
+  skillName: string,
+  compendium: Compendium,
+): Result<Character> => {
+  if (!findSkill(compendium, skillName)) {
+    return fail("skillUnknown", skillName)
+  }
+
+  if (!learnableSkills(character, compendium).some((skill) => skill.name === skillName)) {
+    return fail("skillNotLearnable", skillName)
   }
 
   if (isKnown(character, skillName)) {

@@ -1,49 +1,57 @@
-import { useAtom, useAtomValue } from 'jotai'
-import React from 'react'
-import { Navigate, useParams } from 'react-router-dom'
+import { Button, Modal, Tabs } from "@jposawa/ronin-ui"
+import { useAtom, useAtomValue, useSetAtom } from "jotai"
+import React from "react"
+import { Navigate, useParams } from "react-router-dom"
 
-import { ANCESTRIES, CLASSES, COMMUNITIES, SUBCLASSES } from '@/compendium'
-import { SectionLabel, StepRule, Stepper } from '@/components'
-import { MAX_LEVEL, MIN_LEVEL, ROUTES, SHEET_TABS, TRAIT_LIST } from '@/constants'
-import { MarkerTrack, StatBlock } from '@/fragments'
-import { domainColorToken, formatSigned, touchCharacter } from '@/helpers'
-import { derive } from '@/rules'
-import { houseRulesAtom, rosterAtom, sheetRolesAtom } from '@/states'
-import type { Character, SheetTabId } from '@/types'
+import { ROUTES, RULE_ERROR_MESSAGES, SHEET_TABS } from "@/constants"
+import { SaveState } from "@/fragments"
+import { hasSheetEdits, touchCharacter } from "@/helpers"
+import { useCompendium } from "@/hooks"
+import { derive } from "@/rules"
+import { houseRulesAtom, rosterAtom, sheetRolesAtom, toastAtom } from "@/states"
+import type { Character, Marks, Result, SheetTabId } from "@/types"
 
-import styles from './Sheet.module.css'
+import { CardsPanel, CombatEdit, CombatPlay, HistoryPanel, InventoryPanel } from "./panels"
+
+import styles from "./Sheet.module.css"
 
 /**
  * A ficha. Combate abre primeiro: é a tela usada em 80% do tempo de sessão.
  *
  * Nenhum número aqui é guardado — todos saem de `derive`, e cada `StatBlock`
  * abre mostrando base + modificadores + total.
+ *
+ * **Editar ficha é um estado, não um interruptor.** Fora dele a ficha é de
+ * mesa: marcar HP, trocar carta do loadout, equipar arma — jogadas, que
+ * acontecem no meio de um turno e gravam no toque, porque pedir confirmação
+ * ali seria um passo em cima do gesto mais frequente do app.
+ *
+ * Dentro dele mexe-se no que **define** a ficha: nome, nível, classe, atributo,
+ * que cartas se sabe, o que se carrega, a história. Nada disso chega ao roster
+ * sem SALVAR, e CANCELAR devolve tudo ao que estava. É um rascunho só para as
+ * quatro abas — quem edita a classe e a mochila na mesma ida salva uma vez.
  */
 export const Sheet = () => {
   const { sheetId } = useParams<{ sheetId: string }>()
   const [roster, setRoster] = useAtom(rosterAtom)
   const houseRules = useAtomValue(houseRulesAtom)
   const sheetRoles = useAtomValue(sheetRolesAtom)
-  const [tab, setTab] = React.useState<SheetTabId>('combate')
+  const setToast = useSetAtom(toastAtom)
+  const { compendium } = useCompendium()
+
+  const [tab, setTab] = React.useState<SheetTabId>("combate")
+  const [draft, setDraft] = React.useState<Character | null>(null)
+  const [isConfirmingCancel, setIsConfirmingCancel] = React.useState(false)
 
   const character = sheetId ? roster.characters[sheetId] : undefined
 
   // Papel ausente = ficha local ainda não sincronizada, e ela é sua.
-  const isReadOnly = sheetId ? sheetRoles[sheetId] === 'reader' : false
+  const isReadOnly = sheetId ? sheetRoles[sheetId] === "reader" : false
 
-  const update = (mutate: (current: Character) => Character) => {
-    if (!character || isReadOnly) {
-      // Barrado aqui, num lugar só. Deixar passar gravaria local e falharia
-      // no servidor — a regra de segurança recusa escrita de nível 10 — e a
-      // pessoa veria a mudança sumir no próximo login, sem explicação.
-      return
-    }
-
-    const next = touchCharacter(mutate(character))
-
+  const commit = (next: Character) => {
     setRoster({
       ...roster,
-      characters: { ...roster.characters, [next.id]: next },
+      characters: { ...roster.characters, [next.id]: touchCharacter(next) },
     })
   }
 
@@ -51,258 +59,207 @@ export const Sheet = () => {
     return <Navigate to={ROUTES.roster} replace />
   }
 
-  const derived = derive(character, houseRules)
-  const activeTab = SHEET_TABS.find((sheetTab) => sheetTab.id === tab)
+  const isEditing = draft !== null
+  // Editando, tudo se calcula sobre o rascunho: é o que faz Evasion e HP
+  // mudarem enquanto se escolhe a classe, antes de confirmar.
+  const shown = draft ?? character
+  const derived = derive(shown, houseRules, compendium)
+  const isDirty = draft !== null && hasSheetEdits(draft, character)
+
+  /**
+   * Aplica um `Result` de `rules/`.
+   *
+   * Recusa vira toast com a mensagem em pt-br do código — a tela nunca
+   * reimplementa a condição, só renderiza o que a regra permitiu.
+   * Editando, o resultado vai para o rascunho; em mesa, direto para o roster.
+   */
+  const applyResult = (result: Result<Character>) => {
+    if (!result.ok) {
+      setToast(RULE_ERROR_MESSAGES[result.code])
+
+      return
+    }
+
+    if (isReadOnly) {
+      setToast("Você é leitor desta ficha: nada aqui é salvo.")
+
+      return
+    }
+
+    if (draft) {
+      setDraft(result.value)
+
+      return
+    }
+
+    commit(result.value)
+  }
+
+  const changeDraft = (mutate: (current: Character) => Character) => {
+    setDraft((current) => (current ? mutate(current) : current))
+  }
+
+  const handleMarksChange = (marks: Marks) => {
+    if (isReadOnly) {
+      // Barrado num lugar só. Deixar passar gravaria local e falharia no
+      // servidor — a regra de segurança recusa escrita de nível 10 — e a
+      // pessoa veria a mudança sumir no próximo login, sem explicação.
+      return
+    }
+
+    commit({ ...character, marks })
+  }
+
+  const requestCancel = () => {
+    if (isDirty) {
+      setIsConfirmingCancel(true)
+
+      return
+    }
+
+    setDraft(null)
+  }
+
+  const handleSave = () => {
+    if (draft) {
+      commit(draft)
+    }
+
+    setDraft(null)
+  }
+
+  const panelFor = (tabId: SheetTabId): React.ReactNode => {
+    if (tabId === "combate") {
+      return isEditing && draft ? (
+        <CombatEdit
+          draft={draft}
+          derived={derived}
+          onChange={changeDraft}
+          onApply={applyResult}
+        />
+      ) : (
+        <CombatPlay
+          character={character}
+          derived={derived}
+          isReadOnly={isReadOnly}
+          onMarksChange={handleMarksChange}
+          onApply={applyResult}
+        />
+      )
+    }
+
+    if (tabId === "cartas") {
+      return (
+        <CardsPanel
+          character={shown}
+          derived={derived}
+          isEditing={isEditing}
+          onApply={applyResult}
+        />
+      )
+    }
+
+    if (tabId === "inventario") {
+      return (
+        <InventoryPanel character={shown} derived={derived} onApply={applyResult} />
+      )
+    }
+
+    return (
+      <HistoryPanel
+        character={shown}
+        isEditing={isEditing}
+        onApply={applyResult}
+        onChange={changeDraft}
+      />
+    )
+  }
 
   return (
     <main className={styles.page}>
-      <nav className={styles.tabs} aria-label="Seções da ficha">
-        {SHEET_TABS.map((sheetTab) => (
-          <button
-            type="button"
-            key={sheetTab.id}
-            className={styles.tab}
-            aria-current={tab === sheetTab.id}
-            onClick={() => setTab(sheetTab.id)}
-          >
-            {sheetTab.label}
-          </button>
-        ))}
-      </nav>
+      <header className={styles.toolbar}>
+        {isReadOnly ? (
+          <p className={styles.note}>Você é leitor: dá para ver tudo, nada é salvo.</p>
+        ) : (
+          <SaveState className={styles.saveState} sheetId={character.id} />
+        )}
 
-      {isReadOnly ? (
-        <p className={styles.note}>
-          Você é leitor desta ficha. Dá para ver tudo; alterações não são salvas.
-        </p>
+        {/* Um botão, e não um alternador de dois estados: editar é uma coisa
+            que se faz e se termina — com o resultado salvo ou cancelado —,
+            não um lugar em que se fica. */}
+        {isEditing ? null : (
+          <Button
+            className={styles.editButton}
+            variant="text"
+            disabled={isReadOnly}
+            onClick={() => setDraft(character)}
+          >
+            EDITAR FICHA
+          </Button>
+        )}
+      </header>
+
+      <Tabs
+        className={styles.tabs}
+        hideArrows
+        hideDots
+        activeTabId={tab}
+        onTabChange={(tabId) => setTab(tabId as SheetTabId)}
+        tabs={SHEET_TABS.map((sheetTab) => ({
+          id: sheetTab.id,
+          label: sheetTab.label,
+          content: panelFor(sheetTab.id),
+        }))}
+      />
+
+      {/*
+        Grudada no fundo da janela enquanto se edita.
+        As quatro abas são mais altas que a tela, e um Salvar no fim do
+        documento só aparece para quem rolar até lá.
+      */}
+      {isEditing ? (
+        <footer className={styles.saveBar}>
+          <p className={styles.saveHint}>
+            {isDirty ? "Alterações não salvas" : "Nada alterado"}
+          </p>
+          <Button variant="outline" onClick={requestCancel}>
+            CANCELAR
+          </Button>
+          <Button disabled={!isDirty} onClick={handleSave}>
+            SALVAR
+          </Button>
+        </footer>
       ) : null}
 
-      {tab !== 'combate' ? (
+      {/* `isPersistent` porque cancelar é irreversível: sair clicando no fundo
+          é exatamente o acidente a evitar. */}
+      <Modal
+        isOpen={isConfirmingCancel}
+        isPersistent
+        title="Descartar as alterações?"
+        onClose={() => setIsConfirmingCancel(false)}
+        footer={
+          <>
+            <Button variant="outline" onClick={() => setIsConfirmingCancel(false)}>
+              CONTINUAR EDITANDO
+            </Button>
+            <Button
+              intent="danger"
+              onClick={() => {
+                setIsConfirmingCancel(false)
+                setDraft(null)
+              }}
+            >
+              DESCARTAR
+            </Button>
+          </>
+        }
+      >
         <p className={styles.note}>
-          Aba {activeTab?.label} ainda não implementada. Ver a ordem de entrega em
-          DOMAIN.md.
+          O que você mudou nesta ficha ainda não foi salvo. Descartando, ela volta ao que
+          estava.
         </p>
-      ) : (
-        <>
-          <StepRule />
-
-          <div className={styles.identity}>
-            <div className={[styles.field, styles.fieldWide].join(' ')}>
-              <label htmlFor="character-name">NOME</label>
-              <input
-                id="character-name"
-                value={character.name}
-                placeholder="Quem é o personagem"
-                onChange={(event) =>
-                  update((current) => ({ ...current, name: event.target.value }))
-                }
-              />
-            </div>
-
-            <div className={styles.field}>
-              <label htmlFor="character-ancestry">ESPÉCIE</label>
-              <select
-                id="character-ancestry"
-                value={character.ancestry ?? ''}
-                onChange={(event) =>
-                  update((current) => ({ ...current, ancestry: event.target.value || null }))
-                }
-              >
-                <option value="">—</option>
-                {ANCESTRIES.map((ancestry) => (
-                  <option key={ancestry.name}>{ancestry.name}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className={styles.field}>
-              <label htmlFor="character-community">ORIGEM</label>
-              <select
-                id="character-community"
-                value={character.community ?? ''}
-                onChange={(event) =>
-                  update((current) => ({ ...current, community: event.target.value || null }))
-                }
-              >
-                <option value="">—</option>
-                {COMMUNITIES.map((community) => (
-                  <option key={community.name}>{community.name}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className={styles.field}>
-              <label htmlFor="character-class">CLASSE</label>
-              <select
-                id="character-class"
-                value={character.className ?? ''}
-                onChange={(event) =>
-                  update((current) => ({
-                    ...current,
-                    className: event.target.value || null,
-                    // Subclasse só vale se pertencer à classe: trocar a classe
-                    // limpa a escolha em vez de deixar um par inválido.
-                    subclass: null,
-                  }))
-                }
-              >
-                <option value="">—</option>
-                {CLASSES.map((classDefinition) => (
-                  <option key={classDefinition.name}>{classDefinition.name}</option>
-                ))}
-              </select>
-            </div>
-
-            <div className={styles.field}>
-              <label htmlFor="character-subclass">SUBCLASSE</label>
-              <select
-                id="character-subclass"
-                value={character.subclass ?? ''}
-                onChange={(event) =>
-                  update((current) => ({ ...current, subclass: event.target.value || null }))
-                }
-              >
-                <option value="">—</option>
-                {SUBCLASSES.filter(
-                  (subclass) =>
-                    !character.className || subclass.className === character.className,
-                ).map((subclass) => (
-                  <option key={subclass.name}>{subclass.name}</option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className={styles.stats}>
-            <StatBlock label="EVASION" stat={derived.evasion} />
-            <StatBlock label="PROF" stat={derived.proficiency} />
-            <StatBlock label="ARMOR" stat={derived.armorScore} />
-            <StatBlock label="MAJOR" stat={derived.majorThreshold} />
-          </div>
-
-          <div className={styles.thresholds}>
-            <div className={styles.thresholdCell}>
-              <b className={styles.thresholdValue}>{derived.severeThreshold.total}</b>
-              SEVERE
-            </div>
-            <div className={styles.thresholdCell}>
-              <b className={styles.thresholdValue}>{derived.tier}</b>
-              TIER
-            </div>
-            <div className={[styles.thresholdCell, styles.armorCell].join(' ')}>
-              <b className={styles.thresholdValue}>
-                {derived.isBareBones ? 'Bare Bones' : derived.equippedArmor?.line}
-              </b>
-              {derived.equippedArmor
-                ? derived.equippedArmor.name.toUpperCase()
-                : 'SEM ARMADURA'}
-            </div>
-          </div>
-
-          {derived.isBareBones ? (
-            <p className={styles.note}>
-              Sem armadura vestida: Armor Score 3 + Strength, thresholds{' '}
-              {derived.majorThreshold.base}/{derived.severeThreshold.base} + nível. Não é
-              erro — é escolha de build.
-            </p>
-          ) : null}
-
-          <SectionLabel>TRAÇOS</SectionLabel>
-          <div className={styles.traits}>
-            {TRAIT_LIST.map((trait) => {
-              const stat = derived.traits[trait]
-
-              return (
-                <div className={styles.trait} key={trait}>
-                  <span className={styles.traitName}>
-                    {trait}
-                    {stat.total === stat.base ? null : (
-                      <span className={styles.traitTotal}> → {formatSigned(stat.total)}</span>
-                    )}
-                  </span>
-                  <Stepper
-                    label={trait}
-                    value={formatSigned(stat.base)}
-                    onDecrease={() =>
-                      update((current) => ({
-                        ...current,
-                        traits: { ...current.traits, [trait]: current.traits[trait] - 1 },
-                      }))
-                    }
-                    onIncrease={() =>
-                      update((current) => ({
-                        ...current,
-                        traits: { ...current.traits, [trait]: current.traits[trait] + 1 },
-                      }))
-                    }
-                  />
-                </div>
-              )
-            })}
-          </div>
-
-          <MarkerTrack
-            label="HIT POINTS"
-            marked={character.marks.hp}
-            max={derived.hitPointsMax.total}
-            color={domainColorToken('Havoc')}
-            onChange={(hp) =>
-              update((current) => ({ ...current, marks: { ...current.marks, hp } }))
-            }
-          />
-          <MarkerTrack
-            label="STRESS"
-            marked={character.marks.stress}
-            max={derived.stressMax.total}
-            color={domainColorToken('Essence')}
-            onChange={(stress) =>
-              update((current) => ({ ...current, marks: { ...current.marks, stress } }))
-            }
-          />
-          <MarkerTrack
-            label="ARMOR SLOTS"
-            marked={character.marks.armor}
-            max={derived.armorScore.total}
-            color={domainColorToken('Edge')}
-            onChange={(armor) =>
-              update((current) => ({ ...current, marks: { ...current.marks, armor } }))
-            }
-          />
-          <MarkerTrack
-            label="HOPE"
-            marked={character.marks.hope}
-            max={6}
-            color={domainColorToken('Aegis')}
-            onChange={(hope) =>
-              update((current) => ({ ...current, marks: { ...current.marks, hope } }))
-            }
-          />
-
-          <button
-            type="button"
-            className={styles.action}
-            onClick={() =>
-              update((current) => ({
-                ...current,
-                marks: { ...current.marks, stress: 0, armor: 0 },
-              }))
-            }
-          >
-            DESCANSAR — LIMPAR STRESS E ARMOR SLOTS
-          </button>
-
-          <div className={styles.levelRow}>
-            <span>NÍVEL</span>
-            <Stepper
-              label="nível"
-              value={String(derived.level)}
-              canDecrease={derived.level > MIN_LEVEL}
-              canIncrease={derived.level < MAX_LEVEL}
-              onDecrease={() => update((current) => ({ ...current, level: current.level - 1 }))}
-              onIncrease={() => update((current) => ({ ...current, level: current.level + 1 }))}
-            />
-          </div>
-        </>
-      )}
+      </Modal>
     </main>
   )
 }

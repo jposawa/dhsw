@@ -1,14 +1,15 @@
-import { get, update } from 'firebase/database'
+import { get, update } from "firebase/database"
 
-import { DB_PATHS, SHEET_ROLE_LEVEL } from '@/constants'
-import { dhswPath, dhswRef, dhswRootRef } from '@/lib/firebase'
+import { DB_PATHS, SHEET_ROLE_LEVEL } from "@/constants"
+import { normalizeCharacter } from "@/helpers"
+import { dhswPath, dhswRef, dhswRootRef } from "@/lib/firebase"
 import type {
   Character,
   SheetAccess,
   SheetIndexEntry,
   SheetRoleId,
   SheetWithRole,
-} from '@/types'
+} from "@/types"
 
 /**
  * Única camada que fala com o Realtime Database para fichas.
@@ -24,7 +25,7 @@ const sanitize = <TValue>(value: TValue): TValue => {
     return value.map((item) => sanitize(item)) as TValue
   }
 
-  if (value === null || typeof value !== 'object') {
+  if (value === null || typeof value !== "object") {
     return value
   }
 
@@ -67,7 +68,7 @@ export const createSheet = async (
   character: Character,
   authorId: string,
 ): Promise<void> => {
-  const access = accessRow(character.id, authorId, 'author', authorId)
+  const access = accessRow(character.id, authorId, "author", authorId)
 
   await update(dhswRootRef(), {
     [dhswPath(DB_PATHS.sheet(character.id))]: sanitize(character),
@@ -83,7 +84,9 @@ export const saveSheet = async (character: Character): Promise<void> => {
 export const fetchSheet = async (sheetId: string): Promise<Character | null> => {
   const snapshot = await get(dhswRef(DB_PATHS.sheet(sheetId)))
 
-  return snapshot.exists() ? (snapshot.val() as Character) : null
+  // `normalizeCharacter` e nao `as Character`: o RTDB devolve a ficha sem as
+  // listas vazias que ela tinha ao subir. Ver `helpers/character.ts`.
+  return snapshot.exists() ? normalizeCharacter(snapshot.val() as Character) : null
 }
 
 /**
@@ -113,11 +116,11 @@ export const fetchSheetsForUser = async (userId: string): Promise<SheetWithRole[
   return sheets.filter((sheet): sheet is SheetWithRole => sheet !== null)
 }
 
-/** Compartilhar: `reader` ou `co_author`. `author` é transferência, não concessão. */
+/** Compartilhar: `reader` ou `coAuthor`. `author` é transferência, não concessão. */
 export const grantAccess = async (
   sheetId: string,
   targetUserId: string,
-  roleId: Exclude<SheetRoleId, 'author'>,
+  roleId: Exclude<SheetRoleId, "author">,
   grantedBy: string,
 ): Promise<void> => {
   const access = accessRow(sheetId, targetUserId, roleId, grantedBy)

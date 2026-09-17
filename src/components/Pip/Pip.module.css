@@ -9,19 +9,24 @@
 .pip {
   position: relative;
   display: grid;
-  place-items: center;
-  width: var(--touch-target-min);
-  height: var(--touch-target-min);
-  min-height: var(--touch-target-min);
+  /* Quadrado no início do alvo e não no centro: a trilha começa alinhada ao
+     rótulo, e o resto do alvo de toque se estende para a direita. */
+  place-items: center start;
+  width: var(--size-touch-target);
+  height: var(--size-touch-target);
+  min-height: var(--size-touch-target);
   padding: 0;
   background: none;
   border: 0;
+  /* O pip não parece clicável sem isto: é um quadrado sem moldura de botão,
+     e o cursor é o único sinal que resta no desktop. */
+  cursor: pointer;
 }
 
 .mark {
   display: block;
-  width: 27px;
-  height: 27px;
+  width: 24px;
+  height: 24px;
   background: var(--color-bg-elevated);
   border: var(--border-width) solid var(--color-border);
   transition: background-color 0.15s ease, border-color 0.15s ease;

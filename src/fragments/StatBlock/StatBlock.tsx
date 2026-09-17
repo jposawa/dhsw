@@ -1,9 +1,10 @@
-import React from 'react'
+import clsx from "clsx"
+import React from "react"
 
-import { describeModifierSource, formatSigned } from '@/helpers'
-import type { BaseComponent, ResolvedStat } from '@/types'
+import { describeModifierSource, formatSigned } from "@/helpers"
+import type { BaseComponent, ResolvedStat } from "@/types"
 
-import styles from './StatBlock.module.css'
+import styles from "./StatBlock.module.css"
 
 type StatBlockProps = BaseComponent & {
   label: string
@@ -13,8 +14,8 @@ type StatBlockProps = BaseComponent & {
 /**
  * Valor final + de onde veio cada ponto.
  *
- * Toda caracteristica passa por aqui: base, modificadores nomeados, total.
- * E o que responde "por que minha Evasion e 12?" sem abrir o codigo.
+ * Toda característica passa por aqui: base, modificadores nomeados, total.
+ * É o que responde "por que minha Evasion é 12?" sem abrir o código.
  */
 export const StatBlock = ({ label, stat, className, style }: StatBlockProps) => {
   const [isOpen, setIsOpen] = React.useState(false)
@@ -23,15 +24,15 @@ export const StatBlock = ({ label, stat, className, style }: StatBlockProps) => 
   return (
     <button
       type="button"
-      className={[styles.block, className].filter(Boolean).join(' ')}
+      className={clsx(styles.block, className)}
       style={style}
       aria-expanded={isOpen}
-      aria-label={`${label}: ${stat.total}${hasDetail ? '. Toque para ver os modificadores' : ''}`}
+      aria-label={`${label}: ${stat.total}${hasDetail ? ". Toque para ver os modificadores" : ""}`}
       onClick={() => setIsOpen((open) => hasDetail && !open)}
     >
       <span className={styles.summary}>
         <span className={styles.value}>{stat.total}</span>
-        <span className={[styles.key, hasDetail ? styles.hasDetail : ''].filter(Boolean).join(' ')}>
+        <span className={clsx(styles.key, hasDetail && styles.hasDetail)}>
           {label}
         </span>
       </span>
@@ -46,9 +47,7 @@ export const StatBlock = ({ label, stat, className, style }: StatBlockProps) => 
             <span className={styles.line} key={`${modifier.source.kind}-${index}`}>
               <span>{describeModifierSource(modifier)}</span>
               <span
-                className={[styles.lineValue, modifier.value < 0 ? styles.negative : '']
-                  .filter(Boolean)
-                  .join(' ')}
+                className={clsx(styles.lineValue, modifier.value < 0 && styles.negative)}
               >
                 {formatSigned(modifier.value)}
               </span>

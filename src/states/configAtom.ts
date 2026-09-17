@@ -1,7 +1,7 @@
-import { atom } from 'jotai'
+import { atom } from "jotai"
 
-import { DEFAULT_CONFIG } from '@/constants'
-import type { ConfigStatus, RemoteConfig } from '@/types'
+import { DEFAULT_CONFIG } from "@/constants"
+import type { ConfigStatus, RemoteConfig } from "@/types"
 
 /**
  * Config remota. Comeca no default do codigo e e sobrescrita uma vez no boot.
@@ -20,4 +20,4 @@ export const remoteConfigAtom = atom<RemoteConfig>(DEFAULT_CONFIG)
  *    fariam duas leituras.
  * 2. Deixar a UI distinguir "ainda e o padrao do codigo" de "veio do banco".
  */
-export const configStatusAtom = atom<ConfigStatus>('default')
+export const configStatusAtom = atom<ConfigStatus>("default")

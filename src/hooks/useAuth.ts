@@ -1,9 +1,9 @@
-import { useAtom, useSetAtom } from 'jotai'
-import React from 'react'
+import { useAtom, useSetAtom } from "jotai"
+import React from "react"
 
-import { signInWithGoogle, signOutUser, subscribeToAuth, upsertProfile } from '@/services'
-import { authAtom, sheetRolesAtom, syncStatusAtom, toastAtom } from '@/states'
-import type { AuthState } from '@/types'
+import { signInWithGoogle, signOutUser, subscribeToAuth, upsertProfile } from "@/services"
+import { authAtom, sheetRolesAtom, syncStatusAtom, toastAtom } from "@/states"
+import type { AuthState } from "@/types"
 
 type UseAuthResult = AuthState & {
   signIn: () => Promise<void>
@@ -25,7 +25,7 @@ export const useAuth = (): UseAuthResult => {
   React.useEffect(
     () =>
       subscribeToAuth((user) => {
-        setAuth({ status: user ? 'signed-in' : 'signed-out', user })
+        setAuth({ status: user ? "signed-in" : "signed-out", user })
 
         if (user) {
           // O perfil é espelho, não requisito: falhar aqui não pode impedir
@@ -42,13 +42,13 @@ export const useAuth = (): UseAuthResult => {
     } catch {
       // Popup fechado pela pessoa é o caso comum e não é erro a reportar;
       // bloqueado pelo navegador é, e os dois chegam como a mesma exceção.
-      setToast('Não foi possível entrar. Verifique o bloqueador de pop-up.')
+      setToast("Não foi possível entrar. Verifique o bloqueador de pop-up.")
     }
   }
 
   const signOut = async () => {
     await signOutUser()
-    setSyncStatus('idle')
+    setSyncStatus("idle")
     setSheetRoles({})
     // As fichas locais ficam. Apagar seria perder o trabalho de quem só
     // queria trocar de conta — e sem login o roster nem é alcançável.

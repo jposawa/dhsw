@@ -1,4 +1,4 @@
-import type { Modifier, ResolvedStat, StatKey } from '@/types'
+import type { Modifier, ResolvedStat, StatKey } from "@/types"
 
 /**
  * Montagem de característica: base + modificadores → total.
@@ -19,6 +19,15 @@ export const resolveStat = (
 
   return { base, modifiers, total }
 }
+
+/**
+ * Trava o total entre 0 e o teto da regra — Armor Score 12, Proficiency 6.
+ * Base e modificadores continuam inteiros, para a UI mostrar a soma real.
+ */
+export const clampStat = (stat: ResolvedStat, max: number): ResolvedStat => ({
+  ...stat,
+  total: Math.min(max, Math.max(0, stat.total)),
+})
 
 /** Coletor: acumula modificadores por alvo enquanto `derive` varre as fontes. */
 export type ModifierCollector = {

@@ -1,17 +1,19 @@
-import { atom } from 'jotai'
-import { atomWithStorage } from 'jotai/utils'
+import { atom } from "jotai"
+import { atomWithStorage } from "jotai/utils"
 
-import { STORAGE_KEYS, STORAGE_VERSIONS } from '@/constants'
-import { createVersionedStorage } from '@/services'
-import type { Character, RosterState } from '@/types'
+import { STORAGE_KEYS, STORAGE_VERSIONS } from "@/constants"
+import { rosterV1ToV2, rosterV2ToV3 } from "@/helpers"
+import { createVersionedStorage } from "@/services"
+import type { Character, RosterState } from "@/types"
 
 const EMPTY_ROSTER: RosterState = { characters: {}, order: [] }
 
 const rosterStorage = createVersionedStorage<RosterState>({
   version: STORAGE_VERSIONS.roster,
   migrations: {
-    // Nenhuma ainda — v1 e o primeiro formato. A proxima entra aqui como
-    // `1: (value) => ...` e NUNCA e removida depois.
+    // Indice = versao de origem. Acumulativas: nenhuma sai daqui depois.
+    1: rosterV1ToV2,
+    2: rosterV2ToV3,
   },
 })
 

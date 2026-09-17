@@ -3,7 +3,7 @@ import type {
   RollPreparation,
   SituationalModifier,
   Trait,
-} from '@/types'
+} from "@/types"
 
 /**
  * Preparo de rolagem — o único lugar onde modificador situacional existe.
@@ -20,7 +20,7 @@ export const prepareRoll = (
 ): RollPreparation => {
   const stat = derived.traits[trait]
   const relevant = situational.filter(
-    (modifier) => modifier.target === `trait.${trait}` || modifier.target === 'attackRoll',
+    (modifier) => modifier.target === `trait.${trait}` || modifier.target === "attackRoll",
   )
 
   const situationalTotal = relevant.reduce(
@@ -30,7 +30,7 @@ export const prepareRoll = (
 
   return {
     trait,
-    dice: 'Hope d12 + Fear d12',
+    dice: "Hope d12 + Fear d12",
     stat,
     situational: relevant,
     total: stat.total + situationalTotal,

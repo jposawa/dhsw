@@ -1,173 +1,151 @@
+/*
+ * A ficha é painel, não prosa: a medida é a larga.
+ *
+ * `--content-max-width` é coluna de leitura, e espremer um painel de mesa nos
+ * 640px dela trata o desktop como celular esticado. O que é leitura de verdade
+ * — o texto de carta, as anotações — leva o próprio `max-width` no bloco de
+ * texto, onde a medida importa. STYLING.md.
+ */
 .page {
-  max-width: var(--content-max-width);
-  margin: 0 auto;
-  padding: var(--space-4) var(--space-4) var(--space-6);
-}
-
-.tabs {
   display: flex;
-  gap: 0;
-  overflow-x: auto;
-  scrollbar-width: none;
-  margin: 0 calc(var(--space-4) * -1) var(--space-4);
-  padding: 0 var(--space-4);
-  border-bottom: var(--border-width) solid var(--color-border-subtle);
-}
-
-.tabs::-webkit-scrollbar {
-  display: none;
-}
-
-.tab {
-  padding: var(--space-3) var(--space-4);
-  font-size: var(--text-sm);
-  letter-spacing: var(--tracking-wide);
-  white-space: nowrap;
-  color: var(--color-text-dim);
-  border-bottom: 2px solid transparent;
-}
-
-.tab[aria-current='true'] {
-  color: var(--color-chrome-strong);
-  border-bottom-color: var(--color-chrome);
-}
-
-.identity {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  flex-direction: column;
   gap: var(--space-2);
+  max-width: var(--content-max-width-wide);
+  margin: 0 auto;
+  padding: var(--space-2) var(--space-4) var(--space-6);
+  /* A página ocupa ao menos a altura útil da tela (menos brasão e barra
+     inferior): é o que deixa a barra de salvar no fim da tela em ficha curta. */
+  min-height: calc(100svh - var(--header-height) - var(--border-width) - var(--bottom-bar-height));
 }
 
-.fieldWide {
-  grid-column: 1 / -1;
-}
-
-.field label {
-  display: block;
-  margin-bottom: var(--space-1);
-  font-size: var(--text-xs);
-  letter-spacing: var(--tracking-wider);
-  color: var(--color-chrome-dim);
-}
-
-.field input,
-.field select {
-  width: 100%;
-  min-height: var(--touch-target-min);
-  padding: var(--space-3);
-  font-size: var(--text-base);
-  color: var(--color-ink);
-  background: var(--color-bg-elevated);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--border-radius-sm);
-  transition: border-color 0.15s ease;
-}
-
-.field input:focus,
-.field select:focus {
-  outline: none;
-  border-color: var(--color-chrome);
-}
-
-.stats {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-1);
-  margin-top: var(--space-4);
-}
-
-.thresholds {
-  display: flex;
-  gap: var(--space-1);
-  margin-top: var(--space-2);
-}
-
-.thresholdCell {
+/* O painel das abas é quem carrega o ritmo vertical do conteúdo — as abas em si
+   são só a régua acima dele. */
+/* As abas crescem e empurram a barra de salvar para o fim da página. */
+.tabs {
   flex-grow: 1;
-  padding: var(--space-3) var(--space-1);
-  font-size: var(--text-xs);
-  letter-spacing: var(--tracking-wider);
-  text-align: center;
-  color: var(--color-text-dim);
-  background: var(--color-bg-elevated);
-  border-top: var(--border-width) solid var(--color-border);
 }
 
-.thresholdValue {
-  display: block;
-  margin-bottom: var(--space-1);
-  font-size: var(--text-lg);
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0;
-  color: var(--color-ink);
+.tabs [role="tabpanel"] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
 }
 
-.armorCell {
-  flex-grow: 1.6;
+/*
+ * A régua de abas gruda embaixo do brasão.
+ *
+ * A ficha é mais alta que qualquer tela, e trocar de aba no meio dela obrigava
+ * a rolar até o topo e voltar. Mobile-first de verdade: é no celular que a
+ * rolagem é longa, e no desktop o custo de manter é zero.
+ *
+ * O `top` é a altura do brasão mais o fio dele: `.top` do shell já é sticky em
+ * `top: 0`, e sem somar a borda a régua encosta um pixel acima e deixa passar
+ * uma listra do conteúdo.
+ *
+ * `background` opaco porque o conteúdo passa por baixo; sem ele a régua fica
+ * ilegível na primeira rolagem. `z-index` abaixo do `--z-header` do brasão,
+ * para as duas se empilharem na ordem em que aparecem.
+ *
+ * **Quem gruda é a faixa que contém a régua, não a régua.** Um elemento sticky
+ * só viaja dentro do pai, e a `ronin-ui` embrulha o `tablist` numa faixa da
+ * altura dele — grudar o `tablist` não sairia do lugar. `:has` nomeia o alvo
+ * pelo que ele contém, que é a única coisa estável: a classe daquela faixa é
+ * gerada pelo CSS module da biblioteca e muda a cada build dela.
+ */
+.tabs > :has(> [role="tablist"]) {
+  position: sticky;
+  top: calc(var(--header-height) + var(--border-width));
+  z-index: 1;
+  background: var(--color-bg);
 }
 
-.traits {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--space-1);
-}
-
-.trait {
+/* Uma faixa de 30px: o estado de gravação é um ícone e editar é texto — os
+   dois se consultam de passagem. */
+.toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-2);
-  padding: var(--space-1) var(--space-3);
-  background: var(--color-bg-elevated);
+  gap: var(--space-3);
+  height: 30px;
 }
 
-.traitName {
-  font-size: var(--text-sm);
-  letter-spacing: var(--tracking-wide);
+.toolbar .saveState {
+  min-height: 0;
 }
 
-.traitTotal {
+/*
+ * Ação de passagem: rótulo pequeno e apagado. A caixa tem os 30px da faixa, e
+ * o alvo de toque volta aos 44px por um pseudo-elemento que transborda para
+ * cima e para baixo — o dedo acerta, e a faixa não engorda.
+ */
+.editButton {
+  position: relative;
+  min-height: 30px;
+  padding: 0 var(--space-1);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-text-muted);
+}
+
+.editButton::after {
+  content: "";
+  position: absolute;
+  inset: calc((var(--size-touch-target) - 30px) / -2) 0;
+}
+
+.saveState {
+  margin: 0;
   font-size: var(--text-xs);
+  line-height: 1.4;
+  text-align: right;
   color: var(--color-text-dim);
 }
 
 .note {
-  margin-top: var(--space-2);
-  font-size: var(--text-sm);
+  margin: 0;
+  font-size: var(--text-xs);
   line-height: 1.55;
   color: var(--color-text-dim);
 }
 
-.action {
-  width: 100%;
-  margin-top: var(--space-2);
-  padding: var(--space-3);
-  font-size: var(--text-sm);
-  letter-spacing: var(--tracking-wide);
-  color: var(--color-chrome-strong);
-  background: var(--color-surface);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--border-radius-sm);
-}
-
-@media (min-width: 900px) {
-  .traits {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-.levelRow {
+/*
+ * A barra de salvar, grudada no fundo da janela enquanto se edita.
+ *
+ * As quatro abas são mais altas que a tela, e um Salvar no fim do documento só
+ * aparece para quem rolar até lá — quem não rolar conclui que ele não existe.
+ * O `z-index` fica abaixo do `--z-nav` para o trilho continuar por cima.
+ */
+.saveBar {
+  position: sticky;
+  /* No celular a barra de navegação é fixa embaixo: a de salvar para acima dela. */
+  bottom: var(--bottom-bar-height);
+  z-index: var(--z-header);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: var(--space-2);
-  margin-top: var(--space-2);
-  padding: var(--space-2) var(--space-3);
-  font-size: var(--text-sm);
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--color-bg-elevated);
+  border-top: var(--border-width) solid var(--color-chrome-dim);
+}
+
+/* O aviso ocupa a sobra e empurra os dois botões para a direita. */
+.saveHint {
+  flex-grow: 1;
+  margin: 0;
+  font-size: var(--text-2xs);
   letter-spacing: var(--tracking-wide);
-  color: var(--color-chrome-strong);
-  background: var(--color-surface);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--border-radius-sm);
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+}
+
+@media (min-width: 900px) {
+  /* Sem barra inferior: a navegação é o trilho lateral. */
+  .page {
+    min-height: calc(100svh - var(--header-height) - var(--border-width));
+  }
+
+  .saveBar {
+    bottom: 0;
+  }
 }

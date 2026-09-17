@@ -1,4 +1,4 @@
-import type { Character, RosterState } from '@/types'
+import type { Character, RosterState } from "@/types"
 
 /**
  * Junta o roster local com o que veio do Realtime Database.

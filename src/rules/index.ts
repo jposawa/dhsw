@@ -1,5 +1,6 @@
 export * from "./augments"
 export * from "./derive"
+export * from "./dice"
 export * from "./domainAccess"
 export * from "./downtime"
 export * from "./history"

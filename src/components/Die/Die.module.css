@@ -1,0 +1,55 @@
+/*
+ * Um dado: caixa quadrada com o valor e as faces. A cor do papel entra por
+ * `--die-color`; dado sem papel fica no cromo.
+ */
+.die {
+  --die-color: var(--color-chrome);
+
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 3rem;
+  min-height: 3rem;
+  padding: var(--space-1);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--die-color);
+  border-radius: var(--border-radius-sm);
+}
+
+/* Hope na cor da trilha de Hope da ficha (CombatPlay usa a de Aegis). */
+.die[data-role="hope"] {
+  --die-color: var(--color-domain-aegis);
+}
+
+.die[data-role="fear"] {
+  --die-color: var(--color-danger);
+}
+
+.die[data-role="advantage"] {
+  --die-color: var(--color-success);
+}
+
+.die[data-role="disadvantage"] {
+  --die-color: var(--color-warning);
+}
+
+/* Dado subtraído sem papel próprio: traço tracejado, para não parecer somado. */
+.die[data-subtracted] {
+  border-style: dashed;
+}
+
+.value {
+  font-size: var(--text-lg);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--color-ink);
+}
+
+.sides {
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  color: var(--die-color);
+}

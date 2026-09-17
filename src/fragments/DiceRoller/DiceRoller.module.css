@@ -1,0 +1,36 @@
+.roller {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--color-bg-elevated);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+.quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin: 0;
+}
+
+/* Rótulo à esquerda e stepper à direita, como a linha de nível da ficha. */
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.rowLabel {
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-text-muted);
+}
+
+/* Limpar e Rolar na mesma linha; Rolar ocupa a sobra. */
+.actions {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-2);
+}

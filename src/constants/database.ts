@@ -1,4 +1,4 @@
-import type { DatabaseEnvironment } from "@/types"
+import type { DatabaseEnvironment, RollVisibility } from "@/types"
 
 /**
  * Caminhos do Realtime Database.
@@ -18,6 +18,7 @@ import type { DatabaseEnvironment } from "@/types"
  *       sheetAccess/<sheetId>/<uid>    { roleId, level, grantedBy, grantedAt }
  *       userSheets/<uid>/<sheetId>     { roleId, level, grantedAt }
  *       settings/<uid>/houseRules
+ *       partyRolls/<partyId>/public|gm/<rollId>
  *     prod/
  *       ... idêntico
  *
@@ -66,6 +67,7 @@ export const DB_PATHS = {
 
   /* ── party ── */
   party: (partyId: string) => `parties/${partyId}`,
+  partyHouseRules: (partyId: string) => `parties/${partyId}/houseRules`,
   partyMembersAll: (partyId: string) => `partyMembers/${partyId}`,
   partyMember: (partyId: string, userId: string) => `partyMembers/${partyId}/${userId}`,
   /** Indice invertido: quais parties este jogador alcanca, com o papel. */
@@ -74,4 +76,9 @@ export const DB_PATHS = {
   /** Quais fichas estao na party. O RTDB nao consulta `sheets` por `partyId`. */
   partySheetsAll: (partyId: string) => `partySheets/${partyId}`,
   partySheet: (partyId: string, sheetId: string) => `partySheets/${partyId}/${sheetId}`,
+  /**
+   * Rolagens da mesa, fora de `parties/<id>`: ler a mesa não pode baixar o
+   * histórico junto. `public` todo membro vê; `gm` só o Narrador.
+   */
+  partyRolls: (partyId: string, visibility: RollVisibility) => `partyRolls/${partyId}/${visibility}`,
 } as const

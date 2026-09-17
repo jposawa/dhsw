@@ -6,13 +6,20 @@ import { EQUIP_SLOTS, HOPE_MAX, MAX_PROFICIENCY, TRAIT_LIST, TRAIT_VERBS } from 
 import { MarkerTrack, RuleText, StatBlock, ThresholdBar } from "@/fragments"
 import { describeThresholdOrigin, domainColorToken, formatSigned } from "@/helpers"
 import { useCompendium } from "@/hooks"
-import { activeTokenPools, enterCombat, setTokenCount, tokenCount } from "@/rules"
-import type { Character, DerivedStats, EquipSlot, Marks, Result } from "@/types"
+import {
+  activeTokenPools,
+  enterCombat,
+  presetForTrait,
+  setTokenCount,
+  tokenCount,
+} from "@/rules"
+import type { Character, DerivedStats, DicePreset, EquipSlot, Marks, Result } from "@/types"
 
 import { ActiveWeapon } from "./ActiveWeapon"
 import { EquippedArmorCard } from "./EquippedArmorCard"
 import { IdentityFeatures } from "./IdentityFeatures"
 import { RestDrawer } from "./RestDrawer"
+import { RollDrawer } from "./RollDrawer"
 import { TokenCounter } from "./TokenCounter"
 
 import styles from "./CombatPlay.module.css"
@@ -57,6 +64,8 @@ export const CombatPlay = ({
 }: CombatPlayProps) => {
   const { compendium } = useCompendium()
   const [isResting, setIsResting] = React.useState(false)
+  // `undefined` é gaveta fechada; `null`, aberta para rolagem solta.
+  const [rollPreset, setRollPreset] = React.useState<DicePreset | null | undefined>(undefined)
   // Da mesa, não da ficha: recarregar a página sai do combate, como a troca livre.
   const [isInCombat, setIsInCombat] = React.useState(false)
 
@@ -124,6 +133,15 @@ export const CombatPlay = ({
               EM COMBATE
             </Switch>
           ) : null}
+          {/* Rolagem solta. A de atributo e a de arma saem do próprio bloco. */}
+          <Button
+            className={styles.restButton}
+            variant="outline"
+            onClick={() => setRollPreset(null)}
+          >
+            ROLAR
+          </Button>
+
           {/* No cabeçalho e em texto: descanso acontece entre cenas, poucas vezes
               por sessão, e não disputa espaço com os pips que se tocam no turno. */}
           <Button
@@ -180,12 +198,20 @@ export const CombatPlay = ({
               key={trait}
               data-spellcast={derived.spellcastTrait === trait || undefined}
             >
-              <span className={styles.traitName}>{trait}</span>
-              <b className={styles.traitValue}>{formatSigned(derived.traits[trait].total)}</b>
-              <span className={styles.traitVerbs}>{TRAIT_VERBS[trait].join(" · ")}</span>
-              {derived.spellcastTrait === trait ? (
-                <span className={styles.spellcast}>FORCEWIELDING</span>
-              ) : null}
+              {/* O atributo inteiro é o botão: tocar prepara a rolagem dele. */}
+              <button
+                type="button"
+                className={styles.traitButton}
+                aria-label={`Rolar ${trait}, ${formatSigned(derived.traits[trait].total)}`}
+                onClick={() => setRollPreset(presetForTrait(trait, derived))}
+              >
+                <span className={styles.traitName}>{trait}</span>
+                <b className={styles.traitValue}>{formatSigned(derived.traits[trait].total)}</b>
+                <span className={styles.traitVerbs}>{TRAIT_VERBS[trait].join(" · ")}</span>
+                {derived.spellcastTrait === trait ? (
+                  <span className={styles.spellcast}>FORCEWIELDING</span>
+                ) : null}
+              </button>
             </li>
           ))}
         </ul>
@@ -279,6 +305,8 @@ export const CombatPlay = ({
               weapon={weaponOf(slot.id)}
               proficiency={derived.proficiency.total}
               tierIndex={derived.tier - 1}
+              derived={derived}
+              onPrepareRoll={setRollPreset}
               emptyText={
                 slot.id === "secondary" && isPrimaryTwoHanded
                   ? "A primária é de duas mãos."
@@ -294,6 +322,13 @@ export const CombatPlay = ({
         className={styles.features}
         character={character}
         renderTokens={renderTokens}
+      />
+
+      <RollDrawer
+        isOpen={rollPreset !== undefined}
+        character={character}
+        preset={rollPreset ?? null}
+        onClose={() => setRollPreset(undefined)}
       />
 
       <RestDrawer

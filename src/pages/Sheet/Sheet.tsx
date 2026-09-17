@@ -5,13 +5,20 @@ import { Navigate, useParams } from "react-router-dom"
 
 import { ROUTES, RULE_ERROR_MESSAGES, SHEET_TABS } from "@/constants"
 import { SaveState } from "@/fragments"
-import { hasSheetEdits, touchCharacter } from "@/helpers"
-import { useCompendium } from "@/hooks"
+import { effectiveHouseRules, hasSheetEdits, touchCharacter } from "@/helpers"
+import { HouseRulesContext, useCompendium, usePartyHouseRules } from "@/hooks"
 import { derive } from "@/rules"
-import { houseRulesAtom, rosterAtom, sheetRolesAtom, toastAtom } from "@/states"
+import { rosterAtom, sheetRolesAtom, toastAtom } from "@/states"
 import type { Character, Marks, Result, SheetTabId } from "@/types"
 
-import { CardsPanel, CombatEdit, CombatPlay, HistoryPanel, InventoryPanel } from "./panels"
+import {
+  CardsPanel,
+  CombatEdit,
+  CombatPlay,
+  HistoryPanel,
+  InventoryPanel,
+  RulesPanel,
+} from "./panels"
 
 import styles from "./Sheet.module.css"
 
@@ -34,7 +41,6 @@ import styles from "./Sheet.module.css"
 export const Sheet = () => {
   const { sheetId } = useParams<{ sheetId: string }>()
   const [roster, setRoster] = useAtom(rosterAtom)
-  const houseRules = useAtomValue(houseRulesAtom)
   const sheetRoles = useAtomValue(sheetRolesAtom)
   const setToast = useSetAtom(toastAtom)
   const { compendium } = useCompendium()
@@ -44,6 +50,8 @@ export const Sheet = () => {
   const [isConfirmingCancel, setIsConfirmingCancel] = React.useState(false)
 
   const character = sheetId ? roster.characters[sheetId] : undefined
+  // Antes do retorno antecipado: hook não pode ficar atrás de condição.
+  const partyRules = usePartyHouseRules(character?.partyId ?? null)
 
   // Papel ausente = ficha local ainda não sincronizada, e ela é sua.
   const isReadOnly = sheetId ? sheetRoles[sheetId] === "reader" : false
@@ -63,6 +71,9 @@ export const Sheet = () => {
   // Editando, tudo se calcula sobre o rascunho: é o que faz Evasion e HP
   // mudarem enquanto se escolhe a classe, antes de confirmar.
   const shown = draft ?? character
+  // Em mesa valem as regras da mesa; fora dela, as da ficha — do rascunho,
+  // editando, para os números acompanharem a regra que se está mudando.
+  const houseRules = effectiveHouseRules(shown, partyRules)
   const derived = derive(shown, houseRules, compendium)
   const isDirty = draft !== null && hasSheetEdits(draft, character)
 
@@ -131,12 +142,7 @@ export const Sheet = () => {
   const panelFor = (tabId: SheetTabId): React.ReactNode => {
     if (tabId === "combate") {
       return isEditing && draft ? (
-        <CombatEdit
-          draft={draft}
-          derived={derived}
-          onChange={changeDraft}
-          onApply={applyResult}
-        />
+        <CombatEdit draft={draft} derived={derived} onChange={changeDraft} onApply={applyResult} />
       ) : (
         <CombatPlay
           character={character}
@@ -160,8 +166,17 @@ export const Sheet = () => {
     }
 
     if (tabId === "inventario") {
+      return <InventoryPanel character={shown} derived={derived} onApply={applyResult} />
+    }
+
+    if (tabId === "regras") {
       return (
-        <InventoryPanel character={shown} derived={derived} onApply={applyResult} />
+        <RulesPanel
+          character={shown}
+          partyRules={partyRules}
+          isEditing={isEditing}
+          onChange={changeDraft}
+        />
       )
     }
 
@@ -176,90 +191,89 @@ export const Sheet = () => {
   }
 
   return (
-    <main className={styles.page}>
-      <header className={styles.toolbar}>
-        {isReadOnly ? (
-          <p className={styles.note}>Você é leitor: dá para ver tudo, nada é salvo.</p>
-        ) : (
-          <SaveState className={styles.saveState} sheetId={character.id} />
-        )}
+    <HouseRulesContext.Provider value={houseRules}>
+      <main className={styles.page}>
+        <header className={styles.toolbar}>
+          {isReadOnly ? (
+            <p className={styles.note}>Você é leitor: dá para ver tudo, nada é salvo.</p>
+          ) : (
+            <SaveState className={styles.saveState} sheetId={character.id} />
+          )}
 
-        {/* Um botão, e não um alternador de dois estados: editar é uma coisa
+          {/* Um botão, e não um alternador de dois estados: editar é uma coisa
             que se faz e se termina — com o resultado salvo ou cancelado —,
             não um lugar em que se fica. */}
-        {isEditing ? null : (
-          <Button
-            className={styles.editButton}
-            variant="text"
-            disabled={isReadOnly}
-            onClick={() => setDraft(character)}
-          >
-            EDITAR FICHA
-          </Button>
-        )}
-      </header>
+          {isEditing ? null : (
+            <Button
+              className={styles.editButton}
+              variant="text"
+              disabled={isReadOnly}
+              onClick={() => setDraft(character)}
+            >
+              EDITAR FICHA
+            </Button>
+          )}
+        </header>
 
-      <Tabs
-        className={styles.tabs}
-        hideArrows
-        hideDots
-        activeTabId={tab}
-        onTabChange={(tabId) => setTab(tabId as SheetTabId)}
-        tabs={SHEET_TABS.map((sheetTab) => ({
-          id: sheetTab.id,
-          label: sheetTab.label,
-          content: panelFor(sheetTab.id),
-        }))}
-      />
+        <Tabs
+          className={styles.tabs}
+          hideArrows
+          hideDots
+          activeTabId={tab}
+          onTabChange={(tabId) => setTab(tabId as SheetTabId)}
+          tabs={SHEET_TABS.map((sheetTab) => ({
+            id: sheetTab.id,
+            label: sheetTab.label,
+            content: panelFor(sheetTab.id),
+          }))}
+        />
 
-      {/*
+        {/*
         Grudada no fundo da janela enquanto se edita.
         As quatro abas são mais altas que a tela, e um Salvar no fim do
         documento só aparece para quem rolar até lá.
       */}
-      {isEditing ? (
-        <footer className={styles.saveBar}>
-          <p className={styles.saveHint}>
-            {isDirty ? "Alterações não salvas" : "Nada alterado"}
-          </p>
-          <Button variant="outline" onClick={requestCancel}>
-            CANCELAR
-          </Button>
-          <Button disabled={!isDirty} onClick={handleSave}>
-            SALVAR
-          </Button>
-        </footer>
-      ) : null}
+        {isEditing ? (
+          <footer className={styles.saveBar}>
+            <p className={styles.saveHint}>{isDirty ? "Alterações não salvas" : "Nada alterado"}</p>
+            <Button variant="outline" onClick={requestCancel}>
+              CANCELAR
+            </Button>
+            <Button disabled={!isDirty} onClick={handleSave}>
+              SALVAR
+            </Button>
+          </footer>
+        ) : null}
 
-      {/* `isPersistent` porque cancelar é irreversível: sair clicando no fundo
+        {/* `isPersistent` porque cancelar é irreversível: sair clicando no fundo
           é exatamente o acidente a evitar. */}
-      <Modal
-        isOpen={isConfirmingCancel}
-        isPersistent
-        title="Descartar as alterações?"
-        onClose={() => setIsConfirmingCancel(false)}
-        footer={
-          <>
-            <Button variant="outline" onClick={() => setIsConfirmingCancel(false)}>
-              CONTINUAR EDITANDO
-            </Button>
-            <Button
-              intent="danger"
-              onClick={() => {
-                setIsConfirmingCancel(false)
-                setDraft(null)
-              }}
-            >
-              DESCARTAR
-            </Button>
-          </>
-        }
-      >
-        <p className={styles.note}>
-          O que você mudou nesta ficha ainda não foi salvo. Descartando, ela volta ao que
-          estava.
-        </p>
-      </Modal>
-    </main>
+        <Modal
+          isOpen={isConfirmingCancel}
+          isPersistent
+          title="Descartar as alterações?"
+          onClose={() => setIsConfirmingCancel(false)}
+          footer={
+            <>
+              <Button variant="outline" onClick={() => setIsConfirmingCancel(false)}>
+                CONTINUAR EDITANDO
+              </Button>
+              <Button
+                intent="danger"
+                onClick={() => {
+                  setIsConfirmingCancel(false)
+                  setDraft(null)
+                }}
+              >
+                DESCARTAR
+              </Button>
+            </>
+          }
+        >
+          <p className={styles.note}>
+            O que você mudou nesta ficha ainda não foi salvo. Descartando, ela volta ao que estava.
+          </p>
+        </Modal>
+      </main>
+    </HouseRulesContext.Provider>
   )
 }

@@ -1,11 +1,11 @@
-import { Avatar, Button, Modal, SectionLabel } from "@jposawa/ronin-ui"
+import { Avatar, Button, Modal, SectionLabel, Tabs } from "@jposawa/ronin-ui"
 import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import React from "react"
-import { Navigate, useNavigate, useParams } from "react-router-dom"
+import { Navigate, useNavigate, useParams, useSearchParams } from "react-router-dom"
 
 import { StepRule } from "@/components"
-import { PARTY_ROLES, ROUTES } from "@/constants"
-import { useCompendium } from "@/hooks"
+import { DEFAULT_HOUSE_RULES, PARTY_ROLES, ROUTES } from "@/constants"
+import { useCompendium, usePartyHouseRules } from "@/hooks"
 import {
   canLeaveParty,
   canRemoveSheetFromParty,
@@ -30,7 +30,17 @@ import {
 import { authAtom, charactersAtom, rosterAtom, sheetRolesAtom, toastAtom } from "@/states"
 import type { Character, Party, PartyMember, PartyMemberView } from "@/types"
 
+import { PartyRolls } from "./PartyRolls"
+import { PartyRules } from "./PartyRules"
+
 import styles from "./PartyDetail.module.css"
+
+const PARTY_TAB_IDS = ["mesa", "rolagens", "regras"] as const
+
+type PartyTabId = (typeof PARTY_TAB_IDS)[number]
+
+const isPartyTab = (value: string | null): value is PartyTabId =>
+  PARTY_TAB_IDS.some((id) => id === value)
 
 const labelForRole = (roleId: string): string =>
   PARTY_ROLES.find((role) => role.id === roleId)?.label ?? roleId
@@ -52,6 +62,10 @@ export const PartyDetail = () => {
   const sheetRoles = useAtomValue(sheetRolesAtom)
   const setToast = useSetAtom(toastAtom)
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const requestedTab = searchParams.get("aba")
+  const tab: PartyTabId = isPartyTab(requestedTab) ? requestedTab : "mesa"
+  const partyRules = usePartyHouseRules(partyId ?? null)
 
   const [party, setParty] = React.useState<Party | null>(null)
   const [members, setMembers] = React.useState<PartyMemberView[]>([])
@@ -139,6 +153,10 @@ export const PartyDetail = () => {
   const nameOf = (userId: string): string =>
     members.find((view) => view.member.userId === userId)?.displayName ?? "Jogador"
 
+  // O que uma ficha leva ao sair da mesa: as regras que valiam para ela aqui.
+  const keptRules = { ...DEFAULT_HOUSE_RULES, ...partyRules }
+  const isNarrator = myRole?.roleId === "gm"
+
   const sheetsInParty = new Set(sheets.map((sheet) => sheet.id))
   const addableSheets = myCharacters.filter((character) => !sheetsInParty.has(character.id))
 
@@ -166,7 +184,7 @@ export const PartyDetail = () => {
     setIsWorking(true)
 
     try {
-      await setSheetParty(sheet.id, null, partyId)
+      await setSheetParty(sheet.id, null, partyId, keptRules)
 
       // A ficha não é apagada — só perde o vínculo. Se ela for sua, o roster
       // local acompanha; se for de outra pessoa, não há o que atualizar aqui,
@@ -178,7 +196,7 @@ export const PartyDetail = () => {
           ...roster,
           characters: {
             ...roster.characters,
-            [sheet.id]: touchCharacter({ ...mine, partyId: null }),
+            [sheet.id]: touchCharacter({ ...mine, partyId: null, houseRules: keptRules }),
           },
         })
       }
@@ -257,6 +275,7 @@ export const PartyDetail = () => {
         partyId,
         members.map((view) => view.member.userId),
         sheets.map((sheet) => sheet.id),
+        keptRules,
       )
 
       // As fichas continuam existindo, então o roster local precisa perder o
@@ -264,7 +283,9 @@ export const PartyDetail = () => {
       const released = Object.fromEntries(
         Object.entries(roster.characters).map(([id, character]) => [
           id,
-          character.partyId === partyId ? touchCharacter({ ...character, partyId: null }) : character,
+          character.partyId === partyId
+            ? touchCharacter({ ...character, partyId: null, houseRules: keptRules })
+            : character,
         ]),
       )
 
@@ -285,170 +306,204 @@ export const PartyDetail = () => {
 
       <h2 className={styles.title}>{party?.name ?? (isLoading ? "Carregando…" : "Grupo")}</h2>
 
-      <SectionLabel detail={String(members.length)}>MEMBROS</SectionLabel>
-      <ul className={styles.list}>
-        {members.map(({ member, displayName, photoUrl }) => (
-          <li className={styles.row} key={member.userId}>
-            <Avatar imageUrl={photoUrl ?? undefined} name={displayName} />
-            <span className={styles.rowText}>
-              <b className={styles.rowName}>{displayName}</b>
-              <span className={styles.rowMeta}>
-                {labelForRole(member.roleId)}
-                {isPartyOwner(party, member.userId) ? " · dono" : ""}
-              </span>
-            </span>
-          </li>
-        ))}
-      </ul>
+      <Tabs
+        hideArrows
+        hideDots
+        activeTabId={tab}
+        onTabChange={(tabId) => setSearchParams({ aba: tabId }, { replace: true })}
+        tabs={[
+          {
+            id: "mesa",
+            label: "Mesa",
+            content: (
+              <section className={styles.panel} aria-label="Mesa">
+                <SectionLabel detail={String(members.length)}>MEMBROS</SectionLabel>
+                <ul className={styles.list}>
+                  {members.map(({ member, displayName, photoUrl }) => (
+                    <li className={styles.row} key={member.userId}>
+                      <Avatar imageUrl={photoUrl ?? undefined} name={displayName} />
+                      <span className={styles.rowText}>
+                        <b className={styles.rowName}>{displayName}</b>
+                        <span className={styles.rowMeta}>
+                          {labelForRole(member.roleId)}
+                          {isPartyOwner(party, member.userId) ? " · dono" : ""}
+                        </span>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
 
-      <SectionLabel detail={String(sheets.length)}>FICHAS DO GRUPO</SectionLabel>
-      {sheets.length === 0 ? (
-        <p className={styles.empty}>Nenhuma ficha no grupo ainda.</p>
-      ) : (
-        <ul className={styles.list}>
-          {sheets.map((sheet) => {
-            const classDefinition = sheet.className
-              ? compendium.classes.find((candidate) => candidate.name === sheet.className)
-              : undefined
+                <SectionLabel detail={String(sheets.length)}>FICHAS DO GRUPO</SectionLabel>
+                {sheets.length === 0 ? (
+                  <p className={styles.empty}>Nenhuma ficha no grupo ainda.</p>
+                ) : (
+                  <ul className={styles.list}>
+                    {sheets.map((sheet) => {
+                      const classDefinition = sheet.className
+                        ? compendium.classes.find((candidate) => candidate.name === sheet.className)
+                        : undefined
 
-            return (
-              <li
-                className={styles.row}
-                key={sheet.id}
-                style={
-                  {
-                    "--domain-color": classDefinition
-                      ? domainColorToken(classDefinition.domains[0])
-                      : undefined,
-                  } as React.CSSProperties
-                }
-              >
-                <span className={styles.level}>{sheet.level}</span>
-                <span className={styles.rowText}>
-                  <b className={styles.rowName}>{sheet.name || "Sem nome"}</b>
-                  <span className={styles.rowMeta}>
-                    {[sheet.ancestry, sheet.className].filter(Boolean).join(" · ") ||
-                      "ficha em branco"}
-                  </span>
-                </span>
+                      return (
+                        <li
+                          className={styles.row}
+                          key={sheet.id}
+                          style={
+                            {
+                              "--domain-color": classDefinition
+                                ? domainColorToken(classDefinition.domains[0])
+                                : undefined,
+                            } as React.CSSProperties
+                          }
+                        >
+                          <span className={styles.level}>{sheet.level}</span>
+                          <span className={styles.rowText}>
+                            <b className={styles.rowName}>{sheet.name || "Sem nome"}</b>
+                            <span className={styles.rowMeta}>
+                              {[sheet.ancestry, sheet.className].filter(Boolean).join(" · ") ||
+                                "ficha em branco"}
+                            </span>
+                          </span>
 
-                {/* A porta de saída na própria linha, ao lado da ficha que ela
-                    tira. Pôr uma ficha era um botão e tirá-la não era nada —
-                    quem entrasse com a ficha errada ficava sem caminho de
-                    volta a não ser desfazer a mesa. */}
-                {canRemoveSheetFromParty(sheetRoles[sheet.id], memberRows, user.userId) ? (
-                  <Button
-                    variant="text"
-                    intent="danger"
-                    disabled={isWorking}
-                    aria-label={`Tirar ${sheet.name || "ficha sem nome"} do grupo`}
-                    onClick={() => setSheetToRemove(sheet)}
-                  >
-                    TIRAR
-                  </Button>
+                          {/* A porta de saída na própria linha, ao lado da ficha que ela
+                            tira. Pôr uma ficha era um botão e tirá-la não era nada —
+                            quem entrasse com a ficha errada ficava sem caminho de
+                            volta a não ser desfazer a mesa. */}
+                          {canRemoveSheetFromParty(
+                            sheetRoles[sheet.id],
+                            memberRows,
+                            user.userId,
+                          ) ? (
+                            <Button
+                              variant="text"
+                              intent="danger"
+                              disabled={isWorking}
+                              aria-label={`Tirar ${sheet.name || "ficha sem nome"} do grupo`}
+                              onClick={() => setSheetToRemove(sheet)}
+                            >
+                              TIRAR
+                            </Button>
+                          ) : null}
+                        </li>
+                      )
+                    })}
+                  </ul>
+                )}
+
+                {addableSheets.length > 0 ? (
+                  <>
+                    <SectionLabel>PÔR UMA FICHA SUA NO GRUPO</SectionLabel>
+                    <div className={styles.actions}>
+                      {addableSheets.map((character) => (
+                        <Button
+                          key={character.id}
+                          isFullWidth
+                          variant="outline"
+                          onClick={() => void handleAddSheet(character)}
+                        >
+                          + &nbsp;{character.name || "Sem nome"}
+                        </Button>
+                      ))}
+                    </div>
+                  </>
                 ) : null}
-              </li>
-            )
-          })}
-        </ul>
-      )}
 
-      {addableSheets.length > 0 ? (
-        <>
-          <SectionLabel>PÔR UMA FICHA SUA NO GRUPO</SectionLabel>
-          <div className={styles.actions}>
-            {addableSheets.map((character) => (
-              <Button
-                key={character.id}
-                isFullWidth
-                variant="outline"
-                onClick={() => void handleAddSheet(character)}
-              >
-                + &nbsp;{character.name || "Sem nome"}
-              </Button>
-            ))}
-          </div>
-        </>
-      ) : null}
+                <SectionLabel>CÓDIGO DO GRUPO</SectionLabel>
+                <p className={styles.code}>{partyId}</p>
+                <p className={styles.note}>
+                  Quem tem este código entra no grupo e passa a ver as fichas dele. Ele não expira e
+                  não dá para revogar — trate como o link de uma ficha.
+                </p>
 
-      <SectionLabel>CÓDIGO DO GRUPO</SectionLabel>
-      <p className={styles.code}>{partyId}</p>
-      <p className={styles.note}>
-        Quem tem este código entra no grupo e passa a ver as fichas dele. Ele não
-        expira e não dá para revogar — trate como o link de uma ficha.
-      </p>
+                {/* Promover é ação de Narrador, e não só a saída de emergência de quem
+                  está preso: uma mesa grande quer um segundo Narrador de qualquer
+                  jeito. Por isso a seção não depende de `isLastNarrator`. */}
+                {isNarrator && promotable.length > 0 ? (
+                  <>
+                    <SectionLabel>ADICIONAR NARRADOR</SectionLabel>
+                    <div className={styles.actions}>
+                      {promotable.map((member) => (
+                        <Button
+                          key={member.userId}
+                          isFullWidth
+                          variant="outline"
+                          disabled={isWorking}
+                          onClick={() => void handlePromote(member)}
+                        >
+                          + &nbsp;{nameOf(member.userId).toUpperCase()}
+                        </Button>
+                      ))}
+                    </div>
+                    <p className={styles.note}>
+                      Narrador administra o grupo junto com você — ninguém é rebaixado. É também o
+                      que libera a sua saída, se você for o único hoje.
+                    </p>
+                  </>
+                ) : null}
 
-      {/* Promover é ação de Narrador, e não só a saída de emergência de quem
-          está preso: uma mesa grande quer um segundo Narrador de qualquer
-          jeito. Por isso a seção não depende de `isLastNarrator`. */}
-      {myRole?.roleId === "gm" && promotable.length > 0 ? (
-        <>
-          <SectionLabel>ADICIONAR NARRADOR</SectionLabel>
-          <div className={styles.actions}>
-            {promotable.map((member) => (
-              <Button
-                key={member.userId}
-                isFullWidth
-                variant="outline"
-                disabled={isWorking}
-                onClick={() => void handlePromote(member)}
-              >
-                + &nbsp;{nameOf(member.userId).toUpperCase()}
-              </Button>
-            ))}
-          </div>
-          <p className={styles.note}>
-            Narrador administra o grupo junto com você — ninguém é rebaixado. É
-            também o que libera a sua saída, se você for o único hoje.
-          </p>
-        </>
-      ) : null}
+                <div className={styles.actions}>
+                  <Button
+                    isFullWidth
+                    variant="outline"
+                    intent="danger"
+                    disabled={!myRole || !canLeave || isWorking}
+                    onClick={() => void handleLeave()}
+                  >
+                    SAIR DO GRUPO
+                  </Button>
+                </div>
 
-      <div className={styles.actions}>
-        <Button
-          isFullWidth
-          variant="outline"
-          intent="danger"
-          disabled={!myRole || !canLeave || isWorking}
-          onClick={() => void handleLeave()}
-        >
-          SAIR DO GRUPO
-        </Button>
-      </div>
+                {isLastNarrator ? (
+                  <p className={styles.note}>
+                    {promotable.length > 0
+                      ? "Você é o único Narrador, então sair deixaria a mesa sem quem a administre — um grupo sem Narrador não pode ser apagado nem ter alguém promovido. Suba alguém a Narrador acima, ou desfaça a mesa."
+                      : "Você é o único Narrador e não há mais ninguém na mesa. Sair deixaria o grupo inalcançável, então o que resta é desfazê-lo."}
+                  </p>
+                ) : null}
 
-      {isLastNarrator ? (
-        <p className={styles.note}>
-          {promotable.length > 0
-            ? "Você é o único Narrador, então sair deixaria a mesa sem quem a administre — um grupo sem Narrador não pode ser apagado nem ter alguém promovido. Suba alguém a Narrador acima, ou desfaça a mesa."
-            : "Você é o único Narrador e não há mais ninguém na mesa. Sair deixaria o grupo inalcançável, então o que resta é desfazê-lo."}
-        </p>
-      ) : null}
+                {isOwner && !isLastNarrator ? (
+                  <p className={styles.note}>
+                    O grupo é seu. Ao sair, você escolhe para qual Narrador ele fica.
+                  </p>
+                ) : null}
 
-      {isOwner && !isLastNarrator ? (
-        <p className={styles.note}>
-          O grupo é seu. Ao sair, você escolhe para qual Narrador ele fica.
-        </p>
-      ) : null}
-
-      {/* Apagar é do Dono, não de todo Narrador: o grupo é dele, e um Narrador
-          convidado que quiser sair sempre pode — o Dono continua na mesa como
-          segundo Narrador, então `canLeaveParty` já o libera. Ninguém fica
-          preso precisando desta porta. */}
-      {isOwner && myRole?.roleId === "gm" ? (
-        <>
-          <SectionLabel>DESFAZER A MESA</SectionLabel>
-          <div className={styles.actions}>
-            <Button
-              isFullWidth
-              intent="danger"
-              disabled={isWorking}
-              onClick={() => setIsConfirmingDelete(true)}
-            >
-              APAGAR GRUPO
-            </Button>
-          </div>
-        </>
-      ) : null}
+                {/* Apagar é do Dono, não de todo Narrador: o grupo é dele, e um Narrador
+                  convidado que quiser sair sempre pode — o Dono continua na mesa como
+                  segundo Narrador, então `canLeaveParty` já o libera. Ninguém fica
+                  preso precisando desta porta. */}
+                {isOwner && isNarrator ? (
+                  <>
+                    <SectionLabel>DESFAZER A MESA</SectionLabel>
+                    <div className={styles.actions}>
+                      <Button
+                        isFullWidth
+                        intent="danger"
+                        disabled={isWorking}
+                        onClick={() => setIsConfirmingDelete(true)}
+                      >
+                        APAGAR GRUPO
+                      </Button>
+                    </div>
+                  </>
+                ) : null}
+              </section>
+            ),
+          },
+          {
+            id: "rolagens",
+            label: "Rolagens",
+            // Só monta com a aba aberta: é ela que assina o histórico ao vivo.
+            content:
+              tab === "rolagens" ? <PartyRolls partyId={partyId} isNarrator={isNarrator} /> : null,
+          },
+          {
+            id: "regras",
+            label: "Regras",
+            content: (
+              <PartyRules partyId={partyId} houseRules={partyRules} isNarrator={isNarrator} />
+            ),
+          },
+        ]}
+      />
 
       {/* Tirar ficha passa por confirmação porque mexe no que a mesa inteira
           vê, e porque pôr de volta uma ficha que não é sua depende do dono
@@ -460,11 +515,7 @@ export const PartyDetail = () => {
         onClose={() => setSheetToRemove(null)}
         footer={
           <>
-            <Button
-              variant="outline"
-              disabled={isWorking}
-              onClick={() => setSheetToRemove(null)}
-            >
+            <Button variant="outline" disabled={isWorking} onClick={() => setSheetToRemove(null)}>
               CANCELAR
             </Button>
             <Button
@@ -478,9 +529,9 @@ export const PartyDetail = () => {
         }
       >
         <p className={styles.note}>
-          <b>{sheetToRemove?.name || "Sem nome"}</b> sai da mesa e deixa de aparecer
-          para os outros membros. <b>A ficha não é apagada</b> — ela volta para quem a
-          escreveu, sem grupo, e pode entrar de novo depois.
+          <b>{sheetToRemove?.name || "Sem nome"}</b> sai da mesa e deixa de aparecer para os outros
+          membros. <b>A ficha não é apagada</b> — ela volta para quem a escreveu, sem grupo, e pode
+          entrar de novo depois.
         </p>
       </Modal>
 
@@ -493,11 +544,7 @@ export const PartyDetail = () => {
         title="Para quem fica o grupo?"
         onClose={() => setIsHandingOver(false)}
         footer={
-          <Button
-            variant="outline"
-            disabled={isWorking}
-            onClick={() => setIsHandingOver(false)}
-          >
+          <Button variant="outline" disabled={isWorking} onClick={() => setIsHandingOver(false)}>
             CANCELAR
           </Button>
         }
@@ -505,8 +552,8 @@ export const PartyDetail = () => {
         {successors.length > 0 ? (
           <>
             <p className={styles.note}>
-              O grupo <b>{party?.name || "Sem nome"}</b> é seu. Escolha quem passa a
-              ser o Dono — você sai na mesma ação.
+              O grupo <b>{party?.name || "Sem nome"}</b> é seu. Escolha quem passa a ser o Dono —
+              você sai na mesma ação.
             </p>
             <div className={styles.actions}>
               {successors.map((member) => (
@@ -524,9 +571,8 @@ export const PartyDetail = () => {
           </>
         ) : (
           <p className={styles.note}>
-            O grupo só pode ficar com outro Narrador, e ainda não há nenhum além de
-            você. Feche isto e suba alguém a Narrador — ou desfaça a mesa, se ela
-            acabou.
+            O grupo só pode ficar com outro Narrador, e ainda não há nenhum além de você. Feche isto
+            e suba alguém a Narrador — ou desfaça a mesa, se ela acabou.
           </p>
         )}
       </Modal>
@@ -557,13 +603,13 @@ export const PartyDetail = () => {
       >
         <p className={styles.note}>
           O grupo <b>{party?.name || "Sem nome"}</b> some para todos os{" "}
-          {members.length === 1 ? "seus membros" : `${members.length} membros`}, junto
-          com o código de convite. Não dá para desfazer.
+          {members.length === 1 ? "seus membros" : `${members.length} membros`}, junto com o código
+          de convite. Não dá para desfazer.
         </p>
         <p className={styles.note}>
           As {sheets.length === 1 ? "ficha" : "fichas"} do grupo{" "}
-          <b>não {sheets.length === 1 ? "é apagada" : "são apagadas"}</b> — cada uma
-          volta para quem a escreveu, sem grupo.
+          <b>não {sheets.length === 1 ? "é apagada" : "são apagadas"}</b> — cada uma volta para quem
+          a escreveu, sem grupo.
         </p>
       </Modal>
     </main>

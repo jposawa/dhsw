@@ -1,8 +1,10 @@
 import type {
   DerivedStats,
+  DicePreset,
   RollPreparation,
   SituationalModifier,
   Trait,
+  Weapon,
 } from "@/types"
 
 /**
@@ -34,5 +36,45 @@ export const prepareRoll = (
     stat,
     situational: relevant,
     total: stat.total + situationalTotal,
+  }
+}
+
+/** "duality+2", "duality-1", "duality" — o modificador já no texto. */
+const dualityWith = (modifier: number): string =>
+  modifier === 0 ? "duality" : `duality${modifier > 0 ? "+" : "-"}${Math.abs(modifier)}`
+
+/** Rolar um atributo: Duality com o valor final dele. */
+export const presetForTrait = (trait: Trait, derived: DerivedStats): DicePreset => ({
+  label: trait,
+  expression: dualityWith(derived.traits[trait].total),
+})
+
+/**
+ * Atacar e causar dano com uma arma empunhada.
+ *
+ * O ataque usa o atributo da arma — `Forcewield` é o da subclasse, e sem ele
+ * soma zero. O dano leva a Proficiency no número de dados e o bônus do tier,
+ * como `formatWeaponDamage` mostra. Os bônus de augment entram nos dois.
+ */
+export const presetsForWeapon = (
+  weapon: Weapon,
+  name: string,
+  derived: DerivedStats,
+  bonuses: { attackBonus: number; damageBonus: number },
+): { attack: DicePreset; damage: DicePreset } => {
+  const trait = weapon.trait === "Forcewield" ? derived.spellcastTrait : weapon.trait
+  const traitValue = trait ? derived.traits[trait].total : 0
+  const damageBonus = (weapon.bonusByTier[derived.tier - 1] ?? 0) + bonuses.damageBonus
+  const bonusText = damageBonus === 0 ? "" : `${damageBonus > 0 ? "+" : "-"}${Math.abs(damageBonus)}`
+
+  return {
+    attack: {
+      label: `Ataque · ${name}`,
+      expression: dualityWith(traitValue + bonuses.attackBonus),
+    },
+    damage: {
+      label: `Dano · ${name}`,
+      expression: `${derived.proficiency.total}${weapon.damageDie}${bonusText}`,
+    },
   }
 }

@@ -1,9 +1,14 @@
 import { describe, expect, it } from "vitest"
 
-import { TRAIT_LIST } from "@/constants"
+import { DEFAULT_HOUSE_RULES, TRAIT_LIST } from "@/constants"
 import type { Character } from "@/types"
 
-import { createCharacter, hasSheetEdits, normalizeCharacter } from "./character"
+import {
+  createCharacter,
+  effectiveHouseRules,
+  hasSheetEdits,
+  normalizeCharacter,
+} from "./character"
 
 /**
  * O que o Realtime Database devolve de uma ficha que subiu com listas vazias:
@@ -88,5 +93,37 @@ describe("hasSheetEdits", () => {
     const saved = createCharacter("Rey")
 
     expect(hasSheetEdits({ ...saved, updatedAt: saved.updatedAt + 5000 }, saved)).toBe(false)
+  })
+})
+
+describe("regras da casa da ficha", () => {
+  const custom = { ...DEFAULT_HOUSE_RULES, hasCustomWeapons: true }
+  const partyRules = { ...DEFAULT_HOUSE_RULES, loadoutSize: "4+tier" as const }
+
+  it("ficha nova nasce com o modelo recebido", () => {
+    expect(createCharacter("Rey", custom).houseRules).toEqual(custom)
+  })
+
+  it("ficha do banco sem regras, ou com regra nova faltando, recebe o padrão", () => {
+    const stored = { ...createCharacter("Rey"), houseRules: { hasCustomWeapons: true } } as unknown as Character
+
+    expect(normalizeCharacter(stored).houseRules).toEqual(custom)
+  })
+
+  it("mudar regra acende o Salvar", () => {
+    const saved = createCharacter("Rey")
+
+    expect(hasSheetEdits({ ...saved, houseRules: custom }, saved)).toBe(true)
+  })
+
+  it("fora de mesa valem as da ficha", () => {
+    expect(effectiveHouseRules(createCharacter("Rey", custom), partyRules)).toEqual(custom)
+  })
+
+  it("em mesa valem as da mesa, e as da ficha só enquanto as da mesa não chegam", () => {
+    const inParty = { ...createCharacter("Rey", custom), partyId: "mesa" }
+
+    expect(effectiveHouseRules(inParty, partyRules)).toEqual(partyRules)
+    expect(effectiveHouseRules(inParty, null)).toEqual(custom)
   })
 })

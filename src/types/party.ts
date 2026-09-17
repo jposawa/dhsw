@@ -14,6 +14,8 @@
  * uma terceira tabela — a razão de `SheetAccess` existir não se aplica.
  */
 
+import type { HouseRules } from "./character"
+
 export type PartyRoleId = "player" | "gm"
 
 /** Espaçados de 10, como os papéis de ficha, para caber um no meio depois. */
@@ -33,6 +35,11 @@ export type Party = {
   createdAt: number
   updatedAt: number
   notes: string
+  /**
+   * Regras da casa da mesa. Valem para toda ficha dela, no lugar das da ficha.
+   * Ausente em mesa antiga: vale o padrão do livro até o Narrador ajustar.
+   */
+  houseRules?: HouseRules
 }
 
 export type PartyMember = {

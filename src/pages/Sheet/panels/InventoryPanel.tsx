@@ -1,12 +1,10 @@
 import { Button, Drawer, SectionLabel } from "@jposawa/ronin-ui"
-import { useAtomValue } from "jotai"
 import React from "react"
 
 import { EQUIP_SLOTS, GEAR_KINDS } from "@/constants"
 import { describeNamedArmor } from "@/helpers"
-import { useCompendium } from "@/hooks"
+import { useCompendium, useHouseRules } from "@/hooks"
 import { augmentSlotsFor, candidatesForSlot, consume, equipInSlot, removeEntry } from "@/rules"
-import { houseRulesAtom } from "@/states"
 import type { Character, DerivedStats, EquipSlot, GearKind, InventoryEntry, Result } from "@/types"
 
 import { AugmentDrawer } from "./AugmentDrawer"
@@ -38,7 +36,7 @@ type InventoryPanelProps = {
  */
 export const InventoryPanel = ({ character, derived, onApply }: InventoryPanelProps) => {
   const { compendium } = useCompendium()
-  const houseRules = useAtomValue(houseRulesAtom)
+  const houseRules = useHouseRules()
 
   const [slotDrawer, setSlotDrawer] = React.useState<EquipSlot | null>(null)
   const [catalogueKind, setCatalogueKind] = React.useState<GearKind | null>(null)

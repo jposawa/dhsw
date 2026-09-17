@@ -1,9 +1,9 @@
 import { describe, expect, it } from "vitest"
 
-import { CHARACTER_SCHEMA_VERSION } from "@/constants"
+import { CHARACTER_SCHEMA_VERSION, DEFAULT_HOUSE_RULES } from "@/constants"
 import type { Character, RosterState } from "@/types"
 
-import { houseRulesV1ToV2, rosterV1ToV2, rosterV2ToV3 } from "./migrations"
+import { houseRulesV1ToV2, rosterV1ToV2, rosterV2ToV3, rosterV3ToV4 } from "./migrations"
 
 /**
  * Fixture do formato v1: ficha **sem** `partyId` e com `schema: 1`. Escrita à
@@ -113,11 +113,11 @@ describe("houseRulesV1ToV2", () => {
 describe("rosterV2ToV3", () => {
   const v2 = rosterV1ToV2(V1_ROSTER)
 
-  it("acrescenta tokens vazio e sobe o schema", () => {
+  it("acrescenta tokens vazio e sobe o schema para 3", () => {
     const character = rosterV2ToV3(v2).characters["sheet-1"]
 
     expect(character.tokens).toEqual([])
-    expect(character.schema).toBe(CHARACTER_SCHEMA_VERSION)
+    expect(character.schema).toBe(3)
   })
 
   it("preserva o resto da ficha", () => {
@@ -125,5 +125,19 @@ describe("rosterV2ToV3", () => {
 
     expect(character.marks).toEqual({ hp: 1, stress: 2, armor: 0, hope: 3 })
     expect(character.partyId).toBeNull()
+  })
+})
+
+describe("rosterV3ToV4", () => {
+  const v3 = rosterV2ToV3(rosterV1ToV2(V1_ROSTER))
+  const deviceRules = { ...DEFAULT_HOUSE_RULES, hasTwoCardsPerLevel: true }
+
+  /* Até aqui a ficha calculava com as regras do aparelho: elas viram as dela,
+     e nenhum número muda sozinho na atualização. */
+  it("dá à ficha as regras que valiam no aparelho e sobe o schema", () => {
+    const character = rosterV3ToV4(v3, deviceRules).characters["sheet-1"]
+
+    expect(character.houseRules).toEqual(deviceRules)
+    expect(character.schema).toBe(CHARACTER_SCHEMA_VERSION)
   })
 })

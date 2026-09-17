@@ -19,9 +19,12 @@ export const ROUTES = {
   /** Um segmento do compêndio. As chaves são as de `COMPENDIUM_TABS`. */
   compendiumTab: (tab: CompendiumTabId | ":tab" = ":tab") => `/compendio/${tab}`,
   compendiumEntry: (kind = ":kind", slug = ":slug") => `/compendio/${kind}/${slug}`,
+  /** Rolador público, com histórico do aparelho. */
+  dice: "/rolagem",
   houseRules: "/regras",
   /** Alcancado pelo menu da conta, nao pela barra — fora do catalogo de `appNav`. */
   profile: "/perfil",
+  profileTab: (tab: "conta" | "regras") => `/perfil?aba=${tab}`,
   parties: "/grupos",
   party: (partyId = ":partyId") => `/grupo/${partyId}`,
   data: "/dados",
@@ -41,6 +44,7 @@ export const SHEET_TABS: readonly { id: SheetTabId; label: string }[] = [
   { id: "cartas", label: "Cartas" },
   { id: "inventario", label: "Inventário" },
   { id: "historia", label: "História" },
+  { id: "regras", label: "Regras" },
 ]
 
 /**

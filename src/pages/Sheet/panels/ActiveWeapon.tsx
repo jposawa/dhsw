@@ -1,11 +1,11 @@
-import { useAtomValue } from "jotai"
+
+import { Button } from "@jposawa/ronin-ui"
 
 import { FeatureText, RuleText } from "@/fragments"
 import { formatSigned, formatWeaponDamage } from "@/helpers"
-import { useCompendium } from "@/hooks"
-import { augmentRollBonuses, augmentsOf } from "@/rules"
-import { houseRulesAtom } from "@/states"
-import type { InventoryEntry, Weapon } from "@/types"
+import { useCompendium, useHouseRules } from "@/hooks"
+import { augmentRollBonuses, augmentsOf, presetsForWeapon } from "@/rules"
+import type { DerivedStats, DicePreset, InventoryEntry, Weapon } from "@/types"
 
 import styles from "./ActiveWeapon.module.css"
 
@@ -17,6 +17,9 @@ type ActiveWeaponProps = {
   tierIndex: number
   /** Motivo de o slot estar vazio quando não é só "nada empunhado". */
   emptyText: string
+  derived: DerivedStats
+  /** Prepara o rolador com o ataque ou o dano — não rola. */
+  onPrepareRoll: (preset: DicePreset) => void
 }
 
 /**
@@ -32,9 +35,11 @@ export const ActiveWeapon = ({
   proficiency,
   tierIndex,
   emptyText,
+  derived,
+  onPrepareRoll,
 }: ActiveWeaponProps) => {
   const { compendium } = useCompendium()
-  const houseRules = useAtomValue(houseRulesAtom)
+  const houseRules = useHouseRules()
 
   if (!entry || !weapon) {
     return (
@@ -47,6 +52,10 @@ export const ActiveWeapon = ({
 
   const { damageBonus, attackBonus } = augmentRollBonuses(entry, houseRules, compendium)
   const augments = houseRules.hasCustomWeapons ? augmentsOf(entry, compendium) : []
+  const presets = presetsForWeapon(weapon, entry.nickname ?? weapon.name, derived, {
+    attackBonus,
+    damageBonus,
+  })
 
   return (
     <li className={styles.weapon}>
@@ -73,6 +82,15 @@ export const ActiveWeapon = ({
       {augments.map((augment) => (
         <RuleText key={augment.name} text={`**${augment.name}:** ${augment.text}`} />
       ))}
+
+      <p className={styles.actions}>
+        <Button variant="outline" onClick={() => onPrepareRoll(presets.attack)}>
+          ATACAR
+        </Button>
+        <Button variant="outline" onClick={() => onPrepareRoll(presets.damage)}>
+          DANO
+        </Button>
+      </p>
     </li>
   )
 }

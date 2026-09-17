@@ -94,13 +94,20 @@ export type Character = {
    */
   partyId: string | null
 
+  /**
+   * Regras da casa **desta ficha**. Valem quando ela não está numa mesa; em
+   * mesa, valem as da mesa, lidas ao vivo — ver `effectiveHouseRules`. Nascem
+   * do modelo do perfil e se editam com Salvar.
+   */
+  houseRules: HouseRules
+
   /** Histórico, não resumo: dá para mostrar a progressão e desfazer o último nível. */
   advancements: readonly Advancement[]
   experiences: readonly Experience[]
   notes: string
 }
 
-/** Regras da casa. Escolha da mesa — viaja no código de compartilhamento. */
+/** Regras da casa. Escolha da mesa: vivem na ficha e na mesa, e o perfil guarda o modelo de ficha nova. */
 export type HouseRules = {
   hasTwoCardsPerLevel: boolean
   hasEvasionFromTraits: boolean

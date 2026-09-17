@@ -161,14 +161,31 @@
 
 .trait {
   display: flex;
+  min-width: 0;
+  background: var(--color-bg-elevated);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+/* O atributo é o botão de rolar. Botão nu: fundo, borda e cursor explícitos. */
+.traitButton {
+  display: flex;
   flex-direction: column;
   align-items: center;
   gap: 2px;
+  width: 100%;
   min-width: 0;
   padding: var(--space-1);
+  font: inherit;
   text-align: center;
-  background: var(--color-bg-elevated);
-  border-top: var(--border-width) solid var(--color-border);
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.traitButton:hover {
+  background: var(--color-surface);
 }
 
 /* O atributo de Forcewielding: traço e rótulo no azul da interface, para ser

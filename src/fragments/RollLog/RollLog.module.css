@@ -1,0 +1,125 @@
+.log {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.empty {
+  margin: 0;
+  font-size: var(--text-xs);
+  color: var(--color-text-dim);
+}
+
+/* Faixa à esquerda com o resultado: Hope, Fear, crítico ou nenhum. */
+.entry {
+  --outcome-color: var(--color-chrome-dim);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+  background: var(--color-bg-elevated);
+  border-left: var(--domain-stripe-width) solid var(--outcome-color);
+}
+
+.entry[data-outcome="hope"] {
+  --outcome-color: var(--color-domain-aegis);
+}
+
+.entry[data-outcome="fear"] {
+  --outcome-color: var(--color-danger);
+}
+
+.entry[data-outcome="critical"] {
+  --outcome-color: var(--color-success);
+}
+
+.entry[data-highlighted] {
+  padding: var(--space-3);
+}
+
+/* Botão nu: fundo, borda e cursor explícitos. STYLING.md. */
+.toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: var(--size-touch-target);
+  padding: var(--space-2) var(--space-3);
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.toggle:hover {
+  background: var(--color-surface);
+}
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.summaryText {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-ink);
+  overflow-wrap: anywhere;
+}
+
+.entry[data-highlighted] .summaryText {
+  font-size: var(--text-md);
+}
+
+.meta {
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-dim);
+}
+
+.chevron {
+  flex-shrink: 0;
+  font-style: normal;
+  color: var(--color-chrome-dim);
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+/* Nas linhas fechadas o detalhe abre com o recuo da linha. */
+.toggle + .details {
+  padding: 0 var(--space-3) var(--space-3);
+}
+
+.dice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1);
+  margin: 0;
+}
+
+.modifier {
+  font-size: var(--text-md);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-chrome-strong);
+}
+
+.expression {
+  margin: 0;
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  color: var(--color-text-muted);
+}

@@ -14,6 +14,7 @@ import type { NavIconName } from "@/types"
  *
  *   compendium  a pilha de cartas do compêndio
  *   roster      a ficha, com a marca de quem ela é
+ *   dice        um d6 de pé e um d20 ao lado, as duas formas da mesa
  *   parties     três membros ligados, na geometria do mapa
  *   houseRules  os ajustes que as regras da casa realmente são
  *   account     a conta
@@ -25,6 +26,17 @@ export const NAV_ICON_ART: Readonly<Record<NavIconName, React.ReactNode>> = {
       <rect x="7.5" y="3.5" width="12.5" height="17" rx="1.4" />
       <path d="M4.5 6.6v11.8a2.1 2.1 0 0 0 2.1 2.1" opacity=".5" />
       <path d="M10.8 8.6h6M10.8 12h6M10.8 15.4h3.4" opacity=".7" />
+    </>
+  ),
+
+  /* Dados: um d6 de frente e a silhueta de um d20 atrás. */
+  dice: (
+    <>
+      <path d="M14.2 3.4 20.6 7v7.2l-6.4 3.6" opacity=".55" />
+      <rect x="3.5" y="8.5" width="11" height="11" rx="1.6" />
+      <circle cx="6.6" cy="11.6" r=".9" fill="currentColor" />
+      <circle cx="9" cy="14" r=".9" fill="currentColor" />
+      <circle cx="11.4" cy="16.4" r=".9" fill="currentColor" />
     </>
   ),
 

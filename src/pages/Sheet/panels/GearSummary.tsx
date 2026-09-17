@@ -1,10 +1,8 @@
-import { useAtomValue } from "jotai"
 
 import { FeatureText, RuleText } from "@/fragments"
 import { describeNamedArmor, formatDamageType } from "@/helpers"
-import { useCompendium } from "@/hooks"
+import { useCompendium, useHouseRules } from "@/hooks"
 import { augmentSlotsFor } from "@/rules"
-import { houseRulesAtom } from "@/states"
 import type { GearKind } from "@/types"
 
 import styles from "./GearSummary.module.css"
@@ -23,7 +21,7 @@ type GearSummaryProps = {
  */
 export const GearSummary = ({ kind, name }: GearSummaryProps) => {
   const { compendium } = useCompendium()
-  const houseRules = useAtomValue(houseRulesAtom)
+  const houseRules = useHouseRules()
 
   if (kind === "armas") {
     const weapon = compendium.weapons.find((candidate) => candidate.name === name)

@@ -86,6 +86,21 @@
           }
         },
 
+        "partyRolls": {
+          "$partyId": {
+            "public": {
+              ".read": "auth != null && root.child('dhsw/' + $env + '/partyMembers/' + $partyId + '/' + auth.uid).exists()",
+              ".write": "auth != null && root.child('dhsw/' + $env + '/partyMembers/' + $partyId + '/' + auth.uid).exists()",
+              ".indexOn": ["createdAt"]
+            },
+            "gm": {
+              ".read": "auth != null && root.child('dhsw/' + $env + '/partyMembers/' + $partyId + '/' + auth.uid + '/level').val() >= 20",
+              ".write": "auth != null && root.child('dhsw/' + $env + '/partyMembers/' + $partyId + '/' + auth.uid + '/level').val() >= 20",
+              ".indexOn": ["createdAt"]
+            }
+          }
+        },
+
         "settings": {
           "$uid": {
             ".read": "auth != null && auth.uid === $uid",

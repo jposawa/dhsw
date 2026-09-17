@@ -199,6 +199,16 @@ describe("compêndio embarcado", () => {
     expect(bad.map(labelOf)).toEqual([])
   })
 
+  /* O Action Tracker era do beta. O livro tem holofote e Fear (p. 89), e as
+     cartas foram convertidas para eles. */
+  it("nenhuma carta cita o Action Tracker do beta", () => {
+    const bad = FALLBACK_COMPENDIUM.skills.filter((skill) =>
+      /action (tracker|token)/i.test(skill.text),
+    )
+
+    expect(namesOf(bad)).toEqual([])
+  })
+
   it("ação de downtime: descanso, efeito e dado válidos", () => {
     const bad = FALLBACK_COMPENDIUM.downtimeMoves.filter(
       (move) =>

@@ -140,7 +140,7 @@
     "level": 7,
     "recallCost": 1,
     "category": "Ability",
-    "text": "When you would take Damage, you may mark a **Stress** to reduce the severity of the damage by one **Threshold**. When you do, roll **1D6**. If the result is **2-**, place this card into your Vault."
+    "text": "When you would take Damage, you may mark a **Stress** to reduce the severity of the damage by one **Threshold**. When you do, roll **1D6**. On a result of **3** or lower, place this card into your Vault."
   },
   {
     "name": "Combat Charge",
@@ -188,7 +188,7 @@
     "level": 9,
     "recallCost": 1,
     "category": "Ability",
-    "text": "Spend **2 Hope** to take a defensive stance that lasts until you move or fail a roll with **Fear**.\nWhile in this stance, any enemy that moves within *Very Close* range of you is immediately pulled into *Melee* with you and can choose one of the following:\n- Make a Weapon Attack without putting **Action Token** on **Action Tracker** against the target.\n- Make the target temporarily Restrained until GM spends a **Fear** to end this condition."
+    "text": "Spend **2 Hope** to take a defensive stance that lasts until you move or fail a roll with **Fear**.\nWhile in this stance, any enemy that moves within *Very Close* range of you is immediately pulled into *Melee* with you and can choose one of the following:\n- Make a weapon attack against the target right away, even if you don't have the spotlight.\n- Make the target temporarily Restrained until GM spends a **Fear** to end this condition."
   },
   {
     "name": "Not Now",
@@ -275,7 +275,7 @@
     "level": 3,
     "recallCost": 1,
     "category": "Ability",
-    "text": "When you Help an Ally, they can add one of your **Experience** to their roll as well. When making a *Tag Team* roll, you can roll a **D20** for your **Hope** die instead of a **D12**."
+    "text": "When you Help an Ally, they can spend a **Hope** to add one of your **Experiences** to their roll alongside your advantage die. When making a *Tag Team* roll, you can roll a **D20** for your **Hope** die instead of a **D12**."
   },
   {
     "name": "Perspective Shift",
@@ -312,7 +312,7 @@
   {
     "name": "Not Forgetting",
     "domain": "Allure",
-    "level": 6,
+    "level": 8,
     "recallCost": 1,
     "category": "Ability",
     "text": "When you mark one or more **Hit Points** from an attack, you may mark a **Stress** to place the same number of marked **Hit Points** of tokens on this card. On your next attack, you may clear all the tokens and increase your **Proficiency** by the same amount.\nIf you have any tokens remaining on this card when you take a *Rest*, clear that much **Stress** and clear the tokens.",
@@ -324,12 +324,12 @@
     ]
   },
   {
-    "name": "Pattern Action",
+    "name": "All Eyes on Me",
     "domain": "Allure",
     "level": 6,
     "recallCost": 1,
     "category": "Ability",
-    "text": "Whenever you fail an **Action Roll**, your next **Action Roll** has Advantage."
+    "text": "Make a **Presence Roll** against an adversary within *Far* range. On a success, while it can perceive you, its focus is on you: whenever it attacks, it must target you if it can, and attack rolls against it have advantage.\nWhen an ally hits it, you can spend a **Hope** to make it mark a **Stress**.\nYou can only hold **All Eyes on Me** on one adversary at a time."
   },
   {
     "name": "Allure Focus",
@@ -358,7 +358,7 @@
   {
     "name": "Recovery",
     "domain": "Allure",
-    "level": 8,
+    "level": 6,
     "recallCost": 1,
     "category": "Ability",
     "text": "During a *Rest* you can always choose to do one of the *Long Rest* options instead. You may spend a **Hope** to let one additional party member do the same."
@@ -425,7 +425,7 @@
     "level": 2,
     "recallCost": 1,
     "category": "Ability",
-    "text": "After a *Long Rest*, place a number of tokens equal to your **Knowledge trait** on this card, with a minimum of **1**. When you make an **Attack Roll** against a target, you may spend one token to choose an option below.\n- Make the attack with Advantage\n- Don’t add an Action Token to action tracker for this attack\n- Add **1D8** to your damage\nWhenever out of tokens, you may mark a **Stress** to refill your tokens as you do after a *Long Rest*.",
+    "text": "After a *Long Rest*, place a number of tokens equal to your **Knowledge trait** on this card, with a minimum of **1**. When you make an **Attack Roll** against a target, you may spend one token to choose an option below.\n- Make the attack with Advantage\n- If you roll with **Fear**, the GM doesn't gain a **Fear** from this roll.\n- Add **1D8** to your damage\nWhenever out of tokens, you may mark a **Stress** to refill your tokens as you do after a *Long Rest*.",
     "tokens": [
       {
         "name": "Analytic Approach",
@@ -682,7 +682,7 @@
     "level": 2,
     "recallCost": 2,
     "category": "Holocron",
-    "text": "### Shelter Circle\nPlace **2** **Action Token** in the **Action Tracker** to spend a **Hope** and enter in a meditative defense stance. Until you mark any number of **Hit Point** or take another action, you and any ally within *Very Close* range of you increase each **Evasion** by your **Forcewield** **trait** score.\nEvery attack against any ally in *Very Close* range of you is done with **Disadvantage**.\n### Mynock Way\nWhen you are going to make an attack roll using a *Lightsaber* weapon, you may use your **Knowledge** as your Weapon Trait for the roll.\n### Resilience Armor\nUse an action to spend a **Hope** to roll **1D6** plus your **Forcewield score**. Take the value and add to your Armor Score on the next Armor Slot you mark. This can’t be stacked.\nIf you spend a **Strife** or mark a **Serenity**, you can mark a **Stress** to apply this value"
+    "text": "### Shelter Circle\nSpend a **Hope** and let the GM gain a **Fear** to enter a meditative defense stance. Until you mark any number of **Hit Point** or take another action, you and any ally within *Very Close* range of you increase each **Evasion** by your **Forcewield** **trait** score.\nEvery attack against any ally in *Very Close* range of you is done with **Disadvantage**.\n### Mynock Way\nWhen you are going to make an attack roll using a *Lightsaber* weapon, you may use your **Knowledge** as your Weapon Trait for the roll.\n### Resilience Armor\nUse an action to spend a **Hope** to roll **1D6** plus your **Forcewield score**. Take the value and add to your Armor Score on the next Armor Slot you mark. This can’t be stacked.\nIf you spend a **Strife** or mark a **Serenity**, you can mark a **Stress** to apply this value"
   },
   {
     "name": "Cron of Vaunk",
@@ -690,7 +690,7 @@
     "level": 2,
     "recallCost": 2,
     "category": "Holocron",
-    "text": "### Sun Djem\nSpend a **Hope** to make a **Finesse roll** against a target within *Very Close range*, increasing their Difficulty by half their Attack modifier (rounded down). On a success, consider the target’s weapon die as Threshold. If your damage result meet or beat this value, the target is disarmed. If your damage result is at least the double of target’s weapon Threshold, consider the weapon destroyed.\n### Contention Maneuver\nWhen you fail a *Lightsaber* weapon attack roll, you may mark a **Stress** to add increase your Evasion by half your **Forcewield trait** (Rounded up) until your next attack.\n### Force Leap\nIf you are doing this in a situation where the Action Tracker is active, you must mark a **Stress** to perform this action.\nYou can jump up to 8 times your height, usually used to reach high places. It can also be used to jump in other directions, allowing to quick movement.\nYou don’t need to spend an Action Token to move towards a point within *Far Range*. However, this skill doesn’t remove the need of **Agility roll** if applicable."
+    "text": "### Sun Djem\nSpend a **Hope** to make a **Finesse roll** against a target within *Very Close range*, increasing their Difficulty by half their Attack modifier (rounded down). On a success, consider the target’s weapon die as Threshold. If your damage result meet or beat this value, the target is disarmed. If your damage result is at least the double of target’s weapon Threshold, consider the weapon destroyed.\n### Contention Maneuver\nWhen you fail a *Lightsaber* weapon attack roll, you may mark a **Stress** to add increase your Evasion by half your **Forcewield trait** (Rounded up) until your next attack.\n### Force Leap\nIf you do this during combat, mark a **Stress**.\nYou can jump up to 8 times your height, usually used to reach high places. It can also be used to jump in other directions, allowing to quick movement.\nWhen you make an action roll, you can move to a point within *Far* range as part of that action, instead of *Close*. You still make an **Agility Roll** where the terrain calls for one."
   },
   {
     "name": "Cron of Draay",
@@ -721,7 +721,7 @@
     "level": 4,
     "recallCost": 2,
     "category": "Holocron",
-    "text": "### Hawk-Bat Way\nWhen you are going to make a weapon Attack Roll with a *Lightsaber*, you can use **Agility trait** as the weapon trait.\n### Aggression Aim\nAfter you finish a *Rest*, place a number of tokens equal to your **Tier** for this skill.\nSpend a token to apply all your focus toward a single target. Choose that target.\nUntil you defeat it, select another target, or the battle ends, add **+1** to your **Proficiency** when acting against the chosen target. For any other being, your **Proficiency** should be considered **-1** (With a minimum of 1).\n### Clench\nTarget an object or creature within *Far* range. The target stops in space, unable to move, exactly where it is until the end of the scene. If a creature tries to move it, or if it’s a being that tries to move itself, make a **Forcewield Roll** against them to maintain the hold.\nEach action you make while holding something contributes with **2 Action Tokens**.\nIf you mark a **Strife** you can mark a **Stress** to use the Force to hold the target tighter, dealing 2**D8** Physical damage that can’t be reduced by Armor Slot.",
+    "text": "### Hawk-Bat Way\nWhen you are going to make a weapon Attack Roll with a *Lightsaber*, you can use **Agility trait** as the weapon trait.\n### Aggression Aim\nAfter you finish a *Rest*, place a number of tokens equal to your **Tier** for this skill.\nSpend a token to apply all your focus toward a single target. Choose that target.\nUntil you defeat it, select another target, or the battle ends, add **+1** to your **Proficiency** when acting against the chosen target. For any other being, your **Proficiency** should be considered **-1** (With a minimum of 1).\n### Clench\nTarget an object or creature within *Far* range. The target stops in space, unable to move, exactly where it is until the end of the scene. If a creature tries to move it, or if it’s a being that tries to move itself, make a **Forcewield Roll** against them to maintain the hold.\nEach time you make an action roll while holding something, the GM gains a **Fear**.\nIf you mark a **Strife** you can mark a **Stress** to use the Force to hold the target tighter, dealing 2**D8** Physical damage that can’t be reduced by Armor Slot.",
     "tokens": [
       {
         "name": "Aggression Aim",
@@ -736,7 +736,7 @@
     "level": 4,
     "recallCost": 2,
     "category": "Holocron",
-    "text": "### Redirect\nWhile wielding a *Lightsaber* weapon, when you successfully evade an attack from beyond melee range, or avoid marking any **Hit Point** from it without using an Armor Slot, you may roll a number of **D6** equal to your proficiency. If any roll a **6**, you may mark a **Stress** to redirect the attack against an enemy within *Close* range of you. If you mark an additional **Stress**, you can redirect the attack against the person who made it against you, independent of range, with Advantage.\n### Riposte\nWhile wielding a *Lightsaber* weapon, when you successfully evade an attack from melee range, or avoid marking any **Hit Point** from it without using an Armor Slot, you may mark a **Stress** to perform a Weapon attack roll against the opponent who attacked you, without placing an Action Token.\n### Deflective Dome\nAfter you finish a *Rest*, place a number of tokens equal to half your **Tier** (rounded up) for this skill.\nSpend a token and a **Hope** to completely negate any incoming damage against you.\nIf you mark a **Serenity**, you can use this to negate an incoming damage against a *Very Close* ally.",
+    "text": "### Redirect\nWhile wielding a *Lightsaber* weapon, when you successfully evade an attack from beyond melee range, or avoid marking any **Hit Point** from it without using an Armor Slot, you may roll a number of **D6** equal to your proficiency. If any roll a **6**, you may mark a **Stress** to redirect the attack against an enemy within *Close* range of you. If you mark an additional **Stress**, you can redirect the attack against the person who made it against you, independent of range, with Advantage.\n### Riposte\nWhile wielding a *Lightsaber* weapon, when you successfully evade an attack from melee range, or avoid marking any **Hit Point** from it without using an Armor Slot, you may mark a **Stress** to make a weapon attack against the opponent who attacked you right away, even if you don't have the spotlight.\n### Deflective Dome\nAfter you finish a *Rest*, place a number of tokens equal to half your **Tier** (rounded up) for this skill.\nSpend a token and a **Hope** to completely negate any incoming damage against you.\nIf you mark a **Serenity**, you can use this to negate an incoming damage against a *Very Close* ally.",
     "tokens": [
       {
         "name": "Deflective Dome",
@@ -752,7 +752,7 @@
     "level": 5,
     "recallCost": 2,
     "category": "Holocron",
-    "text": "### Moderation Approach\nWhen you are going to make a weapon Attack Roll with a *Lightsaber*, you may your **Forcewield trait** as the weapon trait.\n### Rancor Way\nYou may spend a **Hope** to perform two attacks using one only **1 Action Token**. For this action, one of them must be a weapon attack while the other must be a Force related attack. Each attack rolls are done independently, each one of them dealing only Half Damage (Rounded up).\nIf at least one of selected attacks succeed, the target marks an **Stress** besides the received damage.\n### Valor\nSpend **3 Hope** to charge your body with the Force. On the next successful weapon or body attack, double your **Proficiency** on the damage roll."
+    "text": "### Moderation Approach\nWhen you are going to make a weapon Attack Roll with a *Lightsaber*, you may your **Forcewield trait** as the weapon trait.\n### Rancor Way\nYou may spend a **Hope** to make two attacks as a single move. For this action, one of them must be a weapon attack while the other must be a Force related attack. Each attack rolls are done independently, each one of them dealing only Half Damage (Rounded up).\nIf at least one of selected attacks succeed, the target marks an **Stress** besides the received damage.\n### Valor\nSpend **3 Hope** to charge your body with the Force. On the next successful weapon or body attack, double your **Proficiency** on the damage roll."
   },
   {
     "name": "Cron of Rath",
@@ -799,7 +799,7 @@
     "level": 7,
     "recallCost": 3,
     "category": "Holocron",
-    "text": "### Tutaminis\nWhen you are going to take an *Energy Damage*, you may mark a **Stress** to make a **Forcewield Roll (19)**. On a success, you negate all the incoming *Energy Damage* from this attack. On a failure, you take Half Damage.\nYou may also, on a Success, spend **2 Hope** to perform an attack against any target without using Action Token. In case your attack hits the target, add the Half the Damage you would receive (Rounded up) to your Damage Roll result.\n### Eruption Pound\nSpend **2 Hope** to make a **Forcewield Roll** against any enemies within *Very Close* range of you. All you succeed against are thrown back to *Far* range and must make a **Reaction Roll (17)**. On a failure they also take **4D10+8** Physical damage and become temporarily Vulnerable. On a success, they don't get Vulnerable and take half damage (Rounded up).\n### Battle Meditation\nAfter you finish a *Rest*, place a number of tokens equal to half your **Tier** (rounded up) for this skill.\nSpend a token and make a **Forcewield Roll (17)**. On a success, you start to emanate an invisible aura through the Force, affecting everyone within *Far Range* of you. When you do, place a **D10** on this card at its highest value.\nAt any moment, you and your allies can use the die value to increase the result of any roll you make, or to decrease the result of any roll made against you or any of your allies.\nThen reduce the die’s value by **1**.\nThe aura ends when the die reaches **0**, you stop it, or you get unconscious.",
+    "text": "### Tutaminis\nWhen you are going to take an *Energy Damage*, you may mark a **Stress** to make a **Forcewield Roll (19)**. On a success, you negate all the incoming *Energy Damage* from this attack. On a failure, you take Half Damage.\nYou may also, on a Success, spend **2 Hope** to make an attack against any target right away, even if you don't have the spotlight. In case your attack hits the target, add the Half the Damage you would receive (Rounded up) to your Damage Roll result.\n### Eruption Pound\nSpend **2 Hope** to make a **Forcewield Roll** against any enemies within *Very Close* range of you. All you succeed against are thrown back to *Far* range and must make a **Reaction Roll (17)**. On a failure they also take **4D10+8** Physical damage and become temporarily Vulnerable. On a success, they don't get Vulnerable and take half damage (Rounded up).\n### Battle Meditation\nAfter you finish a *Rest*, place a number of tokens equal to half your **Tier** (rounded up) for this skill.\nSpend a token and make a **Forcewield Roll (17)**. On a success, you start to emanate an invisible aura through the Force, affecting everyone within *Far Range* of you. When you do, place a **D10** on this card at its highest value.\nAt any moment, you and your allies can use the die value to increase the result of any roll you make, or to decrease the result of any roll made against you or any of your allies.\nThen reduce the die’s value by **1**.\nThe aura ends when the die reaches **0**, you stop it, or you get unconscious.",
     "tokens": [
       {
         "name": "Battle Meditation",
@@ -831,7 +831,7 @@
     "level": 8,
     "recallCost": 3,
     "category": "Holocron",
-    "text": "### Holding Together\nAfter you finish a *Rest*, place a number of tokens equal to half your **Tier** (rounded up) for this skill.\nSpend a token and use an action to absorb **Stress** from a willing creature you can touch. The target describes what intimate knowledge or emotions leak from their mind in this moment between you.\nThen, for each absorbed **Stress**, you choose to gain a **Hope** or mark a **Serenity**.\n### Merging Symphony\nWhen helping an ally to make a roll, you may mark a **Stress** to add one of your Experiences that relates to the action.\nAlso, when participating on a Group Roll, you may mark **2 Stress** to make all participants roll with Advantage.\n### Restoration\nAfter a *Long Rest*, place a number of tokens equal to your **Forcewield Trait** for this skill, with a minimum of **1**.\nYou can connect yourself with a creature within *Very Close* range and spend any number of tokens to heal them for **2 Hit Points** per token.\nYou can also spend a token to clear a **Stress**, end the *Vulnerable* condition, or end other condition (Although the number or required tokens depends on the condition).\nEach spent token increases the *Action Tracker* by **1** if it’s active.\nYou can mark a **Serenity** to place new tokens until you have the same number as your **Forcewield Trait**.",
+    "text": "### Holding Together\nAfter you finish a *Rest*, place a number of tokens equal to half your **Tier** (rounded up) for this skill.\nSpend a token and use an action to absorb **Stress** from a willing creature you can touch. The target describes what intimate knowledge or emotions leak from their mind in this moment between you.\nThen, for each absorbed **Stress**, you choose to gain a **Hope** or mark a **Serenity**.\n### Merging Symphony\nWhen helping an ally to make a roll, you may mark a **Stress** to add one of your Experiences that relates to the action.\nAlso, when participating on a Group Roll, you may mark **2 Stress** to make all participants roll with Advantage.\n### Restoration\nAfter a *Long Rest*, place a number of tokens equal to your **Forcewield Trait** for this skill, with a minimum of **1**.\nYou can connect yourself with a creature within *Very Close* range and spend any number of tokens to heal them for **2 Hit Points** per token.\nYou can also spend a token to clear a **Stress**, end the *Vulnerable* condition, or end other condition (Although the number or required tokens depends on the condition).\nDuring combat, the GM gains a **Fear** for each token you spend.\nYou can mark a **Serenity** to place new tokens until you have the same number as your **Forcewield Trait**.",
     "tokens": [
       {
         "name": "Holding Together",
@@ -899,7 +899,7 @@
     "level": 10,
     "recallCost": 3,
     "category": "Holocron",
-    "text": "### Something Else\nYou can concentrate for a moment (Using 2 Action Tokens if with Action Tracker active) to make a **Forcewield roll (18)**. On a success, spend **2 Hope** to sum up your marked **Strife** and **Serenity** together and redistribute the values as you will between them.\n### Morichro\nMake a **Forcewield roll** against an organ of a target within *Close Range*. You can target a vital organ, if you do so, increase the roll difficulty by **+5**. On a success, spend **3 Hope** to stop the targeted organ, dealing **D10** with half your **Forcewield trait** (Rouded up) score of internal damage (Not reduced by Armor Slot).\nIf you spend a **Serenity**, you may add **4D10** to the Damage Roll.\n### Unnatural Power\nMake a **Forcewield Roll (25)**. On a success, you may restore one creature that has been dead no longer than **50 days**. Then roll **1D12**. On a result above the sum of your **Proficiency** and **Forcewield trait**, put this card into your Vault until you spend **5 Hope** to unlock it.\nOn a failure, this cannot be attempted again for at least a week, and the consequences of failing can have unexpected effects on the dead or on you."
+    "text": "### Something Else\nYou can concentrate for a moment to make a **Forcewield roll (18)**; during combat, the GM also gains a **Fear**. On a success, spend **2 Hope** to sum up your marked **Strife** and **Serenity** together and redistribute the values as you will between them.\n### Morichro\nMake a **Forcewield roll** against an organ of a target within *Close Range*. You can target a vital organ, if you do so, increase the roll difficulty by **+5**. On a success, spend **3 Hope** to stop the targeted organ, dealing **D10** with half your **Forcewield trait** (Rouded up) score of internal damage (Not reduced by Armor Slot).\nIf you spend a **Serenity**, you may add **4D10** to the Damage Roll.\n### Unnatural Power\nMake a **Forcewield Roll (25)**. On a success, you may restore one creature that has been dead no longer than **50 days**. Then roll **1D12**. On a result above the sum of your **Proficiency** and **Forcewield trait**, put this card into your Vault until you spend **5 Hope** to unlock it.\nOn a failure, this cannot be attempted again for at least a week, and the consequences of failing can have unexpected effects on the dead or on you."
   },
   {
     "name": "Cron of Sunrider",

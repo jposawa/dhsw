@@ -10,12 +10,14 @@ import styles from "./TokenCounter.module.css"
 const REFILL_HINT: Readonly<Record<TokenRefill, string>> = {
   rest: "Voltam em qualquer descanso.",
   longRest: "Voltam no descanso longo.",
+  combat: "Voltam ao ligar o modo combate.",
   manual: "Voltam quando a carta diz — ajuste à mão.",
 }
 
 const ACCUMULATOR_HINT: Readonly<Record<TokenRefill, string>> = {
   rest: "Zeram em qualquer descanso.",
   longRest: "Zeram no descanso longo.",
+  combat: "Zeram ao ligar o modo combate.",
   manual: "Não zeram sozinhos.",
 }
 
@@ -32,13 +34,15 @@ type TokenCounterProps = {
  * total. Acumulador não tem teto para desenhar, então é um contador.
  */
 export const TokenCounter = ({ active, count, onChange }: TokenCounterProps) => {
+  // Carta Holocron tem um contador por habilidade: o nome diz qual é qual.
+  const label = active.name === active.owner ? "TOKENS" : `TOKENS · ${active.name.toUpperCase()}`
   const color = active.domain ? domainColorToken(active.domain) : "var(--color-chrome)"
 
   return (
-    <section className={styles.counter} aria-label={`Tokens de ${active.name}`}>
+    <section className={styles.counter} aria-label={`Tokens de ${active.owner}: ${active.name}`}>
       {active.max === null ? (
         <p className={styles.accumulator}>
-          <span className={styles.label}>TOKENS</span>
+          <span className={styles.label}>{label}</span>
           <Stepper
             label={`tokens de ${active.name}`}
             decreaseLabel={`Tirar token de ${active.name}`}
@@ -51,7 +55,7 @@ export const TokenCounter = ({ active, count, onChange }: TokenCounterProps) => 
         </p>
       ) : (
         <MarkerTrack
-          label="TOKENS"
+          label={label}
           hasCount
           marked={count}
           max={active.max}

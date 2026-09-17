@@ -1,12 +1,12 @@
 import { Button, SectionLabel } from "@jposawa/ronin-ui"
 import React from "react"
 
-import { DotScale } from "@/components"
+import { DotScale, Switch } from "@/components"
 import { EQUIP_SLOTS, HOPE_MAX, MAX_PROFICIENCY, TRAIT_LIST, TRAIT_VERBS } from "@/constants"
 import { MarkerTrack, RuleText, StatBlock, ThresholdBar } from "@/fragments"
 import { describeThresholdOrigin, domainColorToken, formatSigned } from "@/helpers"
 import { useCompendium } from "@/hooks"
-import { activeTokenPools, setTokenCount, tokenCount } from "@/rules"
+import { activeTokenPools, enterCombat, setTokenCount, tokenCount } from "@/rules"
 import type { Character, DerivedStats, EquipSlot, Marks, Result } from "@/types"
 
 import { ActiveWeapon } from "./ActiveWeapon"
@@ -57,6 +57,8 @@ export const CombatPlay = ({
 }: CombatPlayProps) => {
   const { compendium } = useCompendium()
   const [isResting, setIsResting] = React.useState(false)
+  // Da mesa, não da ficha: recarregar a página sai do combate, como a troca livre.
+  const [isInCombat, setIsInCombat] = React.useState(false)
 
   const classDefinition = compendium.classes.find(
     (candidate) => candidate.name === character.className,
@@ -79,6 +81,16 @@ export const CombatPlay = ({
   const needsClass = classDefinition === undefined
 
   const tokenPools = activeTokenPools(character, derived, compendium)
+  const hasCombatRefill = tokenPools.some((active) => active.pool.refill === "combat")
+
+  const toggleCombat = () => {
+    if (!isInCombat) {
+      onApply(enterCombat(character, compendium))
+    }
+
+    setIsInCombat(!isInCombat)
+  }
+
   const renderTokens = (key: string) => {
     const active = tokenPools.find((candidate) => candidate.key === key)
 
@@ -100,6 +112,18 @@ export const CombatPlay = ({
         </hgroup>
 
         <div className={styles.identitySide}>
+          {/* Só aparece quando alguma fonte repõe ao entrar em combate: fora
+              disso, o interruptor não mudaria nada. */}
+          {hasCombatRefill ? (
+            <Switch
+              className={styles.combatSwitch}
+              isOn={isInCombat}
+              disabled={isReadOnly}
+              onToggle={toggleCombat}
+            >
+              EM COMBATE
+            </Switch>
+          ) : null}
           {/* No cabeçalho e em texto: descanso acontece entre cenas, poucas vezes
               por sessão, e não disputa espaço com os pips que se tocam no turno. */}
           <Button

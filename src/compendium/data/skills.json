@@ -53,7 +53,15 @@
     "level": 3,
     "recallCost": 2,
     "category": "Ability",
-    "text": "A number of times equal half your **Proficiency** (Rounded up) per Rest, when an enemy in *Melee* Range would deal damage to you, you can avoid the damage entirely and safely move out of *Melee* range of the enemy."
+    "text": "After you finish a *Rest*, place a number of tokens equal to half your **Tier** (rounded up) on this card.\nWhen an enemy in *Melee* range would deal damage to you, spend a token to avoid the damage entirely and safely move out of *Melee* range of the enemy.",
+    "tokens": [
+      {
+        "name": "Feet Play",
+        "scale": "tier",
+        "isHalved": true,
+        "refill": "rest"
+      }
+    ]
   },
   {
     "name": "Provoke",
@@ -69,11 +77,14 @@
     "level": 4,
     "recallCost": 2,
     "category": "Ability",
-    "text": "After you finish a *Rest*, place tokens on this card until their numbers are equal your **Proficiency**.\nWhen you successfully strike an enemy, you may spend a token to clear **3 Stress** or **1 Hit Point**. On a success with **Hope**, you may also clear **3 Stress** or **1 Hope** of an ally within *Close Range*.",
-    "tokens": {
-      "scale": "proficiency",
-      "refill": "rest"
-    }
+    "text": "After you finish a *Rest*, place a number of tokens equal to your **Tier** on this card.\nWhen you successfully strike an enemy, you may spend a token to clear **3 Stress** or **1 Hit Point**. On a success with **Hope**, you may also clear **3 Stress** or **1 Hope** of an ally within *Close Range*.",
+    "tokens": [
+      {
+        "name": "Refreshing Wind",
+        "scale": "tier",
+        "refill": "rest"
+      }
+    ]
   },
   {
     "name": "Armorer",
@@ -105,7 +116,15 @@
     "level": 6,
     "recallCost": 1,
     "category": "Ability",
-    "text": "A number of times equal half your **Proficiency** (Rounded up) per *Short rest*, when you roll a *Critical Success* on an *Attack Roll*, you and all allies that can see or hear you may clear a **1D4 Hit Point** or **1D4+2 Stress**."
+    "text": "After you finish a *Rest*, place a number of tokens equal to half your **Tier** (rounded up) on this card.\nWhen you roll a *Critical Success* on an *Attack Roll*, you can spend a token so that you and all allies that can see or hear you clear **1 Hit Point** or **1D4+2 Stress**.",
+    "tokens": [
+      {
+        "name": "Inspiring Precision",
+        "scale": "tier",
+        "isHalved": true,
+        "refill": "rest"
+      }
+    ]
   },
   {
     "name": "Aegis Focus",
@@ -129,12 +148,15 @@
     "level": 8,
     "recallCost": 2,
     "category": "Ability",
-    "text": "After you finish a *Rest*, place a number of tokens equal half your **Proficiency** (Rounded up) on top of this card.\nYou can spend a token to muster a rousing shout or phrase that inspire your allies. You and all your allies that can hear you clear a **Stress**, gain a **Hope** and take advantage on **Attack Rolls** until you or an ally fails a roll with **Fear.**",
-    "tokens": {
-      "scale": "proficiency",
-      "isHalved": true,
-      "refill": "rest"
-    }
+    "text": "After you finish a *Rest*, place a number of tokens equal to half your **Tier** (rounded up) on this card.\nYou can spend a token to muster a rousing shout or phrase that inspire your allies. You and all your allies that can hear you clear a **Stress**, gain a **Hope** and take advantage on **Attack Rolls** until you or an ally fails a roll with **Fear.**",
+    "tokens": [
+      {
+        "name": "Combat Charge",
+        "scale": "tier",
+        "isHalved": true,
+        "refill": "rest"
+      }
+    ]
   },
   {
     "name": "Total Surge",
@@ -142,7 +164,15 @@
     "level": 8,
     "recallCost": 1,
     "category": "Ability",
-    "text": "Once per *Long Rest*, mark **3 Stress** to push your body to its limits, increasing all of your Character Traits by **+2**. This lasts until your next rest."
+    "text": "After a *Long Rest*, place a number of tokens equal to half your **Tier** (rounded up) on this card.\nSpend a token and mark **3 Stress** to push your body to its limits, increasing all of your Character Traits by **+2**. This lasts until your next *Rest*.",
+    "tokens": [
+      {
+        "name": "Total Surge",
+        "scale": "tier",
+        "isHalved": true,
+        "refill": "longRest"
+      }
+    ]
   },
   {
     "name": "By a thread",
@@ -182,7 +212,15 @@
     "level": 1,
     "recallCost": 0,
     "category": "Ability",
-    "text": "Make a **Presence** roll against a target within *Close* range. ON a success, you can temporarily keep their attention on you. Once per *Rest*, you may also mark a **Stress** on a success to deal a **Stress** to the target."
+    "text": "Make a **Presence** roll against a target within *Close* range. On a success, you can temporarily keep their attention on you.\nAfter you finish a *Rest*, place a number of tokens equal to half your **Tier** (rounded up) on this card.\nOn a success, you can also spend a token and mark a **Stress** to deal a **Stress** to the target.",
+    "tokens": [
+      {
+        "name": "Elate",
+        "scale": "tier",
+        "isHalved": true,
+        "refill": "rest"
+      }
+    ]
   },
   {
     "name": "Inspirational Words",
@@ -191,10 +229,13 @@
     "recallCost": 1,
     "category": "Ability",
     "text": "After a *Long Rest*, place a number of tokens on this card equal to your **Presence score**. When you recite your words, spend a token and choose an option from the list below to grant to the ally you are speaking to. Before the next *Long Rest*, when you are without tokens, you can mark a **Stress** to refill your tokens.\n- Clear a **Stress**.\n- Heal a **Hit Point**.\n- Gain a **Hope**.",
-    "tokens": {
-      "scale": "Presence",
-      "refill": "longRest"
-    }
+    "tokens": [
+      {
+        "name": "Inspirational Words",
+        "scale": "Presence",
+        "refill": "longRest"
+      }
+    ]
   },
   {
     "name": "Sharp Deceiver",
@@ -275,9 +316,12 @@
     "recallCost": 1,
     "category": "Ability",
     "text": "When you mark one or more **Hit Points** from an attack, you may mark a **Stress** to place the same number of marked **Hit Points** of tokens on this card. On your next attack, you may clear all the tokens and increase your **Proficiency** by the same amount.\nIf you have any tokens remaining on this card when you take a *Rest*, clear that much **Stress** and clear the tokens.",
-    "tokens": {
-      "refill": "rest"
-    }
+    "tokens": [
+      {
+        "name": "Not Forgetting",
+        "refill": "rest"
+      }
+    ]
   },
   {
     "name": "Pattern Action",
@@ -349,7 +393,7 @@
     "level": 10,
     "recallCost": 4,
     "category": "Ability",
-    "text": "When you or an ally close to you has used a Skill that has an exhaustion limit (A number of times per Rest), spend any amount of **Hope** and roll that many **D6**. On a **6**, the exhausted feature is refueled.\nThis can't be used on any skill permanently placed in Vault."
+    "text": "When you or an ally within *Close* range has spent all the tokens of a card or feature, spend any amount of **Hope** and roll that many **D6**. On a **6**, those tokens are refilled as if you had finished a *Rest*.\nThis can't be used on any skill permanently placed in Vault."
   },
   {
     "name": "Lightning Reflexes",
@@ -381,12 +425,15 @@
     "level": 2,
     "recallCost": 1,
     "category": "Ability",
-    "text": "After a *Long Rest*, place a number of tokens equal to your **Knowledge trait** on this card, with a minimum of **1**. When you make an **Attack Roll** against a target, you may spend one token to choose an option below.\n- Make the attack with Advantage\n- Don’t add an Action Token to action tracker for this attack\n- Add **1D8** to your damage\nWhenever out of tokens, you may mark a **Stress** to refill your tokens as you do after a *Long Rest*.\nWhen you take a long rest, clear all ununsed tokens.",
-    "tokens": {
-      "scale": "Knowledge",
-      "minimum": 1,
-      "refill": "longRest"
-    }
+    "text": "After a *Long Rest*, place a number of tokens equal to your **Knowledge trait** on this card, with a minimum of **1**. When you make an **Attack Roll** against a target, you may spend one token to choose an option below.\n- Make the attack with Advantage\n- Don’t add an Action Token to action tracker for this attack\n- Add **1D8** to your damage\nWhenever out of tokens, you may mark a **Stress** to refill your tokens as you do after a *Long Rest*.",
+    "tokens": [
+      {
+        "name": "Analytic Approach",
+        "scale": "Knowledge",
+        "maxAtLeast": 1,
+        "refill": "longRest"
+      }
+    ]
   },
   {
     "name": "Assistent Drone",
@@ -426,7 +473,15 @@
     "level": 4,
     "recallCost": 2,
     "category": "Ability",
-    "text": "Once per *Rest*, you can use an Action to trigger a field of tiny healing robots around you. Everywhere within *Close Range* of you is covered by this small cloud of tiny floating drones, causing you and your allies in the area to immediately heal one Hit Point.\nYou can spend a **Hope** to increase the healing power by an additional Hit Point."
+    "text": "After you finish a *Rest*, place a number of tokens equal to half your **Tier** (rounded up) on this card.\nSpend a token and use an Action to trigger a field of tiny healing robots around you. Everywhere within *Close Range* of you is covered by this small cloud of tiny floating drones, causing you and your allies in the area to immediately heal one Hit Point.\nYou can spend a **Hope** to increase the healing power by an additional Hit Point.",
+    "tokens": [
+      {
+        "name": "Nano Medfield",
+        "scale": "tier",
+        "isHalved": true,
+        "refill": "rest"
+      }
+    ]
   },
   {
     "name": "Signature Move",
@@ -434,7 +489,15 @@
     "level": 5,
     "recallCost": 1,
     "category": "Ability",
-    "text": "When you take this card, you take on a signature move in battle that you can perform once per *Rest*. Name it and describe it. When you include its description in an action you’re taking, use a **D20** instead of a **D12** as your **Hope** die. If the attack succeeds, you may clear a **Stress**."
+    "text": "When you take this card, you take on a signature move in battle. Name it and describe it.\nAfter you finish a *Rest*, place a number of tokens equal to half your **Tier** (rounded up) on this card.\nWhen you include its description in an action you’re taking, you can spend a token to use a **D20** instead of a **D12** as your **Hope** die. If the attack succeeds, you may clear a **Stress**.",
+    "tokens": [
+      {
+        "name": "Signature Move",
+        "scale": "tier",
+        "isHalved": true,
+        "refill": "rest"
+      }
+    ]
   },
   {
     "name": "Target Analysis",
@@ -458,10 +521,19 @@
     "level": 6,
     "recallCost": 1,
     "category": "Ability",
-    "text": "Once per *Rest*, spend a **Hope** while touching a willing being and place a number of tokens equal to your **Knowledge trait** on this card.\nWhenever the target takes damage, you can remove any number of these tokens to roll that number of **D6** and add half your Level (Rounded down) to the roll. Reduce the incoming damage by the result and, if the attacker is in melee, deal the same result of energy damage back to the attacker.\nWhen you take a rest, clear all tokens.",
-    "tokens": {
-      "refill": "rest"
-    }
+    "text": "After you finish a *Rest*, place a number of charges equal to half your **Tier** (rounded up) on this card.\nSpend a charge and a **Hope** while touching a willing being to shield them: place a number of shield tokens equal to your **Knowledge trait** on this card.\nWhenever the target takes damage, you can remove any number of shield tokens to roll that number of **D6** and add half your Level (Rounded down) to the roll. Reduce the incoming damage by the result and, if the attacker is in melee, deal the same result of energy damage back to the attacker.\nWhen you take a *Rest*, clear all shield tokens.",
+    "tokens": [
+      {
+        "name": "Charges",
+        "scale": "tier",
+        "isHalved": true,
+        "refill": "rest"
+      },
+      {
+        "name": "Shield",
+        "refill": "rest"
+      }
+    ]
   },
   {
     "name": "Bustling Load",
@@ -469,7 +541,15 @@
     "level": 7,
     "recallCost": 2,
     "category": "Ability",
-    "text": "Once per *Rest*, spend a **Hope** to push your body and senses to their maximum capabilities. Describe how your appearance and body language change, then place a **D6** on this card at value of **6**.\nWhile this die is active, it adds its value to every Action Roll you make. After you add its value to a roll, reduce it by **1**. When the die’s value reaches 0, or you take a rest, this state drops and you must mark an **Stress**."
+    "text": "After you finish a *Rest*, place a number of tokens equal to half your **Tier** (rounded up) on this card.\nSpend a token and a **Hope** to push your body and senses to their maximum capabilities. Describe how your appearance and body language change, then place a **D6** on this card at value of **6**.\nWhile this die is active, it adds its value to every Action Roll you make. After you add its value to a roll, reduce it by **1**. When the die’s value reaches 0, or you take a rest, this state drops and you must mark an **Stress**.",
+    "tokens": [
+      {
+        "name": "Bustling Load",
+        "scale": "tier",
+        "isHalved": true,
+        "refill": "rest"
+      }
+    ]
   },
   {
     "name": "Edge Focus",
@@ -477,7 +557,15 @@
     "level": 7,
     "recallCost": 2,
     "category": "Ability",
-    "text": "When a majority of the domain cards in your Loadout are from Edge domain:\n- Increase your **Agility** by 1.\n- Once per *Rest*, you can do a **Finesse** or **Agility** roll using the double of the trait score."
+    "text": "When a majority of the domain cards in your Loadout are from Edge domain:\n- Increase your **Agility** by 1.\n- After you finish a *Rest*, place a number of tokens equal to half your **Tier** (rounded up) on this card. Spend a token to make a **Finesse** or **Agility** roll using double the trait score.",
+    "tokens": [
+      {
+        "name": "Edge Focus",
+        "scale": "tier",
+        "isHalved": true,
+        "refill": "rest"
+      }
+    ]
   },
   {
     "name": "Capacitor Charge",
@@ -486,9 +574,12 @@
     "recallCost": 1,
     "category": "Ability",
     "text": "When you should take **Energy damage**, place tokens on this card equal to the number of Hit Points that Damage would do. Then, reduce the incoming damage in half (rounded up).\nWhen you make a successful attack roll against a target, you can spend any number of the tokens from this card to deal an additional **1D6 Energy damage** per token. On your next rest, clear all tokens.",
-    "tokens": {
-      "refill": "rest"
-    }
+    "tokens": [
+      {
+        "name": "Capacitor Charge",
+        "refill": "rest"
+      }
+    ]
   },
   {
     "name": "Exposing Blow",
@@ -512,10 +603,15 @@
     "level": 9,
     "recallCost": 2,
     "category": "Ability",
-    "text": "After a *Long Rest*, place on this card a number of tokens equal to how many **Edge** cards you have in your Loadout and Vault.\nWhenever you would make a **Roll**, you may spend any number of these tokens to add **+1** to the result, before knowing the result, for each used token.\nWhenever you roll a **Critical Success** on a **Roll** using an **Edge card**, gain a token.\nWhen you take a *Long Rest*, clear all the tokens.",
-    "tokens": {
-      "refill": "longRest"
-    }
+    "text": "After a *Long Rest*, place on this card a number of tokens equal to how many **Edge** cards you have in your Loadout and Vault.\nWhenever you would make a **Roll**, you may spend any number of these tokens to add **+1** to the result, before knowing the result, for each used token.\nWhenever you roll a **Critical Success** on a **Roll** using an **Edge card**, gain a token, up to that same number.",
+    "tokens": [
+      {
+        "name": "Tech Savvy",
+        "scale": "domainCards",
+        "domain": "Edge",
+        "refill": "longRest"
+      }
+    ]
   },
   {
     "name": "Adamant Armor",
@@ -531,7 +627,15 @@
     "level": 10,
     "recallCost": 3,
     "category": "Ability",
-    "text": "Spend a **Hope** and make an **Attack Roll**. The GM will tell you all the enemies within your attack that it would succeed against.\nA number of times equal half your **Proficiency** (Rounded up) per *Long Rest*, choose one of these enemies and deal **5 Hit Points** of damage."
+    "text": "Spend a **Hope** and make an **Attack Roll**. The GM will tell you all the enemies within your attack that it would succeed against.\nAfter a *Long Rest*, place a number of tokens equal to half your **Tier** (rounded up) on this card.\nSpend a token to choose one of these enemies and deal **5 Hit Points** of damage.",
+    "tokens": [
+      {
+        "name": "Harvest Strike",
+        "scale": "tier",
+        "isHalved": true,
+        "refill": "longRest"
+      }
+    ]
   },
   {
     "name": "Awareness Projection",
@@ -539,7 +643,15 @@
     "level": 1,
     "recallCost": 0,
     "category": "Force",
-    "text": "Make a **Forcewield Roll (12)**. On a success, once per *Rest*, you project your perception and vigilance to a place you know within *Far Range*, with radius no bigger than *Close Range*.\nWhile you are concentrating, you know everything that is happening in the chosen area. If you are doing anything else, you must make a **Forcewield Roll (14)** to perceive any activity. The GM can give you Advantage if the activity you are performing while projecting your awareness is simple enough."
+    "text": "After you finish a *Rest*, place a number of tokens equal to half your **Tier** (rounded up) on this card.\nSpend a token and make a **Forcewield Roll (12)**. On a success, you project your perception and vigilance to a place you know within *Far Range*, with radius no bigger than *Close Range*.\nWhile you are concentrating, you know everything that is happening in the chosen area. If you are doing anything else, you must make a **Forcewield Roll (14)** to perceive any activity. The GM can give you Advantage if the activity you are performing while projecting your awareness is simple enough.",
+    "tokens": [
+      {
+        "name": "Awareness Projection",
+        "scale": "tier",
+        "isHalved": true,
+        "refill": "rest"
+      }
+    ]
   },
   {
     "name": "Cron of Fae",
@@ -555,11 +667,14 @@
     "level": 1,
     "recallCost": 2,
     "category": "Holocron",
-    "text": "Each time you enter in combat or do an Action that contribute to Action Tracker, place tokens over this card until you have a number of tokens equal your **Proficiency**.\n### Blade Parry\nSpend a token from this card to use this skill.\nWhen you are going to take Damage from a *Melee range* attack, if you are wielding a *Lightsaber* type weapon, you can make a **Reaction Roll (15)** using your **Forcewield** **trait** plus your **Agility** score. On a sucess, you may spend a **Hope** to reduce the incoming Damage by the number of weapon’s die sides added of your **Agility** score.\n### Bolt Defense\nSpend a token from this card to use this skill.\nWhen you are going to take Damage from an attack beyond *Melee range*, if you are wielding a *Lightsaber* type weapon, you can make a **Reaction Roll (15)** using your **Forcewield** **trait** plus your **Finesse** score. On a sucess, you may spend a **Hope** to reduce the incoming Damage by the number of weapon’s die sides added of your **Finesse** score.\n### Double Vision\nWhile this card is in your Loadout, add half of your **Forcewielding trait** score, to your **Evasion** (rounded up).",
-    "tokens": {
-      "scale": "proficiency",
-      "refill": "manual"
-    }
+    "text": "When you enter combat, place tokens on this card until you have a number of tokens equal to your **Tier**.\n### Blade Parry\nSpend a token from this card to use this skill.\nWhen you are going to take Damage from a *Melee range* attack, if you are wielding a *Lightsaber* type weapon, you can make a **Reaction Roll (15)** using your **Forcewield** **trait** plus your **Agility** score. On a sucess, you may spend a **Hope** to reduce the incoming Damage by the number of weapon’s die sides added of your **Agility** score.\n### Bolt Defense\nSpend a token from this card to use this skill.\nWhen you are going to take Damage from an attack beyond *Melee range*, if you are wielding a *Lightsaber* type weapon, you can make a **Reaction Roll (15)** using your **Forcewield** **trait** plus your **Finesse** score. On a sucess, you may spend a **Hope** to reduce the incoming Damage by the number of weapon’s die sides added of your **Finesse** score.\n### Double Vision\nWhile this card is in your Loadout, add half of your **Forcewielding trait** score, to your **Evasion** (rounded up).",
+    "tokens": [
+      {
+        "name": "Cron of Simus",
+        "scale": "tier",
+        "refill": "combat"
+      }
+    ]
   },
   {
     "name": "Cron of Fohargh",
@@ -583,7 +698,14 @@
     "level": 3,
     "recallCost": 2,
     "category": "Holocron",
-    "text": "### Invigorating Strike\nA number of times equal your **Proficiency** between Rests, when you make a successful strike against an enemy, you may clear **3 Stress** or one **Hit Point**. On a success with **Hope**, you may also clear **3 Stress** or one **Hit Point** of an ally within *Close Range* of you.\nIf you mark a **Strife**, increase the number of cleared **Stress** or **Hit Point** by one.\n### Blurring Strike\nWhen you cause an enemy to mark at least one **Hit Point**, spend **2 Hope** to temporarily increase your **Evasion** by the number of **Hit Points** you dealt. This bonus lasts until after the next attack that targets you.\n### Oblation\nYou can make a **Forcewield Roll (13)**. On a success, spend a **Hope** to clear a **Hit Point** or a **Stress** of any target within *Melee Range* of you, including yourself.\nIf you are doing this to a target other than yourself, you may spend a **Strife** or mark a **Serenity** to mark one of your **Hit Point** to clear an extra **Hit Point** or **Stress** for the same target."
+    "text": "### Invigorating Strike\nAfter you finish a *Rest*, place a number of tokens equal to your **Tier** for this skill.\nWhen you make a successful strike against an enemy, you may spend a token to clear **3 Stress** or one **Hit Point**. On a success with **Hope**, you may also clear **3 Stress** or one **Hit Point** of an ally within *Close Range* of you.\nIf you mark a **Strife**, increase the number of cleared **Stress** or **Hit Point** by one.\n### Blurring Strike\nWhen you cause an enemy to mark at least one **Hit Point**, spend **2 Hope** to temporarily increase your **Evasion** by the number of **Hit Points** you dealt. This bonus lasts until after the next attack that targets you.\n### Oblation\nYou can make a **Forcewield Roll (13)**. On a success, spend a **Hope** to clear a **Hit Point** or a **Stress** of any target within *Melee Range* of you, including yourself.\nIf you are doing this to a target other than yourself, you may spend a **Strife** or mark a **Serenity** to mark one of your **Hit Point** to clear an extra **Hit Point** or **Stress** for the same target.",
+    "tokens": [
+      {
+        "name": "Invigorating Strike",
+        "scale": "tier",
+        "refill": "rest"
+      }
+    ]
   },
   {
     "name": "Cron of Lok",
@@ -599,7 +721,14 @@
     "level": 4,
     "recallCost": 2,
     "category": "Holocron",
-    "text": "### Hawk-Bat Way\nWhen you are going to make a weapon Attack Roll with a *Lightsaber*, you can use **Agility trait** as the weapon trait.\n### Aggression Aim\nA number of times equal to your **Base Proficiency** per *Rest*, you can apply all your focus toward a single target. Choose that target.\nUntil you defeat it, select another target, or the battle ends, add **+1** to your **Proficiency** when acting against the chosen target. For any other being, your **Proficiency** should be considered **-1** (With a minimum of 1).\n### Clench\nTarget an object or creature within *Far* range. The target stops in space, unable to move, exactly where it is until the end of the scene. If a creature tries to move it, or if it’s a being that tries to move itself, make a **Forcewield Roll** against them to maintain the hold.\nEach action you make while holding something contributes with **2 Action Tokens**.\nIf you mark a **Strife** you can mark a **Stress** to use the Force to hold the target tighter, dealing 2**D8** Physical damage that can’t be reduced by Armor Slot."
+    "text": "### Hawk-Bat Way\nWhen you are going to make a weapon Attack Roll with a *Lightsaber*, you can use **Agility trait** as the weapon trait.\n### Aggression Aim\nAfter you finish a *Rest*, place a number of tokens equal to your **Tier** for this skill.\nSpend a token to apply all your focus toward a single target. Choose that target.\nUntil you defeat it, select another target, or the battle ends, add **+1** to your **Proficiency** when acting against the chosen target. For any other being, your **Proficiency** should be considered **-1** (With a minimum of 1).\n### Clench\nTarget an object or creature within *Far* range. The target stops in space, unable to move, exactly where it is until the end of the scene. If a creature tries to move it, or if it’s a being that tries to move itself, make a **Forcewield Roll** against them to maintain the hold.\nEach action you make while holding something contributes with **2 Action Tokens**.\nIf you mark a **Strife** you can mark a **Stress** to use the Force to hold the target tighter, dealing 2**D8** Physical damage that can’t be reduced by Armor Slot.",
+    "tokens": [
+      {
+        "name": "Aggression Aim",
+        "scale": "tier",
+        "refill": "rest"
+      }
+    ]
   },
   {
     "name": "Cron of Zez-Kai",
@@ -607,7 +736,15 @@
     "level": 4,
     "recallCost": 2,
     "category": "Holocron",
-    "text": "### Redirect\nWhile wielding a *Lightsaber* weapon, when you successfully evade an attack from beyond melee range, or avoid marking any **Hit Point** from it without using an Armor Slot, you may roll a number of **D6** equal to your proficiency. If any roll a **6**, you may mark a **Stress** to redirect the attack against an enemy within *Close* range of you. If you mark an additional **Stress**, you can redirect the attack against the person who made it against you, independent of range, with Advantage.\n### Riposte\nWhile wielding a *Lightsaber* weapon, when you successfully evade an attack from melee range, or avoid marking any **Hit Point** from it without using an Armor Slot, you may mark a **Stress** to perform a Weapon attack roll against the opponent who attacked you, without placing an Action Token.\n### Deflective Dome\nA number of times equal your **Proficiency** per *Rest*, spend a **Hope** to completely negate any incoming damage against you.\nIf you mark a **Serenity**, you can use this to negate an incoming damage against a *Very Close* ally."
+    "text": "### Redirect\nWhile wielding a *Lightsaber* weapon, when you successfully evade an attack from beyond melee range, or avoid marking any **Hit Point** from it without using an Armor Slot, you may roll a number of **D6** equal to your proficiency. If any roll a **6**, you may mark a **Stress** to redirect the attack against an enemy within *Close* range of you. If you mark an additional **Stress**, you can redirect the attack against the person who made it against you, independent of range, with Advantage.\n### Riposte\nWhile wielding a *Lightsaber* weapon, when you successfully evade an attack from melee range, or avoid marking any **Hit Point** from it without using an Armor Slot, you may mark a **Stress** to perform a Weapon attack roll against the opponent who attacked you, without placing an Action Token.\n### Deflective Dome\nAfter you finish a *Rest*, place a number of tokens equal to half your **Tier** (rounded up) for this skill.\nSpend a token and a **Hope** to completely negate any incoming damage against you.\nIf you mark a **Serenity**, you can use this to negate an incoming damage against a *Very Close* ally.",
+    "tokens": [
+      {
+        "name": "Deflective Dome",
+        "scale": "tier",
+        "isHalved": true,
+        "refill": "rest"
+      }
+    ]
   },
   {
     "name": "Cron of Othone",
@@ -623,7 +760,14 @@
     "level": 5,
     "recallCost": 2,
     "category": "Holocron",
-    "text": "### Spark\nA number of times equal to your **Proficiency** per *Rest*, make a **Forcewield Roll** against a target within *Close Range*. On a success, the target must make a **Strength roll (18)**. On a failure, a number of **D8** equal to your **Forcewield Trait** in Energy Damage. On a success, they take half damage (Rounded up).\nIf you mark a **Strife** or spend a **Serenity**, add **3D8** to the damage roll.\n### Projected Strike\nYou project the Force through your body to project strikes without the need of touching the target, or enhancing your body movements. Make an **Unarmed Attack roll** against a target within *Very Close range*. On a success, instead of normal Unarmed Damage roll, you roll **D6** with your **Proficiency**, adding your **Forcewield Trait** to roll result.\nYou may spend **Hope**, before the Damage roll, to increase your **Proficiency** by **+1** for each **Hope** spent.\n### Wave Blast\nMake a **Forcewield Roll** against all enemies within melee range of you. Any you succeed against are hurdled into *Far range* and dealt **D8+3** physical damage using your **Forcewield Trait**."
+    "text": "### Spark\nAfter you finish a *Rest*, place a number of tokens equal to your **Tier** for this skill.\nSpend a token to make a **Forcewield Roll** against a target within *Close Range*. On a success, the target must make a **Strength roll (18)**. On a failure, a number of **D8** equal to your **Forcewield Trait** in Energy Damage. On a success, they take half damage (Rounded up).\nIf you mark a **Strife** or spend a **Serenity**, add **3D8** to the damage roll.\n### Projected Strike\nYou project the Force through your body to project strikes without the need of touching the target, or enhancing your body movements. Make an **Unarmed Attack roll** against a target within *Very Close range*. On a success, instead of normal Unarmed Damage roll, you roll **D6** with your **Proficiency**, adding your **Forcewield Trait** to roll result.\nYou may spend **Hope**, before the Damage roll, to increase your **Proficiency** by **+1** for each **Hope** spent.\n### Wave Blast\nMake a **Forcewield Roll** against all enemies within melee range of you. Any you succeed against are hurdled into *Far range* and dealt **D8+3** physical damage using your **Forcewield Trait**.",
+    "tokens": [
+      {
+        "name": "Spark",
+        "scale": "tier",
+        "refill": "rest"
+      }
+    ]
   },
   {
     "name": "Cron of Kaedan",
@@ -639,7 +783,15 @@
     "level": 6,
     "recallCost": 2,
     "category": "Holocron",
-    "text": "### Echoes\nWhile touching an object, you can make a **Forcewield roll (14)** to sense the moments which the object was present. On a success, you get two information about moments from the object’s past. On a failure, you get only one information. You may spend a **Hope** to focus on specific information that you try to obtain, as if you were asking some question.\nIf you spend a **Serenity** or mark a **Strife**, you may use this skill against a being you are touching, to obtain the information from its memories. Then, the target mark as many **Stress** as the number of memories accessed.\n### Foresight\nYou can see the reality possibilities through the Force. Once per *Long Rest*, immediately after the GM conveys the consequences of your rolling with **Fear**, you may make that event your **Foresight**. You instead mark a **Stress** and rescind the action and consequences like they never happened and choose another action instead."
+    "text": "### Echoes\nWhile touching an object, you can make a **Forcewield roll (14)** to sense the moments which the object was present. On a success, you get two information about moments from the object’s past. On a failure, you get only one information. You may spend a **Hope** to focus on specific information that you try to obtain, as if you were asking some question.\nIf you spend a **Serenity** or mark a **Strife**, you may use this skill against a being you are touching, to obtain the information from its memories. Then, the target mark as many **Stress** as the number of memories accessed.\n### Foresight\nYou can see the reality possibilities through the Force. After a *Long Rest*, place a number of tokens equal to half your **Tier** (rounded up) for this skill.\nImmediately after the GM conveys the consequences of your rolling with **Fear**, you may spend a token to make that event your **Foresight**. You instead mark a **Stress** and rescind the action and consequences like they never happened and choose another action instead.",
+    "tokens": [
+      {
+        "name": "Foresight",
+        "scale": "tier",
+        "isHalved": true,
+        "refill": "longRest"
+      }
+    ]
   },
   {
     "name": "Cron of Shan",
@@ -647,7 +799,15 @@
     "level": 7,
     "recallCost": 3,
     "category": "Holocron",
-    "text": "### Tutaminis\nWhen you are going to take an *Energy Damage*, you may mark a **Stress** to make a **Forcewield Roll (19)**. On a success, you negate all the incoming *Energy Damage* from this attack. On a failure, you take Half Damage.\nYou may also, on a Success, spend **2 Hope** to perform an attack against any target without using Action Token. In case your attack hits the target, add the Half the Damage you would receive (Rounded up) to your Damage Roll result.\n### Eruption Pound\nSpend **2 Hope** to make a **Forcewield Roll** against any enemies within *Very Close* range of you. All you succeed against are thrown back to *Far* range and must make a **Reaction Roll (17)**. On a failure they also take **4D10+8** Physical damage and become temporarily Vulnerable. On a success, they don't get Vulnerable and take half damage (Rounded up).\n### Battle Meditation\nMake a **Forcewield Roll (17)**. On a success, once per *Rest*, you start to emanate an invisible aura through the Force, affecting everyone within *Far Range* of you. When you do, place a **D10** on this card at its highest value.\nAt any moment, you and your allies can use the die value to increase the result of any roll you make, or to decrease the result of any roll made against you or any of your allies.\nThen reduce the die’s value by **1**.\nThe aura ends when the die reaches **0**, you stop it, or you get unconscious."
+    "text": "### Tutaminis\nWhen you are going to take an *Energy Damage*, you may mark a **Stress** to make a **Forcewield Roll (19)**. On a success, you negate all the incoming *Energy Damage* from this attack. On a failure, you take Half Damage.\nYou may also, on a Success, spend **2 Hope** to perform an attack against any target without using Action Token. In case your attack hits the target, add the Half the Damage you would receive (Rounded up) to your Damage Roll result.\n### Eruption Pound\nSpend **2 Hope** to make a **Forcewield Roll** against any enemies within *Very Close* range of you. All you succeed against are thrown back to *Far* range and must make a **Reaction Roll (17)**. On a failure they also take **4D10+8** Physical damage and become temporarily Vulnerable. On a success, they don't get Vulnerable and take half damage (Rounded up).\n### Battle Meditation\nAfter you finish a *Rest*, place a number of tokens equal to half your **Tier** (rounded up) for this skill.\nSpend a token and make a **Forcewield Roll (17)**. On a success, you start to emanate an invisible aura through the Force, affecting everyone within *Far Range* of you. When you do, place a **D10** on this card at its highest value.\nAt any moment, you and your allies can use the die value to increase the result of any roll you make, or to decrease the result of any roll made against you or any of your allies.\nThen reduce the die’s value by **1**.\nThe aura ends when the die reaches **0**, you stop it, or you get unconscious.",
+    "tokens": [
+      {
+        "name": "Battle Meditation",
+        "scale": "tier",
+        "isHalved": true,
+        "refill": "rest"
+      }
+    ]
   },
   {
     "name": "Essence Focus",
@@ -655,7 +815,15 @@
     "level": 7,
     "recallCost": 1,
     "category": "Ability",
-    "text": "When a majority of the domain cards in your Loadout are from Essence domain:\n- You can always mark a **Stress** to add your **Proficiency** to a **Forcewield roll**.\n- Once per *Short* *Rest*, when incoming damage would make you to mark Hit Points, you may choose to mark the same number of **Stress** or spend that much of **Hope** instead.\n- Once per *Rest*, you may replace this card with any card from your Vault without paying a *Recall* cost."
+    "text": "When a majority of the domain cards in your Loadout are from Essence domain:\n- You can always mark a **Stress** to add your **Proficiency** to a **Forcewield roll**.\n- After you finish a *Rest*, place a number of tokens equal to half your **Tier** (rounded up) on this card.\n- When incoming damage would make you mark Hit Points, you can spend a token to mark the same number of **Stress** or spend that much **Hope** instead.\n- You can spend a token to replace this card with any card from your Vault without paying its *Recall* cost.",
+    "tokens": [
+      {
+        "name": "Essence Focus",
+        "scale": "tier",
+        "isHalved": true,
+        "refill": "rest"
+      }
+    ]
   },
   {
     "name": "Cron of Kriss",
@@ -663,11 +831,21 @@
     "level": 8,
     "recallCost": 3,
     "category": "Holocron",
-    "text": "### Holding Together\nOnce per *Rest*, you can use an action to absorb **Stress** from a willing creature you can touch. The target describes what intimate knowledge or emotions leak from their mind in this moment between you.\nThen, for each absorbed **Stress**, you choose to gain a **Hope** or mark a **Serenity**.\n### Merging Symphony\nWhen helping an ally to make a roll, you may mark a **Stress** to add one of your Experiences that relates to the action.\nAlso, when participating on a Group Roll, you may mark **2 Stress** to make all participants roll with Advantage.\n### Restoration\nAfter a *Long Rest*, place a number of tokens equal to your **Forcewield Trait** on this card.\nYou can connect yourself with a creature within *Very Close* range and spend any number of tokens to heal them for **2 Hit Points** per token.\nYou can also spend a token to clear a **Stress**, end the *Vulnerable* condition, or end other condition (Although the number or required tokens depends on the condition).\nEach spent token increases the *Action Tracker* by **1** if it’s active.\nYou can mark a **Serenity** to place new tokens until you have the same number as your **Forcewield Trait**.\nWhen you take a *Long Rest*, clear all remaining tokens.",
-    "tokens": {
-      "scale": "forcewield",
-      "refill": "longRest"
-    }
+    "text": "### Holding Together\nAfter you finish a *Rest*, place a number of tokens equal to half your **Tier** (rounded up) for this skill.\nSpend a token and use an action to absorb **Stress** from a willing creature you can touch. The target describes what intimate knowledge or emotions leak from their mind in this moment between you.\nThen, for each absorbed **Stress**, you choose to gain a **Hope** or mark a **Serenity**.\n### Merging Symphony\nWhen helping an ally to make a roll, you may mark a **Stress** to add one of your Experiences that relates to the action.\nAlso, when participating on a Group Roll, you may mark **2 Stress** to make all participants roll with Advantage.\n### Restoration\nAfter a *Long Rest*, place a number of tokens equal to your **Forcewield Trait** for this skill, with a minimum of **1**.\nYou can connect yourself with a creature within *Very Close* range and spend any number of tokens to heal them for **2 Hit Points** per token.\nYou can also spend a token to clear a **Stress**, end the *Vulnerable* condition, or end other condition (Although the number or required tokens depends on the condition).\nEach spent token increases the *Action Tracker* by **1** if it’s active.\nYou can mark a **Serenity** to place new tokens until you have the same number as your **Forcewield Trait**.",
+    "tokens": [
+      {
+        "name": "Holding Together",
+        "scale": "tier",
+        "isHalved": true,
+        "refill": "rest"
+      },
+      {
+        "name": "Restoration",
+        "scale": "forcewield",
+        "maxAtLeast": 1,
+        "refill": "longRest"
+      }
+    ]
   },
   {
     "name": "Cron of Mann",
@@ -675,7 +853,15 @@
     "level": 8,
     "recallCost": 2,
     "category": "Holocron",
-    "text": "### Deep Empathy\nMake a **Forcewield Roll** against the target. On a success, you may spend a **Hope** to know the exact target’s feeling and intent. You can also do one of the following:\n- Mark a **Serenity** to estimulate calm and peaceful feelings or thoughts, making the target clear as many **Stress** as your **Proficiency**.\n- Mark a **Strife** to confuse and disrupt target’s mind, making them mark a number of **Stress** equal to your **Proficiency**. You can also mark a **Stress** to temporarily **Stun** the target.\n### Combat Meld\nOnce per *Long Rest*, you may choose one:\n- Spend **3 Hope** to initiate an extra **Tag Team** attack with an ally, giving a **D6** for each to add in the Attack or Damage roll.\n- Spend **3 Hope** to initiate an extra **Tag Team** attack with two allies instead of one."
+    "text": "### Deep Empathy\nMake a **Forcewield Roll** against the target. On a success, you may spend a **Hope** to know the exact target’s feeling and intent. You can also do one of the following:\n- Mark a **Serenity** to estimulate calm and peaceful feelings or thoughts, making the target clear as many **Stress** as your **Proficiency**.\n- Mark a **Strife** to confuse and disrupt target’s mind, making them mark a number of **Stress** equal to your **Proficiency**. You can also mark a **Stress** to temporarily **Stun** the target.\n### Combat Meld\nAfter a *Long Rest*, place a number of tokens equal to half your **Tier** (rounded up) for this skill.\nSpend a token to choose one:\n- Spend **3 Hope** to initiate an extra **Tag Team** attack with an ally, giving a **D6** for each to add in the Attack or Damage roll.\n- Spend **3 Hope** to initiate an extra **Tag Team** attack with two allies instead of one.",
+    "tokens": [
+      {
+        "name": "Combat Meld",
+        "scale": "tier",
+        "isHalved": true,
+        "refill": "longRest"
+      }
+    ]
   },
   {
     "name": "Cron of Surik",
@@ -683,7 +869,21 @@
     "level": 9,
     "recallCost": 3,
     "category": "Holocron",
-    "text": "### Shared Feature\nOnce per Rest, you can spend a **Serenity**, or mark a **Strife**, to choose a **Trait** or **Experience** from an ally.\nThe Trait score can’t be higher than your Forcewield trait score, and the Experience level must be bellow your highesr Experience.\nMark a number of **Stress** equal half of the chosen **Feature** (Rounded up) and you can use it as if you had it until your next Downtime period, or you get unconscious.\n### Bonded Skill\nOnce per *Rest*, you can choose a level **8 or lower** card from another player’s Loadout. Spend a number of **Hope** equal to half chosen card’s level (Rounded up), and this skill can mimic the features of chosen card."
+    "text": "### Shared Feature\nAfter you finish a *Rest*, place a number of tokens equal to half your **Tier** (rounded up) for this skill.\nSpend a token and a **Serenity**, or mark a **Strife**, to choose a **Trait** or **Experience** from an ally.\nThe Trait score can’t be higher than your Forcewield trait score, and the Experience level must be bellow your highesr Experience.\nMark a number of **Stress** equal half of the chosen **Feature** (Rounded up) and you can use it as if you had it until your next Downtime period, or you get unconscious.\n### Bonded Skill\nAfter you finish a *Rest*, place a number of tokens equal to half your **Tier** (rounded up) for this skill.\nSpend a token to choose a level **8 or lower** card from another player’s Loadout. Spend a number of **Hope** equal to half chosen card’s level (Rounded up), and this skill can mimic the features of chosen card.",
+    "tokens": [
+      {
+        "name": "Shared Feature",
+        "scale": "tier",
+        "isHalved": true,
+        "refill": "rest"
+      },
+      {
+        "name": "Bonded Skill",
+        "scale": "tier",
+        "isHalved": true,
+        "refill": "rest"
+      }
+    ]
   },
   {
     "name": "Shatterpoint",
@@ -707,12 +907,21 @@
     "level": 10,
     "recallCost": 4,
     "category": "Holocron",
-    "text": "### Power of Many\nOnce per Long Rest, spend **5 Hope** to focus on one or more willing creatures that wish to be bonded.\nUntil your next Rest, any creatures that have this union with each other can always share **Hit Points** Slots, **Stress** Slots and **Hope** Slots between them.\n### Severance\nAfter a *Long Rest*, put on this skill a number of tokens equal to half your **Proficiency** (Rounded up). You can spend a token to do one of the following:\n- Spend **2 Hope** to make a **Forcewield roll (23)** against a Force wielder target within Very Close range. On a success, spend extra **2 Hope** to complete the proccess and completely sever the target from their connection with the Force.\n- Make a Forcewield roll (28) against a Force Wielder with their connection severed within Very Close range. On a success, spend 4 Hope to restore their connection with the Force. Their alignment shifts to half their previous value (Rounded down).",
-    "tokens": {
-      "scale": "proficiency",
-      "isHalved": true,
-      "refill": "longRest"
-    }
+    "text": "### Power of Many\nAfter a *Long Rest*, place a number of tokens equal to half your **Tier** (rounded up) for this skill.\nSpend a token and **5 Hope** to focus on one or more willing creatures that wish to be bonded.\nUntil your next Rest, any creatures that have this union with each other can always share **Hit Points** Slots, **Stress** Slots and **Hope** Slots between them.\n### Severance\nAfter a *Long Rest*, place a number of tokens equal to half your **Tier** (rounded up) for this skill. You can spend a token to do one of the following:\n- Spend **2 Hope** to make a **Forcewield roll (23)** against a Force wielder target within Very Close range. On a success, spend extra **2 Hope** to complete the proccess and completely sever the target from their connection with the Force.\n- Make a Forcewield roll (28) against a Force Wielder with their connection severed within Very Close range. On a success, spend 4 Hope to restore their connection with the Force. Their alignment shifts to half their previous value (Rounded down).",
+    "tokens": [
+      {
+        "name": "Power of Many",
+        "scale": "tier",
+        "isHalved": true,
+        "refill": "longRest"
+      },
+      {
+        "name": "Severance",
+        "scale": "tier",
+        "isHalved": true,
+        "refill": "longRest"
+      }
+    ]
   },
   {
     "name": "Burst Strike",
@@ -744,7 +953,15 @@
     "level": 2,
     "recallCost": 1,
     "category": "Ability",
-    "text": "Once per *Long Rest*, if you compliment someone or ask them about something they are good at, you may both take **3 Hope**."
+    "text": "After a *Long Rest*, place a number of tokens equal to half your **Tier** (rounded up) on this card.\nWhen you compliment someone or ask them about something they are good at, you can spend a token so that you both gain **3 Hope**.",
+    "tokens": [
+      {
+        "name": "Arms Bond",
+        "scale": "tier",
+        "isHalved": true,
+        "refill": "longRest"
+      }
+    ]
   },
   {
     "name": "Daring Presence",
@@ -776,7 +993,15 @@
     "level": 4,
     "recallCost": 0,
     "category": "Ability",
-    "text": "Increase your Armor Score by **+2** while you are wearing armor and this card is in your Loadout.\nOnce per *Rest*, you may use an Armor Slot without marking it."
+    "text": "Increase your Armor Score by **+2** while you are wearing armor and this card is in your Loadout.\nAfter you finish a *Rest*, place a number of tokens equal to half your **Tier** (rounded up) on this card.\nSpend a token to use an Armor Slot without marking it.",
+    "tokens": [
+      {
+        "name": "Reliable Armor",
+        "scale": "tier",
+        "isHalved": true,
+        "refill": "rest"
+      }
+    ]
   },
   {
     "name": "Support Inspiration",
@@ -960,7 +1185,15 @@
     "level": 5,
     "recallCost": 2,
     "category": "Ability",
-    "text": "Once per *Rest*, you can make a **Finesse Roll (15)**. On a sucess, spend a **Hope** to place a Ray shield wall from one point within *Close* range of you, to another. The wall can be as high as **30ft (9m)**. Any creature or objects in its path are shunted to one side.\nIt will dissipate at the end of your next *Rest*, when you use this ability again, or when GM spend **2 Fear** to end it."
+    "text": "After you finish a *Rest*, place a number of tokens equal to half your **Tier** (rounded up) on this card.\nSpend a token to make a **Finesse Roll (15)**. On a success, spend a **Hope** to place a Ray shield wall from one point within *Close* range of you, to another. The wall can be as high as **30ft (9m)**. Any creature or objects in its path are shunted to one side.\nIt will dissipate at the end of your next *Rest*, when you use this ability again, or when GM spend **2 Fear** to end it.",
+    "tokens": [
+      {
+        "name": "Ray Wall",
+        "scale": "tier",
+        "isHalved": true,
+        "refill": "rest"
+      }
+    ]
   },
   {
     "name": "Supressive Field",
@@ -1024,7 +1257,15 @@
     "level": 9,
     "recallCost": 2,
     "category": "Ability",
-    "text": "Once per *Long rest*, use an action to choose any targets within *Very Close range*. For them, your visage changes into something of nightmarish horror. They must make a successful **Reaction Roll (16)** or become temporarily **Horrified**. While **Horrified**, they are *Vulnerable*. Steal an amount of **Fear** from the GM equal to the number of targets that are **Horrified** (or as many as they have, if it’s not enough).\nFor each **Fear** stolen, roll a **D8** and deal that much damage to each **Horrified** target.\nDiscard the stolen Fear."
+    "text": "After a *Long Rest*, place a number of tokens equal to half your **Tier** (rounded up) on this card.\nSpend a token and use an action to choose any targets within *Very Close range*. For them, your visage changes into something of nightmarish horror. They must make a successful **Reaction Roll (16)** or become temporarily **Horrified**. While **Horrified**, they are *Vulnerable*. Steal an amount of **Fear** from the GM equal to the number of targets that are **Horrified** (or as many as they have, if it’s not enough).\nFor each **Fear** stolen, roll a **D8** and deal that much damage to each **Horrified** target.\nDiscard the stolen Fear.",
+    "tokens": [
+      {
+        "name": "Fear Toxine",
+        "scale": "tier",
+        "isHalved": true,
+        "refill": "longRest"
+      }
+    ]
   },
   {
     "name": "Prepared Strike",
@@ -1033,9 +1274,12 @@
     "recallCost": 1,
     "category": "Ability",
     "text": "Choose a target within *Far range* to mark. Each time you succeed on any **Action Roll** against them that **doesn’t** result in making a **Damage roll**, place a token on this card.\nWhen you roll Damage against this target, you can spend any number of tokens to deal an additional **1D12** per token spent.\nYou may only hold **Prepared Strike** on one creature at a time.",
-    "tokens": {
-      "refill": "manual"
-    }
+    "tokens": [
+      {
+        "name": "Prepared Strike",
+        "refill": "manual"
+      }
+    ]
   },
   {
     "name": "Envigorating Evasion",
@@ -1051,6 +1295,14 @@
     "level": 10,
     "recallCost": 2,
     "category": "Ability",
-    "text": "Make a **Finesse Roll (16)**. Once per *Long Rest*, on a success, plunge the entire area within *Far range* into deep shadow. Whenever you or an ally within this shadow are attacked, your Evasion is increased by +**1D6**.\nIn addition, when you or an ally rolls a successful **Attack Roll** with **Hope** against an enemy that is within this shadow, the enemy marks a **Stress**.\nThis spell lasts until the GM spends **2** **Fear**, or you take **Severe damage**."
+    "text": "After a *Long Rest*, place a number of tokens equal to half your **Tier** (rounded up) on this card.\nSpend a token and make a **Finesse Roll (16)**. On a success, plunge the entire area within *Far range* into deep shadow. Whenever you or an ally within this shadow are attacked, your Evasion is increased by +**1D6**.\nIn addition, when you or an ally rolls a successful **Attack Roll** with **Hope** against an enemy that is within this shadow, the enemy marks a **Stress**.\nThis spell lasts until the GM spends **2** **Fear**, or you take **Severe damage**.",
+    "tokens": [
+      {
+        "name": "Shroud",
+        "scale": "tier",
+        "isHalved": true,
+        "refill": "longRest"
+      }
+    ]
   }
 ]

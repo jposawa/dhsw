@@ -88,7 +88,8 @@ export const IdentityFeatures = ({
                 <hgroup className={styles.optionTitle}>
                   <h4 className={styles.optionName}>{subclass.name}</h4>
                   <p className={styles.optionMeta}>
-                    SUBCLASSE · FORCEWIELDING {subclass.spellcastTrait}
+                    SUBCLASSE
+                    {subclass.spellcastTrait ? ` · FORCEWIELDING ${subclass.spellcastTrait}` : null}
                   </p>
                 </hgroup>
                 <SubclassTiers

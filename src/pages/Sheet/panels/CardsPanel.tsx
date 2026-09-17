@@ -10,7 +10,6 @@ import {
   moveToVault,
   setTokenCount,
   tokenCount,
-  tokenPoolKey,
 } from "@/rules"
 import type { Character, DerivedStats, Result, Skill } from "@/types"
 
@@ -57,18 +56,19 @@ export const CardsPanel = ({ character, derived, isEditing, onApply }: CardsPane
   // Tokens são jogada, gravada no toque: editando, a ficha é rascunho e o
   // contador sai, para um toque não ir parar no que o Salvar vai sobrescrever.
   const tokenPools = isEditing ? [] : activeTokenPools(character, derived, compendium)
-  const tokensOf = (skill: Skill) => {
-    const key = tokenPoolKey("card", skill.name, skill.name)
-    const active = tokenPools.find((candidate) => candidate.key === key)
-
-    return active ? (
-      <TokenCounter
-        active={active}
-        count={tokenCount(character, active)}
-        onChange={(next) => onApply(setTokenCount(character, key, next, derived, compendium))}
-      />
-    ) : null
-  }
+  const tokensOf = (skill: Skill) =>
+    tokenPools
+      .filter((active) => active.source === "card" && active.owner === skill.name)
+      .map((active) => (
+        <TokenCounter
+          key={active.key}
+          active={active}
+          count={tokenCount(character, active)}
+          onChange={(next) =>
+            onApply(setTokenCount(character, active.key, next, derived, compendium))
+          }
+        />
+      ))
 
   return (
     <div className={styles.layout}>

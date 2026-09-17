@@ -87,6 +87,15 @@
   letter-spacing: var(--tracking-wider);
 }
 
+/* Ao lado de Descansar, no mesmo tamanho de texto. Filho direto para vencer
+   a largura cheia do Switch sem depender da ordem dos CSS. */
+.identitySide > .combatSwitch {
+  width: auto;
+  min-height: var(--size-touch-target);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wider);
+}
+
 .levelBadge {
   display: flex;
   gap: var(--space-1);

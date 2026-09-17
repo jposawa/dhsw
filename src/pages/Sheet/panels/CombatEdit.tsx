@@ -109,7 +109,9 @@ export const CombatEdit = ({ draft, derived, onChange, onApply }: CombatEditProp
     .map((option) => ({
       name: option.name,
       stripeColor: classDefinition ? domainColorToken(classDefinition.domains[0]) : undefined,
-      meta: `FORCEWIELDING · ${option.spellcastTrait}`,
+      meta: option.spellcastTrait
+        ? `FORCEWIELDING · ${option.spellcastTrait}`
+        : "SEM FORCEWIELDING",
       body: <SubclassTiers subclass={option} />,
     }))
 
@@ -186,7 +188,7 @@ export const CombatEdit = ({ draft, derived, onChange, onApply }: CombatEditProp
             label="SUBCLASSE"
             value={draft.subclass}
             placeholder={draft.className ? "Escolher subclasse" : "Escolha a classe antes"}
-            detail={subclass ? `FORCEWIELDING · ${subclass.spellcastTrait}` : null}
+            detail={subclass?.spellcastTrait ? `FORCEWIELDING · ${subclass.spellcastTrait}` : null}
             isDisabled={!draft.className}
             onOpen={() => setPicker("subclass")}
           />

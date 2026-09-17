@@ -26,12 +26,12 @@ import skills from "./data/skills.json"
 import subclasses from "./data/subclasses.json"
 import weapons from "./data/weapons.json"
 
-export { COMPENDIUM_COLLECTIONS, COMPENDIUM_SCHEMAS } from "./schema"
+export { COMPENDIUM_COLLECTIONS } from "./collections"
 
 /**
  * `as Compendium` porque import de JSON não estreita união literal ("Aegis"
- * vira `string`). A garantia não é o cast: é `compendium.test.ts`, que passa
- * cada arquivo pelo mesmo schema do banco.
+ * vira `string`). A garantia não é o cast: é `compendium.test.ts`, que confere
+ * cada valor fechado — domínio, nível, atributo, escala de token.
  */
 export const FALLBACK_COMPENDIUM = {
   skills,

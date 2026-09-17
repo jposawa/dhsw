@@ -72,7 +72,7 @@
   {
     "name": "Infiltrator",
     "className": "Agent",
-    "spellcastTrait": "",
+    "spellcastTrait": null,
     "foundation": [
       {
         "name": "Infiltration Steps",
@@ -107,7 +107,7 @@
   {
     "name": "Operative",
     "className": "Agent",
-    "spellcastTrait": "",
+    "spellcastTrait": null,
     "foundation": [
       {
         "name": "Target Mark",
@@ -214,7 +214,7 @@
   {
     "name": "Conciliator",
     "className": "Envoy",
-    "spellcastTrait": "",
+    "spellcastTrait": null,
     "foundation": [
       {
         "name": "Heart of Diplomat",
@@ -249,7 +249,7 @@
   {
     "name": "Investigator",
     "className": "Envoy",
-    "spellcastTrait": "",
+    "spellcastTrait": null,
     "foundation": [
       {
         "name": "Contact Network",
@@ -272,7 +272,7 @@
   {
     "name": "Pathfinder",
     "className": "Outrider",
-    "spellcastTrait": "",
+    "spellcastTrait": null,
     "foundation": [
       {
         "name": "Direct Way",
@@ -307,7 +307,7 @@
   {
     "name": "Tracker",
     "className": "Outrider",
-    "spellcastTrait": "",
+    "spellcastTrait": null,
     "foundation": [
       {
         "name": "Predator",
@@ -342,7 +342,7 @@
   {
     "name": "Juggernaut",
     "className": "Soldier",
-    "spellcastTrait": "",
+    "spellcastTrait": null,
     "foundation": [
       {
         "name": "Defensive Layer I",
@@ -407,7 +407,7 @@
   {
     "name": "Marshal",
     "className": "Soldier",
-    "spellcastTrait": "",
+    "spellcastTrait": null,
     "foundation": [
       {
         "name": "Attack Rows",

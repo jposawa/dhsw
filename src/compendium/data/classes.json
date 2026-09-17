@@ -17,7 +17,7 @@
         "text": "After a *Long Rest*, roll a number of **D4** dice equal to your **Forcewield trait**, with a minimum of **1**, and place them on your character sheet. Clear any unspent dice before rolling.\nYou can spend any number of these dice at any time to aid yourself or an ally within *Far* range, using each die's value to do one of the following:\n- Reduce incoming damage.\n- Add to a roll's result, after the roll.\n- Give that many **Hope** to a character in range.",
         "tokens": {
           "scale": "forcewield",
-          "minimum": 1,
+          "maxAtLeast": 1,
           "refill": "longRest"
         }
       },

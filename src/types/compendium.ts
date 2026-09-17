@@ -1,27 +1,45 @@
 import type { DamageKind, DamageType, Domain, Level, Range, Tier, Trait, WeaponBurden } from "./domain"
 
-/** De onde sai o número de tokens que a reposição põe. `forcewield` é o atributo de Forcewielding da subclasse. */
-export type TokenScale = "tier" | "proficiency" | "forcewield" | Trait
+/**
+ * De onde sai o teto de tokens. `forcewield` é o atributo de Forcewielding da
+ * subclasse; `domainCards` conta as cartas de `TokenPool.domain` no loadout e
+ * no vault.
+ */
+export type TokenScale = "tier" | "proficiency" | "forcewield" | "domainCards" | Trait
 
 /**
  * Quando os tokens voltam. `rest` é qualquer descanso, curto ou longo;
- * `manual` nunca volta sozinho — a carta diz quando, e a mesa repõe na mão.
+ * `combat` é ao ligar o modo combate da ficha; `manual` nunca volta
+ * sozinho — a carta diz quando, e a mesa ajusta na mão.
  */
-export type TokenRefill = "rest" | "longRest" | "manual"
+export type TokenRefill = "rest" | "longRest" | "combat" | "manual"
 
 /**
  * Contador de tokens de uma feature ou carta. O texto continua sendo a regra;
  * isto só diz à ficha quantos tokens cabem e quando eles voltam.
  *
- * Sem `scale` é um **acumulador**: a ficha junta tokens sem teto ("place a
- * token for each…"), e a reposição zera em vez de encher.
+ * A contagem vai de 0 ao teto, e a mesa ajusta na mão quando quiser. Sem
+ * `scale` não há teto: é um **acumulador** ("place a token for each…"), e a
+ * reposição zera em vez de encher.
  */
 export type TokenPool = {
   scale?: TokenScale
+  /** O domínio contado por `domainCards`. */
+  domain?: Domain
   /** Metade da escala, arredondada para cima. */
   isHalved?: boolean
-  minimum?: number
+  /** Piso do teto: "with a minimum of 1" num atributo que pode ser 0. */
+  maxAtLeast?: number
   refill: TokenRefill
+}
+
+/**
+ * Contador de uma carta. Carta Holocron junta várias habilidades, cada uma com
+ * o seu limite, então a carta tem uma lista; `name` é a habilidade, ou o nome
+ * da carta quando ela tem um contador só.
+ */
+export type SkillTokenPool = TokenPool & {
+  name: string
 }
 
 export type SkillCategory = "Ability" | "Force" | "Holocron"
@@ -36,7 +54,7 @@ export type Skill = {
   text: string
   /** Arte da carta. Sem ela, a carta mostra o emblema do domínio no lugar. */
   imageUrl?: string
-  tokens?: TokenPool
+  tokens?: readonly SkillTokenPool[]
 }
 
 export type DomainDefinition = {
@@ -111,7 +129,8 @@ export type SubclassFeature = {
 export type Subclass = {
   name: string
   className: string
-  spellcastTrait: Trait | string
+  /** Atributo de Forcewielding. `null` na subclasse que não usa a Força. */
+  spellcastTrait: Trait | null
   foundation: readonly SubclassFeature[]
   specialization: readonly SubclassFeature[]
   mastery: readonly SubclassFeature[]

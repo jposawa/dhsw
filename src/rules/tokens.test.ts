@@ -7,7 +7,7 @@ import type { Character, DowntimeChoice, Result } from "@/types"
 
 import { derive } from "./derive"
 import { takeRest } from "./downtime"
-import { activeTokenPools, setTokenCount, tokenCount, tokenPoolKey } from "./tokens"
+import { activeTokenPools, enterCombat, setTokenCount, tokenCount, tokenPoolKey } from "./tokens"
 
 const unwrap = (result: Result<Character>): Character => {
   if (!result.ok) {
@@ -145,5 +145,37 @@ describe("descanso repõe os tokens", () => {
     const rested = rest(character, "short")
 
     expect(tokenCount(rested, poolOf(rested, NOT_FORGETTING))).toBe(0)
+  })
+})
+
+describe("escalas e momentos de reposição", () => {
+  const TECH_SAVVY = tokenPoolKey("card", "Tech Savvy", "Tech Savvy")
+
+  it("Tech Savvy conta as cartas Edge do loadout e do vault", () => {
+    const character = {
+      ...soldier(9, ["Tech Savvy", "Lightning Reflexes"]),
+      vault: ["Nimble", "Bare Bones"],
+    }
+
+    // Tech Savvy, Lightning Reflexes e Nimble são Edge; Bare Bones é Aegis.
+    expect(poolOf(character, TECH_SAVVY).max).toBe(3)
+  })
+
+  it("modo combate repõe o que volta ao entrar em combate, e só isso", () => {
+    const simus = tokenPoolKey("card", "Cron of Simus", "Cron of Simus")
+    const spent = set(set(soldier(5, ["Cron of Simus"]), simus, 0), IMPLACABLE, 0)
+    const fought = unwrap(enterCombat(spent, FALLBACK_COMPENDIUM))
+
+    expect(tokenCount(fought, poolOf(fought, simus))).toBe(3)
+    expect(tokenCount(fought, poolOf(fought, IMPLACABLE))).toBe(0)
+  })
+
+  it("carta com duas habilidades tem dois contadores separados", () => {
+    const shared = tokenPoolKey("card", "Cron of Surik", "Shared Feature")
+    const bonded = tokenPoolKey("card", "Cron of Surik", "Bonded Skill")
+    const spent = set(soldier(9, ["Cron of Surik"]), shared, 0)
+
+    expect(tokenCount(spent, poolOf(spent, shared))).toBe(0)
+    expect(tokenCount(spent, poolOf(spent, bonded))).toBe(2)
   })
 })

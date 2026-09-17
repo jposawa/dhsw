@@ -8,6 +8,7 @@ import type {
   Result,
   TokenCount,
   TokenPool,
+  TokenRefill,
 } from "@/types"
 
 import { subclassUpgradesOf } from "./identity"
@@ -27,14 +28,16 @@ export type TokenSource = "class" | "subclass" | "card"
  * Chave de uma fonte na ficha. A classe e a subclasse entram na chave: trocar
  * de classe não herda os tokens de uma feature de mesmo nome.
  */
-export const tokenPoolKey = (source: TokenSource, owner: string, feature: string): string =>
-  source === "card" ? `card:${owner}` : `${source}:${owner}:${feature}`
+export const tokenPoolKey = (source: TokenSource, owner: string, name: string): string =>
+  `${source}:${owner}:${name}`
 
 /** Uma fonte de tokens que a ficha tem agora. */
 export type ActiveTokenPool = {
   key: string
   source: TokenSource
-  /** Nome da feature ou da carta. */
+  /** A classe, a subclasse ou a carta. */
+  owner: string
+  /** A feature, ou a habilidade da carta. */
   name: string
   pool: TokenPool
   /** Teto dos tokens. `null` é acumulador, sem teto. */
@@ -43,8 +46,17 @@ export type ActiveTokenPool = {
   domain: Domain | null
 }
 
-const scaleValue = (pool: TokenPool, derived: DerivedStats): number => {
+const scaleValue = (
+  pool: TokenPool,
+  character: Character,
+  derived: DerivedStats,
+  compendium: Compendium,
+): number => {
   switch (pool.scale) {
+    case "domainCards":
+      return [...character.loadout, ...character.vault].filter(
+        (name) => compendium.skills.find((skill) => skill.name === name)?.domain === pool.domain,
+      ).length
     case "tier":
       return derived.tier
     case "proficiency":
@@ -59,15 +71,20 @@ const scaleValue = (pool: TokenPool, derived: DerivedStats): number => {
 }
 
 /** Quantos tokens a reposição põe. `null` para acumulador. */
-export const tokenMax = (pool: TokenPool, derived: DerivedStats): number | null => {
+export const tokenMax = (
+  pool: TokenPool,
+  character: Character,
+  derived: DerivedStats,
+  compendium: Compendium,
+): number | null => {
   if (!pool.scale) {
     return null
   }
 
-  const value = scaleValue(pool, derived)
+  const value = scaleValue(pool, character, derived, compendium)
   const scaled = pool.isHalved ? Math.ceil(value / 2) : value
 
-  return Math.max(pool.minimum ?? 0, scaled)
+  return Math.max(pool.maxAtLeast ?? 0, scaled)
 }
 
 /**
@@ -90,9 +107,10 @@ export const activeTokenPools = (
       pools.push({
         key: tokenPoolKey("class", classDefinition?.name ?? "", feature.name),
         source: "class",
+        owner: classDefinition?.name ?? "",
         name: feature.name,
         pool: feature.tokens,
-        max: tokenMax(feature.tokens, derived),
+        max: tokenMax(feature.tokens, character, derived, compendium),
         domain: classDomain,
       })
     }
@@ -116,9 +134,10 @@ export const activeTokenPools = (
         pools.push({
           key: tokenPoolKey("subclass", subclass.name, feature.name),
           source: "subclass",
+          owner: subclass.name,
           name: feature.name,
           pool: feature.tokens,
-          max: tokenMax(feature.tokens, derived),
+          max: tokenMax(feature.tokens, character, derived, compendium),
           domain: classDomain,
         })
       }
@@ -128,14 +147,15 @@ export const activeTokenPools = (
   for (const skillName of character.loadout) {
     const skill = compendium.skills.find((candidate) => candidate.name === skillName)
 
-    if (skill?.tokens) {
+    for (const pool of skill?.tokens ?? []) {
       pools.push({
-        key: tokenPoolKey("card", skill.name, skill.name),
+        key: tokenPoolKey("card", skill?.name ?? "", pool.name),
         source: "card",
-        name: skill.name,
-        pool: skill.tokens,
-        max: tokenMax(skill.tokens, derived),
-        domain: skill.domain,
+        owner: skill?.name ?? "",
+        name: pool.name,
+        pool,
+        max: tokenMax(pool, character, derived, compendium),
+        domain: skill?.domain ?? null,
       })
     }
   }
@@ -181,24 +201,30 @@ export const setTokenCount = (
   return ok({ ...character, tokens: [...others, next] })
 }
 
-const REFILLED_BY: Readonly<Record<RestKind, readonly TokenPool["refill"][]>> = {
+/** O que repõe tokens: os dois descansos e o modo combate. */
+export type TokenRefillMoment = RestKind | "combat"
+
+const REFILLED_BY: Readonly<Record<TokenRefillMoment, readonly TokenRefill[]>> = {
   short: ["rest"],
   long: ["rest", "longRest"],
+  combat: ["combat"],
 }
 
 /** O `TokenPool` de uma chave, procurado no compêndio. */
 const poolOfKey = (key: string, compendium: Compendium): TokenPool | undefined => {
-  if (key.startsWith("card:")) {
-    return compendium.skills.find((skill) => skill.name === key.slice("card:".length))?.tokens
-  }
-
   const [source, owner, ...rest] = key.split(":")
-  const feature = rest.join(":")
+  const name = rest.join(":")
+
+  if (source === "card") {
+    return compendium.skills
+      .find((skill) => skill.name === owner)
+      ?.tokens?.find((pool) => pool.name === name)
+  }
 
   if (source === "class") {
     return compendium.classes
       .find((candidate) => candidate.name === owner)
-      ?.features.find((candidate) => candidate.name === feature)?.tokens
+      ?.features.find((candidate) => candidate.name === name)?.tokens
   }
 
   const subclass = compendium.subclasses.find((candidate) => candidate.name === owner)
@@ -207,23 +233,30 @@ const poolOfKey = (key: string, compendium: Compendium): TokenPool | undefined =
     ...(subclass?.foundation ?? []),
     ...(subclass?.specialization ?? []),
     ...(subclass?.mastery ?? []),
-  ].find((candidate) => candidate.name === feature)?.tokens
+  ].find((candidate) => candidate.name === name)?.tokens
 }
 
 /**
- * Descanso repõe: apaga a contagem das fontes que voltam neste descanso, o que
+ * Descanso e modo combate repõem: apagam a contagem das fontes que voltam agora, o que
  * as devolve ao inicial — cheias, ou zeradas se forem acumulador. Fonte que o
  * compêndio já não conhece também sai: não há o que contar.
  */
 export const refillTokens = (
   character: Character,
-  rest: RestKind,
+  moment: TokenRefillMoment,
   compendium: Compendium,
 ): Character => ({
   ...character,
   tokens: character.tokens.filter((entry) => {
     const pool = poolOfKey(entry.pool, compendium)
 
-    return pool !== undefined && !REFILLED_BY[rest].includes(pool.refill)
+    return pool !== undefined && !REFILLED_BY[moment].includes(pool.refill)
   }),
 })
+
+/**
+ * Ligar o modo combate: repõe o que volta "ao entrar em combate". O modo em si
+ * não é gravado — é da mesa, como a troca livre do descanso.
+ */
+export const enterCombat = (character: Character, compendium: Compendium): Result<Character> =>
+  ok(refillTokens(character, "combat", compendium))

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { FALLBACK_COMPENDIUM } from "@/compendium"
+import { TEST_COMPENDIUM } from "@/compendium/testing"
 import { DEFAULT_HOUSE_RULES } from "@/constants"
 import { createCharacter } from "@/helpers"
 import type { Character, DowntimeChoice, InventoryEntry } from "@/types"
@@ -38,18 +38,18 @@ const choice = (moveId: string, extra: Partial<DowntimeChoice> = {}): DowntimeCh
 const rest = (character: Character, kind: "short" | "long", choices: DowntimeChoice[]) =>
   takeRest(
     character,
-    derive(character, DEFAULT_HOUSE_RULES, FALLBACK_COMPENDIUM),
+    derive(character, DEFAULT_HOUSE_RULES, TEST_COMPENDIUM),
     kind,
     choices,
-    FALLBACK_COMPENDIUM,
+    TEST_COMPENDIUM,
   )
 
 const marksOf = (result: ReturnType<typeof takeRest>) => (result.ok ? result.value.marks : null)
 
 describe("movesForRest (p. 105)", () => {
   it("Rest tem quatro ações e Long Rest cinco", () => {
-    expect(movesForRest(FALLBACK_COMPENDIUM, "short")).toHaveLength(4)
-    expect(movesForRest(FALLBACK_COMPENDIUM, "long")).toHaveLength(5)
+    expect(movesForRest(TEST_COMPENDIUM, "short")).toHaveLength(4)
+    expect(movesForRest(TEST_COMPENDIUM, "long")).toHaveLength(5)
   })
 })
 

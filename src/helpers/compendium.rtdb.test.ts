@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest"
 
-import { FALLBACK_COMPENDIUM } from "@/compendium"
+import { LOCAL_COMPENDIUM, TEST_COMPENDIUM } from "@/compendium/testing"
+import type { Compendium } from "@/types"
 
 import { resolveCompendium } from "./compendium"
 
@@ -27,15 +28,21 @@ const asStored = (value: unknown): unknown => {
   return value === null ? undefined : value
 }
 
-describe("compêndio exportado para o Realtime Database", () => {
-  it("volta do banco igual ao JSON, sem nenhuma coleção recusada", () => {
-    const { compendium, origin, rejected } = resolveCompendium(
-      asStored(FALLBACK_COMPENDIUM),
-      FALLBACK_COMPENDIUM,
-    )
+const expectRoundTrip = (source: Compendium) => {
+  const { compendium, missing, rejected } = resolveCompendium(asStored(source))
 
-    expect(rejected).toEqual([])
-    expect(Object.values(origin).every((value) => value === "remote")).toBe(true)
-    expect(compendium).toEqual(FALLBACK_COMPENDIUM)
+  expect(rejected).toEqual([])
+  expect(missing).toEqual([])
+  expect(compendium).toEqual(source)
+}
+
+describe("compêndio exportado para o Realtime Database", () => {
+  /* O compêndio de teste tem `null` e lista vazia de propósito. */
+  it("o de teste volta do banco igual", () => {
+    expectRoundTrip(TEST_COMPENDIUM)
+  })
+
+  it.skipIf(LOCAL_COMPENDIUM === null)("o real volta do banco igual", () => {
+    expectRoundTrip(LOCAL_COMPENDIUM as Compendium)
   })
 })

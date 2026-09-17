@@ -1,0 +1,1 @@
+export { CompendiumNotice } from "./CompendiumNotice"

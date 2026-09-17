@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { FALLBACK_COMPENDIUM } from "@/compendium"
+import { TEST_COMPENDIUM } from "@/compendium/testing"
 import { DEFAULT_HOUSE_RULES } from "@/constants"
 import { createCharacter } from "@/helpers"
 import type { Character, DowntimeChoice, Result } from "@/types"
@@ -25,14 +25,14 @@ const soldier = (level: number, loadout: string[] = []): Character => ({
 })
 
 const derivedOf = (character: Character) =>
-  derive(character, DEFAULT_HOUSE_RULES, FALLBACK_COMPENDIUM)
+  derive(character, DEFAULT_HOUSE_RULES, TEST_COMPENDIUM)
 
 const IMPLACABLE = tokenPoolKey("class", "Soldier", "Implacable")
 const NOT_FORGETTING = tokenPoolKey("card", "Not Forgetting", "Not Forgetting")
 const REFRESHING_WIND = tokenPoolKey("card", "Refreshing Wind", "Refreshing Wind")
 
 const poolOf = (character: Character, key: string) => {
-  const active = activeTokenPools(character, derivedOf(character), FALLBACK_COMPENDIUM).find(
+  const active = activeTokenPools(character, derivedOf(character), TEST_COMPENDIUM).find(
     (candidate) => candidate.key === key,
   )
 
@@ -44,7 +44,7 @@ const poolOf = (character: Character, key: string) => {
 }
 
 const set = (character: Character, key: string, count: number) =>
-  unwrap(setTokenCount(character, key, count, derivedOf(character), FALLBACK_COMPENDIUM))
+  unwrap(setTokenCount(character, key, count, derivedOf(character), TEST_COMPENDIUM))
 
 const choice = (moveId: string): DowntimeChoice => ({
   moveId,
@@ -62,7 +62,7 @@ const rest = (character: Character, kind: "short" | "long") =>
       kind === "short"
         ? [choice("prepareShort"), choice("prepareShort")]
         : [choice("prepareLong"), choice("prepareLong")],
-      FALLBACK_COMPENDIUM,
+      TEST_COMPENDIUM,
     ),
   )
 
@@ -82,7 +82,7 @@ describe("tokenMax", () => {
 describe("activeTokenPools", () => {
   it("carta só conta no loadout", () => {
     const inVault = { ...soldier(1), vault: ["Refreshing Wind"] }
-    const keys = activeTokenPools(inVault, derivedOf(inVault), FALLBACK_COMPENDIUM).map(
+    const keys = activeTokenPools(inVault, derivedOf(inVault), TEST_COMPENDIUM).map(
       (active) => active.key,
     )
 
@@ -120,7 +120,7 @@ describe("tokenCount e setTokenCount", () => {
       REFRESHING_WIND,
       1,
       derivedOf(soldier(1)),
-      FALLBACK_COMPENDIUM,
+      TEST_COMPENDIUM,
     )
 
     expect(result.ok ? null : result.code).toBe("tokenPoolUnknown")
@@ -164,7 +164,7 @@ describe("escalas e momentos de reposição", () => {
   it("modo combate repõe o que volta ao entrar em combate, e só isso", () => {
     const simus = tokenPoolKey("card", "Cron of Simus", "Cron of Simus")
     const spent = set(set(soldier(5, ["Cron of Simus"]), simus, 0), IMPLACABLE, 0)
-    const fought = unwrap(enterCombat(spent, FALLBACK_COMPENDIUM))
+    const fought = unwrap(enterCombat(spent, TEST_COMPENDIUM))
 
     expect(tokenCount(fought, poolOf(fought, simus))).toBe(3)
     expect(tokenCount(fought, poolOf(fought, IMPLACABLE))).toBe(0)

@@ -2,8 +2,8 @@ import { useAtomValue, useStore } from "jotai"
 import React from "react"
 
 import { fetchCompendium } from "@/services"
-import { compendiumAtom, compendiumStatusAtom } from "@/states"
-import type { Compendium, ConfigStatus } from "@/types"
+import { compendiumAtom, compendiumGapsAtom, compendiumStatusAtom } from "@/states"
+import type { Compendium, CompendiumCollection, ConfigStatus } from "@/types"
 
 export type UseCompendiumOptions = {
   /** Busca no banco ao montar. **Só o `App` liga isto** — ver `useConfig`. */
@@ -11,9 +11,11 @@ export type UseCompendiumOptions = {
 }
 
 export type UseCompendiumResult = {
-  /** Nunca vazio: começa no JSON do repositório. */
+  /** Vazio até o banco responder: não há JSON embarcado. */
   compendium: Compendium
   status: ConfigStatus
+  /** Coleções ausentes ou recusadas no banco. */
+  gaps: readonly CompendiumCollection[]
 }
 
 /**
@@ -27,6 +29,7 @@ export const useCompendium = ({
 }: UseCompendiumOptions = {}): UseCompendiumResult => {
   const compendium = useAtomValue(compendiumAtom)
   const status = useAtomValue(compendiumStatusAtom)
+  const gaps = useAtomValue(compendiumGapsAtom)
   const store = useStore()
 
   React.useEffect(() => {
@@ -41,6 +44,7 @@ export const useCompendium = ({
       .then((resolved) => {
         if (!isCancelled) {
           store.set(compendiumAtom, resolved.compendium)
+          store.set(compendiumGapsAtom, [...resolved.missing, ...resolved.rejected])
           store.set(compendiumStatusAtom, "loaded")
         }
       })
@@ -55,5 +59,5 @@ export const useCompendium = ({
     }
   }, [initialFetch, store])
 
-  return { compendium, status }
+  return { compendium, status, gaps }
 }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { FALLBACK_COMPENDIUM } from "@/compendium"
+import { TEST_COMPENDIUM } from "@/compendium/testing"
 import { DEFAULT_HOUSE_RULES } from "@/constants"
 import { createCharacter } from "@/helpers"
 import type { Character, InventoryEntry } from "@/types"
@@ -29,11 +29,11 @@ const armed = (level: number, installedModules: string[] = []): Character => ({
 })
 
 const install = (character: Character, name: string, tier: 1 | 2 | 3 | 4, rules = houseRules) =>
-  installAugment(character, "blaster", name, tier, rules, FALLBACK_COMPENDIUM)
+  installAugment(character, "blaster", name, tier, rules, TEST_COMPENDIUM)
 
 describe("augments (Motherboard, p. 300)", () => {
   it("Customizable (n) dá n + 1 slots, e arma sem a propriedade não tem slot", () => {
-    const pistol = FALLBACK_COMPENDIUM.weapons.find((weapon) => weapon.name === "Blaster Pistol")
+    const pistol = TEST_COMPENDIUM.weapons.find((weapon) => weapon.name === "Blaster Pistol")
 
     expect(augmentSlotsFor(pistol && { ...pistol, customizable: 2 })).toBe(3)
     expect(augmentSlotsFor(pistol && { ...pistol, customizable: null })).toBe(0)
@@ -41,8 +41,8 @@ describe("augments (Motherboard, p. 300)", () => {
 
   it("recusa arma que não é Customizable", () => {
     const compendium = {
-      ...FALLBACK_COMPENDIUM,
-      weapons: FALLBACK_COMPENDIUM.weapons.map((weapon) => ({ ...weapon, customizable: null })),
+      ...TEST_COMPENDIUM,
+      weapons: TEST_COMPENDIUM.weapons.map((weapon) => ({ ...weapon, customizable: null })),
     }
     const result = installAugment(armed(1), "blaster", "Amplifier", 1, houseRules, compendium)
 
@@ -74,12 +74,12 @@ describe("augments (Motherboard, p. 300)", () => {
   it("soma dano e ataque na rolagem da arma", () => {
     const entry = blaster(["Overcharged Cell", "Targeting Array"])
 
-    expect(augmentRollBonuses(entry, houseRules, FALLBACK_COMPENDIUM)).toEqual({ damageBonus: 1, attackBonus: 1 })
-    expect(augmentRollBonuses(entry, DEFAULT_HOUSE_RULES, FALLBACK_COMPENDIUM)).toEqual({ damageBonus: 0, attackBonus: 0 })
+    expect(augmentRollBonuses(entry, houseRules, TEST_COMPENDIUM)).toEqual({ damageBonus: 1, attackBonus: 1 })
+    expect(augmentRollBonuses(entry, DEFAULT_HOUSE_RULES, TEST_COMPENDIUM)).toEqual({ damageBonus: 0, attackBonus: 0 })
   })
 
   it("augment com modificador mexe na ficha com a arma equipada", () => {
-    const derived = derive(armed(1, ["Deflector Emitter"]), houseRules, FALLBACK_COMPENDIUM)
+    const derived = derive(armed(1, ["Deflector Emitter"]), houseRules, TEST_COMPENDIUM)
 
     expect(derived.armorScore.total).toBe(2)
   })

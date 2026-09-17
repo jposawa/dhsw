@@ -1,5 +1,6 @@
 export { AuthGate } from "./AuthGate"
 export { BottomNav } from "./BottomNav"
+export { CompendiumNotice } from "./CompendiumNotice"
 export { FeatureText } from "./FeatureText"
 export { HomeRoute } from "./HomeRoute"
 export { MarkerTrack } from "./MarkerTrack"

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import { FALLBACK_COMPENDIUM } from "@/compendium"
+import { TEST_COMPENDIUM } from "@/compendium/testing"
 import { DEFAULT_HOUSE_RULES } from "@/constants"
 import { createCharacter } from "@/helpers"
 import type { Advancement, Character } from "@/types"
@@ -17,7 +17,7 @@ const soldier = (level: number, advancements: Advancement[] = []): Character => 
 
 describe("domainAccessFor (p. 111)", () => {
   it("domínios da classe até o nível do personagem", () => {
-    expect(domainAccessFor(soldier(3), FALLBACK_COMPENDIUM)).toEqual([
+    expect(domainAccessFor(soldier(3), TEST_COMPENDIUM)).toEqual([
       { domain: "Aegis", maxLevel: 3 },
       { domain: "Havoc", maxLevel: 3 },
     ])
@@ -25,7 +25,7 @@ describe("domainAccessFor (p. 111)", () => {
 
   it("domínio de multiclasse até metade do nível, arredondando para cima", () => {
     const multiclass: Advancement = { level: 5, kind: "multiclass", detail: "Veil", slotsSpent: 2 }
-    const access = domainAccessFor(soldier(5, [multiclass]), FALLBACK_COMPENDIUM)
+    const access = domainAccessFor(soldier(5, [multiclass]), TEST_COMPENDIUM)
 
     expect(access).toContainEqual({ domain: "Veil", maxLevel: 3 })
   })
@@ -33,15 +33,15 @@ describe("domainAccessFor (p. 111)", () => {
 
 describe("learnableSkills", () => {
   it("não oferece carta acima do nível nem de outro domínio", () => {
-    const skills = learnableSkills(soldier(2), FALLBACK_COMPENDIUM)
+    const skills = learnableSkills(soldier(2), TEST_COMPENDIUM)
 
     expect(skills.every((skill) => skill.level <= 2)).toBe(true)
     expect(skills.every((skill) => skill.domain === "Aegis" || skill.domain === "Havoc")).toBe(true)
   })
 
   it("learnSkill recusa carta que o personagem não alcança", () => {
-    const tooHigh = FALLBACK_COMPENDIUM.skills.find((skill) => skill.domain === "Aegis" && skill.level === 9)
-    const result = learnSkill(soldier(1), tooHigh?.name ?? "", FALLBACK_COMPENDIUM)
+    const tooHigh = TEST_COMPENDIUM.skills.find((skill) => skill.domain === "Aegis" && skill.level === 9)
+    const result = learnSkill(soldier(1), tooHigh?.name ?? "", TEST_COMPENDIUM)
 
     expect(result.ok ? null : result.code).toBe("skillNotLearnable")
   })

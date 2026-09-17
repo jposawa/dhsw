@@ -1,44 +1,44 @@
 import { describe, expect, it } from "vitest"
 
-import { FALLBACK_COMPENDIUM } from "@/compendium"
+import { EMPTY_COMPENDIUM } from "@/compendium"
 
 import { resolveCompendium } from "./compendium"
 
-describe("resolveCompendium", () => {
-  it("sem nada no banco, tudo vem do JSON", () => {
-    const { compendium, origin, rejected } = resolveCompendium(null, FALLBACK_COMPENDIUM)
+const underborne = { name: "Underborne", description: "Subníveis.", feature: "Low-Light" }
 
-    expect(compendium).toEqual(FALLBACK_COMPENDIUM)
-    expect(Object.values(origin).every((value) => value === "fallback")).toBe(true)
+describe("resolveCompendium", () => {
+  it("sem nada no banco, o compêndio fica vazio e tudo é listado como ausente", () => {
+    const { compendium, missing, rejected } = resolveCompendium(null)
+
+    expect(compendium).toEqual(EMPTY_COMPENDIUM)
+    expect(missing).toContain("skills")
     expect(rejected).toEqual([])
   })
 
-  it("coleção válida do banco substitui a do JSON, e só ela", () => {
-    const communities = [{ name: "Underborne", description: "Subníveis.", feature: "Low-Light" }]
-    const { compendium, origin } = resolveCompendium({ communities }, FALLBACK_COMPENDIUM)
+  it("coleção do banco entra, e as outras ficam vazias", () => {
+    const { compendium, missing } = resolveCompendium({ communities: [underborne] })
 
-    expect(compendium.communities).toEqual(communities)
-    expect(origin.communities).toBe("remote")
-    expect(compendium.classes).toBe(FALLBACK_COMPENDIUM.classes)
-    expect(origin.classes).toBe("fallback")
+    expect(compendium.communities).toEqual([underborne])
+    expect(compendium.classes).toEqual([])
+    expect(missing).not.toContain("communities")
+    expect(missing).toContain("classes")
   })
 
   it("aceita coleção chaveada por nome, como o console do Firebase grava", () => {
-    const remote = {
-      communities: {
-        underborne: { name: "Underborne", description: "Subníveis.", feature: "Low-Light" },
-      },
-    }
+    const remote = { communities: { underborne } }
 
-    expect(resolveCompendium(remote, FALLBACK_COMPENDIUM).compendium.communities).toHaveLength(1)
+    expect(resolveCompendium(remote).compendium.communities).toHaveLength(1)
   })
 
-  it("coleção inválida cai no JSON e é listada como recusada", () => {
-    const remote = { classes: [{ name: "Sem domínios" }] }
-    const { compendium, origin, rejected } = resolveCompendium(remote, FALLBACK_COMPENDIUM)
+  it("registro sem nome recusa a coleção inteira", () => {
+    const remote = { communities: [underborne, { description: "Sem nome." }] }
+    const { compendium, rejected } = resolveCompendium(remote)
 
-    expect(compendium.classes).toBe(FALLBACK_COMPENDIUM.classes)
-    expect(origin.classes).toBe("fallback")
-    expect(rejected).toEqual(["classes"])
+    expect(compendium.communities).toEqual([])
+    expect(rejected).toEqual(["communities"])
+  })
+
+  it("coleção que não é lista de registros é recusada", () => {
+    expect(resolveCompendium({ classes: "quebrado" }).rejected).toEqual(["classes"])
   })
 })

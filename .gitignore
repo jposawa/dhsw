@@ -10,7 +10,11 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
+database-export
 compendium-export.json
+
+# Conteúdo do compêndio — vai para o banco pelo export:database, não para o git
+data
 *.local
 
 # Specs de trabalho — locais, não versionadas

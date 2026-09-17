@@ -1,0 +1,18 @@
+/*
+ * Faixa fina, na largura do cabeçalho: é estado do app, não da página, e não
+ * pode depender do layout de cada tela.
+ */
+.notice {
+  margin: 0;
+  padding: var(--space-1) var(--space-4);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  text-align: center;
+  color: var(--color-text-muted);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+/* Estado semântico usa `--color-danger`, nunca cor de domínio. STYLING.md. */
+.notice[data-tone="danger"] {
+  color: var(--color-danger);
+}

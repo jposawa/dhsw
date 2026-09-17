@@ -1,51 +1,33 @@
 /**
- * O compêndio embarcado: o JSON de `data/`, que é o fallback do banco.
+ * O compêndio do app vem **só do banco**: `services/compendiumService.ts` lê
+ * `/dhsw/<env>/compendium` depois do login.
  *
- * **A fonte editável é o JSON.** Carta, classe, espécie ou arma se muda lá, em
- * um arquivo por coleção, e o mesmo arquivo é o que se importa no Realtime
- * Database. Em runtime quem manda é o banco — `services/compendiumService.ts`
- * lê `/dhsw/<env>/compendium` e só cai aqui na coleção que falta ou não valida.
+ * O conteúdo não é versionado nem vai no bundle — o repositório é público. A
+ * fonte editável fica em `data/compendium/` (fora do git), um JSON por coleção,
+ * e chega ao banco por `pnpm export:database`. Os testes usam o compêndio de
+ * `./testing`, que não entra no app.
  *
- * Por isso nada fora de `services/`, `states/` e dos testes importa daqui
- * direto: tela lê de `useCompendium`, regra recebe o compêndio por parâmetro.
+ * Sem cache local de propósito: compêndio velho guardado no navegador é regra
+ * velha na mesa, sem ninguém perceber.
  */
 import type { Compendium } from "@/types"
 
-import ancestries from "./data/ancestries.json"
-import armorLines from "./data/armorLines.json"
-import augments from "./data/augments.json"
-import classes from "./data/classes.json"
-import communities from "./data/communities.json"
-import consumables from "./data/consumables.json"
-import domains from "./data/domains.json"
-import downtimeMoves from "./data/downtimeMoves.json"
-import features from "./data/features.json"
-import items from "./data/items.json"
-import namedArmor from "./data/namedArmor.json"
-import skills from "./data/skills.json"
-import subclasses from "./data/subclasses.json"
-import weapons from "./data/weapons.json"
-
 export { COMPENDIUM_COLLECTIONS } from "./collections"
 
-/**
- * `as Compendium` porque import de JSON não estreita união literal ("Aegis"
- * vira `string`). A garantia não é o cast: é `compendium.test.ts`, que confere
- * cada valor fechado — domínio, nível, atributo, escala de token.
- */
-export const FALLBACK_COMPENDIUM = {
-  skills,
-  domains,
-  classes,
-  subclasses,
-  ancestries,
-  communities,
-  armorLines,
-  namedArmor,
-  weapons,
-  items,
-  consumables,
-  features,
-  augments,
-  downtimeMoves,
-} as Compendium
+/** Antes do banco responder, ou sem acesso a ele: nenhuma entrada. */
+export const EMPTY_COMPENDIUM: Compendium = {
+  skills: [],
+  domains: [],
+  classes: [],
+  subclasses: [],
+  ancestries: [],
+  communities: [],
+  armorLines: [],
+  namedArmor: [],
+  weapons: [],
+  items: [],
+  consumables: [],
+  features: [],
+  augments: [],
+  downtimeMoves: [],
+}

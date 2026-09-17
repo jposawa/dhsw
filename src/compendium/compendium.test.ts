@@ -9,12 +9,18 @@ import {
 } from "@/constants"
 import type { FeatureModifier, TokenPool } from "@/types"
 
-import { COMPENDIUM_COLLECTIONS, FALLBACK_COMPENDIUM } from "./index"
+import { COMPENDIUM_COLLECTIONS, EMPTY_COMPENDIUM } from "./index"
+import { LOCAL_COMPENDIUM } from "./testing"
 
 /*
- * O JSON de `data/` é editado à mão e é o mesmo que se importa no banco.
+ * O JSON de `data/compendium/` é editado à mão e é o que se importa no banco.
  * Estas invariantes quebram o teste, e não a mesa.
+ *
+ * A pasta não é versionada: sem ela (no CI), o bloco inteiro se pula. Quem
+ * edita o compêndio roda estes testes antes do `export:database`.
  */
+
+const REAL = LOCAL_COMPENDIUM ?? EMPTY_COMPENDIUM
 
 const namesOf = (list: readonly { name: string }[]) => list.map((entry) => entry.name)
 
@@ -46,11 +52,11 @@ const isTokenScale = ({ scale, domain }: TokenPool) =>
 const repeated = (names: readonly string[]) =>
   names.filter((name, index) => names.indexOf(name) !== index)
 
-describe("compêndio embarcado", () => {
+describe.skipIf(LOCAL_COMPENDIUM === null)("compêndio real (data/compendium)", () => {
   it.each(COMPENDIUM_COLLECTIONS)(
     "%s tem nome em todo registro, sem espaço sobrando",
     (collection) => {
-      const bad = FALLBACK_COMPENDIUM[collection].filter(
+      const bad = REAL[collection].filter(
         (entry) => entry.name.trim() === "" || entry.name !== entry.name.trim(),
       )
 
@@ -59,7 +65,7 @@ describe("compêndio embarcado", () => {
   )
 
   it("carta: domínio, nível, Recall Cost e categoria válidos", () => {
-    const bad = FALLBACK_COMPENDIUM.skills.filter(
+    const bad = REAL.skills.filter(
       (skill) =>
         !DOMAIN_LIST.includes(skill.domain) ||
         !isIntegerIn(skill.level, 1, 10) ||
@@ -72,7 +78,7 @@ describe("compêndio embarcado", () => {
   })
 
   it("classe: Evasion, HP e features com texto", () => {
-    const bad = FALLBACK_COMPENDIUM.classes.filter(
+    const bad = REAL.classes.filter(
       (klass) =>
         !Number.isInteger(klass.evasion) ||
         !isIntegerIn(klass.hitPoints, 1, 12) ||
@@ -85,7 +91,7 @@ describe("compêndio embarcado", () => {
   })
 
   it("subclasse: Forcewielding é um atributo, ou nenhum", () => {
-    const bad = FALLBACK_COMPENDIUM.subclasses.filter(
+    const bad = REAL.subclasses.filter(
       (subclass) =>
         subclass.spellcastTrait !== null && !TRAIT_LIST.includes(subclass.spellcastTrait),
     )
@@ -94,7 +100,7 @@ describe("compêndio embarcado", () => {
   })
 
   it("arma: atributo, alcance, dado, bônus por tier e tipo de dano válidos", () => {
-    const bad = FALLBACK_COMPENDIUM.weapons.filter(
+    const bad = REAL.weapons.filter(
       (weapon) =>
         !(weapon.trait === "Forcewield" || TRAIT_LIST.includes(weapon.trait)) ||
         !RANGE_LIST.includes(weapon.range) ||
@@ -110,14 +116,14 @@ describe("compêndio embarcado", () => {
 
   it("armadura: linha com quatro tiers, peça e item com tier de 1 a 4", () => {
     expect(
-      namesOf(FALLBACK_COMPENDIUM.armorLines.filter((line) => line.tiers.length !== 4)),
+      namesOf(REAL.armorLines.filter((line) => line.tiers.length !== 4)),
     ).toEqual([])
 
     const tiered = [
-      ...FALLBACK_COMPENDIUM.namedArmor,
-      ...FALLBACK_COMPENDIUM.items,
-      ...FALLBACK_COMPENDIUM.consumables,
-      ...FALLBACK_COMPENDIUM.augments,
+      ...REAL.namedArmor,
+      ...REAL.items,
+      ...REAL.consumables,
+      ...REAL.augments,
     ]
 
     expect(namesOf(tiered.filter((entry) => !isIntegerIn(entry.tier, 1, 4)))).toEqual([])
@@ -125,10 +131,10 @@ describe("compêndio embarcado", () => {
 
   it("modificador permanente: alvo válido e value ou valueByTier, um dos dois", () => {
     const modifiers: FeatureModifier[] = [
-      ...FALLBACK_COMPENDIUM.features.flatMap((feature) => feature.modifiers ?? []),
-      ...FALLBACK_COMPENDIUM.augments.flatMap((augment) => augment.modifiers ?? []),
-      ...FALLBACK_COMPENDIUM.ancestries.flatMap((ancestry) => ancestry.modifiers ?? []),
-      ...FALLBACK_COMPENDIUM.subclasses.flatMap((subclass) =>
+      ...REAL.features.flatMap((feature) => feature.modifiers ?? []),
+      ...REAL.augments.flatMap((augment) => augment.modifiers ?? []),
+      ...REAL.ancestries.flatMap((ancestry) => ancestry.modifiers ?? []),
+      ...REAL.subclasses.flatMap((subclass) =>
         [...subclass.foundation, ...subclass.specialization, ...subclass.mastery].flatMap(
           (feature) => feature.modifiers ?? [],
         ),
@@ -146,10 +152,10 @@ describe("compêndio embarcado", () => {
   })
 
   const featurePools = [
-    ...FALLBACK_COMPENDIUM.classes.flatMap((klass) =>
+    ...REAL.classes.flatMap((klass) =>
       klass.features.map((feature) => ({ owner: klass.name, feature })),
     ),
-    ...FALLBACK_COMPENDIUM.subclasses.flatMap((subclass) =>
+    ...REAL.subclasses.flatMap((subclass) =>
       [...subclass.foundation, ...subclass.specialization, ...subclass.mastery].map((feature) => ({
         owner: subclass.name,
         feature,
@@ -159,7 +165,7 @@ describe("compêndio embarcado", () => {
     feature.tokens ? [{ owner, name: feature.name, tokens: feature.tokens }] : [],
   )
 
-  const cardPools = FALLBACK_COMPENDIUM.skills.flatMap((skill) =>
+  const cardPools = REAL.skills.flatMap((skill) =>
     (skill.tokens ?? []).map((tokens) => ({ owner: skill.name, name: tokens.name, tokens })),
   )
 
@@ -191,7 +197,7 @@ describe("compêndio embarcado", () => {
      da Holocron, ou os "charges" e o "shield" de uma carta de dois contadores. */
   it("token: contador de carta tem nome citado no texto dela", () => {
     const bad = cardPools.filter(({ owner, name }) => {
-      const skill = FALLBACK_COMPENDIUM.skills.find((candidate) => candidate.name === owner)
+      const skill = REAL.skills.find((candidate) => candidate.name === owner)
 
       return name !== owner && !skill?.text.toLowerCase().includes(name.toLowerCase())
     })
@@ -202,7 +208,7 @@ describe("compêndio embarcado", () => {
   /* O Action Tracker era do beta. O livro tem holofote e Fear (p. 89), e as
      cartas foram convertidas para eles. */
   it("nenhuma carta cita o Action Tracker do beta", () => {
-    const bad = FALLBACK_COMPENDIUM.skills.filter((skill) =>
+    const bad = REAL.skills.filter((skill) =>
       /action (tracker|token)/i.test(skill.text),
     )
 
@@ -210,7 +216,7 @@ describe("compêndio embarcado", () => {
   })
 
   it("ação de downtime: descanso, efeito e dado válidos", () => {
-    const bad = FALLBACK_COMPENDIUM.downtimeMoves.filter(
+    const bad = REAL.downtimeMoves.filter(
       (move) =>
         !["short", "long"].includes(move.rest) ||
         !["clearRolled", "clearAll", "gainHope", "narrative"].includes(move.effect.kind) ||
@@ -226,16 +232,16 @@ describe("compêndio embarcado", () => {
   )
 
   it.each(referencedByName)("%s não repete nome — a ficha referencia por nome", (collection) => {
-    expect(repeated(namesOf(FALLBACK_COMPENDIUM[collection]))).toEqual([])
+    expect(repeated(namesOf(REAL[collection]))).toEqual([])
   })
 
   it("ação de downtime não repete id", () => {
-    expect(repeated(FALLBACK_COMPENDIUM.downtimeMoves.map((move) => move.id))).toEqual([])
+    expect(repeated(REAL.downtimeMoves.map((move) => move.id))).toEqual([])
   })
 
   it("cada domínio tem 21 cartas: 3 no nível 1 e 2 em cada nível de 2 a 10", () => {
     for (const domain of DOMAIN_LIST) {
-      const cards = FALLBACK_COMPENDIUM.skills.filter((skill) => skill.domain === domain)
+      const cards = REAL.skills.filter((skill) => skill.domain === domain)
       const perLevel = Array.from(
         { length: 10 },
         (_, index) => cards.filter((card) => card.level === index + 1).length,
@@ -246,9 +252,9 @@ describe("compêndio embarcado", () => {
   })
 
   it("cada classe tem 2 domínios e 2 subclasses que existem", () => {
-    const subclassNames = namesOf(FALLBACK_COMPENDIUM.subclasses)
+    const subclassNames = namesOf(REAL.subclasses)
 
-    for (const klass of FALLBACK_COMPENDIUM.classes) {
+    for (const klass of REAL.classes) {
       expect(klass.domains).toHaveLength(2)
       expect(klass.subclasses).toHaveLength(2)
       expect(klass.subclasses.filter((name) => !subclassNames.includes(name))).toEqual([])
@@ -257,15 +263,15 @@ describe("compêndio embarcado", () => {
 
   it("cada domínio aparece em exatamente 2 classes", () => {
     for (const domain of DOMAIN_LIST) {
-      const uses = FALLBACK_COMPENDIUM.classes.filter((klass) => klass.domains.includes(domain))
+      const uses = REAL.classes.filter((klass) => klass.domains.includes(domain))
 
       expect({ domain, uses: uses.length }).toEqual({ domain, uses: 2 })
     }
   })
 
   it("subclasse aponta para classe que existe", () => {
-    const classNames = namesOf(FALLBACK_COMPENDIUM.classes)
-    const orphans = FALLBACK_COMPENDIUM.subclasses.filter(
+    const classNames = namesOf(REAL.classes)
+    const orphans = REAL.subclasses.filter(
       (subclass) => !classNames.includes(subclass.className),
     )
 
@@ -273,19 +279,19 @@ describe("compêndio embarcado", () => {
   })
 
   it("toda feature citada por arma e armadura existe no registro", () => {
-    const registered = namesOf(FALLBACK_COMPENDIUM.features)
+    const registered = namesOf(REAL.features)
     const cited = [
-      ...FALLBACK_COMPENDIUM.weapons.map((weapon) => weapon.feature),
-      ...FALLBACK_COMPENDIUM.namedArmor.map((armor) => armor.feature),
-      ...FALLBACK_COMPENDIUM.armorLines.map((line) => line.feature),
+      ...REAL.weapons.map((weapon) => weapon.feature),
+      ...REAL.namedArmor.map((armor) => armor.feature),
+      ...REAL.armorLines.map((line) => line.feature),
     ].filter((feature): feature is string => feature !== null)
 
     expect(cited.filter((feature) => !registered.includes(feature))).toEqual([])
   })
 
   it("armadura nomeada aponta para linha que existe", () => {
-    const lines = namesOf(FALLBACK_COMPENDIUM.armorLines)
-    const orphans = FALLBACK_COMPENDIUM.namedArmor.filter((armor) => !lines.includes(armor.line))
+    const lines = namesOf(REAL.armorLines)
+    const orphans = REAL.namedArmor.filter((armor) => !lines.includes(armor.line))
 
     expect(namesOf(orphans)).toEqual([])
   })

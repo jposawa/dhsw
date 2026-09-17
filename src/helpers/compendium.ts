@@ -1,5 +1,5 @@
-import { COMPENDIUM_COLLECTIONS } from "@/compendium"
-import type { Compendium, CompendiumCollection, CompendiumOrigin } from "@/types"
+import { COMPENDIUM_COLLECTIONS, EMPTY_COMPENDIUM } from "@/compendium"
+import type { Compendium, CompendiumCollection } from "@/types"
 
 /**
  * O Realtime Database devolve lista como array quando as chaves são 0..n, e
@@ -41,138 +41,69 @@ const fromStored = (stored: unknown): unknown => {
   return Object.fromEntries(entries.map(([key, item]) => [key, fromStored(item)]))
 }
 
-type FieldKind = "string" | "number" | "boolean" | "list" | "record" | "null"
-
-type FieldRule = {
-  kinds: ReadonlySet<FieldKind>
-  /** Presente em todo registro do JSON. */
-  isRequired: boolean
-}
-
 type StoredRecord = Record<string, unknown>
 
-const kindOf = (value: unknown): FieldKind | null => {
-  if (value === null) {
-    return "null"
-  }
-
-  if (Array.isArray(value)) {
-    return "list"
-  }
-
-  const kind = typeof value
-
-  if (kind === "object") {
-    return "record"
-  }
-
-  return kind === "string" || kind === "number" || kind === "boolean" ? kind : null
-}
-
-const isRecord = (value: unknown): value is StoredRecord => kindOf(value) === "record"
+type RecordOf<TCollection extends CompendiumCollection> = Compendium[TCollection][number]
 
 /**
- * O molde de uma coleção, tirado do próprio JSON do repositório: que campos
- * todo registro tem, e de que tipo cada campo aparece.
+ * Os campos obrigatórios que o banco apaga — `null` e lista vazia somem ao
+ * gravar — e o valor que eles tinham. Campo opcional ausente já está certo e
+ * não entra aqui. Tipado contra `types/`: um nome errado não compila.
  *
- * É o que dispensa declarar o formato uma segunda vez — o `type` de `types/`
- * continua sendo a única declaração, e o JSON, que já é conferido contra as
- * regras em `compendium.test.ts`, é o exemplo do que vale.
+ * `compendium.rtdb.test.ts` confere a ida e a volta, com o compêndio de teste
+ * e, na máquina de quem tem, com o real.
  */
-const shapeOf = (records: readonly object[]): ReadonlyMap<string, FieldRule> => {
-  const counts = new Map<string, number>()
-  const kinds = new Map<string, Set<FieldKind>>()
-
-  for (const record of records) {
-    for (const [key, value] of Object.entries(record)) {
-      const kind = kindOf(value)
-
-      if (value === undefined || kind === null) {
-        continue
-      }
-
-      counts.set(key, (counts.get(key) ?? 0) + 1)
-      kinds.set(key, (kinds.get(key) ?? new Set()).add(kind))
-    }
-  }
-
-  return new Map(
-    [...kinds].map(([key, fieldKinds]) => [
-      key,
-      { kinds: fieldKinds, isRequired: counts.get(key) === records.length },
-    ]),
-  )
+const DROPPED_BY_DATABASE: { readonly [K in CompendiumCollection]?: Partial<RecordOf<K>> } = {
+  classes: { domains: [], subclasses: [], features: [] },
+  subclasses: { spellcastTrait: null, foundation: [], specialization: [], mastery: [] },
+  ancestries: { features: [] },
+  armorLines: { feature: null },
+  namedArmor: { feature: null },
+  weapons: { feature: null, customizable: null },
 }
 
-/**
- * Um registro do banco, conferido contra o molde. O banco apaga `null` e lista
- * vazia: campo obrigatório que falta volta com esse valor quando o molde o
- * admite. Qualquer outro campo obrigatório ausente, ou de tipo que o JSON
- * nunca usa, recusa o registro.
- */
-const conform = (value: unknown, shape: ReadonlyMap<string, FieldRule>): StoredRecord | null => {
-  if (!isRecord(value)) {
-    return null
-  }
+const isRecord = (value: unknown): value is StoredRecord =>
+  value !== null && typeof value === "object" && !Array.isArray(value)
 
-  const record: StoredRecord = { ...value }
-
-  for (const [key, rule] of shape) {
-    if (record[key] === undefined && rule.isRequired) {
-      if (rule.kinds.has("null")) {
-        record[key] = null
-      } else if (rule.kinds.has("list")) {
-        record[key] = []
-      } else {
-        return null
-      }
-    }
-  }
-
-  for (const [key, field] of Object.entries(record)) {
-    const rule = shape.get(key)
-    const kind = kindOf(field)
-
-    if (rule && (kind === null || !rule.kinds.has(kind))) {
-      return null
-    }
-  }
-
-  return record
-}
+/** Todo registro do compêndio tem nome — a ficha referencia por ele. */
+const conform = (value: unknown, dropped: object): StoredRecord | null =>
+  isRecord(value) && typeof value.name === "string" && value.name.trim() !== ""
+    ? { ...dropped, ...value }
+    : null
 
 export type ResolvedCompendium = {
   compendium: Compendium
-  origin: CompendiumOrigin
-  /** Coleções que existiam no banco e foram recusadas. */
+  /** Coleções que o banco ainda não tem. */
+  missing: readonly CompendiumCollection[]
+  /** Coleções que o banco tem, mas em formato que não se lê. */
   rejected: readonly CompendiumCollection[]
 }
 
 /**
- * Banco primeiro, JSON do repositório depois — **coleção a coleção**.
+ * O compêndio do banco, **coleção a coleção**.
  *
- * Uma coleção quebrada no banco não derruba as outras: cai para o fallback
- * sozinha e fica listada em `rejected`. Coleção ausente não é recusa, é só o
- * banco ainda não ter aquilo. Um registro fora do molde recusa a coleção
- * inteira: meia coleção do banco com meia do JSON seria um compêndio que
- * ninguém escreveu.
+ * Não há JSON de reserva: coleção ausente ou recusada fica vazia, e a tela diz
+ * que falta. Um registro sem nome recusa a coleção inteira — meia coleção
+ * seria um compêndio que ninguém escreveu.
+ *
+ * O formato é o `type` de `types/`; o cuidado com ele está nos testes e no
+ * `export:database`, que gera o que se importa.
  */
-export const resolveCompendium = (remote: unknown, fallback: Compendium): ResolvedCompendium => {
+export const resolveCompendium = (remote: unknown): ResolvedCompendium => {
   const stored = isRecord(remote) ? remote : {}
-  const compendium = { ...fallback }
-  const origin = {} as Record<CompendiumCollection, "remote" | "fallback">
+  const compendium: Compendium = { ...EMPTY_COMPENDIUM }
+  const missing: CompendiumCollection[] = []
   const rejected: CompendiumCollection[] = []
 
   for (const collection of COMPENDIUM_COLLECTIONS) {
-    origin[collection] = "fallback"
-
     if (stored[collection] === undefined || stored[collection] === null) {
+      missing.push(collection)
       continue
     }
 
     const list = fromStored(toList(stored[collection]))
-    const shape = shapeOf(fallback[collection])
-    const records = Array.isArray(list) ? list.map((item) => conform(item, shape)) : []
+    const dropped = DROPPED_BY_DATABASE[collection] ?? {}
+    const records = Array.isArray(list) ? list.map((item) => conform(item, dropped)) : []
 
     if (records.length === 0 || records.some((record) => record === null)) {
       rejected.push(collection)
@@ -180,10 +111,9 @@ export const resolveCompendium = (remote: unknown, fallback: Compendium): Resolv
     }
 
     Object.assign(compendium, { [collection]: records })
-    origin[collection] = "remote"
   }
 
-  return { compendium, origin, rejected }
+  return { compendium, missing, rejected }
 }
 
 /** Feature de equipamento pelo nome, ou `undefined` se o registro não tem. */

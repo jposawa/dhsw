@@ -262,9 +262,8 @@ export type DowntimeChoice = {
 /**
  * O compêndio inteiro, uma coleção por chave.
  *
- * Vem do Realtime Database quando existe lá, coleção a coleção, e cai no JSON
- * de `compendium/data/` quando não existe ou não passa na validação. Ver
- * `services/compendiumService.ts`.
+ * Vem só do Realtime Database, coleção a coleção. Coleção ausente ou recusada
+ * fica vazia. Ver `services/compendiumService.ts`.
  */
 export type Compendium = {
   skills: readonly Skill[]
@@ -285,8 +284,3 @@ export type Compendium = {
 
 export type CompendiumCollection = keyof Compendium
 
-/**
- * De onde veio cada coleção. `remote` é do banco; `fallback` é o JSON do
- * repositório — porque o banco não tem, ou tem algo que não valida.
- */
-export type CompendiumOrigin = Readonly<Record<CompendiumCollection, "remote" | "fallback">>

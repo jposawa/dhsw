@@ -3,7 +3,7 @@ import React from "react"
 import { Outlet, useLocation } from "react-router-dom"
 
 import { NAV_ITEMS, ROUTES } from "@/constants"
-import { BottomNav } from "@/fragments"
+import { BottomNav, CompendiumNotice } from "@/fragments"
 import { useAuth, useCompendium, useConfig, useSheetSync } from "@/hooks"
 import { themeAtom, toastAtom, isNavCollapsedAtom } from "@/states"
 
@@ -157,6 +157,7 @@ export const App = () => {
     >
       <header className={styles.top}>
         <Crest subtitle={subtitleFor(location.pathname)} />
+        <CompendiumNotice />
       </header>
 
       <Outlet />

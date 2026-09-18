@@ -7,10 +7,16 @@
   padding: var(--space-4) var(--space-4) var(--space-6);
 }
 
+/* Os três zeros não são decoração: sem eles a lista herda do navegador o
+   recuo de 40px e a margem de bloco que `ul` traz, e os cartões desalinham
+   do rótulo e do botão. Toda lista do app repete este reset. */
 .list {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .card {

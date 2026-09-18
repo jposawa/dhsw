@@ -9,6 +9,7 @@ import {
   rosterV2ToV3,
   rosterV3ToV4,
   rosterV4ToV5,
+  rosterV5ToV6,
 } from "./migrations"
 
 /**
@@ -152,11 +153,47 @@ describe("rosterV4ToV5", () => {
   const v4 = rosterV3ToV4(rosterV2ToV3(rosterV1ToV2(V1_ROSTER)), DEFAULT_HOUSE_RULES)
 
   /* Ficha antiga tem espécie única: as duas features vêm dela. */
-  it("acrescenta a espécie mista vazia e sobe o schema", () => {
-    const character = rosterV4ToV5(v4).characters["sheet-1"]
+  it("acrescenta a espécie mista vazia e sobe o schema para 5", () => {
+    const character = rosterV4ToV5(v4).characters["sheet-1"] as unknown as {
+      ancestry: string | null
+      mixedAncestry: string | null
+      schema: number
+    }
 
     expect(character.mixedAncestry).toBeNull()
     expect(character.ancestry).toBe("Human")
-    expect(character.schema).toBe(CHARACTER_SCHEMA_VERSION)
+    expect(character.schema).toBe(5)
+  })
+})
+
+describe("rosterV5ToV6", () => {
+  const v5 = rosterV4ToV5(rosterV3ToV4(rosterV2ToV3(rosterV1ToV2(V1_ROSTER)), DEFAULT_HOUSE_RULES))
+  const heritageOf = (roster: RosterState) => roster.characters["sheet-1"].heritage
+
+  it("espécie única vira o código da ascendência, sem nome nem escolhas", () => {
+    expect(heritageOf(rosterV5ToV6(v5))).toEqual({
+      ancestry: "Human",
+      label: null,
+      firstAncestry: null,
+      secondAncestry: null,
+    })
+    expect(rosterV5ToV6(v5).characters["sheet-1"].schema).toBe(CHARACTER_SCHEMA_VERSION)
+  })
+
+  /* Na v5 a espécie mista era um campo solto ao lado da espécie: a primeira
+     feature vinha da espécie e a segunda do campo solto. */
+  it("mista guarda o código da mista e a espécie de cada feature", () => {
+    const stored = v5.characters["sheet-1"] as unknown as Record<string, unknown>
+    const mixed: RosterState = {
+      ...v5,
+      characters: { "sheet-1": { ...stored, mixedAncestry: "Twilek" } as unknown as Character },
+    }
+
+    expect(heritageOf(rosterV5ToV6(mixed))).toEqual({
+      ancestry: "mixed",
+      label: null,
+      firstAncestry: "Human",
+      secondAncestry: "Twilek",
+    })
   })
 })

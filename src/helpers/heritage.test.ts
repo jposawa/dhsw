@@ -1,16 +1,27 @@
 import { describe, expect, it } from "vitest"
 
 import { TEST_COMPENDIUM } from "@/compendium/testing"
-import type { Character } from "@/types"
+import { MIXED_ANCESTRY } from "@/constants"
+import type { Character, Heritage } from "@/types"
 
 import { createCharacter } from "./character"
-import { featureNameOf, heritageFeatures, heritageLabel } from "./heritage"
+import { featureNameOf, heritageFeatures, heritageLabel, NO_HERITAGE } from "./heritage"
 
-const human = (): Character => ({ ...createCharacter("Rey"), ancestry: "Human" })
-const mixed = (): Character => ({ ...human(), mixedAncestry: "Twilek" })
+const withHeritage = (heritage: Partial<Heritage>): Character => ({
+  ...createCharacter("Rey"),
+  heritage: { ...NO_HERITAGE, ...heritage },
+})
+
+const human = (): Character => withHeritage({ ancestry: "Human" })
+
+/* Mista: o código é o da mista, e a espécie de cada feature vem à parte. */
+const mixed = (): Character =>
+  withHeritage({ ancestry: MIXED_ANCESTRY, firstAncestry: "Human", secondAncestry: "Twilek" })
 
 const featuresOf = (character: Character) =>
-  heritageFeatures(character, TEST_COMPENDIUM).map((feature) => `${feature.ancestry}: ${feature.name}`)
+  heritageFeatures(character, TEST_COMPENDIUM).map(
+    (feature) => `${feature.ancestry}: ${feature.name}`,
+  )
 
 describe("featureNameOf", () => {
   it("tira o nome em negrito do começo da feature", () => {
@@ -40,5 +51,17 @@ describe("heritageLabel", () => {
     expect(heritageLabel(mixed())).toBe("Human-Twilek")
     expect(heritageLabel(human())).toBe("Human")
     expect(heritageLabel(createCharacter("Rey"))).toBeNull()
+  })
+
+  /* O livro deixa o nome da mistura a cargo da mesa: quando ela deu um, é
+     ele que vale, não o par de espécies. */
+  it("na mista, o nome da mesa vem na frente", () => {
+    const named = { ...mixed(), heritage: { ...mixed().heritage, label: "Corelliano" } }
+
+    expect(heritageLabel(named)).toBe("Corelliano")
+  })
+
+  it("mista sem nenhuma espécie ainda não diz nada", () => {
+    expect(heritageLabel(withHeritage({ ancestry: MIXED_ANCESTRY }))).toBeNull()
   })
 })

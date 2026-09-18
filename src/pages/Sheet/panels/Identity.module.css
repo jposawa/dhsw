@@ -97,30 +97,12 @@
   gap: var(--space-3);
 }
 
-.mixedSwitch {
-  background: var(--color-surface);
-}
-
-.mixedText {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  text-align: left;
-}
-
-.mixedNote {
+/* A linha de contexto acima da lista, quando a escolha precisa de uma. */
+.drawerNote {
   font-size: var(--text-2xs);
   letter-spacing: var(--tracking-normal);
   text-transform: none;
   color: var(--color-text-dim);
-}
-
-/* Duas escolhas por espécie na mista: uma por posição de feature. */
-.optionActions {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  flex-shrink: 0;
 }
 
 .options {

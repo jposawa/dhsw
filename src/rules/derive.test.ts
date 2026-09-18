@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest"
 
 import { TEST_COMPENDIUM } from "@/compendium/testing"
-import { DEFAULT_HOUSE_RULES } from "@/constants"
-import { createCharacter } from "@/helpers"
+import { DEFAULT_HOUSE_RULES, MIXED_ANCESTRY } from "@/constants"
+import { createCharacter, NO_HERITAGE } from "@/helpers"
 import type { Advancement, Character, HouseRules, InventoryEntry } from "@/types"
 
 import { derive as deriveWith, tierOf } from "./derive"
@@ -184,8 +184,8 @@ describe("derive — HP e Stress", () => {
 
   it("advancement guarda o nivel em que foi comprado", () => {
     const advancements: Advancement[] = [{ level: 2, kind: "hp", detail: "", slotsSpent: 1 }]
-    const [modifier] = derive({ ...soldier(7), advancements }, DEFAULT_HOUSE_RULES)
-      .hitPointsMax.modifiers
+    const [modifier] = derive({ ...soldier(7), advancements }, DEFAULT_HOUSE_RULES).hitPointsMax
+      .modifiers
 
     expect(modifier.source).toEqual({ kind: "advancement", level: 2 })
   })
@@ -258,9 +258,25 @@ describe("derive — nada de derivado e guardado", () => {
   })
 })
 
+const asHuman = (character: Character): Character => ({
+  ...character,
+  heritage: { ...NO_HERITAGE, ancestry: "Human" },
+})
+
+/** Mista: o código é o da mista, e cada feature diz de qual espécie veio. */
+const asMixed = (character: Character, first: string, second: string): Character => ({
+  ...character,
+  heritage: {
+    ...NO_HERITAGE,
+    ancestry: MIXED_ANCESTRY,
+    firstAncestry: first,
+    secondAncestry: second,
+  },
+})
+
 describe("derive — features com efeito permanente", () => {
   it("Human ganha um slot de Stress (High Stamina)", () => {
-    const derived = derive({ ...soldier(1), ancestry: "Human" }, DEFAULT_HOUSE_RULES)
+    const derived = derive(asHuman(soldier(1)), DEFAULT_HOUSE_RULES)
 
     expect(derived.stressMax.total).toBe(7)
     expect(derived.stressMax.modifiers[0].source).toEqual({
@@ -274,7 +290,7 @@ describe("derive — features com efeito permanente", () => {
      Human dá Stress na primeira; Twilek dá Evasion na segunda e Presence na
      primeira, que não entra. */
   it("ascendência mista aplica só as duas features que a ficha tem", () => {
-    const character = { ...soldier(1), ancestry: "Human", mixedAncestry: "Twilek" }
+    const character = asMixed(soldier(1), "Human", "Twilek")
     const derived = derive(character, DEFAULT_HOUSE_RULES)
 
     expect(derived.stressMax.total).toBe(7)
@@ -283,7 +299,7 @@ describe("derive — features com efeito permanente", () => {
   })
 
   it("invertendo as espécies, invertem-se as features", () => {
-    const character = { ...soldier(1), ancestry: "Twilek", mixedAncestry: "Human" }
+    const character = asMixed(soldier(1), "Twilek", "Human")
     const derived = derive(character, DEFAULT_HOUSE_RULES)
 
     expect(derived.traits.Presence.total).toBe(1)
@@ -325,7 +341,10 @@ describe("derive — features de equipamento (registro)", () => {
   it("Protective escala com o Tier do personagem", () => {
     const shielded = (level: number) => ({
       ...withArmor(soldier(level), "Trooper Plate"),
-      inventory: [...withArmor(soldier(level), "Trooper Plate").inventory, weaponEntry("Riot Shield", true)],
+      inventory: [
+        ...withArmor(soldier(level), "Trooper Plate").inventory,
+        weaponEntry("Riot Shield", true),
+      ],
     })
 
     // Trooper Plate T1 tem score 4; Protective soma o Tier.
@@ -361,6 +380,8 @@ describe("derive — atributo de Forcewielding", () => {
   })
 
   it("subclasse sem Forcewielding não marca atributo", () => {
-    expect(derive({ ...soldier(1), subclass: "Juggernaut" }, DEFAULT_HOUSE_RULES).spellcastTrait).toBeNull()
+    expect(
+      derive({ ...soldier(1), subclass: "Juggernaut" }, DEFAULT_HOUSE_RULES).spellcastTrait,
+    ).toBeNull()
   })
 })

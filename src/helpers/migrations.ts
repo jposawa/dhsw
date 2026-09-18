@@ -1,4 +1,4 @@
-import { CHARACTER_SCHEMA_VERSION, DEFAULT_HOUSE_RULES } from "@/constants"
+import { CHARACTER_SCHEMA_VERSION, DEFAULT_HOUSE_RULES, MIXED_ANCESTRY } from "@/constants"
 import type { Character, HouseRules, RosterState } from "@/types"
 
 /**
@@ -86,23 +86,58 @@ export const rosterV3ToV4 = (value: unknown, current: HouseRules): RosterState =
 }
 
 /**
- * v4 → v5: `Character.mixedAncestry`. Ficha existente tem espécie única — as
- * duas features vêm dela, como antes.
+ * v4 → v5: a ascendência mista, como campo solto ao lado da espécie. Ficha
+ * existente tem espécie única — as duas features vêm dela, como antes.
+ *
+ * O formato desta versão não é mais o de `Character`: a v6 juntou os dois
+ * campos num objeto. Migração lê o que estava gravado, e o que estava gravado
+ * aqui era este formato.
  */
+type CharacterV5 = Omit<Character, "heritage"> & {
+  ancestry?: string | null
+  mixedAncestry?: string | null
+}
+
 export const rosterV4ToV5 = (value: unknown): RosterState => {
+  const roster = value as { characters?: Record<string, CharacterV5>; order?: string[] } | null
+
+  const characters = Object.fromEntries(
+    Object.entries(roster?.characters ?? {}).map(([id, character]) => [
+      id,
+      // `as unknown`: o resultado ainda é o formato da v5, e só a última
+      // migração da corrente devolve uma ficha de hoje.
+      { ...character, mixedAncestry: character.mixedAncestry ?? null, schema: 5 } as unknown as Character,
+    ]),
+  )
+
+  return { characters, order: roster?.order ?? [] }
+}
+
+/**
+ * v5 → v6: `Character.heritage`. Os dois campos soltos — a espécie e a da
+ * ascendência mista — viram um objeto com código, nome e a espécie de cada
+ * feature. Ficha de espécie única guarda o nome dela como código.
+ */
+export const rosterV5ToV6 = (value: unknown): RosterState => {
   const roster = value as RosterState | null
 
   const characters = Object.fromEntries(
     Object.entries(roster?.characters ?? {}).map(([id, stored]) => {
-      const character = stored as Character
+      const { ancestry = null, mixedAncestry = null, ...rest } = stored as unknown as CharacterV5
+      const isMixed = mixedAncestry !== null
 
       return [
         id,
         {
-          ...character,
-          mixedAncestry: character.mixedAncestry ?? null,
+          ...rest,
+          heritage: {
+            ancestry: isMixed ? MIXED_ANCESTRY : ancestry,
+            label: null,
+            firstAncestry: isMixed ? ancestry : null,
+            secondAncestry: mixedAncestry,
+          },
           schema: CHARACTER_SCHEMA_VERSION,
-        },
+        } as Character,
       ]
     }),
   )

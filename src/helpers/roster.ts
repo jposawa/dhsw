@@ -1,5 +1,7 @@
 import type { Character, RosterState } from "@/types"
 
+import { normalizeCharacter } from "./character"
+
 /**
  * Junta o roster local com o que veio do Realtime Database.
  *
@@ -53,3 +55,29 @@ export const findUnsyncedCharacters = (
   remoteIds: ReadonlySet<string>,
 ): Character[] =>
   Object.values(roster.characters).filter((character) => !remoteIds.has(character.id))
+
+/**
+ * O roster do `localStorage`, completo.
+ *
+ * **Leitura local também é fronteira.** `normalizeCharacter` já cuidava do que
+ * vem do Realtime Database, mas a ficha que ele devolve sem as listas vazias
+ * podia ter sido gravada assim no aparelho por uma versão antiga do app — e aí
+ * ficava quebrada para sempre, porque migração só acrescenta campo novo e
+ * ninguém mais olhava. Uma ficha sem `inventory` derruba `derive` na primeira
+ * linha.
+ *
+ * Sai daqui também o id que não tem ficha: ordem apontando para nada.
+ */
+export const normalizeRoster = (roster: RosterState): RosterState => {
+  const characters = Object.fromEntries(
+    Object.entries(roster.characters ?? {}).map(([id, character]) => [
+      id,
+      normalizeCharacter(character),
+    ]),
+  )
+
+  return {
+    characters,
+    order: (roster.order ?? []).filter((id) => characters[id]),
+  }
+}

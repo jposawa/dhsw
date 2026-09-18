@@ -54,20 +54,31 @@
 
 /* ── campos ──────────────────────────────────────────────────────────────── */
 
+/*
+ * Duas colunas iguais, e só duas. O nível não ganha trilha própria: quando
+ * ganhava, a coluna da direita herdava a sobra dele e subclasse e origem
+ * ficavam quase o dobro de classe e espécie — dois campos irmãos com pesos
+ * diferentes sem que nada na ficha justificasse.
+ */
 .fields {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-2);
 }
 
 /* O rótulo envolve o campo: um toque no texto foca o campo, sem `htmlFor`. */
 .field,
-.fieldEnd,
 .nameField {
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
   min-width: 0;
+}
+
+/* No celular nome e nível são duas fileiras: `contents` devolve os dois à
+   grade e some com o invólucro. No desktop ele vira a fileira dos dois. */
+.nameRow {
+  display: contents;
 }
 
 .nameField {
@@ -88,10 +99,12 @@
   border-radius: var(--border-radius-sm);
 }
 
-/* O interruptor ocupa a fileira inteira, entre os campos. */
-.mixedSwitch {
-  grid-column: 1 / -1;
-  background: var(--color-bg-elevated);
+/* Texto de apoio dentro de uma opção da gaveta. */
+.note {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  color: var(--color-text-dim);
 }
 
 .label {
@@ -121,6 +134,32 @@
   outline: 2px solid var(--color-chrome-strong);
   outline-offset: -2px;
   border-color: var(--color-chrome);
+}
+
+/*
+ * Os campos que só a mista tem, num bloco próprio e não soltos no fim do
+ * formulário: na grade corrida eles liam como mais dois campos quaisquer, sem
+ * dizer que são detalhe da espécie escolhida logo acima. A faixa à esquerda é
+ * a mesma largura das faixas de domínio da gaveta.
+ */
+.mixedGroup {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+  grid-column: 1 / -1;
+  padding: var(--space-3);
+  background: var(--color-surface);
+  border-left: var(--domain-stripe-width) solid var(--color-chrome-dim);
+}
+
+/* O `legend` nasce colado na borda de cima do grupo: o recuo dele é que
+   devolve a folga que o `padding` do grupo dá aos outros três lados. */
+.mixedLegend {
+  grid-column: 1 / -1;
+  padding: var(--space-3) 0 0;
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-chrome-strong);
 }
 
 /* ── traços ──────────────────────────────────────────────────────────────── */
@@ -210,24 +249,18 @@
   }
 
   /*
-   * Três trilhas: o nome ocupa duas e o nível a terceira, na largura do
-   * stepper. Subclasse e origem vão da segunda até o fim, para a fileira de
-   * seleção fechar na mesma borda direita do nível.
+   * Nome e nível dividem a primeira fileira, o nível só com a largura do
+   * stepper — um número de 1 a 10 não precisa de meia tela. Fora da grade,
+   * ele não empurra as colunas dos campos de baixo.
    */
-  .fields {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  .nameRow {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--space-2);
+    grid-column: 1 / -1;
   }
 
-  .nameField {
-    grid-column: 1 / 3;
-  }
-
-  .levelRow {
-    grid-column: 3;
-    align-self: end;
-  }
-
-  .fieldEnd {
-    grid-column: 2 / -1;
+  .nameRow .nameField {
+    flex: 1;
   }
 }

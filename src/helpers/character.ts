@@ -1,5 +1,7 @@
 import { CHARACTER_SCHEMA_VERSION, DEFAULT_HOUSE_RULES, STARTING_HOPE, TRAIT_LIST } from "@/constants"
-import type { Character, HouseRules, Trait } from "@/types"
+import type { Character, HouseRules, Marks, Trait } from "@/types"
+
+import { NO_HERITAGE } from "./heritage"
 
 /**
  * Fabrica de ficha em branco. Pura — o id vem de `crypto.randomUUID`.
@@ -17,8 +19,7 @@ export const createCharacter = (
     name,
     createdAt: now,
     updatedAt: now,
-    ancestry: null,
-    mixedAncestry: null,
+    heritage: NO_HERITAGE,
     community: null,
     className: null,
     subclass: null,
@@ -54,54 +55,39 @@ export const touchCharacter = (character: Character): Character => ({
   updatedAt: Date.now(),
 })
 
+/** Marcador ausente vale zero — nada marcado, nenhuma Hope. */
+const NO_MARKS: Marks = { hp: 0, stress: 0, armor: 0, hope: 0 }
+
 /**
  * Completa o que o Realtime Database engole.
  *
- * **O RTDB não guarda array vazio nem objeto vazio — ele apaga a chave.** Uma
- * ficha nova, sem inventário, sem cartas e sem advancements, sobe com cinco
- * listas vazias e volta sem nenhuma delas. O `as Character` do serviço dizia
- * que estava tudo lá, e a primeira linha de `resolveEquippedArmor` batia num
- * `character.inventory` que não existia: a ficha não abria.
+ * **O RTDB não guarda lista nem objeto vazio — ele apaga a chave.** Uma ficha
+ * sem inventário, sem cartas e sem advancements sobe com cinco listas vazias e
+ * volta sem nenhuma delas, e a primeira linha de `resolveEquippedArmor` bate
+ * num `character.inventory` que não existe.
  *
- * Some aqui, na fronteira de leitura, e não em `rules/`: o contrato de
- * `Character` é que os campos existem, e defender cada um deles dentro das
- * regras espalharia o conserto por todo cálculo — hoje a armadura, amanhã o
- * loadout.
+ * Uma regra só: **campo ausente vale o da ficha em branco**. Os objetos
+ * aninhados se mesclam à parte, porque o espalhamento de cima trocaria cada um
+ * inteiro — uma ficha com metade dos traços perderia a outra metade, e regra
+ * da casa nova nasceria ausente em ficha antiga.
+ *
+ * **Marcador é a exceção, e vale zero**, não o da ficha em branco: o banco
+ * apaga `hope: 0`, e quem gastou toda a Hope voltaria com ela cheia.
+ *
+ * Mora aqui, na fronteira de leitura, e não em `rules/`: o contrato de
+ * `Character` é que os campos existem, e defender cada um dentro do cálculo
+ * espalharia o conserto por toda regra — hoje a armadura, amanhã o loadout.
  */
 export const normalizeCharacter = (stored: Character): Character => {
-  const traits = TRAIT_LIST.reduce(
-    (filled, trait) => ({ ...filled, [trait]: stored.traits?.[trait] ?? 0 }),
-    {} as Record<Trait, number>,
-  )
+  const blank = createCharacter()
 
   return {
+    ...blank,
     ...stored,
-    schema: stored.schema ?? CHARACTER_SCHEMA_VERSION,
-    name: stored.name ?? "",
-    level: stored.level ?? 1,
-    ancestry: stored.ancestry ?? null,
-    mixedAncestry: stored.mixedAncestry ?? null,
-    community: stored.community ?? null,
-    className: stored.className ?? null,
-    subclass: stored.subclass ?? null,
-    partyId: stored.partyId ?? null,
-    // Merge com o padrão: regra nova da casa entra desligada em ficha antiga.
-    houseRules: { ...DEFAULT_HOUSE_RULES, ...stored.houseRules },
-    traits,
-    marks: {
-      hp: stored.marks?.hp ?? 0,
-      stress: stored.marks?.stress ?? 0,
-      armor: stored.marks?.armor ?? 0,
-      hope: stored.marks?.hope ?? 0,
-    },
-    // O banco apaga lista vazia: ficha sem token gasto volta sem o campo.
-    tokens: stored.tokens ?? [],
-    loadout: stored.loadout ?? [],
-    vault: stored.vault ?? [],
-    inventory: stored.inventory ?? [],
-    advancements: stored.advancements ?? [],
-    experiences: stored.experiences ?? [],
-    notes: stored.notes ?? "",
+    heritage: { ...blank.heritage, ...stored.heritage },
+    traits: { ...blank.traits, ...stored.traits },
+    marks: { ...NO_MARKS, ...stored.marks },
+    houseRules: { ...blank.houseRules, ...stored.houseRules },
   }
 }
 
@@ -118,8 +104,6 @@ const EDITED_FIELDS = [
   "level",
   "className",
   "subclass",
-  "ancestry",
-  "mixedAncestry",
   "community",
   "notes",
 ] as const
@@ -143,6 +127,10 @@ export const hasSheetEdits = (draft: Character, saved: Character): boolean => {
   }
 
   if (TRAIT_LIST.some((trait) => draft.traits[trait] !== saved.traits[trait])) {
+    return true
+  }
+
+  if (JSON.stringify(draft.heritage) !== JSON.stringify(saved.heritage)) {
     return true
   }
 

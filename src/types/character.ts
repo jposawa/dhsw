@@ -65,6 +65,26 @@ export type TokenCount = {
   count: number
 }
 
+/**
+ * A ascendência da ficha.
+ *
+ * `ancestry` é **código**: o nome de uma espécie do compêndio, ou `MIXED` —
+ * a ascendência mista, que não é espécie e sim a escolha de duas features
+ * (Core Rulebook, p. 70–71).
+ *
+ * Na mista, cada feature diz de qual espécie vem, e `label` é o nome que a
+ * mesa deu à mistura: o livro deixa livre ("goblin-orc", "toothling"). Vazio
+ * cai no padrão, que junta as duas espécies.
+ */
+export type Heritage = {
+  ancestry: string | null
+  label: string | null
+  /** Espécie da 1ª feature. Só na mista; na única as duas vêm de `ancestry`. */
+  firstAncestry: string | null
+  /** Espécie da 2ª feature. */
+  secondAncestry: string | null
+}
+
 export type Character = {
   id: string
   schema: number
@@ -72,12 +92,7 @@ export type Character = {
   createdAt: number
   updatedAt: number
 
-  ancestry: string | null
-  /**
-   * Ascendência mista: a espécie que dá a **segunda** feature. `null` é
-   * espécie única. Ver `helpers/heritage.ts` e o livro, p. 70–71.
-   */
-  mixedAncestry: string | null
+  heritage: Heritage
   community: string | null
   className: string | null
   subclass: string | null

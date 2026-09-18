@@ -9,6 +9,7 @@ import { useCompendium, usePartyHouseRules } from "@/hooks"
 import {
   canLeaveParty,
   canRemoveSheetFromParty,
+  createCharacter,
   domainColorToken,
   heritageLabel,
   isPartyOwner,
@@ -18,6 +19,7 @@ import {
   touchCharacter,
 } from "@/helpers"
 import {
+  createSheet,
   deleteParty,
   fetchParty,
   fetchPartyMembers,
@@ -60,7 +62,7 @@ export const PartyDetail = () => {
   const { user } = useAtomValue(authAtom)
   const [roster, setRoster] = useAtom(rosterAtom)
   const myCharacters = useAtomValue(charactersAtom)
-  const sheetRoles = useAtomValue(sheetRolesAtom)
+  const [sheetRoles, setSheetRoles] = useAtom(sheetRolesAtom)
   const setToast = useSetAtom(toastAtom)
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams()
@@ -178,6 +180,43 @@ export const PartyDetail = () => {
       setToast("Ficha adicionada ao grupo")
     } catch {
       setToast("Não foi possível adicionar a ficha.")
+    }
+  }
+
+  /**
+   * Ficha nova já nascida no grupo.
+   *
+   * Sem isto, quem chega numa mesa sem personagem fazia a volta inteira —
+   * Fichas, nova ficha, voltar ao grupo, pôr no grupo —, e o passo do meio era
+   * o que as pessoas esqueciam.
+   *
+   * Ela sobe aqui em vez de esperar o `useSheetSync`: o índice de fichas da
+   * party só pode apontar para uma ficha que já existe, e a linha de acesso
+   * que dá direito de escrita nasce junto com ela em `createSheet`.
+   */
+  const handleCreateSheet = async () => {
+    // As regras da mesa, e não as do perfil: a ficha nasce dentro dela e leva
+    // as mesmas regras consigo no dia em que sair.
+    const character: Character = { ...createCharacter("", keptRules), partyId }
+
+    setIsWorking(true)
+
+    try {
+      await createSheet(character, user.userId)
+      await setSheetParty(character.id, partyId, null)
+
+      setRoster({
+        characters: { ...roster.characters, [character.id]: character },
+        order: [character.id, ...roster.order],
+      })
+      setSheetRoles({ ...sheetRoles, [character.id]: "author" })
+      setSheets((current) => [...current, character])
+
+      navigate(ROUTES.sheet(character.id))
+    } catch {
+      setToast("Não foi possível criar a ficha.")
+    } finally {
+      setIsWorking(false)
     }
   }
 
@@ -413,6 +452,23 @@ export const PartyDetail = () => {
                         </div>
                       </>
                     ) : null}
+
+                    {/* Não é ação de Narrador: quem chega na mesa sem
+                        personagem é justamente o jogador. */}
+                    <SectionLabel>COMEÇAR UMA FICHA AQUI</SectionLabel>
+                    <div className={styles.actions}>
+                      <Button
+                        isFullWidth
+                        variant="outline"
+                        disabled={isWorking}
+                        onClick={() => void handleCreateSheet()}
+                      >
+                        + &nbsp;NOVA FICHA
+                      </Button>
+                    </div>
+                    <p className={styles.note}>
+                      Nasce já no grupo e com as regras desta mesa, e abre para você preencher.
+                    </p>
                   </div>
                   <div className={styles.column}>
                     <SectionLabel>CÓDIGO DO GRUPO</SectionLabel>

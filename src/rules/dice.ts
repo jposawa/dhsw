@@ -128,6 +128,22 @@ export const formatDicePool = ({ hasDuality, groups, modifier }: DicePool): stri
   return terms.join("").replace(/^\+/, "")
 }
 
+/**
+ * Dá para rolar este pool?
+ *
+ * Duas coisas que não são rolagem e que a tela não deve deixar montar:
+ *
+ * - **pool sem dado** — um modificador sozinho é uma conta, não uma rolagem, e
+ *   o resultado seria o número que já estava na tela;
+ * - **pool só de dados subtraídos** — tirar d6 é ajuste de uma rolagem, e sem
+ *   nada de onde tirar ele vira um total negativo sem sentido.
+ *
+ * Mora aqui, e não no componente: os dois roladores fazem a mesma pergunta, e
+ * respondida em cada um ela divergiria no primeiro ajuste.
+ */
+export const canRollPool = ({ hasDuality, groups }: DicePool): boolean =>
+  hasDuality || groups.some((group) => group.sign > 0)
+
 /** Soma (ou tira) um dado do pool, juntando ao grupo de mesmas faces e sinal. */
 export const addDieToPool = (pool: DicePool, sides: number, sign: 1 | -1): DicePool => {
   const same = pool.groups.some((group) => group.sides === sides && group.sign === sign)
@@ -141,6 +157,21 @@ export const addDieToPool = (pool: DicePool, sides: number, sign: 1 | -1): DiceP
       : [...pool.groups, { count: 1, sides, sign }],
   }
 }
+
+/**
+ * Tira **um** dado do grupo de mesmas faces e sinal; o grupo some ao zerar.
+ *
+ * Um por vez e não o grupo inteiro: cada dado preparado é um ícone com o seu
+ * ×, e um × que leva os outros três junto não é o que o ícone promete.
+ */
+export const removeDieFromPool = (pool: DicePool, sides: number, sign: 1 | -1): DicePool => ({
+  ...pool,
+  groups: pool.groups
+    .map((group) =>
+      group.sides === sides && group.sign === sign ? { ...group, count: group.count - 1 } : group,
+    )
+    .filter((group) => group.count > 0),
+})
 
 /** Com os Duality Dice no pool, o d6 é vantagem ou desvantagem; sem eles, dado comum. */
 const roleOf = (group: DiceGroup, hasDuality: boolean): DieRole => {
@@ -163,10 +194,18 @@ const outcomeOf = (hope: number, fear: number): DualityOutcome => {
 export const rollPool = (text: string, label: string, random: RandomDie): RollResult | null => {
   const pool = parseDicePool(text)
 
-  if (!pool) {
-    return null
-  }
+  return pool && rollDicePool(pool, label, random)
+}
 
+/**
+ * Rola o pool montado.
+ *
+ * É esta que a tela usa: com os dados montados por ícone, não há texto para
+ * reanalisar, e passar por `formatDicePool` só para `parseDicePool` desfazer
+ * seria ida e volta por um parser que ninguém pediu. `rollPool` continua para
+ * quem chega com expressão — a rolagem preparada que vem da ficha.
+ */
+export const rollDicePool = (pool: DicePool, label: string, random: RandomDie): RollResult => {
   const duality: RolledDie[] = pool.hasDuality
     ? [
         { sides: 12, value: random(12), role: "hope" },

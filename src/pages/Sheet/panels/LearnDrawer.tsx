@@ -3,7 +3,7 @@ import React from "react"
 
 import { WideDrawer } from "@/fragments"
 import { useCompendium, useSkillSearch } from "@/hooks"
-import { isKnown, learnableSkills, learnSkill } from "@/rules"
+import { forgetSkill, isKnown, learnableSkills, learnSkill } from "@/rules"
 import type { Character, DerivedStats, Domain, Result } from "@/types"
 
 import { SkillRow } from "./SkillRow"
@@ -26,6 +26,11 @@ type LearnDrawerProps = {
  * A lista vem de `learnableSkills` — domínios da classe até o nível dele, e o
  * domínio de multiclasse até metade do nível. A tela não filtra nada por conta
  * própria; a busca só estreita o que a regra já liberou.
+ *
+ * A carta já sabida traz ESQUECER, e não um aviso de que já é sabida: a gaveta
+ * é a lista do que o personagem pode saber, e tirar é a outra metade de pôr.
+ * Sem confirmar antes — isto é modo edição, e o CANCELAR da barra já é o
+ * desfazer; perguntar de novo pela mesma coisa é atrito por atrito.
  */
 export const LearnDrawer = ({ isOpen, character, derived, onApply, onClose }: LearnDrawerProps) => {
   const { compendium } = useCompendium()
@@ -71,7 +76,14 @@ export const LearnDrawer = ({ isOpen, character, derived, onApply, onClose }: Le
                 skill={skill}
                 action={
                   isKnown(character, skill.name) ? (
-                    <span className={styles.known}>JÁ SABE</span>
+                    <Button
+                      variant="text"
+                      intent="danger"
+                      aria-label={`Esquecer ${skill.name}`}
+                      onClick={() => onApply(forgetSkill(character, skill.name))}
+                    >
+                      ESQUECER
+                    </Button>
                   ) : (
                     <Button
                       variant="outline"

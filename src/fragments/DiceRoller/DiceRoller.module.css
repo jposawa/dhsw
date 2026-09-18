@@ -34,3 +34,131 @@
   grid-template-columns: auto 1fr;
   gap: var(--space-2);
 }
+
+/*
+ * Os seis dados que se pode somar. Grade e não fileira: cada célula é a
+ * silhueta com o + e o − dela, e enfileirados eles perdiam a quem pertence
+ * cada botão.
+ */
+.dice {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(5.5rem, 1fr));
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.dieCell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-1);
+  background: var(--color-surface);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+.dieArt {
+  color: var(--color-chrome-strong);
+}
+
+.dieButtons {
+  display: flex;
+  gap: var(--space-1);
+}
+
+/* Alvo de toque cheio, caixa estreita: são doze na mesma grade. */
+.dieButton {
+  min-width: var(--size-touch-target);
+  padding: 0;
+  font-size: var(--text-md);
+}
+
+/* ── o que está preparado ─────────────────────────────────────────────────── */
+
+.prepared {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-height: calc(var(--size-touch-target) + var(--space-4));
+}
+
+.preparedList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/*
+ * Um dado preparado: a silhueta e o × que a tira. O contorno é o que separa um
+ * dado do seguinte quando são cinco iguais em fila.
+ */
+.preparedItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-1) var(--space-1) var(--space-2);
+  color: var(--color-chrome-strong);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+}
+
+/* Subtraído: tracejado e na cor de aviso, a mesma leitura do dado já rolado. */
+.preparedItem[data-subtracted] {
+  color: var(--color-warning);
+  border-style: dashed;
+}
+
+/* Os dois Duality Dice andam juntos e saem juntos: são um dado só na regra. */
+.preparedItem[data-duality] {
+  color: var(--color-primary);
+}
+
+.preparedDuality {
+  display: flex;
+  gap: 2px;
+}
+
+.preparedArt {
+  font-size: var(--text-xs);
+}
+
+.preparedModifier {
+  font-size: var(--text-md);
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+ * O × mora dentro da caixa do dado. Reset local de fundo, borda e cursor —
+ * ver `STYLING.md` sobre `@layer`.
+ */
+.remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  min-height: 1.5rem;
+  font-size: var(--text-md);
+  line-height: 1;
+  color: inherit;
+  background: none;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.remove:hover {
+  opacity: 1;
+}
+
+.empty {
+  margin: 0;
+  font-size: var(--text-xs);
+  color: var(--color-text-dim);
+}

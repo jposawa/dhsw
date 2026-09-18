@@ -1,11 +1,11 @@
 import { Button, Drawer, SectionLabel } from "@jposawa/ronin-ui"
 import React from "react"
 
-import { EQUIP_SLOTS, GEAR_KINDS } from "@/constants"
+import { EQUIP_SLOTS } from "@/constants"
 import { describeNamedArmor } from "@/helpers"
 import { useCompendium, useHouseRules } from "@/hooks"
 import { augmentSlotsFor, candidatesForSlot, consume, equipInSlot, removeEntry } from "@/rules"
-import type { Character, DerivedStats, EquipSlot, GearKind, InventoryEntry, Result } from "@/types"
+import type { Character, DerivedStats, EquipSlot, InventoryEntry, Result } from "@/types"
 
 import { AugmentDrawer } from "./AugmentDrawer"
 import { CatalogueDrawer } from "./CatalogueDrawer"
@@ -29,7 +29,8 @@ type InventoryPanelProps = {
  *
  * **A troca do que está empunhando é uma gaveta, não uma lista de botões.**
  * Três slots — armadura, primária, secundária —, cada um abrindo o que cabe
- * nele. Pegar equipamento novo é uma gaveta por tipo.
+ * nele. Pegar equipamento novo é uma gaveta só, com o tipo como filtro dentro
+ * dela: quatro botões obrigavam a saber o tipo antes de procurar.
  *
  * Com a regra da casa de armas customizáveis, cada arma ganha o botão dos
  * augments dela.
@@ -39,7 +40,7 @@ export const InventoryPanel = ({ character, derived, onApply }: InventoryPanelPr
   const houseRules = useHouseRules()
 
   const [slotDrawer, setSlotDrawer] = React.useState<EquipSlot | null>(null)
-  const [catalogueKind, setCatalogueKind] = React.useState<GearKind | null>(null)
+  const [isPicking, setIsPicking] = React.useState(false)
   const [augmentEntryId, setAugmentEntryId] = React.useState<string | null>(null)
 
   const carried = character.inventory.filter((entry) => !entry.isEquipped)
@@ -172,14 +173,13 @@ export const InventoryPanel = ({ character, derived, onApply }: InventoryPanelPr
           </ul>
         )}
 
-        {/* Um botão por tipo, e cada um abre só aquele catálogo. */}
-        <menu className={styles.pickButtons}>
-          {GEAR_KINDS.map((option) => (
-            <Button key={option.id} variant="outline" onClick={() => setCatalogueKind(option.id)}>
-              + {option.label.toUpperCase()}
-            </Button>
-          ))}
-        </menu>
+        <Button
+          className={styles.pickButton}
+          variant="outline"
+          onClick={() => setIsPicking(true)}
+        >
+          + &nbsp;PEGAR EQUIPAMENTO
+        </Button>
       </section>
 
       {/* Gaveta de slot: o que cabe aqui, e a opção de esvaziar. */}
@@ -205,10 +205,10 @@ export const InventoryPanel = ({ character, derived, onApply }: InventoryPanelPr
       </Drawer>
 
       <CatalogueDrawer
-        kind={catalogueKind}
+        isOpen={isPicking}
         character={character}
         onApply={onApply}
-        onClose={() => setCatalogueKind(null)}
+        onClose={() => setIsPicking(false)}
       />
 
       <AugmentDrawer

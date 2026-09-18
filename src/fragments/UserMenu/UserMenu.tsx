@@ -18,7 +18,11 @@ const SYNC_LABELS: Record<string, string> = {
 }
 
 /**
- * Conta: gatilho na barra inferior, painel com prévia e ações rápidas.
+ * Perfil: gatilho na barra inferior, painel com prévia e ações rápidas.
+ *
+ * O gatilho se chama PERFIL e não CONTA porque é para o perfil que ele leva —
+ * e porque o rótulo visível e o nome acessível têm que ser o mesmo, senão quem
+ * dita "perfil" por voz não acha o botão que lê "conta".
  *
  * Deslogado, o painel também abre: traz o botão de entrar e o tema, que não
  * depende de conta. O `signIn` sai direto do clique no item — `signInWithPopup`
@@ -75,7 +79,7 @@ export const UserMenu = ({ isNavCollapsed = false }: { isNavCollapsed?: boolean 
           <i className={[styles.triggerSlot, styles.triggerIcon].join(" ")} aria-hidden="true">
             <NavIcon name="account" />
           </i>
-          <span className={styles.triggerLabel}>CONTA</span>
+          <span className={styles.triggerLabel}>PERFIL</span>
         </span>
       </div>
     )
@@ -84,6 +88,9 @@ export const UserMenu = ({ isNavCollapsed = false }: { isNavCollapsed?: boolean 
   const signedUser = status === "signed-out" ? null : user
   const isDark = theme === "dark"
   const triggerName = signedUser ? signedUser.displayName : "Entrar"
+  // Deslogado, entrar é a única ação que destrava ficha e grupo — ela não pode
+  // pesar o mesmo que um destino qualquer do trilho.
+  const isGuest = signedUser === null
 
   return (
     <div className={styles.wrapper} ref={wrapperRef} data-collapsed={isNavCollapsed}>
@@ -91,9 +98,10 @@ export const UserMenu = ({ isNavCollapsed = false }: { isNavCollapsed?: boolean 
         type="button"
         ref={triggerRef}
         className={styles.trigger}
+        data-guest={isGuest || undefined}
         aria-expanded={isOpen}
         aria-haspopup="menu"
-        aria-label={signedUser ? `Conta de ${signedUser.displayName}` : "Conta"}
+        aria-label={signedUser ? `Perfil de ${signedUser.displayName}` : "Entrar"}
         title={isNavCollapsed ? triggerName : undefined}
         onClick={() => setIsOpen((open) => !open)}
       >
@@ -111,11 +119,11 @@ export const UserMenu = ({ isNavCollapsed = false }: { isNavCollapsed?: boolean 
             <NavIcon name="account" />
           </i>
         )}
-        <span className={styles.triggerLabel}>{signedUser ? "CONTA" : "ENTRAR"}</span>
+        <span className={styles.triggerLabel}>{signedUser ? "PERFIL" : "ENTRAR"}</span>
       </button>
 
       {isOpen ? (
-        <section className={styles.panel} aria-label="Conta">
+        <section className={styles.panel} aria-label={signedUser ? "Perfil" : "Entrar"}>
           {signedUser ? (
             <>
               <header className={styles.identity}>

@@ -46,7 +46,17 @@ export const duplicateCharacter = (source: Character): Character => {
   const name = `${source.name || "Sem nome"} (cópia)`
   const now = Date.now()
 
-  return { ...source, id: crypto.randomUUID(), name, createdAt: now, updatedAt: now }
+  return {
+    ...source,
+    id: crypto.randomUUID(),
+    name,
+    createdAt: now,
+    updatedAt: now,
+    // A cópia nasce fora da mesa. Copiar o vínculo daria uma ficha que se diz
+    // de um grupo que nunca a listou — o índice da party é escrita à parte, e
+    // ninguém a fez por ela.
+    partyId: null,
+  }
 }
 
 /** Marca a ficha como alterada agora. Isola o `Date.now` do corpo do componente. */
@@ -84,7 +94,14 @@ export const normalizeCharacter = (stored: Character): Character => {
   return {
     ...blank,
     ...stored,
-    heritage: { ...blank.heritage, ...stored.heritage },
+    // `sources` entra fundo: o RTDB apaga campo nulo, e uma mista com só a
+    // 1ª espécie volta de lá como `{ first }` — a mesclagem rasa deixaria
+    // `second` indefinido, e `heritageFeatures` lê as duas.
+    heritage: {
+      ...blank.heritage,
+      ...stored.heritage,
+      sources: { ...blank.heritage.sources, ...stored.heritage?.sources },
+    },
     traits: { ...blank.traits, ...stored.traits },
     marks: { ...NO_MARKS, ...stored.marks },
     houseRules: { ...blank.houseRules, ...stored.houseRules },

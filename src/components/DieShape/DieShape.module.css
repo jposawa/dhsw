@@ -1,0 +1,28 @@
+/*
+ * A silhueta acompanha o texto ao lado: `1em` de lado e `currentColor` no
+ * traço. Quem usa decide o tamanho pelo `font-size`, como no `NavIcon`.
+ */
+.shape {
+  width: 2.25em;
+  height: 2.25em;
+  flex-shrink: 0;
+}
+
+/* Mais apagadas que o contorno: elas dão volume, e no mesmo peso competiriam
+   com o número que está no meio. */
+.facet {
+  opacity: 0.45;
+}
+
+/*
+ * O número dentro do dado. `fill` e não `color`: em SVG o texto se pinta pelo
+ * preenchimento, e o `stroke: currentColor` herdado do contorno engrossaria
+ * o algarismo até fechar os buracos do 8 e do 0.
+ */
+.label {
+  fill: currentColor;
+  stroke: none;
+  font-size: 9px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}

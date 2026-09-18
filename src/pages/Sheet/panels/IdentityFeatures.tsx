@@ -2,7 +2,7 @@ import { SectionLabel } from "@jposawa/ronin-ui"
 import clsx from "clsx"
 import type React from "react"
 
-import { domainStripeStyle, heritageFeatures, heritageLabel, isMixedAncestry } from "@/helpers"
+import { domainStripeStyle, heritageFeatures, heritageLabel } from "@/helpers"
 import { useCompendium } from "@/hooks"
 import { subclassUpgradesOf, tokenPoolKey } from "@/rules"
 import type { BaseComponent, Character } from "@/types"
@@ -42,7 +42,7 @@ export const IdentityFeatures = ({
       candidate.name === character.subclass && candidate.className === character.className,
   )
   const heritage = heritageFeatures(character, compendium)
-  const isMixed = isMixedAncestry(character.heritage)
+  const { isMixed } = character.heritage
   const community = compendium.communities.find(
     (candidate) => candidate.name === character.community,
   )

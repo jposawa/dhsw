@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest"
 
 import { TEST_COMPENDIUM } from "@/compendium/testing"
-import { DEFAULT_HOUSE_RULES, MIXED_ANCESTRY } from "@/constants"
-import { createCharacter, NO_HERITAGE } from "@/helpers"
+import { DEFAULT_HOUSE_RULES } from "@/constants"
+import { createCharacter, singleAncestry } from "@/helpers"
 import type { Advancement, Character, HouseRules, InventoryEntry } from "@/types"
 
 import { derive as deriveWith, tierOf } from "./derive"
@@ -260,18 +260,13 @@ describe("derive — nada de derivado e guardado", () => {
 
 const asHuman = (character: Character): Character => ({
   ...character,
-  heritage: { ...NO_HERITAGE, ancestry: "Human" },
+  heritage: singleAncestry("Human"),
 })
 
-/** Mista: o código é o da mista, e cada feature diz de qual espécie veio. */
+/** Mista: duas fontes diferentes, e o nome fica a cargo da mesa. */
 const asMixed = (character: Character, first: string, second: string): Character => ({
   ...character,
-  heritage: {
-    ...NO_HERITAGE,
-    ancestry: MIXED_ANCESTRY,
-    firstAncestry: first,
-    secondAncestry: second,
-  },
+  heritage: { name: null, sources: { first, second }, isMixed: true },
 })
 
 describe("derive — features com efeito permanente", () => {

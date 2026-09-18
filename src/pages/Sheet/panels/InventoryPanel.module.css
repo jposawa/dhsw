@@ -114,6 +114,14 @@
   min-width: 0;
 }
 
+/* O tipo ao lado do nome, na lista em que os quatro se misturam. */
+.rowKind {
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+}
+
 /* Quantidade ao lado do nome, separada pelo gap e não por margin. */
 .rowName {
   display: flex;
@@ -173,12 +181,10 @@
 }
 
 /* Quatro tipos de equipamento, dois por fileira no celular. */
-.pickButtons {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-1);
-  margin: 0;
-  padding: 0;
+/* Um botão só, largura cheia: é a única porta do catálogo, e um botão curto
+   no meio da coluna não parecia a continuação da mochila. */
+.pickButton {
+  width: 100%;
 }
 
 .catalogue {
@@ -187,11 +193,12 @@
   gap: var(--space-3);
 }
 
-.chips {
-  display: flex;
-  margin: 0;
-  flex-wrap: wrap;
-  gap: var(--space-1);
+/* As caixas de filtro: uma por fileira no celular, lado a lado assim que
+   couberem — são de uma a três, conforme os tipos marcados. */
+.filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+  gap: var(--space-2);
 }
 
 .empty {
@@ -210,9 +217,5 @@
     display: grid;
     grid-template-columns: 1fr 1.2fr;
     align-items: start;
-  }
-
-  .pickButtons {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }

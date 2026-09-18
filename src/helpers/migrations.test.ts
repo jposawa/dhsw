@@ -10,6 +10,7 @@ import {
   rosterV3ToV4,
   rosterV4ToV5,
   rosterV5ToV6,
+  rosterV6ToV7,
 } from "./migrations"
 
 /**
@@ -177,7 +178,7 @@ describe("rosterV5ToV6", () => {
       firstAncestry: null,
       secondAncestry: null,
     })
-    expect(rosterV5ToV6(v5).characters["sheet-1"].schema).toBe(CHARACTER_SCHEMA_VERSION)
+    expect(rosterV5ToV6(v5).characters["sheet-1"].schema).toBe(6)
   })
 
   /* Na v5 a espécie mista era um campo solto ao lado da espécie: a primeira
@@ -194,6 +195,65 @@ describe("rosterV5ToV6", () => {
       label: null,
       firstAncestry: "Human",
       secondAncestry: "Twilek",
+    })
+  })
+})
+
+describe("rosterV6ToV7", () => {
+  const v5 = rosterV4ToV5(rosterV3ToV4(rosterV2ToV3(rosterV1ToV2(V1_ROSTER)), DEFAULT_HOUSE_RULES))
+  const v6 = rosterV5ToV6(v5)
+  const heritageOf = (roster: RosterState) => roster.characters["sheet-1"].heritage
+
+  const asMixedV6 = (heritage: Record<string, unknown>): RosterState => ({
+    ...v6,
+    characters: {
+      "sheet-1": { ...v6.characters["sheet-1"], heritage } as unknown as Character,
+    },
+  })
+
+  /* O ponto da v7: as duas fontes valem para toda ascendência. Na única elas
+     apontam para a própria espécie, e quem lê para de perguntar se é mista. */
+  it("espécie única aponta as duas fontes para ela mesma", () => {
+    expect(heritageOf(rosterV6ToV7(v6))).toEqual({
+      name: "Human",
+      sources: { first: "Human", second: "Human" },
+      isMixed: false,
+    })
+    expect(rosterV6ToV7(v6).characters["sheet-1"].schema).toBe(CHARACTER_SCHEMA_VERSION)
+  })
+
+  /* O código `"mixed"` sai do campo do nome e vira `isMixed`; o nome passa a
+     ser o que a mesa deu, que na v6 morava em `label`. */
+  it("mista troca o código sentinela pela marca, e o nome pelo da mesa", () => {
+    const mixed = asMixedV6({
+      ancestry: "mixed",
+      label: "Corelliano",
+      firstAncestry: "Human",
+      secondAncestry: "Twilek",
+    })
+
+    expect(heritageOf(rosterV6ToV7(mixed))).toEqual({
+      name: "Corelliano",
+      sources: { first: "Human", second: "Twilek" },
+      isMixed: true,
+    })
+  })
+
+  /* Migração não adivinha escolha de ninguém: a 1ª fonte que a versão anterior
+     copiava da espécie anterior fica onde está, porque apagá-la tiraria uma
+     feature de uma ficha em jogo. */
+  it("mista pela metade atravessa como está, sem inventar a fonte que falta", () => {
+    const half = asMixedV6({
+      ancestry: "mixed",
+      label: null,
+      firstAncestry: "Human",
+      secondAncestry: null,
+    })
+
+    expect(heritageOf(rosterV6ToV7(half))).toEqual({
+      name: null,
+      sources: { first: "Human", second: null },
+      isMixed: true,
     })
   })
 })

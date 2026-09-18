@@ -44,6 +44,27 @@
 }
 
 /*
+ * Deslogado o gatilho vira chamada, não mais um item do trilho: no cromo
+ * apagado ele se perdia entre os destinos, e é a porta para tudo que está
+ * atrás do login. Cor primária, o mesmo azul da ação principal em botão.
+ */
+.trigger[data-guest],
+.trigger[data-guest]:hover,
+.trigger[data-guest][aria-expanded='true'] {
+  font-weight: 500;
+  color: var(--color-primary);
+}
+
+/* O retorno do hover é o sublinhado e não outra cor: `--color-primary` é claro
+   no tema escuro e escuro no claro, então "uma tonalidade adiante" iria para
+   lados opostos nos dois. */
+.trigger[data-guest]:hover,
+.trigger[data-guest][aria-expanded='true'] {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/*
  * A caixa do avatar tem a altura da caixa de ícone dos destinos. O avatar da
  * biblioteca vem com 2rem; aqui ele desce para 1.5rem, senão empurra o rótulo
  * CONTA para baixo dos outros quatro.

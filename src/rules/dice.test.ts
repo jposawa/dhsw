@@ -2,12 +2,15 @@ import { describe, expect, it } from "vitest"
 
 import {
   addDieToPool,
+  canRollPool,
   cryptoDie,
   describeRoll,
   EMPTY_POOL,
   formatDicePool,
   parseDicePool,
   type RandomDie,
+  removeDieFromPool,
+  rollDicePool,
   rollPool,
 } from "./dice"
 
@@ -71,6 +74,62 @@ describe("formatDicePool e addDieToPool", () => {
     const minus = addDieToPool(twice, 6, -1)
 
     expect(formatDicePool(minus)).toBe("2d6-1d6")
+  })
+})
+
+describe("removeDieFromPool", () => {
+  /* Um por vez: cada dado preparado é um ícone com o seu ×, e um × que leva os
+     outros do mesmo tipo junto não é o que o ícone promete. */
+  it("tira um dado do grupo, e o grupo some ao zerar", () => {
+    const três = addDieToPool(addDieToPool(addDieToPool(EMPTY_POOL, 6, 1), 6, 1), 6, 1)
+
+    expect(formatDicePool(removeDieFromPool(três, 6, 1))).toBe("2d6")
+    expect(
+      formatDicePool(removeDieFromPool(removeDieFromPool(removeDieFromPool(três, 6, 1), 6, 1), 6, 1)),
+    ).toBe("")
+  })
+
+  it("o sinal faz parte da identidade: tirar somado não mexe no subtraído", () => {
+    const misto = addDieToPool(addDieToPool(EMPTY_POOL, 6, 1), 6, -1)
+
+    expect(formatDicePool(removeDieFromPool(misto, 6, 1))).toBe("-1d6")
+  })
+
+  it("tirar dado que não está no pool não muda nada", () => {
+    expect(removeDieFromPool(EMPTY_POOL, 20, 1)).toEqual(EMPTY_POOL)
+  })
+})
+
+describe("canRollPool", () => {
+  it("dado somado, ou Duality, é rolagem", () => {
+    expect(canRollPool(addDieToPool(EMPTY_POOL, 8, 1))).toBe(true)
+    expect(canRollPool({ ...EMPTY_POOL, hasDuality: true })).toBe(true)
+  })
+
+  /* Um modificador sozinho é uma conta, não uma rolagem: o resultado seria o
+     número que já estava na tela. */
+  it("modificador sem dado não é rolagem", () => {
+    expect(canRollPool({ ...EMPTY_POOL, modifier: 3 })).toBe(false)
+    expect(canRollPool(EMPTY_POOL)).toBe(false)
+  })
+
+  /* Tirar d6 é ajuste de uma rolagem; sem nada de onde tirar, vira um total
+     negativo sem sentido. */
+  it("só dados subtraídos não é rolagem", () => {
+    expect(canRollPool(addDieToPool(EMPTY_POOL, 6, -1))).toBe(false)
+    expect(canRollPool(addDieToPool({ ...EMPTY_POOL, hasDuality: true }, 6, -1))).toBe(true)
+  })
+})
+
+describe("rollDicePool", () => {
+  /* A tela rola o pool montado sem passar por texto. O resultado tem que ser o
+     mesmo que a expressão equivalente dá — senão são dois roladores. */
+  it("dá o mesmo que rolar a expressão equivalente", () => {
+    const pool = addDieToPool(addDieToPool(EMPTY_POOL, 8, 1), 8, 1)
+
+    expect(rollDicePool({ ...pool, modifier: 3 }, "Dano", sequence(5, 7))).toEqual(
+      rollPool("2d8+3", "Dano", sequence(5, 7)),
+    )
   })
 })
 

@@ -68,21 +68,35 @@ export type TokenCount = {
 /**
  * A ascendência da ficha.
  *
- * `ancestry` é **código**: o nome de uma espécie do compêndio, ou `MIXED` —
- * a ascendência mista, que não é espécie e sim a escolha de duas features
- * (Core Rulebook, p. 70–71).
- *
- * Na mista, cada feature diz de qual espécie vem, e `label` é o nome que a
- * mesa deu à mistura: o livro deixa livre ("goblin-orc", "toothling"). Vazio
- * cai no padrão, que junta as duas espécies.
+ * **Uma forma só, para toda ascendência.** Espécie única e mista não são dois
+ * formatos: as duas têm um nome e duas fontes de feature. Na única as duas
+ * fontes são a mesma espécie; na mista, duas diferentes (Core Rulebook,
+ * p. 70–71). Não existe código sentinela de "mista" ocupando o campo do nome —
+ * a mista é uma ascendência à parte e **não** deriva da espécie que estava
+ * escolhida antes dela.
  */
 export type Heritage = {
-  ancestry: string | null
-  label: string | null
-  /** Espécie da 1ª feature. Só na mista; na única as duas vêm de `ancestry`. */
-  firstAncestry: string | null
-  /** Espécie da 2ª feature. */
-  secondAncestry: string | null
+  /**
+   * Como ela se chama. Na única é o nome da espécie; na mista é o nome que a
+   * mesa deu à mistura, que o livro deixa livre ("goblin-orc", "toothling") e
+   * que pode não existir ainda.
+   */
+  name: string | null
+  /** De qual espécie vem cada feature. Na única, as duas são a mesma. */
+  sources: HeritageSources
+  /**
+   * Escolha, e não dedução a partir das fontes: mista recém-escolhida ainda
+   * não tem fonte nenhuma, e sem esta marca ela seria indistinguível de ficha
+   * em branco — a tela não saberia mostrar os dois campos de feature.
+   */
+  isMixed: boolean
+}
+
+export type HeritageSources = {
+  /** A espécie que dá a 1ª feature. */
+  first: string | null
+  /** A espécie que dá a 2ª feature. */
+  second: string | null
 }
 
 export type Character = {

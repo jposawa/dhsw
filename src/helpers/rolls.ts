@@ -44,22 +44,28 @@ const listOf = <TItem>(stored: unknown): TItem[] => {
   return stored && typeof stored === "object" ? (Object.values(stored) as TItem[]) : []
 }
 
+/** Uma rolagem vazia: o molde do que o banco apaga (os `null` e o zero). */
+const BLANK_ROLL: Omit<RollRecord, "id"> = {
+  createdAt: 0,
+  kind: "dice",
+  label: "",
+  expression: "",
+  dice: [],
+  modifier: 0,
+  total: 0,
+  outcome: null,
+  author: null,
+  sheet: null,
+  visibility: "public",
+}
+
 /**
- * Uma rolagem como o banco devolve: sem os `null` (autor, ficha, resultado de
- * dados soltos) e com os dados como objeto quando a lista tem buraco. O id é a
- * chave do nó.
+ * Uma rolagem como o banco devolve: sem os `null` e sem o que é zero, e com os
+ * dados vindo como objeto quando a lista tem buraco. O id é a chave do nó.
  */
 export const normalizeRollRecord = (id: string, stored: Partial<RollRecord>): RollRecord => ({
+  ...BLANK_ROLL,
+  ...stored,
   id,
-  createdAt: stored.createdAt ?? 0,
-  kind: stored.kind ?? "dice",
-  label: stored.label ?? "",
-  expression: stored.expression ?? "",
   dice: listOf(stored.dice),
-  modifier: stored.modifier ?? 0,
-  total: stored.total ?? 0,
-  outcome: stored.outcome ?? null,
-  author: stored.author ?? null,
-  sheet: stored.sheet ?? null,
-  visibility: stored.visibility ?? "public",
 })

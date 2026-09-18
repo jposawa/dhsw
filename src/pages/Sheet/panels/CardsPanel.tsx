@@ -5,6 +5,7 @@ import { Switch } from "@/components"
 import { useCompendium } from "@/hooks"
 import {
   activeTokenPools,
+  domainAccessFor,
   forgetSkill,
   moveToLoadout,
   moveToVault,
@@ -49,6 +50,10 @@ export const CardsPanel = ({ character, derived, isEditing, onApply }: CardsPane
     names
       .map((name) => compendium.skills.find((candidate) => candidate.name === name))
       .filter((skill): skill is Skill => skill !== undefined)
+
+  // Sem classe não há domínio, e sem domínio não há carta ao alcance: o botão
+  // abriria uma gaveta vazia.
+  const hasDomains = domainAccessFor(character, compendium).length > 0
 
   const loadout = skillsOf(character.loadout)
   const vault = skillsOf(character.vault)
@@ -170,9 +175,22 @@ export const CardsPanel = ({ character, derived, isEditing, onApply }: CardsPane
       {/* Aprender só aparece editando, e abre uma gaveta: a lista de cartas é
           consulta de um momento, não parte da tela. */}
       {isEditing ? (
-        <Button className={styles.learnButton} variant="outline" onClick={() => setIsLearning(true)}>
-          + APRENDER CARTA
-        </Button>
+        <>
+          <Button
+            className={styles.learnButton}
+            variant="outline"
+            disabled={!hasDomains}
+            onClick={() => setIsLearning(true)}
+          >
+            + APRENDER CARTA
+          </Button>
+
+          {hasDomains ? null : (
+            <p className={styles.empty}>
+              As cartas vêm dos domínios da classe. Escolha a classe em Combate.
+            </p>
+          )}
+        </>
       ) : null}
 
       <LearnDrawer

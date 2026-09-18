@@ -2,18 +2,20 @@ import { Stepper } from "@jposawa/ronin-ui"
 import React from "react"
 
 import { DomainLabel } from "@/components"
-import { MAX_LEVEL, MIN_LEVEL, TRAIT_LIST } from "@/constants"
+import { MAX_LEVEL, MIN_LEVEL, MIXED_ANCESTRY, TRAIT_LIST } from "@/constants"
 import { ThresholdBar } from "@/fragments"
 import {
   describeThresholdOrigin,
+  featureNameOf,
   formatSigned,
+  heritageFeatures,
   heritageLabel,
+  isMixedAncestry,
 } from "@/helpers"
 import { useCompendium } from "@/hooks"
 import { changeClass, changeSubclass, classChangeLoss } from "@/rules"
-import type { Character, DerivedStats, Result } from "@/types"
+import type { Character, DerivedStats, Heritage, Result } from "@/types"
 
-import { AncestryDrawer } from "./AncestryDrawer"
 import { ChoiceDrawer, type ChoiceOption } from "./ChoiceDrawer"
 import { ChoiceField } from "./ChoiceField"
 import { ClassChangeConfirm } from "./ClassChangeConfirm"
@@ -23,7 +25,14 @@ import { SubclassTiers } from "./SubclassTiers"
 
 import styles from "./CombatEdit.module.css"
 
-type Picker = "class" | "subclass" | "ancestry" | "community"
+type Picker = "class" | "subclass" | "ancestry" | "firstFeature" | "secondFeature" | "community"
+
+/**
+ * Como a mista se chama na tela — o código guardado na ficha é
+ * `MIXED_ANCESTRY`. Ela é um cartão como os outros na lista de espécies:
+ * escolhê-la abre os campos de feature, em vez de definir espécie.
+ */
+const MIXED_ANCESTRY_LABEL = "Ascendência mista"
 
 type CombatEditProps = {
   draft: Character
@@ -62,6 +71,15 @@ export const CombatEdit = ({ draft, derived, onChange, onApply }: CombatEditProp
     (candidate) => candidate.name === draft.subclass && candidate.className === draft.className,
   )
 
+  const { heritage } = draft
+  const isMixed = isMixedAncestry(heritage)
+  const features = heritageFeatures(draft, compendium)
+  const featureAt = (index: 0 | 1) => features.find((feature) => feature.index === index)
+
+  const changeHeritage = (patch: Partial<Heritage>) => {
+    onChange((current) => ({ ...current, heritage: { ...current.heritage, ...patch } }))
+  }
+
   const closePicker = () => {
     setPicker(null)
   }
@@ -92,6 +110,28 @@ export const CombatEdit = ({ draft, derived, onChange, onApply }: CombatEditProp
     onApply(changeSubclass(draft, subclassName, compendium))
   }
 
+  /** O código da ascendência: o nome de uma espécie, ou a mista. */
+  const chooseAncestry = (ancestry: string) => {
+    closePicker()
+
+    // Virar mista aproveita a espécie que já estava como a da 1ª feature;
+    // voltar para espécie única esquece as escolhas e o nome da mistura.
+    changeHeritage(
+      ancestry === MIXED_ANCESTRY
+        ? { ancestry, firstAncestry: heritage.ancestry, secondAncestry: null }
+        : { ancestry, label: null, firstAncestry: null, secondAncestry: null },
+    )
+  }
+
+  const chooseFirstAncestry = (firstAncestry: string) => {
+    closePicker()
+    changeHeritage({ firstAncestry })
+  }
+
+  const chooseSecondAncestry = (secondAncestry: string) => {
+    closePicker()
+    changeHeritage({ secondAncestry })
+  }
 
   const chooseCommunity = (community: string) => {
     closePicker()
@@ -116,6 +156,34 @@ export const CombatEdit = ({ draft, derived, onChange, onApply }: CombatEditProp
       body: <SubclassTiers subclass={option} />,
     }))
 
+  const ancestryOptions: ChoiceOption[] = [
+    ...compendium.ancestries.map((option) => ({
+      name: option.name,
+      body: <OriginFeatures description={option.description} features={option.features} />,
+    })),
+    {
+      name: MIXED_ANCESTRY_LABEL,
+      value: MIXED_ANCESTRY,
+      meta: "DUAS ESPÉCIES",
+      body: (
+        <p className={styles.note}>
+          A 1ª feature vem de uma espécie e a 2ª de outra, nunca as duas da mesma. Escolhendo aqui,
+          os dois campos de feature aparecem na ficha.
+        </p>
+      ),
+    },
+  ]
+
+  /** Cada espécie com a feature daquela posição — é ela que se está escolhendo. */
+  const featureOptions = (index: 0 | 1, other: string | null): ChoiceOption[] =>
+    compendium.ancestries
+      .filter((option) => option.name !== other && option.features[index] !== undefined)
+      .map((option) => ({
+        name: option.name,
+        meta: featureNameOf(option.features[index] ?? "") ?? undefined,
+        body: <OriginFeatures features={[option.features[index] ?? ""]} />,
+      }))
+
   const communityOptions: ChoiceOption[] = compendium.communities.map((option) => ({
     name: option.name,
     body: <OriginFeatures description={option.description} features={[option.feature]} />,
@@ -125,45 +193,49 @@ export const CombatEdit = ({ draft, derived, onChange, onApply }: CombatEditProp
     <div className={styles.layout}>
       <section className={styles.identity} aria-label="Identidade">
         <fieldset className={styles.fields}>
-          <label className={styles.nameField}>
-            <span className={styles.label}>NOME</span>
-            <input
-              className={styles.input}
-              value={draft.name}
-              placeholder="Quem é o personagem"
-              onChange={(event) =>
-                onChange((current) => ({
-                  ...current,
-                  name: event.target.value,
-                }))
-              }
-            />
-          </label>
+          {/* Nome e nível na mesma fileira: o nível fora da grade dos campos é
+              o que mantém as duas colunas de baixo iguais. */}
+          <div className={styles.nameRow}>
+            <label className={styles.nameField}>
+              <span className={styles.label}>NOME</span>
+              <input
+                className={styles.input}
+                value={draft.name}
+                placeholder="Quem é o personagem"
+                onChange={(event) =>
+                  onChange((current) => ({
+                    ...current,
+                    name: event.target.value,
+                  }))
+                }
+              />
+            </label>
 
-          {/* Nível ao lado do nome e com a largura do stepper: é entrada, não
-              resumo, e um número de 1 a 10 não precisa de meia tela. */}
-          <div className={styles.levelRow}>
-            <span className={styles.label}>NÍVEL</span>
-            <Stepper
-              label="nível"
-              decreaseLabel="Diminuir nível"
-              increaseLabel="Aumentar nível"
-              value={String(draft.level)}
-              canDecrease={draft.level > MIN_LEVEL}
-              canIncrease={draft.level < MAX_LEVEL}
-              onDecrease={() =>
-                onChange((current) => ({
-                  ...current,
-                  level: current.level - 1,
-                }))
-              }
-              onIncrease={() =>
-                onChange((current) => ({
-                  ...current,
-                  level: current.level + 1,
-                }))
-              }
-            />
+            {/* Nível com a largura do stepper: é entrada, não resumo, e um
+                número de 1 a 10 não precisa de meia tela. */}
+            <div className={styles.levelRow}>
+              <span className={styles.label}>NÍVEL</span>
+              <Stepper
+                label="nível"
+                decreaseLabel="Diminuir nível"
+                increaseLabel="Aumentar nível"
+                value={String(draft.level)}
+                canDecrease={draft.level > MIN_LEVEL}
+                canIncrease={draft.level < MAX_LEVEL}
+                onDecrease={() =>
+                  onChange((current) => ({
+                    ...current,
+                    level: current.level - 1,
+                  }))
+                }
+                onIncrease={() =>
+                  onChange((current) => ({
+                    ...current,
+                    level: current.level + 1,
+                  }))
+                }
+              />
+            </div>
           </div>
 
           {/* Classe antes de espécie: é ela que move os números. Espécie e origem
@@ -180,7 +252,7 @@ export const CombatEdit = ({ draft, derived, onChange, onApply }: CombatEditProp
           />
 
           <ChoiceField
-            className={styles.fieldEnd}
+            className={styles.field}
             label="SUBCLASSE"
             value={draft.subclass}
             placeholder={draft.className ? "Escolher subclasse" : "Escolha a classe antes"}
@@ -189,23 +261,62 @@ export const CombatEdit = ({ draft, derived, onChange, onApply }: CombatEditProp
             onOpen={() => setPicker("subclass")}
           />
 
+          {/* Na mista o campo mostra o nome da mistura, como o vizinho mostra o
+              nome da classe — que ela é mista está no grupo logo abaixo, e
+              repetir aqui era a mesma linha duas vezes seguidas. */}
           <ChoiceField
             className={styles.field}
             label="ESPÉCIE"
-            value={heritageLabel(draft)}
+            value={isMixed ? (heritageLabel(draft) ?? MIXED_ANCESTRY_LABEL) : heritage.ancestry}
             placeholder="Escolher espécie"
-            detail={draft.mixedAncestry ? "ASCENDÊNCIA MISTA" : null}
             onOpen={() => setPicker("ancestry")}
           />
 
           <ChoiceField
-            className={styles.fieldEnd}
+            className={styles.field}
             label="ORIGEM"
             value={draft.community}
             placeholder="Escolher origem"
             onOpen={() => setPicker("community")}
           />
 
+          {/* Mista: a espécie de cada feature, e o nome da mistura — que o livro
+              deixa a cargo da mesa (p. 70–71). Num grupo próprio, porque os três
+              são desdobramento da espécie acima e não campos soltos no fim. */}
+          {isMixed ? (
+            <fieldset className={styles.mixedGroup}>
+              <legend className={styles.mixedLegend}>{MIXED_ANCESTRY_LABEL.toUpperCase()}</legend>
+
+              <ChoiceField
+                className={styles.field}
+                label="1ª FEATURE"
+                value={featureAt(0)?.name ?? null}
+                placeholder="Escolher 1ª feature"
+                detail={heritage.firstAncestry}
+                onOpen={() => setPicker("firstFeature")}
+              />
+
+              <ChoiceField
+                className={styles.field}
+                label="2ª FEATURE"
+                value={featureAt(1)?.name ?? null}
+                placeholder="Escolher 2ª feature"
+                detail={heritage.secondAncestry}
+                onOpen={() => setPicker("secondFeature")}
+              />
+
+              <label className={styles.nameField}>
+                <span className={styles.label}>NOME DA MISTURA</span>
+                <input
+                  className={styles.input}
+                  value={heritage.label ?? ""}
+                  placeholder={heritageLabel(draft) ?? "Como a mesa chama esta mistura"}
+                  maxLength={40}
+                  onChange={(event) => changeHeritage({ label: event.target.value || null })}
+                />
+              </label>
+            </fieldset>
+          ) : null}
         </fieldset>
       </section>
 
@@ -314,14 +425,30 @@ export const CombatEdit = ({ draft, derived, onChange, onApply }: CombatEditProp
         onChoose={chooseSubclass}
         onClose={closePicker}
       />
-      {/* A `key` reinicia a gaveta a cada abertura: ela guarda se a mista está
-          ligada, e isso vem do estado da ficha na hora de abrir. */}
-      <AncestryDrawer
-        key={picker === "ancestry" ? "aberta" : "fechada"}
+      <ChoiceDrawer
         isOpen={picker === "ancestry"}
-        ancestry={draft.ancestry}
-        mixedAncestry={draft.mixedAncestry}
-        onChange={(heritage) => onChange((current) => ({ ...current, ...heritage }))}
+        title="Escolher espécie"
+        options={ancestryOptions}
+        current={heritage.ancestry}
+        onChoose={chooseAncestry}
+        onClose={closePicker}
+      />
+      <ChoiceDrawer
+        isOpen={picker === "firstFeature"}
+        title="Escolher 1ª feature"
+        note="A espécie usada na 2ª feature não aparece: as duas não podem sair da mesma."
+        options={featureOptions(0, heritage.secondAncestry)}
+        current={heritage.firstAncestry}
+        onChoose={chooseFirstAncestry}
+        onClose={closePicker}
+      />
+      <ChoiceDrawer
+        isOpen={picker === "secondFeature"}
+        title="Escolher 2ª feature"
+        note="A espécie usada na 1ª feature não aparece: as duas não podem sair da mesma."
+        options={featureOptions(1, heritage.firstAncestry)}
+        current={heritage.secondAncestry}
+        onChoose={chooseSecondAncestry}
         onClose={closePicker}
       />
       <ChoiceDrawer

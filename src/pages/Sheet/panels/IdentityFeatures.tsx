@@ -2,7 +2,7 @@ import { SectionLabel } from "@jposawa/ronin-ui"
 import clsx from "clsx"
 import type React from "react"
 
-import { domainStripeStyle, heritageFeatures, heritageLabel } from "@/helpers"
+import { domainStripeStyle, heritageFeatures, heritageLabel, isMixedAncestry } from "@/helpers"
 import { useCompendium } from "@/hooks"
 import { subclassUpgradesOf, tokenPoolKey } from "@/rules"
 import type { BaseComponent, Character } from "@/types"
@@ -42,6 +42,7 @@ export const IdentityFeatures = ({
       candidate.name === character.subclass && candidate.className === character.className,
   )
   const heritage = heritageFeatures(character, compendium)
+  const isMixed = isMixedAncestry(character.heritage)
   const community = compendium.communities.find(
     (candidate) => candidate.name === character.community,
   )
@@ -105,18 +106,12 @@ export const IdentityFeatures = ({
               <article className={styles.featureCardBody}>
                 <hgroup className={styles.optionTitle}>
                   <h4 className={styles.optionName}>{heritageLabel(character)}</h4>
-                  <p className={styles.optionMeta}>
-                    {character.mixedAncestry ? "ESPÉCIE MISTA" : "ESPÉCIE"}
-                  </p>
+                  <p className={styles.optionMeta}>{isMixed ? "ESPÉCIE MISTA" : "ESPÉCIE"}</p>
                 </hgroup>
                 {/* Na mista, cada feature diz de qual espécie veio. */}
                 <OriginFeatures
                   features={heritage.map((feature) => feature.text)}
-                  sources={
-                    character.mixedAncestry
-                      ? heritage.map((feature) => feature.ancestry)
-                      : undefined
-                  }
+                  sources={isMixed ? heritage.map((feature) => feature.ancestry) : undefined}
                 />
               </article>
             </li>

@@ -1,8 +1,10 @@
 import { get, onValue, update } from "firebase/database"
 
 import { DB_PATHS, PARTY_ROLE_LEVEL } from "@/constants"
-import { normalizeCharacter, sanitize } from "@/helpers"
+import { sanitize } from "@/helpers"
 import { dhswPath, dhswRef, dhswRootRef } from "@/lib/firebase"
+
+import { fetchSheet } from "./sheetService"
 import type {
   Character,
   HouseRules,
@@ -302,13 +304,9 @@ export const fetchPartySheets = async (partyId: string): Promise<Character[]> =>
 
   const sheetIds = Object.keys(indexSnapshot.val() as Record<string, true>)
 
-  const sheets = await Promise.all(
-    sheetIds.map(async (sheetId) => {
-      const snapshot = await get(dhswRef(DB_PATHS.sheet(sheetId)))
-
-      return snapshot.exists() ? normalizeCharacter(snapshot.val() as Character) : null
-    }),
-  )
+  // `fetchSheet` e não uma leitura própria: ele é a fronteira que completa a
+  // ficha, e duas leituras diferentes divergiriam na primeira mudança.
+  const sheets = await Promise.all(sheetIds.map((sheetId) => fetchSheet(sheetId)))
 
   return sheets.filter((sheet): sheet is Character => sheet !== null)
 }

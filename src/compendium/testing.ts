@@ -170,8 +170,18 @@ export const TEST_COMPENDIUM: Compendium = {
     {
       name: "Human",
       description: TEXT,
-      features: [TEXT, TEXT],
+      // O nome em **negrito** é o que liga a feature ao modificador dela.
+      features: [`**High Stamina** — ${TEXT}`, `**Adaptability** — ${TEXT}`],
       modifiers: [{ feature: "High Stamina", target: "stressMax", value: 1 }],
+    },
+    {
+      name: "Twilek",
+      description: TEXT,
+      features: [`**Lekku Read** — ${TEXT}`, `**Heat Adapted** — ${TEXT}`],
+      modifiers: [
+        { feature: "Lekku Read", target: "trait.Presence", value: 1 },
+        { feature: "Heat Adapted", target: "evasion", value: 1 },
+      ],
     },
   ],
   communities: [{ name: "Underborne", description: TEXT, feature: TEXT }],

@@ -270,6 +270,27 @@ describe("derive — features com efeito permanente", () => {
     })
   })
 
+  /* Mista: a primeira feature de uma espécie e a segunda da outra (p. 70–71).
+     Human dá Stress na primeira; Twilek dá Evasion na segunda e Presence na
+     primeira, que não entra. */
+  it("ascendência mista aplica só as duas features que a ficha tem", () => {
+    const character = { ...soldier(1), ancestry: "Human", mixedAncestry: "Twilek" }
+    const derived = derive(character, DEFAULT_HOUSE_RULES)
+
+    expect(derived.stressMax.total).toBe(7)
+    expect(derived.evasion.total).toBe(10)
+    expect(derived.traits.Presence.total).toBe(0)
+  })
+
+  it("invertendo as espécies, invertem-se as features", () => {
+    const character = { ...soldier(1), ancestry: "Twilek", mixedAncestry: "Human" }
+    const derived = derive(character, DEFAULT_HOUSE_RULES)
+
+    expect(derived.traits.Presence.total).toBe(1)
+    expect(derived.stressMax.total).toBe(6)
+    expect(derived.evasion.total).toBe(9)
+  })
+
   it("Juggernaut soma Defensive Layer conforme as cartas de subclasse que tem", () => {
     const juggernaut = withArmor({ ...soldier(5), subclass: "Juggernaut" }, "Trooper Plate")
     const upgrade: Advancement = { level: 5, kind: "subclass", detail: "", slotsSpent: 1 }

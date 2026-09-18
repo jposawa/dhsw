@@ -1,0 +1,11 @@
+/*
+ * A largura da gaveta, por cima da da biblioteca.
+ *
+ * A regra dela é `._drawer[data-side=end] { inline-size: min(24rem, 100%) }`.
+ * Para vencer sem depender da ordem em que os CSS entram, a nossa repete a
+ * classe (`.drawer.drawer`) e também casa o `data-side` — dois pontos de
+ * especificidade a mais, e nenhum `!important`.
+ */
+.drawer.drawer[data-side] {
+  inline-size: min(48rem, 100%);
+}

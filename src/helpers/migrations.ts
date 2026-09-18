@@ -76,6 +76,31 @@ export const rosterV3ToV4 = (value: unknown, current: HouseRules): RosterState =
         {
           ...character,
           houseRules: character.houseRules ?? current,
+          schema: 4,
+        },
+      ]
+    }),
+  )
+
+  return { characters, order: roster?.order ?? [] }
+}
+
+/**
+ * v4 → v5: `Character.mixedAncestry`. Ficha existente tem espécie única — as
+ * duas features vêm dela, como antes.
+ */
+export const rosterV4ToV5 = (value: unknown): RosterState => {
+  const roster = value as RosterState | null
+
+  const characters = Object.fromEntries(
+    Object.entries(roster?.characters ?? {}).map(([id, stored]) => {
+      const character = stored as Character
+
+      return [
+        id,
+        {
+          ...character,
+          mixedAncestry: character.mixedAncestry ?? null,
           schema: CHARACTER_SCHEMA_VERSION,
         },
       ]

@@ -38,25 +38,19 @@ export const useCompendium = ({
     }
 
     store.set(compendiumStatusAtom, "loading")
-    let isCancelled = false
 
+    // Sem `isCancelled`: o resultado vai para o store, não para estado de
+    // componente, e desmontar não é motivo para descartá-lo. Com ele, as duas
+    // montagens do StrictMode se anulavam — a primeira buscava e era
+    // cancelada, a segunda via "loading" e nem buscava, e o compêndio ficava
+    // preso em "carregando" para sempre.
     void fetchCompendium()
       .then((resolved) => {
-        if (!isCancelled) {
-          store.set(compendiumAtom, resolved.compendium)
-          store.set(compendiumGapsAtom, [...resolved.missing, ...resolved.rejected])
-          store.set(compendiumStatusAtom, "loaded")
-        }
+        store.set(compendiumAtom, resolved.compendium)
+        store.set(compendiumGapsAtom, [...resolved.missing, ...resolved.rejected])
+        store.set(compendiumStatusAtom, "loaded")
       })
-      .catch(() => {
-        if (!isCancelled) {
-          store.set(compendiumStatusAtom, "error")
-        }
-      })
-
-    return () => {
-      isCancelled = true
-    }
+      .catch(() => store.set(compendiumStatusAtom, "error"))
   }, [initialFetch, store])
 
   return { compendium, status, gaps }

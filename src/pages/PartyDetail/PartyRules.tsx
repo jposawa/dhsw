@@ -52,7 +52,7 @@ export const PartyRules = ({ partyId, houseRules, isNarrator }: PartyRulesProps)
   }
 
   return (
-    <section className={styles.panel} aria-label="Regras da mesa">
+    <section className={styles.reading} aria-label="Regras da mesa">
       <p className={styles.note}>
         Valem para todas as fichas desta mesa, no lugar das regras de cada ficha. Uma ficha
         que sai da mesa leva estas regras com ela.

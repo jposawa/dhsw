@@ -24,7 +24,7 @@ export const PartyRolls = ({ partyId, isNarrator }: PartyRollsProps) => {
   const [isPrivate, setIsPrivate] = React.useState(false)
 
   return (
-    <section className={styles.panel} aria-label="Rolagens da mesa">
+    <section className={styles.rollsPanel} aria-label="Rolagens da mesa">
       <DiceRoller
         onRoll={(result) =>
           roll(result, { visibility: isNarrator && isPrivate ? "gm" : "public" })
@@ -37,11 +37,13 @@ export const PartyRolls = ({ partyId, isNarrator }: PartyRollsProps) => {
         ) : null}
       </DiceRoller>
 
-      <SectionLabel detail={`últimas ${PARTY_ROLLS_SHOWN}`}>
-        <h3>ROLAGENS DA MESA</h3>
-      </SectionLabel>
+      <div className={styles.column}>
+        <SectionLabel detail={`últimas ${PARTY_ROLLS_SHOWN}`}>
+          <h3>ROLAGENS DA MESA</h3>
+        </SectionLabel>
 
-      <RollLog rolls={rolls} showAuthor emptyText="Ninguém rolou nesta mesa ainda." />
+        <RollLog rolls={rolls} showAuthor emptyText="Ninguém rolou nesta mesa ainda." />
+      </div>
     </section>
   )
 }

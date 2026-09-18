@@ -1,5 +1,10 @@
-import { Button, Drawer } from "@jposawa/ronin-ui"
+import { Button } from "@jposawa/ronin-ui"
 import type React from "react"
+
+import type { Domain } from "@/types"
+
+import { WideDrawer } from "@/fragments"
+import { domainStripeStyle } from "@/helpers"
 
 import styles from "./Identity.module.css"
 
@@ -7,8 +12,11 @@ export type ChoiceOption = {
   name: string
   meta?: React.ReactNode
   body: React.ReactNode
-  /** Faixa à esquerda: cor do domínio da classe, quando há. */
-  stripeColor?: string
+  /**
+   * Faixa à esquerda: os domínios da entidade. Um pinta a faixa inteira; dois
+   * dividem meio a meio. Vazio fica no cromo.
+   */
+  stripeDomains?: readonly Domain[]
 }
 
 type ChoiceDrawerProps = {
@@ -34,7 +42,7 @@ export const ChoiceDrawer = ({
   onChoose,
   onClose,
 }: ChoiceDrawerProps) => (
-  <Drawer isOpen={isOpen} title={title} onClose={onClose}>
+  <WideDrawer isOpen={isOpen} title={title} onClose={onClose}>
     <ul className={styles.options}>
       {options.map((option) => {
         const isCurrent = option.name === current
@@ -44,13 +52,7 @@ export const ChoiceDrawer = ({
             key={option.name}
             className={styles.option}
             data-current={isCurrent || undefined}
-            style={
-              option.stripeColor
-                ? ({
-                    "--domain-color": option.stripeColor,
-                  } as React.CSSProperties)
-                : undefined
-            }
+            style={domainStripeStyle(option.stripeDomains)}
           >
             <article className={styles.optionBody}>
               <header className={styles.optionHead}>
@@ -78,5 +80,5 @@ export const ChoiceDrawer = ({
         )
       })}
     </ul>
-  </Drawer>
+  </WideDrawer>
 )

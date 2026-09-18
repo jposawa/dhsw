@@ -1,8 +1,8 @@
-import { Drawer, SectionLabel } from "@jposawa/ronin-ui"
+import { SectionLabel } from "@jposawa/ronin-ui"
 import { useAtom } from "jotai"
 
 import { LOCAL_ROLL_LIMIT } from "@/constants"
-import { DiceRoller, RollLog } from "@/fragments"
+import { DiceRoller, RollLog, WideDrawer } from "@/fragments"
 import { addToHistory, createRollRecord } from "@/helpers"
 import { usePartyRolls } from "@/hooks"
 import { rollHistoryAtom } from "@/states"
@@ -42,7 +42,7 @@ export const RollDrawer = ({ isOpen, character, preset, onClose }: RollDrawerPro
   }
 
   return (
-    <Drawer isOpen={isOpen} title="Rolar" onClose={onClose}>
+    <WideDrawer isOpen={isOpen} title="Rolar" onClose={onClose}>
       <section className={styles.layout} aria-label="Rolagem da ficha">
         {/* A key troca com o preset: cada toque na ficha começa um rolador novo. */}
         <DiceRoller
@@ -61,6 +61,6 @@ export const RollDrawer = ({ isOpen, character, preset, onClose }: RollDrawerPro
           emptyText="Nenhuma rolagem ainda."
         />
       </section>
-    </Drawer>
+    </WideDrawer>
   )
 }

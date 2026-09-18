@@ -3,7 +3,13 @@ import { describe, expect, it } from "vitest"
 import { CHARACTER_SCHEMA_VERSION, DEFAULT_HOUSE_RULES } from "@/constants"
 import type { Character, RosterState } from "@/types"
 
-import { houseRulesV1ToV2, rosterV1ToV2, rosterV2ToV3, rosterV3ToV4 } from "./migrations"
+import {
+  houseRulesV1ToV2,
+  rosterV1ToV2,
+  rosterV2ToV3,
+  rosterV3ToV4,
+  rosterV4ToV5,
+} from "./migrations"
 
 /**
  * Fixture do formato v1: ficha **sem** `partyId` e com `schema: 1`. Escrita à
@@ -134,10 +140,23 @@ describe("rosterV3ToV4", () => {
 
   /* Até aqui a ficha calculava com as regras do aparelho: elas viram as dela,
      e nenhum número muda sozinho na atualização. */
-  it("dá à ficha as regras que valiam no aparelho e sobe o schema", () => {
+  it("dá à ficha as regras que valiam no aparelho e sobe o schema para 4", () => {
     const character = rosterV3ToV4(v3, deviceRules).characters["sheet-1"]
 
     expect(character.houseRules).toEqual(deviceRules)
+    expect(character.schema).toBe(4)
+  })
+})
+
+describe("rosterV4ToV5", () => {
+  const v4 = rosterV3ToV4(rosterV2ToV3(rosterV1ToV2(V1_ROSTER)), DEFAULT_HOUSE_RULES)
+
+  /* Ficha antiga tem espécie única: as duas features vêm dela. */
+  it("acrescenta a espécie mista vazia e sobe o schema", () => {
+    const character = rosterV4ToV5(v4).characters["sheet-1"]
+
+    expect(character.mixedAncestry).toBeNull()
+    expect(character.ancestry).toBe("Human")
     expect(character.schema).toBe(CHARACTER_SCHEMA_VERSION)
   })
 })

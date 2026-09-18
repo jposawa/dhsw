@@ -4,11 +4,16 @@ import React from "react"
 import { DomainLabel } from "@/components"
 import { MAX_LEVEL, MIN_LEVEL, TRAIT_LIST } from "@/constants"
 import { ThresholdBar } from "@/fragments"
-import { describeThresholdOrigin, domainColorToken, formatSigned } from "@/helpers"
+import {
+  describeThresholdOrigin,
+  formatSigned,
+  heritageLabel,
+} from "@/helpers"
 import { useCompendium } from "@/hooks"
 import { changeClass, changeSubclass, classChangeLoss } from "@/rules"
 import type { Character, DerivedStats, Result } from "@/types"
 
+import { AncestryDrawer } from "./AncestryDrawer"
 import { ChoiceDrawer, type ChoiceOption } from "./ChoiceDrawer"
 import { ChoiceField } from "./ChoiceField"
 import { ClassChangeConfirm } from "./ClassChangeConfirm"
@@ -87,10 +92,6 @@ export const CombatEdit = ({ draft, derived, onChange, onApply }: CombatEditProp
     onApply(changeSubclass(draft, subclassName, compendium))
   }
 
-  const chooseAncestry = (ancestry: string) => {
-    closePicker()
-    onChange((current) => ({ ...current, ancestry }))
-  }
 
   const chooseCommunity = (community: string) => {
     closePicker()
@@ -99,7 +100,7 @@ export const CombatEdit = ({ draft, derived, onChange, onApply }: CombatEditProp
 
   const classOptions: ChoiceOption[] = compendium.classes.map((option) => ({
     name: option.name,
-    stripeColor: domainColorToken(option.domains[0]),
+    stripeDomains: option.domains,
     meta: option.domains.map((domain) => <DomainLabel key={domain} domain={domain} />),
     body: <ClassSummary classDefinition={option} isPreview />,
   }))
@@ -108,17 +109,12 @@ export const CombatEdit = ({ draft, derived, onChange, onApply }: CombatEditProp
     .filter((option) => option.className === draft.className)
     .map((option) => ({
       name: option.name,
-      stripeColor: classDefinition ? domainColorToken(classDefinition.domains[0]) : undefined,
+      stripeDomains: classDefinition?.domains,
       meta: option.spellcastTrait
         ? `FORCEWIELDING · ${option.spellcastTrait}`
         : "SEM FORCEWIELDING",
       body: <SubclassTiers subclass={option} />,
     }))
-
-  const ancestryOptions: ChoiceOption[] = compendium.ancestries.map((option) => ({
-    name: option.name,
-    body: <OriginFeatures description={option.description} features={option.features} />,
-  }))
 
   const communityOptions: ChoiceOption[] = compendium.communities.map((option) => ({
     name: option.name,
@@ -196,8 +192,9 @@ export const CombatEdit = ({ draft, derived, onChange, onApply }: CombatEditProp
           <ChoiceField
             className={styles.field}
             label="ESPÉCIE"
-            value={draft.ancestry}
+            value={heritageLabel(draft)}
             placeholder="Escolher espécie"
+            detail={draft.mixedAncestry ? "ASCENDÊNCIA MISTA" : null}
             onOpen={() => setPicker("ancestry")}
           />
 
@@ -208,6 +205,7 @@ export const CombatEdit = ({ draft, derived, onChange, onApply }: CombatEditProp
             placeholder="Escolher origem"
             onOpen={() => setPicker("community")}
           />
+
         </fieldset>
       </section>
 
@@ -316,12 +314,14 @@ export const CombatEdit = ({ draft, derived, onChange, onApply }: CombatEditProp
         onChoose={chooseSubclass}
         onClose={closePicker}
       />
-      <ChoiceDrawer
+      {/* A `key` reinicia a gaveta a cada abertura: ela guarda se a mista está
+          ligada, e isso vem do estado da ficha na hora de abrir. */}
+      <AncestryDrawer
+        key={picker === "ancestry" ? "aberta" : "fechada"}
         isOpen={picker === "ancestry"}
-        title="Escolher espécie"
-        options={ancestryOptions}
-        current={draft.ancestry}
-        onChoose={chooseAncestry}
+        ancestry={draft.ancestry}
+        mixedAncestry={draft.mixedAncestry}
+        onChange={(heritage) => onChange((current) => ({ ...current, ...heritage }))}
         onClose={closePicker}
       />
       <ChoiceDrawer

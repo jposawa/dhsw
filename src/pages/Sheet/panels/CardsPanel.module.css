@@ -39,11 +39,6 @@
   color: var(--color-text-dim);
 }
 
-/* Dentro da gaveta a grade é estreita: sempre duas cartas por fileira. */
-.learnGrid.learnGrid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
 .list {
   display: flex;
   flex-direction: column;

@@ -4,7 +4,12 @@ import React from "react"
 import { DotScale, Switch } from "@/components"
 import { EQUIP_SLOTS, HOPE_MAX, MAX_PROFICIENCY, TRAIT_LIST, TRAIT_VERBS } from "@/constants"
 import { MarkerTrack, RuleText, StatBlock, ThresholdBar } from "@/fragments"
-import { describeThresholdOrigin, domainColorToken, formatSigned } from "@/helpers"
+import {
+  describeThresholdOrigin,
+  domainColorToken,
+  formatSigned,
+  heritageLabel,
+} from "@/helpers"
 import { useCompendium } from "@/hooks"
 import {
   activeTokenPools,
@@ -72,7 +77,12 @@ export const CombatPlay = ({
   const classDefinition = compendium.classes.find(
     (candidate) => candidate.name === character.className,
   )
-  const lineage = [character.className, character.subclass, character.ancestry, character.community]
+  const lineage = [
+    character.className,
+    character.subclass,
+    heritageLabel(character),
+    character.community,
+  ]
     .filter(Boolean)
     .join(" · ")
 

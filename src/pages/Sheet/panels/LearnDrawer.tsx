@@ -1,10 +1,12 @@
-import { Button, Drawer, Input, SectionLabel } from "@jposawa/ronin-ui"
+import { Button, Input, SectionLabel } from "@jposawa/ronin-ui"
 import React from "react"
 
-import { SkillCardGrid } from "@/fragments"
+import { WideDrawer } from "@/fragments"
 import { useCompendium, useSkillSearch } from "@/hooks"
 import { isKnown, learnableSkills, learnSkill } from "@/rules"
 import type { Character, DerivedStats, Domain, Result } from "@/types"
+
+import { SkillRow } from "./SkillRow"
 
 import styles from "./CardsPanel.module.css"
 
@@ -39,7 +41,7 @@ export const LearnDrawer = ({ isOpen, character, derived, onApply, onClose }: Le
   }
 
   return (
-    <Drawer isOpen={isOpen} title="Aprender carta" onClose={handleClose}>
+    <WideDrawer isOpen={isOpen} title="Aprender carta" onClose={handleClose}>
       <section className={styles.learn} aria-label="Cartas que dá para aprender">
         <SectionLabel detail={`${derived.expectedCards} esperadas no nível ${derived.level}`}>
           <h3>{shown.length} CARTAS AO ALCANCE</h3>
@@ -59,25 +61,32 @@ export const LearnDrawer = ({ isOpen, character, derived, onApply, onClose }: Le
         {shown.length === 0 ? (
           <p className={styles.empty}>Nenhuma carta ao alcance com essa busca.</p>
         ) : (
-          <SkillCardGrid
-            className={styles.learnGrid}
-            skills={shown}
-            actionFor={(skill) =>
-              isKnown(character, skill.name) ? (
-                <span className={styles.known}>JÁ SABE</span>
-              ) : (
-                <Button
-                  variant="outline"
-                  aria-label={`Aprender ${skill.name}`}
-                  onClick={() => onApply(learnSkill(character, skill.name, compendium))}
-                >
-                  APRENDER
-                </Button>
-              )
-            }
-          />
+          /* Lista, e não grade de cartas: aqui a pergunta é "o que esta carta
+             faz", e o texto inteiro à vista responde. A grade é do compêndio,
+             onde se procura pela arte e pelo nome. */
+          <ul className={styles.list}>
+            {shown.map((skill) => (
+              <SkillRow
+                key={skill.name}
+                skill={skill}
+                action={
+                  isKnown(character, skill.name) ? (
+                    <span className={styles.known}>JÁ SABE</span>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      aria-label={`Aprender ${skill.name}`}
+                      onClick={() => onApply(learnSkill(character, skill.name, compendium))}
+                    >
+                      APRENDER
+                    </Button>
+                  )
+                }
+              />
+            ))}
+          </ul>
         )}
       </section>
-    </Drawer>
+    </WideDrawer>
   )
 }

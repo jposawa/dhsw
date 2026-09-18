@@ -4,7 +4,12 @@ import { Link } from "react-router-dom"
 
 import { StepRule } from "@/components"
 import { ROUTES } from "@/constants"
-import { createCharacter, domainColorToken, duplicateCharacter } from "@/helpers"
+import {
+  createCharacter,
+  domainColorToken,
+  duplicateCharacter,
+  heritageLabel,
+} from "@/helpers"
 import { useCompendium } from "@/hooks"
 import { deleteSheet, leaveSheet } from "@/services"
 import {
@@ -20,7 +25,7 @@ import type { Character } from "@/types"
 import styles from "./Roster.module.css"
 
 const summaryOf = (character: Character): string =>
-  [character.ancestry, character.className, character.subclass]
+  [heritageLabel(character), character.className, character.subclass]
     .filter(Boolean)
     .join(" · ") || "ficha em branco"
 

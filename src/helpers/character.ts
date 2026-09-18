@@ -18,6 +18,7 @@ export const createCharacter = (
     createdAt: now,
     updatedAt: now,
     ancestry: null,
+    mixedAncestry: null,
     community: null,
     className: null,
     subclass: null,
@@ -79,6 +80,7 @@ export const normalizeCharacter = (stored: Character): Character => {
     name: stored.name ?? "",
     level: stored.level ?? 1,
     ancestry: stored.ancestry ?? null,
+    mixedAncestry: stored.mixedAncestry ?? null,
     community: stored.community ?? null,
     className: stored.className ?? null,
     subclass: stored.subclass ?? null,
@@ -117,6 +119,7 @@ const EDITED_FIELDS = [
   "className",
   "subclass",
   "ancestry",
+  "mixedAncestry",
   "community",
   "notes",
 ] as const

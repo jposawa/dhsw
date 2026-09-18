@@ -2,7 +2,7 @@ import { atom } from "jotai"
 import { atomWithStorage } from "jotai/utils"
 
 import { DEFAULT_HOUSE_RULES, STORAGE_KEYS, STORAGE_VERSIONS } from "@/constants"
-import { rosterV1ToV2, rosterV2ToV3, rosterV3ToV4 } from "@/helpers"
+import { rosterV1ToV2, rosterV2ToV3, rosterV3ToV4, rosterV4ToV5 } from "@/helpers"
 import { createVersionedStorage } from "@/services"
 import type { Character, RosterState } from "@/types"
 
@@ -19,6 +19,7 @@ const rosterStorage = createVersionedStorage<RosterState>({
     // As regras que valiam para toda ficha até aqui eram as do aparelho.
     3: (value) =>
       rosterV3ToV4(value, houseRulesStorage.getItem(STORAGE_KEYS.houseRules, DEFAULT_HOUSE_RULES)),
+    4: rosterV4ToV5,
   },
 })
 

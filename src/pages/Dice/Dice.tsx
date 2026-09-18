@@ -27,19 +27,24 @@ export const Dice = () => {
     <main className={styles.page}>
       <StepRule />
 
-      <DiceRoller onRoll={handleRoll} />
+      {/* No desktop, rolar de um lado e o histórico do outro. */}
+      <div className={styles.columns}>
+        <DiceRoller onRoll={handleRoll} />
 
-      <SectionLabel detail={`${history.length}/${LOCAL_ROLL_LIMIT}`}>
-        <h2>HISTÓRICO DESTE APARELHO</h2>
-      </SectionLabel>
+        <div className={styles.column}>
+          <SectionLabel detail={`${history.length}/${LOCAL_ROLL_LIMIT}`}>
+            <h2>HISTÓRICO DESTE APARELHO</h2>
+          </SectionLabel>
 
-      <RollLog rolls={history} emptyText="Nenhuma rolagem ainda." />
+          <RollLog rolls={history} emptyText="Nenhuma rolagem ainda." />
 
-      {history.length > 0 ? (
-        <Button variant="text" intent="danger" onClick={() => setHistory([])}>
-          LIMPAR HISTÓRICO
-        </Button>
-      ) : null}
+          {history.length > 0 ? (
+            <Button variant="text" intent="danger" onClick={() => setHistory([])}>
+              LIMPAR HISTÓRICO
+            </Button>
+          ) : null}
+        </div>
+      </div>
     </main>
   )
 }

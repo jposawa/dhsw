@@ -73,6 +73,11 @@ export type Character = {
   updatedAt: number
 
   ancestry: string | null
+  /**
+   * Ascendência mista: a espécie que dá a **segunda** feature. `null` é
+   * espécie única. Ver `helpers/heritage.ts` e o livro, p. 70–71.
+   */
+  mixedAncestry: string | null
   community: string | null
   className: string | null
   subclass: string | null

@@ -10,6 +10,7 @@ import {
   canLeaveParty,
   canRemoveSheetFromParty,
   domainColorToken,
+  heritageLabel,
   isPartyOwner,
   mustHandOverParty,
   promotableMembers,
@@ -317,174 +318,183 @@ export const PartyDetail = () => {
             label: "Mesa",
             content: (
               <section className={styles.panel} aria-label="Mesa">
-                <SectionLabel detail={String(members.length)}>MEMBROS</SectionLabel>
-                <ul className={styles.list}>
-                  {members.map(({ member, displayName, photoUrl }) => (
-                    <li className={styles.row} key={member.userId}>
-                      <Avatar imageUrl={photoUrl ?? undefined} name={displayName} />
-                      <span className={styles.rowText}>
-                        <b className={styles.rowName}>{displayName}</b>
-                        <span className={styles.rowMeta}>
-                          {labelForRole(member.roleId)}
-                          {isPartyOwner(party, member.userId) ? " · dono" : ""}
-                        </span>
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-
-                <SectionLabel detail={String(sheets.length)}>FICHAS DO GRUPO</SectionLabel>
-                {sheets.length === 0 ? (
-                  <p className={styles.empty}>Nenhuma ficha no grupo ainda.</p>
-                ) : (
-                  <ul className={styles.list}>
-                    {sheets.map((sheet) => {
-                      const classDefinition = sheet.className
-                        ? compendium.classes.find((candidate) => candidate.name === sheet.className)
-                        : undefined
-
-                      return (
-                        <li
-                          className={styles.row}
-                          key={sheet.id}
-                          style={
-                            {
-                              "--domain-color": classDefinition
-                                ? domainColorToken(classDefinition.domains[0])
-                                : undefined,
-                            } as React.CSSProperties
-                          }
-                        >
-                          <span className={styles.level}>{sheet.level}</span>
+                {/* Duas colunas no desktop: quem e o que está na mesa de um
+                    lado, o convite e a administração do outro. */}
+                <div className={styles.columns}>
+                  <div className={styles.column}>
+                    <SectionLabel detail={String(members.length)}>MEMBROS</SectionLabel>
+                    <ul className={styles.list}>
+                      {members.map(({ member, displayName, photoUrl }) => (
+                        <li className={styles.row} key={member.userId}>
+                          <Avatar imageUrl={photoUrl ?? undefined} name={displayName} />
                           <span className={styles.rowText}>
-                            <b className={styles.rowName}>{sheet.name || "Sem nome"}</b>
+                            <b className={styles.rowName}>{displayName}</b>
                             <span className={styles.rowMeta}>
-                              {[sheet.ancestry, sheet.className].filter(Boolean).join(" · ") ||
-                                "ficha em branco"}
+                              {labelForRole(member.roleId)}
+                              {isPartyOwner(party, member.userId) ? " · dono" : ""}
                             </span>
                           </span>
+                        </li>
+                      ))}
+                    </ul>
 
-                          {/* A porta de saída na própria linha, ao lado da ficha que ela
+                    <SectionLabel detail={String(sheets.length)}>FICHAS DO GRUPO</SectionLabel>
+                    {sheets.length === 0 ? (
+                      <p className={styles.empty}>Nenhuma ficha no grupo ainda.</p>
+                    ) : (
+                      <ul className={styles.list}>
+                        {sheets.map((sheet) => {
+                          const classDefinition = sheet.className
+                            ? compendium.classes.find(
+                                (candidate) => candidate.name === sheet.className,
+                              )
+                            : undefined
+
+                          return (
+                            <li
+                              className={styles.row}
+                              key={sheet.id}
+                              style={
+                                {
+                                  "--domain-color": classDefinition
+                                    ? domainColorToken(classDefinition.domains[0])
+                                    : undefined,
+                                } as React.CSSProperties
+                              }
+                            >
+                              <span className={styles.level}>{sheet.level}</span>
+                              <span className={styles.rowText}>
+                                <b className={styles.rowName}>{sheet.name || "Sem nome"}</b>
+                                <span className={styles.rowMeta}>
+                                  {[heritageLabel(sheet), sheet.className].filter(Boolean).join(" · ") ||
+                                    "ficha em branco"}
+                                </span>
+                              </span>
+
+                              {/* A porta de saída na própria linha, ao lado da ficha que ela
                             tira. Pôr uma ficha era um botão e tirá-la não era nada —
                             quem entrasse com a ficha errada ficava sem caminho de
                             volta a não ser desfazer a mesa. */}
-                          {canRemoveSheetFromParty(
-                            sheetRoles[sheet.id],
-                            memberRows,
-                            user.userId,
-                          ) ? (
+                              {canRemoveSheetFromParty(
+                                sheetRoles[sheet.id],
+                                memberRows,
+                                user.userId,
+                              ) ? (
+                                <Button
+                                  variant="text"
+                                  intent="danger"
+                                  disabled={isWorking}
+                                  aria-label={`Tirar ${sheet.name || "ficha sem nome"} do grupo`}
+                                  onClick={() => setSheetToRemove(sheet)}
+                                >
+                                  TIRAR
+                                </Button>
+                              ) : null}
+                            </li>
+                          )
+                        })}
+                      </ul>
+                    )}
+
+                    {addableSheets.length > 0 ? (
+                      <>
+                        <SectionLabel>PÔR UMA FICHA SUA NO GRUPO</SectionLabel>
+                        <div className={styles.actions}>
+                          {addableSheets.map((character) => (
                             <Button
-                              variant="text"
-                              intent="danger"
-                              disabled={isWorking}
-                              aria-label={`Tirar ${sheet.name || "ficha sem nome"} do grupo`}
-                              onClick={() => setSheetToRemove(sheet)}
+                              key={character.id}
+                              isFullWidth
+                              variant="outline"
+                              onClick={() => void handleAddSheet(character)}
                             >
-                              TIRAR
+                              + &nbsp;{character.name || "Sem nome"}
                             </Button>
-                          ) : null}
-                        </li>
-                      )
-                    })}
-                  </ul>
-                )}
+                          ))}
+                        </div>
+                      </>
+                    ) : null}
+                  </div>
+                  <div className={styles.column}>
+                    <SectionLabel>CÓDIGO DO GRUPO</SectionLabel>
+                    <p className={styles.code}>{partyId}</p>
+                    <p className={styles.note}>
+                      Quem tem este código entra no grupo e passa a ver as fichas dele. Ele não
+                      expira e não dá para revogar — trate como o link de uma ficha.
+                    </p>
 
-                {addableSheets.length > 0 ? (
-                  <>
-                    <SectionLabel>PÔR UMA FICHA SUA NO GRUPO</SectionLabel>
-                    <div className={styles.actions}>
-                      {addableSheets.map((character) => (
-                        <Button
-                          key={character.id}
-                          isFullWidth
-                          variant="outline"
-                          onClick={() => void handleAddSheet(character)}
-                        >
-                          + &nbsp;{character.name || "Sem nome"}
-                        </Button>
-                      ))}
-                    </div>
-                  </>
-                ) : null}
-
-                <SectionLabel>CÓDIGO DO GRUPO</SectionLabel>
-                <p className={styles.code}>{partyId}</p>
-                <p className={styles.note}>
-                  Quem tem este código entra no grupo e passa a ver as fichas dele. Ele não expira e
-                  não dá para revogar — trate como o link de uma ficha.
-                </p>
-
-                {/* Promover é ação de Narrador, e não só a saída de emergência de quem
+                    {/* Promover é ação de Narrador, e não só a saída de emergência de quem
                   está preso: uma mesa grande quer um segundo Narrador de qualquer
                   jeito. Por isso a seção não depende de `isLastNarrator`. */}
-                {isNarrator && promotable.length > 0 ? (
-                  <>
-                    <SectionLabel>ADICIONAR NARRADOR</SectionLabel>
-                    <div className={styles.actions}>
-                      {promotable.map((member) => (
-                        <Button
-                          key={member.userId}
-                          isFullWidth
-                          variant="outline"
-                          disabled={isWorking}
-                          onClick={() => void handlePromote(member)}
-                        >
-                          + &nbsp;{nameOf(member.userId).toUpperCase()}
-                        </Button>
-                      ))}
-                    </div>
-                    <p className={styles.note}>
-                      Narrador administra o grupo junto com você — ninguém é rebaixado. É também o
-                      que libera a sua saída, se você for o único hoje.
-                    </p>
-                  </>
-                ) : null}
+                    {isNarrator && promotable.length > 0 ? (
+                      <>
+                        <SectionLabel>ADICIONAR NARRADOR</SectionLabel>
+                        <div className={styles.actions}>
+                          {promotable.map((member) => (
+                            <Button
+                              key={member.userId}
+                              isFullWidth
+                              variant="outline"
+                              disabled={isWorking}
+                              onClick={() => void handlePromote(member)}
+                            >
+                              + &nbsp;{nameOf(member.userId).toUpperCase()}
+                            </Button>
+                          ))}
+                        </div>
+                        <p className={styles.note}>
+                          Narrador administra o grupo junto com você — ninguém é rebaixado. É também
+                          o que libera a sua saída, se você for o único hoje.
+                        </p>
+                      </>
+                    ) : null}
 
-                <div className={styles.actions}>
-                  <Button
-                    isFullWidth
-                    variant="outline"
-                    intent="danger"
-                    disabled={!myRole || !canLeave || isWorking}
-                    onClick={() => void handleLeave()}
-                  >
-                    SAIR DO GRUPO
-                  </Button>
-                </div>
-
-                {isLastNarrator ? (
-                  <p className={styles.note}>
-                    {promotable.length > 0
-                      ? "Você é o único Narrador, então sair deixaria a mesa sem quem a administre — um grupo sem Narrador não pode ser apagado nem ter alguém promovido. Suba alguém a Narrador acima, ou desfaça a mesa."
-                      : "Você é o único Narrador e não há mais ninguém na mesa. Sair deixaria o grupo inalcançável, então o que resta é desfazê-lo."}
-                  </p>
-                ) : null}
-
-                {isOwner && !isLastNarrator ? (
-                  <p className={styles.note}>
-                    O grupo é seu. Ao sair, você escolhe para qual Narrador ele fica.
-                  </p>
-                ) : null}
-
-                {/* Apagar é do Dono, não de todo Narrador: o grupo é dele, e um Narrador
-                  convidado que quiser sair sempre pode — o Dono continua na mesa como
-                  segundo Narrador, então `canLeaveParty` já o libera. Ninguém fica
-                  preso precisando desta porta. */}
-                {isOwner && isNarrator ? (
-                  <>
-                    <SectionLabel>DESFAZER A MESA</SectionLabel>
                     <div className={styles.actions}>
                       <Button
                         isFullWidth
+                        variant="outline"
                         intent="danger"
-                        disabled={isWorking}
-                        onClick={() => setIsConfirmingDelete(true)}
+                        disabled={!myRole || !canLeave || isWorking}
+                        onClick={() => void handleLeave()}
                       >
-                        APAGAR GRUPO
+                        SAIR DO GRUPO
                       </Button>
                     </div>
-                  </>
-                ) : null}
+
+                    {isLastNarrator ? (
+                      <p className={styles.note}>
+                        {promotable.length > 0
+                          ? "Você é o único Narrador, então sair deixaria a mesa sem quem a administre — um grupo sem Narrador não pode ser apagado nem ter alguém promovido. Suba alguém a Narrador acima, ou desfaça a mesa."
+                          : "Você é o único Narrador e não há mais ninguém na mesa. Sair deixaria o grupo inalcançável, então o que resta é desfazê-lo."}
+                      </p>
+                    ) : null}
+
+                    {isOwner && !isLastNarrator ? (
+                      <p className={styles.note}>
+                        O grupo é seu. Ao sair, você escolhe para qual Narrador ele fica.
+                      </p>
+                    ) : null}
+
+                    {/* Apagar é do Dono, não de todo Narrador: o grupo é dele, e um Narrador
+                  convidado que quiser sair sempre pode — o Dono continua na mesa como
+                  segundo Narrador, então `canLeaveParty` já o libera. Ninguém fica
+                  preso precisando desta porta. */}
+                    {isOwner && isNarrator ? (
+                      <>
+                        <SectionLabel>DESFAZER A MESA</SectionLabel>
+                        <div className={styles.actions}>
+                          <Button
+                            isFullWidth
+                            intent="danger"
+                            disabled={isWorking}
+                            onClick={() => setIsConfirmingDelete(true)}
+                          >
+                            APAGAR GRUPO
+                          </Button>
+                        </div>
+                      </>
+                    ) : null}
+                  </div>
+                </div>
               </section>
             ),
           },

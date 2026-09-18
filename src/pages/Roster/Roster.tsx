@@ -4,16 +4,28 @@ import { Link } from "react-router-dom"
 
 import { StepRule } from "@/components"
 import { ROUTES } from "@/constants"
-import { createCharacter, domainColorToken, duplicateCharacter } from "@/helpers"
+import {
+  createCharacter,
+  domainColorToken,
+  duplicateCharacter,
+  heritageLabel,
+} from "@/helpers"
 import { useCompendium } from "@/hooks"
 import { deleteSheet, leaveSheet } from "@/services"
-import { authAtom, charactersAtom, rosterAtom, sheetRolesAtom, toastAtom } from "@/states"
+import {
+  authAtom,
+  charactersAtom,
+  houseRulesAtom,
+  rosterAtom,
+  sheetRolesAtom,
+  toastAtom,
+} from "@/states"
 import type { Character } from "@/types"
 
 import styles from "./Roster.module.css"
 
 const summaryOf = (character: Character): string =>
-  [character.ancestry, character.className, character.subclass]
+  [heritageLabel(character), character.className, character.subclass]
     .filter(Boolean)
     .join(" · ") || "ficha em branco"
 
@@ -28,6 +40,7 @@ export const Roster = () => {
   const characters = useAtomValue(charactersAtom)
   const [roster, setRoster] = useAtom(rosterAtom)
   const { user } = useAtomValue(authAtom)
+  const houseRulesTemplate = useAtomValue(houseRulesAtom)
   const [sheetRoles, setSheetRoles] = useAtom(sheetRolesAtom)
   const setToast = useSetAtom(toastAtom)
 
@@ -42,7 +55,7 @@ export const Roster = () => {
   }
 
   const handleCreate = () => {
-    addLocally(createCharacter())
+    addLocally(createCharacter("", houseRulesTemplate))
   }
 
   const handleDuplicate = (source: Character) => {

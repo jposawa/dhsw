@@ -1,0 +1,187 @@
+import { Avatar, Button, Input, SectionLabel } from "@jposawa/ronin-ui"
+import { useAtom, useAtomValue, useSetAtom } from "jotai"
+import React from "react"
+
+import { Switch } from "@/components"
+import { databaseEnvironment } from "@/lib/firebase"
+import { fetchProfile, updateDisplayName } from "@/services"
+import {
+  charactersAtom,
+  syncErrorAtom,
+  syncStatusAtom,
+  themeAtom,
+  toastAtom,
+} from "@/states"
+import { useAuth } from "@/hooks"
+
+import styles from "./Profile.module.css"
+
+const SYNC_LABELS: Record<string, string> = {
+  idle: "não sincronizado",
+  pulling: "sincronizando…",
+  ready: "em dia",
+  error: "falhou",
+}
+
+/**
+ * A aba de conta do perfil: nome na mesa, estado da conta, tema e saída.
+ *
+ * O que dá para mudar aqui é pouco de propósito: `email` e foto são espelho do
+ * Google e não são editáveis, senão deixariam de ser espelho. O nome é o que
+ * a mesa vê quando uma ficha for compartilhada, e por isso é seu.
+ */
+export const ProfileAccount = () => {
+  const { user, signOut } = useAuth()
+  const [theme, setTheme] = useAtom(themeAtom)
+  const syncStatus = useAtomValue(syncStatusAtom)
+  const syncError = useAtomValue(syncErrorAtom)
+  const characters = useAtomValue(charactersAtom)
+  const setToast = useSetAtom(toastAtom)
+
+  const [displayName, setDisplayName] = React.useState("")
+  const [savedName, setSavedName] = React.useState("")
+  const [isSaving, setIsSaving] = React.useState(false)
+
+  // O nome vem do perfil no banco, não do provedor: é lá que mora o que a
+  // pessoa ajustou. O do Google só serve como valor inicial na criação.
+  React.useEffect(() => {
+    if (!user) {
+      return
+    }
+
+    let isCancelled = false
+
+    void fetchProfile(user.userId)
+      .then((profile) => {
+        if (!isCancelled) {
+          const current = profile?.displayName ?? user.displayName
+          setDisplayName(current)
+          setSavedName(current)
+        }
+      })
+      .catch(() => {
+        if (!isCancelled) {
+          setDisplayName(user.displayName)
+          setSavedName(user.displayName)
+        }
+      })
+
+    return () => {
+      isCancelled = true
+    }
+  }, [user])
+
+  if (!user) {
+    return null
+  }
+
+  const trimmedName = displayName.trim()
+  const canSave = trimmedName.length > 0 && trimmedName !== savedName && !isSaving
+
+  const handleSave = async () => {
+    setIsSaving(true)
+
+    try {
+      await updateDisplayName(user.userId, trimmedName)
+      setSavedName(trimmedName)
+      setToast("Nome salvo")
+    } catch {
+      setToast("Não foi possível salvar o nome.")
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const isDark = theme === "dark"
+
+  return (
+    <section className={styles.panel} aria-label="Conta">
+      <div className={styles.identity}>
+        <Avatar imageUrl={user.photoUrl ?? undefined} name={savedName || user.displayName} size="md" />
+        <span className={styles.identityText}>
+          <strong className={styles.name}>{savedName || user.displayName}</strong>
+          <span className={styles.email}>{user.email}</span>
+        </span>
+      </div>
+
+      <SectionLabel>NOME NA MESA</SectionLabel>
+      <div className={styles.form}>
+        <Input
+          label="COMO VOCÊ APARECE PARA QUEM COMPARTILHA FICHA"
+          value={displayName}
+          maxLength={60}
+          onValueChange={setDisplayName}
+        />
+        <Button isFullWidth disabled={!canSave} onClick={() => void handleSave()}>
+          {isSaving ? "SALVANDO…" : "SALVAR NOME"}
+        </Button>
+      </div>
+
+      <SectionLabel>CONTA</SectionLabel>
+      <div className={styles.rows}>
+        <div className={styles.row}>
+          E-mail
+          <span className={styles.rowValue}>{user.email}</span>
+        </div>
+        <div className={styles.row}>
+          Fichas
+          <span className={styles.rowValue}>{characters.length}</span>
+        </div>
+        <div className={styles.row}>
+          Sincronização
+          <span
+            className={[
+              styles.rowValue,
+              syncStatus === "error" ? styles.rowValueWarn : "",
+            ]
+              .filter(Boolean)
+              .join(" ")}
+          >
+            {SYNC_LABELS[syncStatus] ?? syncStatus}
+          </span>
+        </div>
+        <div className={styles.row}>
+          Ambiente
+          <span className={styles.rowValue}>{databaseEnvironment}</span>
+        </div>
+      </div>
+
+      {syncError ? (
+        <p className={styles.diagnostic}>
+          <b>Última falha</b>
+          <br />
+          {syncError}
+        </p>
+      ) : null}
+
+      <p className={styles.note}>
+        E-mail e foto vêm do Google e não são editáveis aqui — deixá-los mudáveis
+        faria deles alegação, não espelho da conta.
+      </p>
+
+      <SectionLabel>PREFERÊNCIAS</SectionLabel>
+      <Switch
+        className={styles.switch}
+        isOn={isDark}
+        onToggle={() => setTheme(isDark ? "light" : "dark")}
+      >
+        TEMA ESCURO
+      </Switch>
+
+      <Button
+        isFullWidth
+        variant="outline"
+        intent="danger"
+        className={styles.action}
+        onClick={() => void signOut()}
+      >
+        SAIR DA CONTA
+      </Button>
+
+      <p className={styles.note}>
+        Sair não apaga as fichas deste aparelho — perder o trabalho de quem só
+        queria trocar de conta seria pior. Elas voltam a aparecer no próximo login.
+      </p>
+    </section>
+  )
+}

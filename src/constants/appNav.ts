@@ -29,6 +29,15 @@ export const NAV_ITEMS: readonly NavItem[] = [
     order: 0,
   },
   {
+    key: "dice",
+    label: "ROLAGEM",
+    icon: "dice",
+    path: ROUTES.dice,
+    needAuth: false,
+    active: true,
+    order: 3,
+  },
+  {
     key: "roster",
     label: "FICHAS",
     icon: "roster",
@@ -45,15 +54,6 @@ export const NAV_ITEMS: readonly NavItem[] = [
     needAuth: true,
     active: true,
     order: 2,
-  },
-  {
-    key: "houseRules",
-    label: "REGRAS",
-    icon: "houseRules",
-    path: ROUTES.houseRules,
-    needAuth: false,
-    active: true,
-    order: 3,
   },
 ]
 

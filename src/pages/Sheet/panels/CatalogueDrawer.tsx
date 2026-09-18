@@ -1,10 +1,11 @@
-import { Button, Chip, Drawer, Input } from "@jposawa/ronin-ui"
+import { Button, Chip, Input } from "@jposawa/ronin-ui"
 import React from "react"
 
 import { GEAR_KINDS, WEAPON_BURDEN_LIST } from "@/constants"
 import { createInventoryEntry, filterByText } from "@/helpers"
 import { useCompendium } from "@/hooks"
 import { addEntry } from "@/rules"
+import { WideDrawer } from "@/fragments"
 import type { Character, GearKind, InventoryEntryKind, Result } from "@/types"
 
 import { GearSummary } from "./GearSummary"
@@ -88,7 +89,7 @@ export const CatalogueDrawer = ({ kind, character, onApply, onClose }: Catalogue
   const label = GEAR_KINDS.find((option) => option.id === kind)?.label.toLowerCase() ?? ""
 
   return (
-    <Drawer isOpen={kind !== null} title={`Pegar ${label}`} onClose={handleClose}>
+    <WideDrawer isOpen={kind !== null} title={`Pegar ${label}`} onClose={handleClose}>
       <section className={styles.catalogue} aria-label={`Catálogo de ${label}`}>
         {filters.length > 0 ? (
           <p className={styles.chips}>
@@ -141,6 +142,6 @@ export const CatalogueDrawer = ({ kind, character, onApply, onClose }: Catalogue
           </ul>
         )}
       </section>
-    </Drawer>
+    </WideDrawer>
   )
 }

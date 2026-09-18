@@ -12,7 +12,13 @@
  * nome precisa ter arte desenhada em `components/NavIcon`, e o compilador é
  * quem garante que um item do catálogo não aponte para ícone inexistente.
  */
-export type NavIconName = "compendium" | "roster" | "parties" | "houseRules" | "account"
+export type NavIconName =
+  | "compendium"
+  | "dice"
+  | "roster"
+  | "parties"
+  | "houseRules"
+  | "account"
 
 export type NavItem = {
   /** Chave estavel. E por ela que a config remota referencia o item. */

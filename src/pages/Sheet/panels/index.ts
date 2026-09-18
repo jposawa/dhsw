@@ -7,8 +7,10 @@
  * e existem separados porque a divisão entre "grava no toque" e "só grava no
  * Salvar" é a decisão central da ficha.
  */
+export { AncestryDrawer } from "./AncestryDrawer"
 export { CardsPanel } from "./CardsPanel"
 export { CombatEdit } from "./CombatEdit"
 export { CombatPlay } from "./CombatPlay"
 export { HistoryPanel } from "./HistoryPanel"
 export { InventoryPanel } from "./InventoryPanel"
+export { RulesPanel } from "./RulesPanel"

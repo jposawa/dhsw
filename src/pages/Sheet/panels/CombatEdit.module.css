@@ -88,6 +88,12 @@
   border-radius: var(--border-radius-sm);
 }
 
+/* O interruptor ocupa a fileira inteira, entre os campos. */
+.mixedSwitch {
+  grid-column: 1 / -1;
+  background: var(--color-bg-elevated);
+}
+
 .label {
   font-size: var(--text-2xs);
   letter-spacing: var(--tracking-wider);

@@ -1,7 +1,7 @@
 import { get, update } from "firebase/database"
 
 import { DB_PATHS, SHEET_ROLE_LEVEL } from "@/constants"
-import { normalizeCharacter } from "@/helpers"
+import { normalizeCharacter, sanitize } from "@/helpers"
 import { dhswPath, dhswRef, dhswRootRef } from "@/lib/firebase"
 import type {
   Character,
@@ -15,26 +15,6 @@ import type {
  * Única camada que fala com o Realtime Database para fichas.
  * Nada acima daqui importa `firebase/database`. Ver BACKEND.md.
  */
-
-/**
- * `undefined` explode no RTDB e `null` apaga o nó. Todo objeto que sai do app
- * passa por aqui: chaves indefinidas são omitidas, não enviadas.
- */
-const sanitize = <TValue>(value: TValue): TValue => {
-  if (Array.isArray(value)) {
-    return value.map((item) => sanitize(item)) as TValue
-  }
-
-  if (value === null || typeof value !== "object") {
-    return value
-  }
-
-  const entries = Object.entries(value as Record<string, unknown>)
-    .filter(([, fieldValue]) => fieldValue !== undefined)
-    .map(([key, fieldValue]) => [key, sanitize(fieldValue)])
-
-  return Object.fromEntries(entries) as TValue
-}
 
 const accessRow = (
   sheetId: string,

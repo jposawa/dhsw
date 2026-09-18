@@ -2,9 +2,24 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  max-width: var(--content-max-width);
+  max-width: var(--content-max-width-wide);
   margin: 0 auto;
   padding: var(--space-4) var(--space-4) var(--space-6);
+}
+
+/* O conteúdo de cada aba, no ritmo da página. */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-top: var(--space-2);
+}
+
+/* Descartar e Salvar lado a lado, alinhados à direita. */
+.saveRow {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
 }
 
 .title {
@@ -81,6 +96,8 @@
 }
 
 .note {
+  /* Prosa fica na medida de leitura mesmo com a página larga. */
+  max-width: var(--content-max-width);
   margin: 0;
   font-size: var(--text-xs);
   line-height: 1.55;
@@ -93,4 +110,56 @@
   font-size: var(--text-md);
   text-align: center;
   color: var(--color-text-dim);
+}
+
+/*
+ * A mesa é painel, não prosa: no desktop ela abre em duas colunas, e cada
+ * bloco de texto leva a própria medida. Abaixo de 900px é uma coluna só.
+ */
+.columns {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+@media (min-width: 900px) {
+  .columns {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+    column-gap: var(--space-4);
+  }
+}
+
+/* Formulário e prosa ficam na largura de leitura, mesmo com a página larga. */
+.reading {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  max-width: var(--content-max-width);
+  padding-top: var(--space-2);
+}
+
+/* Rolar de um lado, o que a mesa rolou do outro. */
+.rollsPanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-top: var(--space-2);
+}
+
+@media (min-width: 900px) {
+  .rollsPanel {
+    display: grid;
+    grid-template-columns: minmax(0, 22rem) minmax(0, 1fr);
+    align-items: start;
+    column-gap: var(--space-4);
+  }
 }

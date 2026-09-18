@@ -1,3 +1,5 @@
+import { heritageFeatures } from "@/helpers"
+
 import {
   BARE_BONES,
   BASE_STRESS,
@@ -183,14 +185,21 @@ export const derive = (
 
   /* ── features com efeito permanente ───────────────────────────────── */
 
-  const ancestry = compendium.ancestries.find((candidate) => candidate.name === character.ancestry)
+  // Só as features que a ficha **tem**: numa ascendência mista, a primeira de
+  // uma espécie e a segunda de outra, nunca as duas da mesma (p. 70–71).
+  for (const feature of heritageFeatures(character, compendium)) {
+    const ancestry = compendium.ancestries.find((candidate) => candidate.name === feature.ancestry)
+    const modifiers = (ancestry?.modifiers ?? []).filter(
+      (modifier) => modifier.feature === feature.name,
+    )
 
-  for (const modifier of ancestry?.modifiers ?? []) {
-    collector.add({
-      target: modifier.target,
-      value: featureModifierValue(modifier, tier),
-      source: { kind: "ancestry", name: ancestry?.name ?? "", feature: modifier.feature },
-    })
+    for (const modifier of modifiers) {
+      collector.add({
+        target: modifier.target,
+        value: featureModifierValue(modifier, tier),
+        source: { kind: "ancestry", name: feature.ancestry, feature: modifier.feature },
+      })
+    }
   }
 
   const subclass = compendium.subclasses.find(

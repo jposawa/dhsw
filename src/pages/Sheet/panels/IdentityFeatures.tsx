@@ -2,7 +2,7 @@ import { SectionLabel } from "@jposawa/ronin-ui"
 import clsx from "clsx"
 import type React from "react"
 
-import { domainColorToken } from "@/helpers"
+import { domainStripeStyle, heritageFeatures, heritageLabel } from "@/helpers"
 import { useCompendium } from "@/hooks"
 import { subclassUpgradesOf, tokenPoolKey } from "@/rules"
 import type { BaseComponent, Character } from "@/types"
@@ -41,17 +41,14 @@ export const IdentityFeatures = ({
     (candidate) =>
       candidate.name === character.subclass && candidate.className === character.className,
   )
-  const ancestry = compendium.ancestries.find((candidate) => candidate.name === character.ancestry)
+  const heritage = heritageFeatures(character, compendium)
   const community = compendium.communities.find(
     (candidate) => candidate.name === character.community,
   )
 
-  const hasAny = Boolean(classDefinition ?? subclass ?? ancestry ?? community)
-  const classStripe = classDefinition
-    ? ({
-        "--domain-color": domainColorToken(classDefinition.domains[0]),
-      } as React.CSSProperties)
-    : undefined
+  const hasAny = Boolean(classDefinition ?? subclass ?? community) || heritage.length > 0
+  // As duas cores dos domínios da classe, meio a meio na faixa.
+  const classStripe = domainStripeStyle(classDefinition?.domains)
 
   return (
     <section
@@ -103,14 +100,24 @@ export const IdentityFeatures = ({
             </li>
           ) : null}
 
-          {ancestry ? (
+          {heritage.length > 0 ? (
             <li className={styles.featureCard}>
               <article className={styles.featureCardBody}>
                 <hgroup className={styles.optionTitle}>
-                  <h4 className={styles.optionName}>{ancestry.name}</h4>
-                  <p className={styles.optionMeta}>ESPÉCIE</p>
+                  <h4 className={styles.optionName}>{heritageLabel(character)}</h4>
+                  <p className={styles.optionMeta}>
+                    {character.mixedAncestry ? "ESPÉCIE MISTA" : "ESPÉCIE"}
+                  </p>
                 </hgroup>
-                <OriginFeatures features={ancestry.features} />
+                {/* Na mista, cada feature diz de qual espécie veio. */}
+                <OriginFeatures
+                  features={heritage.map((feature) => feature.text)}
+                  sources={
+                    character.mixedAncestry
+                      ? heritage.map((feature) => feature.ancestry)
+                      : undefined
+                  }
+                />
               </article>
             </li>
           ) : null}

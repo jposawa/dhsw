@@ -90,21 +90,75 @@
 
 /* ── gaveta ──────────────────────────────────────────────────────────────── */
 
+/* O corpo da gaveta: o interruptor da mista e a lista. */
+.drawerBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.mixedSwitch {
+  background: var(--color-surface);
+}
+
+.mixedText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+}
+
+.mixedNote {
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-normal);
+  text-transform: none;
+  color: var(--color-text-dim);
+}
+
+/* Duas escolhas por espécie na mista: uma por posição de feature. */
+.optionActions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  flex-shrink: 0;
+}
+
 .options {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  /* Folga maior que entre linhas de lista: cada opção é um bloco de leitura
+     com duas features dentro, e colados eles viravam um texto só. */
+  gap: var(--space-3);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-/* A faixa cai no cromo sem `--domain-color`: espécie não tem domínio. */
+/*
+ * A faixa da esquerda são **as cores dos domínios**, meio a meio: classe tem
+ * dois, e pintar só o primeiro dizia metade. Borda não aceita gradiente, então
+ * ela é imagem de fundo com parada seca no meio — uma cor só preenche a faixa
+ * inteira, porque a de baixo cai na de cima.
+ *
+ * Sem cor nenhuma fica no cromo: espécie e origem não pertencem a domínio.
+ *
+ * A borda em volta é a divisória: com fundo elevado e sem ela, duas opções
+ * seguidas liam como um bloco contínuo.
+ */
 .option,
 .featureCard {
+  --stripe-fallback: var(--color-chrome-dim);
+
   min-width: 0;
-  background: var(--color-bg-elevated);
-  border-left: var(--domain-stripe-width) solid var(--domain-color, var(--color-chrome-dim));
+  background-color: var(--color-bg-elevated);
+  background-image: linear-gradient(
+    180deg,
+    var(--stripe-top, var(--stripe-fallback)) 0 50%,
+    var(--stripe-bottom, var(--stripe-top, var(--stripe-fallback))) 50% 100%
+  );
+  background-repeat: no-repeat;
+  background-size: var(--domain-stripe-width) 100%;
+  border: var(--border-width) solid var(--color-border);
 }
 
 .option[data-current] {

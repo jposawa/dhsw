@@ -1,8 +1,14 @@
-import { CHARACTER_SCHEMA_VERSION, STARTING_HOPE, TRAIT_LIST } from "@/constants"
-import type { Character, Trait } from "@/types"
+import { CHARACTER_SCHEMA_VERSION, DEFAULT_HOUSE_RULES, STARTING_HOPE, TRAIT_LIST } from "@/constants"
+import type { Character, HouseRules, Trait } from "@/types"
 
-/** Fabrica de ficha em branco. Pura — o id vem de `crypto.randomUUID`. */
-export const createCharacter = (name = ""): Character => {
+/**
+ * Fabrica de ficha em branco. Pura — o id vem de `crypto.randomUUID`.
+ * As regras da casa vêm do modelo do perfil de quem cria.
+ */
+export const createCharacter = (
+  name = "",
+  houseRules: HouseRules = DEFAULT_HOUSE_RULES,
+): Character => {
   const now = Date.now()
 
   return {
@@ -12,6 +18,7 @@ export const createCharacter = (name = ""): Character => {
     createdAt: now,
     updatedAt: now,
     ancestry: null,
+    mixedAncestry: null,
     community: null,
     className: null,
     subclass: null,
@@ -21,6 +28,7 @@ export const createCharacter = (name = ""): Character => {
       {} as Record<Trait, number>,
     ),
     partyId: null,
+    houseRules,
     marks: { hp: 0, stress: 0, armor: 0, hope: STARTING_HOPE },
     tokens: [],
     loadout: [],
@@ -72,10 +80,13 @@ export const normalizeCharacter = (stored: Character): Character => {
     name: stored.name ?? "",
     level: stored.level ?? 1,
     ancestry: stored.ancestry ?? null,
+    mixedAncestry: stored.mixedAncestry ?? null,
     community: stored.community ?? null,
     className: stored.className ?? null,
     subclass: stored.subclass ?? null,
     partyId: stored.partyId ?? null,
+    // Merge com o padrão: regra nova da casa entra desligada em ficha antiga.
+    houseRules: { ...DEFAULT_HOUSE_RULES, ...stored.houseRules },
     traits,
     marks: {
       hp: stored.marks?.hp ?? 0,
@@ -108,6 +119,7 @@ const EDITED_FIELDS = [
   "className",
   "subclass",
   "ancestry",
+  "mixedAncestry",
   "community",
   "notes",
 ] as const
@@ -134,7 +146,21 @@ export const hasSheetEdits = (draft: Character, saved: Character): boolean => {
     return true
   }
 
+  if (JSON.stringify(draft.houseRules) !== JSON.stringify(saved.houseRules)) {
+    return true
+  }
+
   return EDITED_LISTS.some(
     (field) => JSON.stringify(draft[field]) !== JSON.stringify(saved[field]),
   )
 }
+
+/**
+ * As regras da casa que valem para a ficha: as da mesa, quando ela está numa e
+ * elas já chegaram; senão, as dela. `null` é mesa sem acesso ou ainda lendo.
+ */
+export const effectiveHouseRules = (
+  character: Character,
+  partyRules: HouseRules | null,
+): HouseRules =>
+  character.partyId && partyRules ? { ...DEFAULT_HOUSE_RULES, ...partyRules } : character.houseRules

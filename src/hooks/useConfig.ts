@@ -54,28 +54,23 @@ export const useConfig = ({ initialFetch = false }: UseConfigOptions = {}): UseC
     }
 
     store.set(configStatusAtom, "loading")
-    let isCancelled = false
 
+    // Sem cancelamento no desmonte: o resultado vai para o store, não para
+    // estado de componente. Cancelar fazia as duas montagens do StrictMode se
+    // anularem — a primeira buscava e era descartada, a segunda via 'loading'
+    // e não buscava —, e o status ficava preso em 'loading'.
     void fetchRemoteConfig()
       .then((remote) => {
-        if (!isCancelled) {
-          store.set(remoteConfigAtom, remote)
-          store.set(configStatusAtom, "loaded")
-        }
+        store.set(remoteConfigAtom, remote)
+        store.set(configStatusAtom, "loaded")
       })
       .catch(() => {
         // `fetchRemoteConfig` já engole falha de rede e devolve o padrão, então
         // chegar aqui significa defeito nosso. O `catch` existe para o status
         // não ficar preso em 'loading' para sempre — e nada na tela muda,
         // porque o padrão do código continua valendo.
-        if (!isCancelled) {
-          store.set(configStatusAtom, "error")
-        }
+        store.set(configStatusAtom, "error")
       })
-
-    return () => {
-      isCancelled = true
-    }
   }, [initialFetch, store])
 
   return { config, status }

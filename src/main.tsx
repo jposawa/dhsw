@@ -13,7 +13,7 @@ import {
   CompendiumDomains,
   CompendiumGear,
 } from "@/pages/Compendium"
-import { HouseRules } from "@/pages/HouseRules"
+import { Dice } from "@/pages/Dice"
 import { Parties } from "@/pages/Parties"
 import { PartyDetail } from "@/pages/PartyDetail"
 import { Profile } from "@/pages/Profile"
@@ -52,8 +52,8 @@ import "./styles/tokens.css"
  *
  * A divisão de rotas É a fronteira de acesso do app:
  *
- *   público    /compendio, /regras  — o compêndio não toca o Firebase, e as
- *                                     regras da casa são preferência local
+ *   público    /compendio           — leitura pública do banco, sem conta
+ *              /rolagem             — rolador com histórico do aparelho
  *   com conta  /fichas, /ficha/:id  — a ficha vive na conta
  *              /grupos, /grupo/:id  — e o grupo tambem
  *   decide     /                    — com sessão vai para fichas, sem sessão
@@ -80,7 +80,9 @@ const router = createBrowserRouter([
           { path: "equipamento", element: <CompendiumGear /> },
         ],
       },
-      { path: ROUTES.houseRules, element: <HouseRules /> },
+      { path: ROUTES.dice, element: <Dice /> },
+      // As regras da casa viraram modelo de ficha nova, na aba do perfil.
+      { path: ROUTES.houseRules, element: <Navigate to={ROUTES.profileTab("regras")} replace /> },
       {
         element: <AuthGate />,
         children: [

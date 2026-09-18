@@ -1,10 +1,11 @@
-import { get, update } from "firebase/database"
+import { get, onValue, update } from "firebase/database"
 
 import { DB_PATHS, PARTY_ROLE_LEVEL } from "@/constants"
-import { normalizeCharacter } from "@/helpers"
+import { normalizeCharacter, sanitize } from "@/helpers"
 import { dhswPath, dhswRef, dhswRootRef } from "@/lib/firebase"
 import type {
   Character,
+  HouseRules,
   Party,
   PartyIndexEntry,
   PartyMember,
@@ -26,22 +27,6 @@ import type {
  * hora e não há N escritas para manter em sincronia. O custo são duas leituras
  * a mais por avaliação de regra. Ver `database.rules.json`.
  */
-
-const sanitize = <TValue>(value: TValue): TValue => {
-  if (Array.isArray(value)) {
-    return value.map((item) => sanitize(item)) as TValue
-  }
-
-  if (value === null || typeof value !== "object") {
-    return value
-  }
-
-  return Object.fromEntries(
-    Object.entries(value as Record<string, unknown>)
-      .filter(([, fieldValue]) => fieldValue !== undefined)
-      .map(([key, fieldValue]) => [key, sanitize(fieldValue)]),
-  ) as TValue
-}
 
 const memberRow = (
   partyId: string,
@@ -251,6 +236,7 @@ export const deleteParty = async (
   partyId: string,
   memberIds: readonly string[],
   sheetIds: readonly string[],
+  keptHouseRules?: HouseRules,
 ): Promise<void> => {
   const updates: Record<string, unknown> = {
     [dhswPath(DB_PATHS.party(partyId))]: null,
@@ -264,6 +250,10 @@ export const deleteParty = async (
   for (const sheetId of sheetIds) {
     updates[dhswPath(DB_PATHS.partySheet(partyId, sheetId))] = null
     updates[dhswPath(`${DB_PATHS.sheet(sheetId)}/partyId`)] = null
+
+    if (keptHouseRules) {
+      updates[dhswPath(`${DB_PATHS.sheet(sheetId)}/houseRules`)] = keptHouseRules
+    }
   }
 
   await update(dhswRootRef(), updates)
@@ -280,9 +270,15 @@ export const setSheetParty = async (
   sheetId: string,
   partyId: string | null,
   previousPartyId: string | null,
+  /** Ao sair da mesa, as regras dela ficam na ficha: os números não mudam de repente. */
+  keptHouseRules?: HouseRules,
 ): Promise<void> => {
   const updates: Record<string, unknown> = {
     [dhswPath(`${DB_PATHS.sheet(sheetId)}/partyId`)]: partyId,
+  }
+
+  if (keptHouseRules) {
+    updates[dhswPath(`${DB_PATHS.sheet(sheetId)}/houseRules`)] = keptHouseRules
   }
 
   if (previousPartyId) {
@@ -320,3 +316,25 @@ export const fetchPartySheets = async (partyId: string): Promise<Character[]> =>
 export const renameParty = async (partyId: string, name: string): Promise<void> => {
   await update(dhswRef(DB_PATHS.party(partyId)), { name, updatedAt: Date.now() })
 }
+
+/** Regras da casa da mesa. Só o Narrador grava — a regra de `parties` já exige. */
+export const savePartyHouseRules = async (partyId: string, houseRules: HouseRules): Promise<void> => {
+  await update(dhswRef(DB_PATHS.party(partyId)), { houseRules, updatedAt: Date.now() })
+}
+
+/**
+ * Assina as regras da mesa. Ao vivo, e não lidas uma vez: o Narrador ajusta e
+ * toda ficha aberta da mesa passa a calcular com a regra nova.
+ *
+ * `null` quando a mesa não tem regras gravadas ou a leitura é recusada — quem
+ * só lê a ficha, sem ser da mesa, não alcança `parties`.
+ */
+export const subscribePartyHouseRules = (
+  partyId: string,
+  onChange: (houseRules: HouseRules | null) => void,
+): (() => void) =>
+  onValue(
+    dhswRef(DB_PATHS.partyHouseRules(partyId)),
+    (snapshot) => onChange(snapshot.exists() ? (snapshot.val() as HouseRules) : null),
+    () => onChange(null),
+  )

@@ -1,6 +1,6 @@
-import { Button, Drawer, SectionLabel } from "@jposawa/ronin-ui"
+import { Button, SectionLabel } from "@jposawa/ronin-ui"
 
-import { RuleText } from "@/fragments"
+import { RuleText, WideDrawer } from "@/fragments"
 import { useCompendium } from "@/hooks"
 import { augmentSlotsFor, augmentsOf, installAugment, removeAugment } from "@/rules"
 import type { Character, DerivedStats, HouseRules, Result } from "@/types"
@@ -36,7 +36,7 @@ export const AugmentDrawer = ({
   const slots = augmentSlotsFor(weapon)
 
   return (
-    <Drawer isOpen={entry !== undefined} title={entry ? `Augments — ${entry.name}` : ""} onClose={onClose}>
+    <WideDrawer isOpen={entry !== undefined} title={entry ? `Augments — ${entry.name}` : ""} onClose={onClose}>
       {entry ? (
         <section className={styles.catalogue} aria-label="Augments">
           <SectionLabel detail={`${installed.length}/${slots} slots`}>
@@ -99,6 +99,6 @@ export const AugmentDrawer = ({
           </ul>
         </section>
       ) : null}
-    </Drawer>
+    </WideDrawer>
   )
 }

@@ -8,6 +8,7 @@
  * lista de imports de toda tela. STRUCTURE.md pede o barril por pasta — não
  * um barril que se apresenta como dono do que reexporta.
  */
+export { Die } from "./Die"
 export { DomainLabel } from "./DomainLabel"
 export { DotScale } from "./DotScale"
 export { DomainSymbol } from "./DomainSymbol"

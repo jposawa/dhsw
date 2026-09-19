@@ -38,11 +38,11 @@ export const Dice = () => {
 
           <RollLog rolls={history} emptyText="Nenhuma rolagem ainda." />
 
-          {history.length > 0 ? (
+          {history.length > 0 && (
             <Button variant="text" intent="danger" onClick={() => setHistory([])}>
               LIMPAR HISTÓRICO
             </Button>
-          ) : null}
+          )}
         </div>
       </div>
     </main>

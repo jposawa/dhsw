@@ -56,7 +56,7 @@ export const PortraitDrawer = ({
           </p>
         )}
 
-        {onChange ? (
+        {!!onChange && (
           <Button
             className={styles.edit}
             variant="outline"
@@ -65,12 +65,12 @@ export const PortraitDrawer = ({
             <LuPencil aria-hidden="true" />
             &nbsp;{portrait ? "TROCAR IMAGEM" : "PÔR UMA IMAGEM"}
           </Button>
-        ) : null}
+        )}
       </section>
 
       {/* A chave devolve o campo ao endereço atual a cada abertura: sem ela,
           cancelar e reabrir traria o texto que a pessoa acabou de descartar. */}
-      {isLinking ? (
+      {isLinking && (
         <PortraitLinkModal
           key={avatarUrl ?? ""}
           isOpen
@@ -81,7 +81,7 @@ export const PortraitDrawer = ({
           }}
           onClose={() => setIsLinking(false)}
         />
-      ) : null}
+      )}
     </WideDrawer>
   )
 }

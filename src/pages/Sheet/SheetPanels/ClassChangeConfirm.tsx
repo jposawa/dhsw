@@ -43,17 +43,17 @@ export const ClassChangeConfirm = ({
     <section className={styles.confirm}>
       <p className={styles.confirmText}>A troca desfaz o que vinha da classe atual:</p>
       <ul className={styles.lossList}>
-        {loss.subclass ? (
+        {!!loss.subclass && (
           <li>
             a subclasse <b>{loss.subclass}</b>, com as features dela
           </li>
-        ) : null}
-        {loss.cardCount > 0 ? (
+        )}
+        {loss.cardCount > 0 && (
           <li>
             <b>{loss.cardCount}</b> {loss.cardCount === 1 ? "carta" : "cartas"} de domínio, do
             loadout e do vault
           </li>
-        ) : null}
+        )}
       </ul>
       <p className={styles.confirmText}>
         Nível, atributos, advancements, inventário e Experiences ficam. Nada é gravado até SALVAR.

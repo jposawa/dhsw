@@ -5,7 +5,7 @@ import { DEFAULT_HOUSE_RULES } from "@/constants"
 import { createCharacter } from "@/helpers"
 import type { Advancement, Character } from "@/types"
 
-import { derive } from "./derive"
+import { derive } from "./sheet"
 import { canMulticlass, domainAccessFor, learnableSkills } from "./domainAccess"
 import { learnSkill } from "./loadout"
 

@@ -34,12 +34,12 @@ export const GearSummary = ({ kind, name }: GearSummaryProps) => {
         <p className={styles.meta}>
           {weapon.trait} · {weapon.range} · {weapon.damageDie} {formatDamageType(weapon, houseRules.hasGranularDamageTypes)} · {weapon.burden}
         </p>
-        {weapon.feature ? <FeatureText className={styles.body} name={weapon.feature} /> : null}
-        {houseRules.hasCustomWeapons && weapon.customizable !== null ? (
+        {!!weapon.feature && <FeatureText className={styles.body} name={weapon.feature} />}
+        {houseRules.hasCustomWeapons && weapon.customizable !== null && (
           <p className={styles.meta}>
             Customizable ({weapon.customizable}) · {augmentSlotsFor(weapon)} slots
           </p>
-        ) : null}
+        )}
       </>
     )
   }

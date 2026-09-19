@@ -46,6 +46,6 @@ export const ChoiceField = ({
         ›
       </i>
     </span>
-    {detail ? <span className={styles.choiceDetail}>{detail}</span> : null}
+    {!!detail && <span className={styles.choiceDetail}>{detail}</span>}
   </button>
 )

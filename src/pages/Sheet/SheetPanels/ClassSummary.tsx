@@ -22,7 +22,7 @@ export const ClassSummary = ({
   renderTokens,
 }: ClassSummaryProps) => (
   <section className={styles.summary}>
-    {isPreview ? (
+    {isPreview && (
       <dl className={styles.stats}>
         <div className={styles.stat}>
           <dt>EVASION</dt>
@@ -33,7 +33,7 @@ export const ClassSummary = ({
           <dd>{classDefinition.hitPoints}</dd>
         </div>
       </dl>
-    ) : null}
+    )}
 
     <h5 className={styles.tierLabel}>FEATURES DE CLASSE</h5>
     <ul className={styles.featureList}>
@@ -45,11 +45,11 @@ export const ClassSummary = ({
       ))}
     </ul>
 
-    {isPreview ? (
+    {isPreview && (
       <>
         <h5 className={styles.tierLabel}>HOPE FEATURE</h5>
         <RuleText className={styles.featureText} text={classDefinition.hopeFeature} />
       </>
-    ) : null}
+    )}
   </section>
 )

@@ -5,8 +5,8 @@ import { Navigate, useNavigate, useParams } from "react-router-dom"
 
 import { ROUTES, RULE_ERROR_MESSAGES, SHEET_TABS } from "@/constants"
 import { SaveState } from "@/fragments"
-import { derive, duplicateCharacter, effectiveHouseRules, hasSheetEdits, touchCharacter } from "@/helpers"
-import { HouseRulesContext, useCompendium, usePartyHouseRules } from "@/hooks"
+import { duplicateCharacter, hasSheetEdits, touchCharacter } from "@/helpers"
+import { HouseRulesContext, usePartyHouseRules, useSheet } from "@/hooks"
 import { rosterAtom, sheetRolesAtom, toastAtom } from "@/states"
 import type { Character, Marks, Result, SheetTabId } from "@/types"
 
@@ -17,7 +17,7 @@ import {
   HistoryPanel,
   InventoryPanel,
   RulesPanel,
-} from "./panels"
+} from "./SheetPanels"
 
 import styles from "./Sheet.module.css"
 
@@ -43,19 +43,21 @@ export const Sheet = () => {
   const [sheetRoles, setSheetRoles] = useAtom(sheetRolesAtom)
   const setToast = useSetAtom(toastAtom)
   const navigate = useNavigate()
-  const { compendium } = useCompendium()
 
   const [tab, setTab] = React.useState<SheetTabId>("combate")
   const [draft, setDraft] = React.useState<Character | null>(null)
   const [isConfirmingCancel, setIsConfirmingCancel] = React.useState(false)
   const [isConfirmingCopy, setIsConfirmingCopy] = React.useState(false)
 
-  const character = sheetId ? roster.characters[sheetId] : undefined
-  // Antes do retorno antecipado: hook não pode ficar atrás de condição.
+  /**
+   * Editando, tudo se calcula sobre o rascunho: é o que faz Evasion e HP
+   * mudarem enquanto se escolhe a classe, antes de confirmar. É por isso que
+   * o rascunho entra no hook em vez de a tela derivar por fora.
+   */
+  const { character, isReadOnly, houseRules, derived } = useSheet(sheetId, draft)
+  // A aba de Regras mostra as da mesa ao lado das da ficha, então precisa das
+  // duas separadas — `houseRules` já traz só a que vale.
   const partyRules = usePartyHouseRules(character?.partyId ?? null)
-
-  // Papel ausente = ficha local ainda não sincronizada, e ela é sua.
-  const isReadOnly = sheetId ? sheetRoles[sheetId] === "reader" : false
 
   /**
    * Uma cópia da ficha, e abre nela.
@@ -86,18 +88,12 @@ export const Sheet = () => {
     })
   }
 
-  if (!character) {
+  if (!character || !derived) {
     return <Navigate to={ROUTES.roster} replace />
   }
 
   const isEditing = draft !== null
-  // Editando, tudo se calcula sobre o rascunho: é o que faz Evasion e HP
-  // mudarem enquanto se escolhe a classe, antes de confirmar.
   const shown = draft ?? character
-  // Em mesa valem as regras da mesa; fora dela, as da ficha — do rascunho,
-  // editando, para os números acompanharem a regra que se está mudando.
-  const houseRules = effectiveHouseRules(shown, partyRules)
-  const derived = derive(shown, houseRules, compendium)
   const isDirty = draft !== null && hasSheetEdits(draft, character)
 
   /**
@@ -264,7 +260,7 @@ export const Sheet = () => {
         As quatro abas são mais altas que a tela, e um Salvar no fim do
         documento só aparece para quem rolar até lá.
       */}
-        {isEditing ? (
+        {isEditing && (
           <footer className={styles.saveBar}>
             <p className={styles.saveHint}>{isDirty ? "Alterações não salvas" : "Nada alterado"}</p>
             <Button variant="outline" onClick={requestCancel}>
@@ -274,7 +270,7 @@ export const Sheet = () => {
               SALVAR
             </Button>
           </footer>
-        ) : null}
+        )}
 
         {/* `isPersistent` porque cancelar é irreversível: sair clicando no fundo
           é exatamente o acidente a evitar. */}

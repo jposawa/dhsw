@@ -76,7 +76,7 @@ export const ActiveWeapon = ({
         </b>
       </header>
 
-      {weapon.feature ? <FeatureText name={weapon.feature} /> : null}
+      {!!weapon.feature && <FeatureText name={weapon.feature} />}
 
       {augments.map((augment) => (
         <RuleText key={augment.name} text={`**${augment.name}:** ${augment.text}`} />

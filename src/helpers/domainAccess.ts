@@ -1,7 +1,7 @@
 import { DOMAIN_LIST, EARLY_MULTICLASS_MIN_TIER, MULTICLASS_MIN_TIER } from "@/constants"
 import type { Character, Compendium, Domain, HouseRules, Skill } from "@/types"
 
-import { clampLevel, tierOf } from "./derive"
+import { clampLevel, tierOf } from "./sheet"
 
 /**
  * Até que nível de carta o personagem alcança em cada domínio.

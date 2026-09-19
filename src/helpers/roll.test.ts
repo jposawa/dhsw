@@ -5,7 +5,7 @@ import { DEFAULT_HOUSE_RULES } from "@/constants"
 import { createCharacter } from "@/helpers"
 import type { Character, Weapon } from "@/types"
 
-import { derive } from "./derive"
+import { derive } from "./sheet"
 import { parseDicePool } from "./dice"
 import { presetForTrait, presetsForWeapon } from "./roll"
 

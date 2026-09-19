@@ -37,7 +37,7 @@ export const StatBlock = ({ label, stat, className, style }: StatBlockProps) => 
         </span>
       </span>
 
-      {isOpen ? (
+      {isOpen && (
         <span className={styles.detail}>
           <span className={styles.line}>
             <span>base</span>
@@ -54,7 +54,7 @@ export const StatBlock = ({ label, stat, className, style }: StatBlockProps) => 
             </span>
           ))}
         </span>
-      ) : null}
+      )}
     </button>
   )
 }

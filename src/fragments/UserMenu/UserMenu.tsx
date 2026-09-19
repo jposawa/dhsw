@@ -149,7 +149,7 @@ export const UserMenu = ({
 				</span>
 			</button>
 
-			{isOpen ? (
+			{isOpen && (
 				<section
 					className={styles.panel}
 					aria-label={signedUser ? "Perfil" : "Entrar"}
@@ -244,7 +244,7 @@ export const UserMenu = ({
 							</Switch>
 						</li>
 
-						{signedUser ? (
+						{!!signedUser && (
 							<li>
 								<button
 									type="button"
@@ -259,10 +259,10 @@ export const UserMenu = ({
 									</span>
 								</button>
 							</li>
-						) : null}
+						)}
 					</menu>
 				</section>
-			) : null}
+			)}
 		</div>
 	);
 };

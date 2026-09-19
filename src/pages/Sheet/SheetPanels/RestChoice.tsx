@@ -77,21 +77,21 @@ export const RestChoice = ({ move, choice, tier, onChange, onRemove }: RestChoic
 
       {renderDice()}
 
-      {canTargetAlly ? (
+      {canTargetAlly && (
         <Chip
           label="Num aliado"
           isActive={choice.isOnAlly}
           onToggle={() => onChange({ ...choice, isOnAlly: !choice.isOnAlly })}
         />
-      ) : null}
+      )}
 
-      {effect.kind === "gainHope" ? (
+      {effect.kind === "gainHope" && (
         <Chip
           label={`Com o grupo (+${effect.withPartyAmount})`}
           isActive={choice.isWithParty}
           onToggle={() => onChange({ ...choice, isWithParty: !choice.isWithParty })}
         />
-      ) : null}
+      )}
     </li>
   )
 }

@@ -5,7 +5,7 @@ import { DEFAULT_HOUSE_RULES } from "@/constants"
 import { createCharacter } from "@/helpers"
 import type { Character, DowntimeChoice, InventoryEntry } from "@/types"
 
-import { derive } from "./derive"
+import { derive } from "./sheet"
 import { movesForRest, takeRest } from "./downtime"
 
 const armor: InventoryEntry = {

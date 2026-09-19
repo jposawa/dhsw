@@ -34,9 +34,9 @@ export const EquippedArmorCard = ({ derived }: EquippedArmorCardProps) => {
         <hgroup className={styles.identity}>
           <h4 className={styles.name}>{armor ? armor.name : "Sem armadura"}</h4>
           <p className={styles.meta}>
-            {armor ? `${armor.line} · Tier ${armor.tier}` : null}
-            {!armor && derived.hasBareBones ? "Bare Bones no Loadout" : null}
-            {!armor && !derived.hasBareBones ? "Nenhuma vestida — escolha no Inventário" : null}
+            {!!armor && `${armor.line} · Tier ${armor.tier}`}
+            {!armor && derived.hasBareBones && "Bare Bones no Loadout"}
+            {!armor && !derived.hasBareBones && "Nenhuma vestida — escolha no Inventário"}
           </p>
         </hgroup>
         <b className={styles.damage} aria-label={`Armor Score ${armorScore.total}`}>
@@ -45,11 +45,11 @@ export const EquippedArmorCard = ({ derived }: EquippedArmorCardProps) => {
         </b>
       </header>
 
-      {breakdown ? (
+      {!!breakdown && (
         <p className={styles.meta}>
           base {armorScore.base} · {breakdown}
         </p>
-      ) : null}
+      )}
 
       {armor?.features.map((feature) => (
         <FeatureText key={feature} name={feature} />

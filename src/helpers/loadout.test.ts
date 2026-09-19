@@ -5,7 +5,7 @@ import { DEFAULT_HOUSE_RULES } from "@/constants"
 import { createCharacter } from "@/helpers"
 import type { Character, DerivedStats } from "@/types"
 
-import { derive } from "./derive"
+import { derive } from "./sheet"
 import { learnSkill } from "./loadout"
 
 const soldier = (level = 1): Character => ({

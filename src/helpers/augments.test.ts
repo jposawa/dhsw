@@ -6,7 +6,7 @@ import { createCharacter } from "@/helpers"
 import type { Character, InventoryEntry } from "@/types"
 
 import { augmentRollBonuses, augmentSlotsFor, installAugment, removeAugment } from "./augments"
-import { derive } from "./derive"
+import { derive } from "./sheet"
 
 const houseRules = { ...DEFAULT_HOUSE_RULES, hasCustomWeapons: true }
 

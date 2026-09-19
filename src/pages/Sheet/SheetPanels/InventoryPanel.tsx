@@ -138,9 +138,9 @@ export const InventoryPanel = ({ character, derived, onApply }: InventoryPanelPr
                 <hgroup className={styles.rowText}>
                   <h4 className={styles.rowName}>
                     {entry.name}
-                    {entry.quantity > 1 ? (
+                    {entry.quantity > 1 && (
                       <span className={styles.quantity}>×{entry.quantity}</span>
-                    ) : null}
+                    )}
                   </h4>
                   <p className={styles.rowMeta}>{describe(entry)}</p>
                 </hgroup>
@@ -148,7 +148,7 @@ export const InventoryPanel = ({ character, derived, onApply }: InventoryPanelPr
                 <menu className={styles.rowActions}>
                   {augmentButtonFor(entry)}
 
-                  {entry.kind === "consumable" ? (
+                  {entry.kind === "consumable" && (
                     <Button
                       variant="outline"
                       aria-label={`Usar ${entry.name}`}
@@ -156,7 +156,7 @@ export const InventoryPanel = ({ character, derived, onApply }: InventoryPanelPr
                     >
                       USAR
                     </Button>
-                  ) : null}
+                  )}
 
                   <Button
                     variant="text"
@@ -191,7 +191,7 @@ export const InventoryPanel = ({ character, derived, onApply }: InventoryPanelPr
         }
         onClose={() => setSlotDrawer(null)}
       >
-        {slotDrawer ? (
+        {!!slotDrawer && (
           <SlotChoices
             candidates={candidatesForSlot(character, slotDrawer)}
             equippedId={equippedIn(slotDrawer)?.id ?? null}
@@ -200,7 +200,7 @@ export const InventoryPanel = ({ character, derived, onApply }: InventoryPanelPr
               applyAndCloseDrawer(equipInSlot(character, slotDrawer, entryId, compendium))
             }
           />
-        ) : null}
+        )}
       </Drawer>
 
       <CatalogueDrawer

@@ -112,9 +112,9 @@ export const CompendiumClasses = () => {
                     (subclass) => (
                       <li key={subclass.name} className={styles.subRow}>
                         <b className={styles.subName}>{subclass.name}</b>
-                        {subclass.spellcastTrait ? (
+                        {!!subclass.spellcastTrait && (
                           <span className={styles.meta}>{subclass.spellcastTrait}</span>
-                        ) : null}
+                        )}
                       </li>
                     ),
                   )}

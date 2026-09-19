@@ -86,7 +86,7 @@ export const VaultDrawer = ({
                     >
                       EQUIPAR
                     </Button>
-                    {isEditing ? (
+                    {isEditing && (
                       <Button
                         variant="text"
                         intent="danger"
@@ -95,7 +95,7 @@ export const VaultDrawer = ({
                       >
                         ESQUECER
                       </Button>
-                    ) : null}
+                    )}
                   </div>
                 }
               />

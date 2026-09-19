@@ -88,9 +88,9 @@ export const CompendiumGear = () => {
         </SectionLabel>
       </search>
 
-      {shown.length === 0 ? <p className={styles.empty}>Nada encontrado para “{query}”.</p> : null}
+      {shown.length === 0 && <p className={styles.empty}>Nada encontrado para “{query}”.</p>}
 
-      {kind === "armas" && weapons.length > 0 ? (
+      {kind === "armas" && weapons.length > 0 && (
         <ul className={styles.list}>
           {weapons.map((weapon) => (
             <li key={weapon.name} className={styles.item}>
@@ -118,14 +118,14 @@ export const CompendiumGear = () => {
                   ))}
                 </p>
 
-                {weapon.feature ? <FeatureText className={styles.body} name={weapon.feature} /> : null}
+                {!!weapon.feature && <FeatureText className={styles.body} name={weapon.feature} />}
               </article>
             </li>
           ))}
         </ul>
-      ) : null}
+      )}
 
-      {kind === "armaduras" && armor.length > 0 ? (
+      {kind === "armaduras" && armor.length > 0 && (
         <ul className={styles.list}>
           {armor.map((piece) => {
             const described = describeNamedArmor(compendium, piece.name)
@@ -141,12 +141,12 @@ export const CompendiumGear = () => {
                         {described?.stats.baseScore ?? "—"}
                       </p>
                     </hgroup>
-                    {described ? (
+                    {!!described && (
                       <span className={styles.value}>
                         {described.stats.majorBase}/{described.stats.severeBase}
                         <span className={styles.unit}> thresholds</span>
                       </span>
-                    ) : null}
+                    )}
                   </header>
 
                   {described?.features.map((feature) => (
@@ -157,9 +157,9 @@ export const CompendiumGear = () => {
             )
           })}
         </ul>
-      ) : null}
+      )}
 
-      {(kind === "itens" || kind === "consumiveis") && entries.length > 0 ? (
+      {(kind === "itens" || kind === "consumiveis") && entries.length > 0 && (
         <ul className={styles.list}>
           {entries.map((entry) => (
             <li key={entry.name} className={styles.item}>
@@ -176,7 +176,7 @@ export const CompendiumGear = () => {
             </li>
           ))}
         </ul>
-      ) : null}
+      )}
     </>
   )
 }

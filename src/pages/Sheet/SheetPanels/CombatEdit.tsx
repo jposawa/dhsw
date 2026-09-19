@@ -318,7 +318,7 @@ export const CombatEdit = ({ draft, derived, onChange, onApply }: CombatEditProp
           {/* Mista: a espécie de cada feature, e o nome da mistura — que o livro
               deixa a cargo da mesa (p. 70–71). Num grupo próprio, porque os três
               são desdobramento da espécie acima e não campos soltos no fim. */}
-          {isMixed ? (
+          {isMixed && (
             <fieldset className={styles.mixedGroup}>
               <legend className={styles.mixedLegend}>{MIXED_ANCESTRY_LABEL.toUpperCase()}</legend>
 
@@ -351,7 +351,7 @@ export const CombatEdit = ({ draft, derived, onChange, onApply }: CombatEditProp
                 />
               </label>
             </fieldset>
-          ) : null}
+          )}
         </fieldset>
       </section>
 
@@ -435,9 +435,9 @@ export const CombatEdit = ({ draft, derived, onChange, onApply }: CombatEditProp
                     }))
                   }
                 />
-                {derived.spellcastTrait === trait ? (
+                {derived.spellcastTrait === trait && (
                   <span className={styles.spellcast}>FORCEWIELDING</span>
-                ) : null}
+                )}
               </li>
             )
           })}
@@ -452,7 +452,7 @@ export const CombatEdit = ({ draft, derived, onChange, onApply }: CombatEditProp
         onApply={onApply}
       />
 
-      {isLinking ? (
+      {isLinking && (
         <PortraitLinkModal
           key={draft.avatarUrl ?? ""}
           isOpen
@@ -463,7 +463,7 @@ export const CombatEdit = ({ draft, derived, onChange, onApply }: CombatEditProp
           }}
           onClose={() => setIsLinking(false)}
         />
-      ) : null}
+      )}
 
       <ChoiceDrawer
         isOpen={picker === "class"}

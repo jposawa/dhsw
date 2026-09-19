@@ -5,7 +5,7 @@ import { DEFAULT_HOUSE_RULES } from "@/constants"
 import { createCharacter, singleAncestry } from "@/helpers"
 import type { Advancement, Character, HouseRules, InventoryEntry } from "@/types"
 
-import { derive as deriveWith, tierOf } from "./derive"
+import { derive as deriveWith, tierOf } from "./sheet"
 
 const derive = (character: Character, houseRules: HouseRules) =>
   deriveWith(character, houseRules, TEST_COMPENDIUM)

@@ -83,24 +83,24 @@ export const SkillCard = (props: SkillCardProps) => {
 
         <footer className={styles.footer}>
           <span>{skill.category}</span>
-          {props.variant === "open" ? (
+          {props.variant === "open" && (
             <button type="button" className={styles.close} onClick={props.onClose}>
               FECHAR
             </button>
-          ) : null}
-          {props.variant === "closed" && props.action ? (
+          )}
+          {props.variant === "closed" && props.action && (
             <span className={styles.action}>{props.action}</span>
-          ) : null}
+          )}
         </footer>
 
-        {props.variant === "closed" ? (
+        {props.variant === "closed" && (
           <button
             type="button"
             className={styles.open}
             aria-label={`Abrir ${skill.name}`}
             onClick={props.onOpen}
           />
-        ) : null}
+        )}
       </div>
     </article>
   )

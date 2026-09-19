@@ -155,7 +155,7 @@ export const CombatPlay = ({
 			<header className={styles.identity}>
 				{/* O retrato pequeno é identificação; quem quer ver o personagem toca e
             abre a gaveta, onde ele cabe inteiro. */}
-				{portrait && (
+				{!!portrait && (
 					<button
 						type="button"
 						className={styles.portraitButton}
@@ -184,7 +184,7 @@ export const CombatPlay = ({
 				<aside className={styles.identitySide}>
 					{/* Só aparece quando alguma fonte repõe ao entrar em combate: fora
               disso, o interruptor não mudaria nada. */}
-					{hasCombatRefill ? (
+					{hasCombatRefill && (
 						<Switch
 							className={styles.combatSwitch}
 							isOn={isInCombat}
@@ -193,7 +193,7 @@ export const CombatPlay = ({
 						>
 							EM COMBATE
 						</Switch>
-					) : null}
+					)}
 					{/* Rolagem solta. A de atributo e a de arma saem do próprio bloco. */}
 					<Button
 						className={styles.restButton}
@@ -227,12 +227,12 @@ export const CombatPlay = ({
 				</aside>
 			</header>
 
-			{needsClass ? (
+			{!!needsClass && (
 				<p className={styles.notice}>
 					Sem classe, não há Evasion nem Hit Points. Escolha a classe em Editar
 					ficha.
 				</p>
-			) : null}
+			)}
 
 			<section className={styles.defense} aria-label="Defesa">
 				<StatBlock label="EVASION" stat={derived.evasion} />
@@ -276,9 +276,9 @@ export const CombatPlay = ({
 								<span className={styles.traitVerbs}>
 									{TRAIT_VERBS[trait].join(" · ")}
 								</span>
-								{derived.spellcastTrait === trait ? (
+								{derived.spellcastTrait === trait && (
 									<span className={styles.spellcast}>FORCEWIELDING</span>
-								) : null}
+								)}
 							</button>
 						</li>
 					))}
@@ -323,7 +323,7 @@ export const CombatPlay = ({
 			</section>
 
 			<section className={styles.hope}>
-				{classDefinition ? (
+				{!!classDefinition && (
 					<>
 						<SectionLabel>
 							<h3>HOPE FEATURE</h3>
@@ -333,7 +333,7 @@ export const CombatPlay = ({
 							text={classDefinition.hopeFeature}
 						/>
 					</>
-				) : null}
+				)}
 
 				<SectionLabel detail={String(character.experiences.length)}>
 					<h3>EXPERIENCES</h3>

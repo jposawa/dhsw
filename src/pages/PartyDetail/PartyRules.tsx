@@ -61,7 +61,7 @@ export const PartyRules = ({ partyId, houseRules, isNarrator }: PartyRulesProps)
 
       <HouseRulesForm value={shown} onChange={isNarrator ? setDraft : undefined} />
 
-      {isNarrator ? (
+      {isNarrator && (
         <div className={styles.saveRow}>
           <Button variant="outline" disabled={!isDirty || isSaving} onClick={() => setDraft(null)}>
             DESCARTAR
@@ -70,7 +70,7 @@ export const PartyRules = ({ partyId, houseRules, isNarrator }: PartyRulesProps)
             {isSaving ? "SALVANDO…" : "SALVAR REGRAS"}
           </Button>
         </div>
-      ) : null}
+      )}
     </section>
   )
 }

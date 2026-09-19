@@ -37,7 +37,7 @@ export const AugmentDrawer = ({
 
   return (
     <WideDrawer isOpen={entry !== undefined} title={entry ? `Augments — ${entry.name}` : ""} onClose={onClose}>
-      {entry ? (
+      {!!entry && (
         <section className={styles.catalogue} aria-label="Augments">
           <SectionLabel detail={`${installed.length}/${slots} slots`}>
             <h3>INSTALADOS</h3>
@@ -98,7 +98,7 @@ export const AugmentDrawer = ({
               ))}
           </ul>
         </section>
-      ) : null}
+      )}
     </WideDrawer>
   )
 }

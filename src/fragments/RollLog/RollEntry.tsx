@@ -67,7 +67,7 @@ export const RollEntry = ({ record, isHighlighted, showAuthor }: RollEntryProps)
         </button>
       )}
 
-      {hasDetails ? (
+      {hasDetails && (
         <div className={styles.details} id={detailsId}>
           <p className={styles.dice}>
             {record.dice.map((die, index) => (
@@ -85,7 +85,7 @@ export const RollEntry = ({ record, isHighlighted, showAuthor }: RollEntryProps)
           </p>
           <p className={styles.expression}>{record.expression}</p>
         </div>
-      ) : null}
+      )}
     </li>
   )
 }

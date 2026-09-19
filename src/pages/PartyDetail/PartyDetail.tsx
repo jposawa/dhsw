@@ -418,7 +418,7 @@ export const PartyDetail = () => {
                                 sheetRoles[sheet.id],
                                 memberRows,
                                 user.userId,
-                              ) ? (
+                              ) && (
                                 <Button
                                   variant="text"
                                   intent="danger"
@@ -428,14 +428,14 @@ export const PartyDetail = () => {
                                 >
                                   TIRAR
                                 </Button>
-                              ) : null}
+                              )}
                             </li>
                           )
                         })}
                       </ul>
                     )}
 
-                    {addableSheets.length > 0 ? (
+                    {addableSheets.length > 0 && (
                       <>
                         <SectionLabel>PÔR UMA FICHA SUA NO GRUPO</SectionLabel>
                         <div className={styles.actions}>
@@ -451,7 +451,7 @@ export const PartyDetail = () => {
                           ))}
                         </div>
                       </>
-                    ) : null}
+                    )}
 
                     {/* Não é ação de Narrador: quem chega na mesa sem
                         personagem é justamente o jogador. */}
@@ -481,7 +481,7 @@ export const PartyDetail = () => {
                     {/* Promover é ação de Narrador, e não só a saída de emergência de quem
                   está preso: uma mesa grande quer um segundo Narrador de qualquer
                   jeito. Por isso a seção não depende de `isLastNarrator`. */}
-                    {isNarrator && promotable.length > 0 ? (
+                    {isNarrator && promotable.length > 0 && (
                       <>
                         <SectionLabel>ADICIONAR NARRADOR</SectionLabel>
                         <div className={styles.actions}>
@@ -502,7 +502,7 @@ export const PartyDetail = () => {
                           o que libera a sua saída, se você for o único hoje.
                         </p>
                       </>
-                    ) : null}
+                    )}
 
                     <div className={styles.actions}>
                       <Button
@@ -516,25 +516,25 @@ export const PartyDetail = () => {
                       </Button>
                     </div>
 
-                    {isLastNarrator ? (
+                    {isLastNarrator && (
                       <p className={styles.note}>
                         {promotable.length > 0
                           ? "Você é o único Narrador, então sair deixaria a mesa sem quem a administre — um grupo sem Narrador não pode ser apagado nem ter alguém promovido. Suba alguém a Narrador acima, ou desfaça a mesa."
                           : "Você é o único Narrador e não há mais ninguém na mesa. Sair deixaria o grupo inalcançável, então o que resta é desfazê-lo."}
                       </p>
-                    ) : null}
+                    )}
 
-                    {isOwner && !isLastNarrator ? (
+                    {isOwner && !isLastNarrator && (
                       <p className={styles.note}>
                         O grupo é seu. Ao sair, você escolhe para qual Narrador ele fica.
                       </p>
-                    ) : null}
+                    )}
 
                     {/* Apagar é do Dono, não de todo Narrador: o grupo é dele, e um Narrador
                   convidado que quiser sair sempre pode — o Dono continua na mesa como
                   segundo Narrador, então `canLeaveParty` já o libera. Ninguém fica
                   preso precisando desta porta. */}
-                    {isOwner && isNarrator ? (
+                    {isOwner && isNarrator && (
                       <>
                         <SectionLabel>DESFAZER A MESA</SectionLabel>
                         <div className={styles.actions}>
@@ -548,7 +548,7 @@ export const PartyDetail = () => {
                           </Button>
                         </div>
                       </>
-                    ) : null}
+                    )}
                   </div>
                 </div>
               </section>

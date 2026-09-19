@@ -16,12 +16,12 @@ type OriginFeaturesProps = {
 /** Features de espécie ou de origem — o dado já traz nome e efeito juntos. */
 export const OriginFeatures = ({ features, sources, description }: OriginFeaturesProps) => (
   <section className={styles.summary}>
-    {description ? <RuleText className={styles.description} text={description} /> : null}
+    {!!description && <RuleText className={styles.description} text={description} />}
 
     <ul className={styles.featureList}>
       {features.map((feature, index) => (
         <li key={feature}>
-          {sources?.[index] ? <p className={styles.optionMeta}>{sources[index]}</p> : null}
+          {!!sources?.[index] && <p className={styles.optionMeta}>{sources[index]}</p>}
           <RuleText className={styles.featureText} text={feature} />
         </li>
       ))}

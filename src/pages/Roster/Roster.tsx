@@ -144,7 +144,7 @@ export const Roster = () => {
                 <Link className={styles.open} to={ROUTES.sheet(character.id)}>
                   {/* A linha continua a mesma sem imagem: o retrato entra
                       antes do nível, e a ficha sem ele não abre buraco. */}
-                  {toImageUrl(character.avatarUrl ?? "") ? (
+                  {!!toImageUrl(character.avatarUrl ?? "") && (
                     <img
                       className={styles.portrait}
                       src={toImageUrl(character.avatarUrl ?? "") ?? ""}
@@ -154,7 +154,7 @@ export const Roster = () => {
                         event.currentTarget.hidden = true
                       }}
                     />
-                  ) : null}
+                  )}
 
                   <span className={styles.level}>{character.level}</span>
                   <span className={styles.nameBlock}>

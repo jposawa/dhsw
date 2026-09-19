@@ -62,7 +62,7 @@ export const IdentityFeatures = ({
 
       {hasAny ? (
         <ul className={styles.featureGrid}>
-          {classDefinition ? (
+          {!!classDefinition && (
             <li className={styles.featureCard} style={classStripe}>
               <article className={styles.featureCardBody}>
                 <hgroup className={styles.optionTitle}>
@@ -77,16 +77,16 @@ export const IdentityFeatures = ({
                 />
               </article>
             </li>
-          ) : null}
+          )}
 
-          {subclass ? (
+          {!!subclass && (
             <li className={styles.featureCard} style={classStripe}>
               <article className={styles.featureCardBody}>
                 <hgroup className={styles.optionTitle}>
                   <h4 className={styles.optionName}>{subclass.name}</h4>
                   <p className={styles.optionMeta}>
                     SUBCLASSE
-                    {subclass.spellcastTrait ? ` · FORCEWIELDING ${subclass.spellcastTrait}` : null}
+                    {!!subclass.spellcastTrait && ` · FORCEWIELDING ${subclass.spellcastTrait}`}
                   </p>
                 </hgroup>
                 <SubclassTiers
@@ -98,9 +98,9 @@ export const IdentityFeatures = ({
                 />
               </article>
             </li>
-          ) : null}
+          )}
 
-          {heritage.length > 0 ? (
+          {heritage.length > 0 && (
             <li className={styles.featureCard}>
               <article className={styles.featureCardBody}>
                 <hgroup className={styles.optionTitle}>
@@ -114,9 +114,9 @@ export const IdentityFeatures = ({
                 />
               </article>
             </li>
-          ) : null}
+          )}
 
-          {community ? (
+          {!!community && (
             <li className={styles.featureCard}>
               <article className={styles.featureCardBody}>
                 <hgroup className={styles.optionTitle}>
@@ -126,7 +126,7 @@ export const IdentityFeatures = ({
                 <OriginFeatures features={[community.feature]} />
               </article>
             </li>
-          ) : null}
+          )}
         </ul>
       ) : (
         <p className={styles.empty}>

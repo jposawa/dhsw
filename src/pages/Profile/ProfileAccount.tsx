@@ -180,13 +180,13 @@ export const ProfileAccount = () => {
         </div>
       </div>
 
-      {syncError ? (
+      {!!syncError && (
         <p className={styles.diagnostic}>
           <b>Última falha</b>
           <br />
           {syncError}
         </p>
-      ) : null}
+      )}
 
       <p className={styles.note}>
         E-mail e foto vêm do Google e não são editáveis aqui — deixá-los mudáveis

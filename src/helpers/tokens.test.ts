@@ -5,7 +5,7 @@ import { DEFAULT_HOUSE_RULES } from "@/constants"
 import { createCharacter } from "@/helpers"
 import type { Character, DowntimeChoice, Result } from "@/types"
 
-import { derive } from "./derive"
+import { derive } from "./sheet"
 import { takeRest } from "./downtime"
 import { activeTokenPools, enterCombat, setTokenCount, tokenCount, tokenPoolKey } from "./tokens"
 

@@ -49,7 +49,7 @@ export const ChoiceDrawer = ({
 }: ChoiceDrawerProps) => (
   <WideDrawer isOpen={isOpen} title={title} onClose={onClose}>
     <div className={styles.drawerBody}>
-      {note ? <p className={styles.drawerNote}>{note}</p> : null}
+      {!!note && <p className={styles.drawerNote}>{note}</p>}
 
       <ul className={styles.options}>
         {options.map((option) => {
@@ -67,7 +67,7 @@ export const ChoiceDrawer = ({
                 <header className={styles.optionHead}>
                   <hgroup className={styles.optionTitle}>
                     <h4 className={styles.optionName}>{option.name}</h4>
-                    {option.meta ? <p className={styles.optionMeta}>{option.meta}</p> : null}
+                    {!!option.meta && <p className={styles.optionMeta}>{option.meta}</p>}
                   </hgroup>
 
                   {isCurrent ? (

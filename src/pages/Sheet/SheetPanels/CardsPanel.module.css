@@ -14,8 +14,8 @@
 /* `menu` é lista de ações: sem o recuo e a margem de lista do navegador.
    Largura cheia no celular; no desktop, do tamanho do texto. */
 .actions {
-  display: grid;
-  grid-template-columns: 1fr;
+  display: flex;
+  justify-content: flex-end;
   gap: var(--space-2);
   margin: 0;
   padding: 0;

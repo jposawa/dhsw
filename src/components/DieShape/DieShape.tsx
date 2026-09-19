@@ -70,6 +70,6 @@ export const DieShape = ({
       {children === undefined ? null : <b className={styles.value}>{children}</b>}
     </span>
 
-    {caption ? <span className={styles.caption}>{caption}</span> : null}
+    {!!caption && <span className={styles.caption}>{caption}</span>}
   </span>
 )

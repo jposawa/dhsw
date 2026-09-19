@@ -20,24 +20,6 @@ import type { IconName } from "@/types"
  *   account     a conta
  */
 export const ICON_ART: Readonly<Record<IconName, React.ReactNode>> = {
-  /* Lixeira: tampa, corpo e os dois riscos de dentro. */
-  trash: (
-    <>
-      <path d="M4.5 6.5h15" />
-      <path d="M9.5 6.5V4.8a1.3 1.3 0 0 1 1.3-1.3h2.4a1.3 1.3 0 0 1 1.3 1.3v1.7" />
-      <path d="M6.5 6.5 7.4 19a1.5 1.5 0 0 0 1.5 1.4h6.2a1.5 1.5 0 0 0 1.5-1.4l.9-12.5" />
-      <path d="M10.3 10v6.8M13.7 10v6.8" opacity=".6" />
-    </>
-  ),
-
-  /* Duas folhas sobrepostas: a de trás é a original, a da frente é a cópia. */
-  copy: (
-    <>
-      <rect x="8.5" y="8.5" width="11" height="12" rx="1.4" />
-      <path d="M15.5 5.5H6a1.5 1.5 0 0 0-1.5 1.5v9.5" opacity=".6" />
-    </>
-  ),
-
   /* Pilha de cartas: a de trás recuada, a da frente com o texto da carta. */
   compendium: (
     <>

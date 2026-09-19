@@ -73,9 +73,20 @@ export const moveToVault = (character: Character, skillName: string): Result<Cha
   })
 }
 
-/** Aprender carta nova: entra no vault. */
+/**
+ * Aprender carta nova: vai direto para o loadout se couber, senão para o vault.
+ *
+ * **Não custa Stress**, e é por isso que não passa por `moveToLoadout`: o
+ * custo do SRD é do *recall* — trazer de volta o que estava guardado no meio
+ * da cena. Carta recém-aprendida nunca esteve guardada, e cobrar por ela seria
+ * punir quem subiu de nível.
+ *
+ * Com o loadout cheio ela cai no vault, como antes: o teto é regra, e o atalho
+ * não pode furá-lo.
+ */
 export const learnSkill = (
   character: Character,
+  derived: DerivedStats,
   skillName: string,
   compendium: Compendium,
 ): Result<Character> => {
@@ -91,7 +102,11 @@ export const learnSkill = (
     return ok(character)
   }
 
-  return ok({ ...character, vault: [...character.vault, skillName] })
+  // `derived` vem de fora, como em `moveToLoadout`: quem chama já o tem, e
+  // recalcular a ficha inteira aqui seria pagar de novo pelo mesmo número.
+  return character.loadout.length < derived.loadoutMax.total
+    ? ok({ ...character, loadout: [...character.loadout, skillName] })
+    : ok({ ...character, vault: [...character.vault, skillName] })
 }
 
 export const forgetSkill = (character: Character, skillName: string): Result<Character> =>

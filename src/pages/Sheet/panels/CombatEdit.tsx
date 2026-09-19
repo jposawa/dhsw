@@ -1,5 +1,6 @@
-import { Stepper } from "@jposawa/ronin-ui"
+import { Button, Stepper } from "@jposawa/ronin-ui"
 import React from "react"
+import { LuImage, LuPencil } from "react-icons/lu"
 
 import { DomainLabel } from "@/components"
 import {
@@ -32,6 +33,7 @@ import { ChoiceField } from "./ChoiceField"
 import { ClassChangeConfirm } from "./ClassChangeConfirm"
 import { ClassSummary } from "./ClassSummary"
 import { ExperienceEditor } from "./ExperienceEditor"
+import { PortraitLinkModal } from "./PortraitLinkModal"
 import { OriginFeatures } from "./OriginFeatures"
 import { SubclassTiers } from "./SubclassTiers"
 
@@ -70,6 +72,9 @@ export const CombatEdit = ({ draft, derived, onChange, onApply }: CombatEditProp
 
   const [picker, setPicker] = React.useState<Picker | null>(null)
   const [pendingClass, setPendingClass] = React.useState<string | null>(null)
+  const [isLinking, setIsLinking] = React.useState(false)
+
+  const portrait = toImageUrl(draft.avatarUrl ?? "")
 
   const classDefinition = compendium.classes.find((candidate) => candidate.name === draft.className)
   const subclass = compendium.subclasses.find(
@@ -241,23 +246,32 @@ export const CombatEdit = ({ draft, derived, onChange, onApply }: CombatEditProp
             </div>
           </div>
 
-          {/* Endereço e não upload: a ficha sobe inteira a cada gravação, e um
-              arquivo embutido subiria junto toda vez. */}
-          <label className={styles.nameField}>
+          {/* A prévia no lugar do campo: um endereço de 200 caracteres não
+              diz nada sobre a imagem, e a imagem diz tudo. Trocar abre o mesmo
+              modal que a gaveta do modo jogo abre. */}
+          <div className={styles.portraitField}>
             <span className={styles.label}>IMAGEM DO PERSONAGEM</span>
-            <input
-              className={styles.input}
-              value={draft.avatarUrl ?? ""}
-              placeholder="https://… — opcional"
-              maxLength={500}
-              onChange={(event) =>
-                onChange((current) => ({
-                  ...current,
-                  avatarUrl: toImageUrl(event.target.value) ?? (event.target.value || null),
-                }))
-              }
-            />
-          </label>
+
+            <div className={styles.portraitRow}>
+              {portrait ? (
+                <img className={styles.portraitPreview} src={portrait} alt="" />
+              ) : (
+                <span className={styles.portraitPreview} aria-hidden="true">
+                  <LuImage />
+                </span>
+              )}
+
+              <Button
+                className={styles.portraitEdit}
+                variant="outline"
+                aria-label={portrait ? "Trocar a imagem do personagem" : "Pôr uma imagem no personagem"}
+                onClick={() => setIsLinking(true)}
+              >
+                <LuPencil aria-hidden="true" />
+                &nbsp;{portrait ? "TROCAR" : "PÔR IMAGEM"}
+              </Button>
+            </div>
+          </div>
 
           {/* Classe antes de espécie: é ela que move os números. Espécie e origem
               trazem features, não a base de cálculo. */}
@@ -437,6 +451,19 @@ export const CombatEdit = ({ draft, derived, onChange, onApply }: CombatEditProp
         character={draft}
         onApply={onApply}
       />
+
+      {isLinking ? (
+        <PortraitLinkModal
+          key={draft.avatarUrl ?? ""}
+          isOpen
+          avatarUrl={draft.avatarUrl}
+          onConfirm={(avatarUrl) => {
+            onChange((current) => ({ ...current, avatarUrl }))
+            setIsLinking(false)
+          }}
+          onClose={() => setIsLinking(false)}
+        />
+      ) : null}
 
       <ChoiceDrawer
         isOpen={picker === "class"}

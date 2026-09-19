@@ -1,9 +1,10 @@
 import { Button, Modal, SectionLabel } from "@jposawa/ronin-ui"
 import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import React from "react"
+import { LuCopy, LuTrash2 } from "react-icons/lu"
 import { Link } from "react-router-dom"
 
-import { Icon, StepRule } from "@/components"
+import { StepRule } from "@/components"
 import { ROUTES } from "@/constants"
 import {
   createCharacter,
@@ -167,7 +168,7 @@ export const Roster = () => {
                   aria-label={`Duplicar ${character.name || "ficha sem nome"}`}
                   onClick={() => handleDuplicate(character)}
                 >
-                  <Icon name="copy" />
+                  <LuCopy />
                 </Button>
                 {/* Lixeira e não ×: um × lê como "fechar", e o que ele faz é
                     apagar a ficha para todo mundo. Desenhada, e não o emoji —
@@ -184,7 +185,7 @@ export const Roster = () => {
                   }
                   onClick={() => setToRemove(character)}
                 >
-                  {isAuthor ? <Icon name="trash" /> : "↪"}
+                  {isAuthor ? <LuTrash2 /> : "↪"}
                 </Button>
               </li>
             )

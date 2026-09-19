@@ -1,40 +1,55 @@
-import { Button, SectionLabel } from "@jposawa/ronin-ui"
-import React from "react"
+import { Button, SectionLabel } from "@jposawa/ronin-ui";
+import React from "react";
 
-import { DotScale, Switch } from "@/components"
-import { EQUIP_SLOTS, HOPE_MAX, MAX_PROFICIENCY, TRAIT_LIST, TRAIT_VERBS } from "@/constants"
-import { MarkerTrack, RuleText, StatBlock, ThresholdBar } from "@/fragments"
+import { DotScale, Switch } from "@/components";
 import {
-  activeTokenPools,
-  describeThresholdOrigin,
-  domainColorToken,
-  enterCombat,
-  formatSigned,
-  heritageLabel,
-  toImageUrl,
-  presetForTrait,
-  setTokenCount,
-  tokenCount,
-} from "@/helpers"
-import { useCompendium } from "@/hooks"
-import type { Character, DerivedStats, DicePreset, EquipSlot, Marks, Result } from "@/types"
+	EQUIP_SLOTS,
+	HOPE_MAX,
+	MAX_PROFICIENCY,
+	TRAIT_LIST,
+	TRAIT_VERBS,
+} from "@/constants";
+import { MarkerTrack, RuleText, StatBlock, ThresholdBar } from "@/fragments";
+import {
+	activeTokenPools,
+	describeThresholdOrigin,
+	domainColorToken,
+	enterCombat,
+	formatSigned,
+	heritageLabel,
+	ok,
+	presetForTrait,
+	setTokenCount,
+	toImageUrl,
+	tokenCount,
+} from "@/helpers";
+import { useCompendium } from "@/hooks";
+import type {
+	Character,
+	DerivedStats,
+	DicePreset,
+	EquipSlot,
+	Marks,
+	Result,
+} from "@/types";
 
-import { ActiveWeapon } from "./ActiveWeapon"
-import { EquippedArmorCard } from "./EquippedArmorCard"
-import { IdentityFeatures } from "./IdentityFeatures"
-import { RestDrawer } from "./RestDrawer"
-import { RollDrawer } from "./RollDrawer"
-import { TokenCounter } from "./TokenCounter"
+import { ActiveWeapon } from "./ActiveWeapon";
+import { EquippedArmorCard } from "./EquippedArmorCard";
+import { IdentityFeatures } from "./IdentityFeatures";
+import { PortraitDrawer } from "./PortraitDrawer";
+import { RestDrawer } from "./RestDrawer";
+import { RollDrawer } from "./RollDrawer";
+import { TokenCounter } from "./TokenCounter";
 
-import styles from "./CombatPlay.module.css"
+import styles from "./CombatPlay.module.css";
 
 type CombatPlayProps = {
-  character: Character
-  derived: DerivedStats
-  isReadOnly: boolean
-  onMarksChange: (marks: Marks) => void
-  onApply: (result: Result<Character>) => void
-}
+	character: Character;
+	derived: DerivedStats;
+	isReadOnly: boolean;
+	onMarksChange: (marks: Marks) => void;
+	onApply: (result: Result<Character>) => void;
+};
 
 /**
  * A ficha em mesa.
@@ -60,310 +75,352 @@ type CombatPlayProps = {
  * ações de downtime, confirmadas na gaveta.
  */
 export const CombatPlay = ({
-  character,
-  derived,
-  isReadOnly,
-  onMarksChange,
-  onApply,
+	character,
+	derived,
+	isReadOnly,
+	onMarksChange,
+	onApply,
 }: CombatPlayProps) => {
-  const { compendium } = useCompendium()
-  const [isResting, setIsResting] = React.useState(false)
-  // `undefined` é gaveta fechada; `null`, aberta para rolagem solta.
-  const [rollPreset, setRollPreset] = React.useState<DicePreset | null | undefined>(undefined)
-  // Da mesa, não da ficha: recarregar a página sai do combate, como a troca livre.
-  const [isInCombat, setIsInCombat] = React.useState(false)
+	const { compendium } = useCompendium();
+	const [isResting, setIsResting] = React.useState(false);
+	// `undefined` é gaveta fechada; `null`, aberta para rolagem solta.
+	const [rollPreset, setRollPreset] = React.useState<
+		DicePreset | null | undefined
+	>(undefined);
+	// Da mesa, não da ficha: recarregar a página sai do combate, como a troca livre.
+	const [isInCombat, setIsInCombat] = React.useState(false);
 
-  const classDefinition = compendium.classes.find(
-    (candidate) => candidate.name === character.className,
-  )
-  const lineage = [
-    character.className,
-    character.subclass,
-    heritageLabel(character),
-    character.community,
-  ]
-    .filter(Boolean)
-    .join(" · ")
+	const classDefinition = compendium.classes.find(
+		(candidate) => candidate.name === character.className,
+	);
+	const lineage = [
+		character.className,
+		character.subclass,
+		heritageLabel(character),
+		character.community,
+	]
+		.filter(Boolean)
+		.join(" · ");
 
-  const equippedIn = (slot: EquipSlot) =>
-    character.inventory.find((entry) => entry.isEquipped && entry.slot === slot)
+	const equippedIn = (slot: EquipSlot) =>
+		character.inventory.find(
+			(entry) => entry.isEquipped && entry.slot === slot,
+		);
 
-  const weaponOf = (slot: EquipSlot) => {
-    const entry = equippedIn(slot)
+	const weaponOf = (slot: EquipSlot) => {
+		const entry = equippedIn(slot);
 
-    return entry ? compendium.weapons.find((candidate) => candidate.name === entry.name) : undefined
-  }
+		return entry
+			? compendium.weapons.find((candidate) => candidate.name === entry.name)
+			: undefined;
+	};
 
-  const isPrimaryTwoHanded = weaponOf("primary")?.burden === "Duas mãos"
+	const isPrimaryTwoHanded = weaponOf("primary")?.burden === "Duas mãos";
 
-  const needsClass = classDefinition === undefined
+	const needsClass = classDefinition === undefined;
 
-  const tokenPools = activeTokenPools(character, derived, compendium)
-  const hasCombatRefill = tokenPools.some((active) => active.pool.refill === "combat")
+	const tokenPools = activeTokenPools(character, derived, compendium);
+	const hasCombatRefill = tokenPools.some(
+		(active) => active.pool.refill === "combat",
+	);
 
-  const toggleCombat = () => {
-    if (!isInCombat) {
-      onApply(enterCombat(character, compendium))
-    }
+	const toggleCombat = () => {
+		if (!isInCombat) {
+			onApply(enterCombat(character, compendium));
+		}
 
-    setIsInCombat(!isInCombat)
-  }
+		setIsInCombat(!isInCombat);
+	};
 
-  const renderTokens = (key: string) => {
-    const active = tokenPools.find((candidate) => candidate.key === key)
+	const renderTokens = (key: string) => {
+		const active = tokenPools.find((candidate) => candidate.key === key);
 
-    return active ? (
-      <TokenCounter
-        active={active}
-        count={tokenCount(character, active)}
-        onChange={(next) => onApply(setTokenCount(character, key, next, derived, compendium))}
-      />
-    ) : null
-  }
+		return active ? (
+			<TokenCounter
+				active={active}
+				count={tokenCount(character, active)}
+				onChange={(next) =>
+					onApply(setTokenCount(character, key, next, derived, compendium))
+				}
+			/>
+		) : null;
+	};
 
-  // Endereço inválido não vira `<img>`: ficaria o ícone de imagem quebrada.
-  const portrait = toImageUrl(character.avatarUrl ?? "")
+	// Endereço inválido não vira `<img>`: ficaria o ícone de imagem quebrada.
+	const portrait = toImageUrl(character.avatarUrl ?? "");
+	const [isPortraitOpen, setIsPortraitOpen] = React.useState(false);
 
-  return (
-    <div className={styles.layout}>
-      <header className={styles.identity}>
-        {portrait ? (
-          <img
-            className={styles.portrait}
-            src={portrait}
-            alt=""
-            loading="lazy"
-            onError={(event) => {
-              // Endereço que morreu não deixa buraco na ficha: o retrato some
-              // e o resto do cabeçalho continua igual.
-              event.currentTarget.hidden = true
-            }}
-          />
-        ) : null}
+	return (
+		<div className={styles.layout}>
+			<header className={styles.identity}>
+				{/* O retrato pequeno é identificação; quem quer ver o personagem toca e
+            abre a gaveta, onde ele cabe inteiro. */}
+				{portrait && (
+					<button
+						type="button"
+						className={styles.portraitButton}
+						aria-label={`Ver o retrato de ${character.name || "Sem nome"}`}
+						onClick={() => setIsPortraitOpen(true)}
+					>
+						<img
+							className={styles.portrait}
+							src={portrait}
+							alt=""
+							loading="lazy"
+							onError={(event) => {
+								// Endereço que morreu não deixa buraco na ficha: o retrato some
+								// e o resto do cabeçalho continua igual.
+								event.currentTarget.hidden = true;
+							}}
+						/>
+					</button>
+				)}
 
-        <hgroup className={styles.identityText}>
-          <h2 className={styles.name}>{character.name || "Sem nome"}</h2>
-          <p className={styles.lineage}>{lineage || "ficha em branco"}</p>
-        </hgroup>
+				<hgroup className={styles.identityText}>
+					<h2 className={styles.name}>{character.name || "Sem nome"}</h2>
+					<p className={styles.lineage}>{lineage || "ficha em branco"}</p>
+				</hgroup>
 
-        <div className={styles.identitySide}>
-          {/* Só aparece quando alguma fonte repõe ao entrar em combate: fora
+				<aside className={styles.identitySide}>
+					{/* Só aparece quando alguma fonte repõe ao entrar em combate: fora
               disso, o interruptor não mudaria nada. */}
-          {hasCombatRefill ? (
-            <Switch
-              className={styles.combatSwitch}
-              isOn={isInCombat}
-              disabled={isReadOnly}
-              onToggle={toggleCombat}
-            >
-              EM COMBATE
-            </Switch>
-          ) : null}
-          {/* Rolagem solta. A de atributo e a de arma saem do próprio bloco. */}
-          <Button
-            className={styles.restButton}
-            variant="outline"
-            onClick={() => setRollPreset(null)}
-          >
-            ROLAR
-          </Button>
+					{hasCombatRefill ? (
+						<Switch
+							className={styles.combatSwitch}
+							isOn={isInCombat}
+							disabled={isReadOnly}
+							onToggle={toggleCombat}
+						>
+							EM COMBATE
+						</Switch>
+					) : null}
+					{/* Rolagem solta. A de atributo e a de arma saem do próprio bloco. */}
+					<Button
+						className={styles.restButton}
+						variant="outline"
+						onClick={() => setRollPreset(null)}
+					>
+						ROLAR
+					</Button>
 
-          {/* No cabeçalho e em texto: descanso acontece entre cenas, poucas vezes
+					{/* No cabeçalho e em texto: descanso acontece entre cenas, poucas vezes
               por sessão, e não disputa espaço com os pips que se tocam no turno. */}
-          <Button
-            className={styles.restButton}
-            variant="outline"
-            disabled={isReadOnly}
-            onClick={() => setIsResting(true)}
-          >
-            DESCANSAR
-          </Button>
+					<Button
+						className={styles.restButton}
+						variant="outline"
+						disabled={isReadOnly}
+						onClick={() => setIsResting(true)}
+					>
+						DESCANSAR
+					</Button>
 
-          <dl className={styles.levelBadge}>
-            <div className={styles.levelCell}>
-              <dt>NÍVEL</dt>
-              <dd>{derived.level}</dd>
-            </div>
-            <div className={styles.levelCell}>
-              <dt>TIER</dt>
-              <dd>{derived.tier}</dd>
-            </div>
-          </dl>
-        </div>
-      </header>
+					<dl className={styles.levelBadge}>
+						<div className={styles.levelCell}>
+							<dt>NÍVEL</dt>
+							<dd>{derived.level}</dd>
+						</div>
+						<div className={styles.levelCell}>
+							<dt>TIER</dt>
+							<dd>{derived.tier}</dd>
+						</div>
+					</dl>
+				</aside>
+			</header>
 
-      {needsClass ? (
-        <p className={styles.notice}>
-          Sem classe, não há Evasion nem Hit Points. Escolha a classe em Editar ficha.
-        </p>
-      ) : null}
+			{needsClass ? (
+				<p className={styles.notice}>
+					Sem classe, não há Evasion nem Hit Points. Escolha a classe em Editar
+					ficha.
+				</p>
+			) : null}
 
-      <section className={styles.defense} aria-label="Defesa">
-        <StatBlock label="EVASION" stat={derived.evasion} />
+			<section className={styles.defense} aria-label="Defesa">
+				<StatBlock label="EVASION" stat={derived.evasion} />
 
-        {/* Os slots no lugar do número: o Armor Score está no card da armadura,
+				{/* Os slots no lugar do número: o Armor Score está no card da armadura,
             em Equipamento, e aqui fica o que se toca ao receber dano. */}
-        <MarkerTrack
-          className={styles.armorSlots}
-          label="ARMOR SLOTS"
-          hasCount
-          rows={3}
-          marked={character.marks.armor}
-          max={derived.armorScore.total}
-          color={domainColorToken("Edge")}
-          emptyText="Sem armadura: nenhum slot para marcar."
-          onChange={(armorMarks) => onMarksChange({ ...character.marks, armor: armorMarks })}
-        />
-      </section>
+				<MarkerTrack
+					className={styles.armorSlots}
+					label="ARMOR SLOTS"
+					hasCount
+					rows={3}
+					marked={character.marks.armor}
+					max={derived.armorScore.total}
+					color={domainColorToken("Edge")}
+					emptyText="Sem armadura: nenhum slot para marcar."
+					onChange={(armorMarks) =>
+						onMarksChange({ ...character.marks, armor: armorMarks })
+					}
+				/>
+			</section>
 
-      <section className={styles.traits} aria-label="Atributos">
-        <ul className={styles.traitList}>
-          {TRAIT_LIST.map((trait) => (
-            <li
-              className={styles.trait}
-              key={trait}
-              data-spellcast={derived.spellcastTrait === trait || undefined}
-            >
-              {/* O atributo inteiro é o botão: tocar prepara a rolagem dele. */}
-              <button
-                type="button"
-                className={styles.traitButton}
-                aria-label={`Rolar ${trait}, ${formatSigned(derived.traits[trait].total)}`}
-                onClick={() => setRollPreset(presetForTrait(trait, derived))}
-              >
-                <span className={styles.traitName}>{trait}</span>
-                <b className={styles.traitValue}>{formatSigned(derived.traits[trait].total)}</b>
-                <span className={styles.traitVerbs}>{TRAIT_VERBS[trait].join(" · ")}</span>
-                {derived.spellcastTrait === trait ? (
-                  <span className={styles.spellcast}>FORCEWIELDING</span>
-                ) : null}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </section>
+			<section className={styles.traits} aria-label="Atributos">
+				<ul className={styles.traitList}>
+					{TRAIT_LIST.map((trait) => (
+						<li
+							className={styles.trait}
+							key={trait}
+							data-spellcast={derived.spellcastTrait === trait || undefined}
+						>
+							{/* O atributo inteiro é o botão: tocar prepara a rolagem dele. */}
+							<button
+								type="button"
+								className={styles.traitButton}
+								aria-label={`Rolar ${trait}, ${formatSigned(derived.traits[trait].total)}`}
+								onClick={() => setRollPreset(presetForTrait(trait, derived))}
+							>
+								<span className={styles.traitName}>{trait}</span>
+								<b className={styles.traitValue}>
+									{formatSigned(derived.traits[trait].total)}
+								</b>
+								<span className={styles.traitVerbs}>
+									{TRAIT_VERBS[trait].join(" · ")}
+								</span>
+								{derived.spellcastTrait === trait ? (
+									<span className={styles.spellcast}>FORCEWIELDING</span>
+								) : null}
+							</button>
+						</li>
+					))}
+				</ul>
+			</section>
 
-      <section className={styles.vitals} aria-label="Dano, vida e Hope">
-        <ThresholdBar
-          major={derived.majorThreshold}
-          severe={derived.severeThreshold}
-          origin={describeThresholdOrigin(derived)}
-        />
+			<section className={styles.vitals} aria-label="Dano, vida e Hope">
+				<ThresholdBar
+					major={derived.majorThreshold}
+					severe={derived.severeThreshold}
+					origin={describeThresholdOrigin(derived)}
+				/>
 
-        <MarkerTrack
-          label="HIT POINTS"
-          hasCount
-          marked={character.marks.hp}
-          max={derived.hitPointsMax.total}
-          color={domainColorToken("Havoc")}
-          emptyText="A classe define os Hit Points."
-          onChange={(hp) => onMarksChange({ ...character.marks, hp })}
-        />
-        <MarkerTrack
-          label="STRESS"
-          hasCount
-          marked={character.marks.stress}
-          max={derived.stressMax.total}
-          color={domainColorToken("Essence")}
-          onChange={(stress) => onMarksChange({ ...character.marks, stress })}
-        />
-        <MarkerTrack
-          label="HOPE"
-          hasCount
-          marked={character.marks.hope}
-          max={HOPE_MAX}
-          color={domainColorToken("Aegis")}
-          onChange={(hope) => onMarksChange({ ...character.marks, hope })}
-        />
-        <p className={styles.hint}>Gaste uma Hope para usar uma Experience ou ajudar um aliado.</p>
-      </section>
+				<MarkerTrack
+					label="HIT POINTS"
+					hasCount
+					marked={character.marks.hp}
+					max={derived.hitPointsMax.total}
+					color={domainColorToken("Havoc")}
+					emptyText="A classe define os Hit Points."
+					onChange={(hp) => onMarksChange({ ...character.marks, hp })}
+				/>
+				<MarkerTrack
+					label="STRESS"
+					hasCount
+					marked={character.marks.stress}
+					max={derived.stressMax.total}
+					color={domainColorToken("Essence")}
+					onChange={(stress) => onMarksChange({ ...character.marks, stress })}
+				/>
+				<MarkerTrack
+					label="HOPE"
+					hasCount
+					marked={character.marks.hope}
+					max={HOPE_MAX}
+					color={domainColorToken("Aegis")}
+					onChange={(hope) => onMarksChange({ ...character.marks, hope })}
+				/>
+				<p className={styles.hint}>
+					Gaste uma Hope para usar uma Experience ou ajudar um aliado.
+				</p>
+			</section>
 
-      <section className={styles.hope}>
-        {classDefinition ? (
-          <>
-            <SectionLabel>
-              <h3>HOPE FEATURE</h3>
-            </SectionLabel>
-            <RuleText className={styles.hopeFeature} text={classDefinition.hopeFeature} />
-          </>
-        ) : null}
+			<section className={styles.hope}>
+				{classDefinition ? (
+					<>
+						<SectionLabel>
+							<h3>HOPE FEATURE</h3>
+						</SectionLabel>
+						<RuleText
+							className={styles.hopeFeature}
+							text={classDefinition.hopeFeature}
+						/>
+					</>
+				) : null}
 
-        <SectionLabel detail={String(character.experiences.length)}>
-          <h3>EXPERIENCES</h3>
-        </SectionLabel>
+				<SectionLabel detail={String(character.experiences.length)}>
+					<h3>EXPERIENCES</h3>
+				</SectionLabel>
 
-        {character.experiences.length === 0 ? (
-          <p className={styles.empty}>Nenhuma. Adicione em Editar ficha.</p>
-        ) : (
-          <ul className={styles.experiences}>
-            {character.experiences.map((experience) => (
-              <li className={styles.experience} key={experience.name}>
-                <span className={styles.experienceName}>{experience.name}</span>
-                <b className={styles.experienceBonus}>+{experience.bonus}</b>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+				{character.experiences.length === 0 ? (
+					<p className={styles.empty}>Nenhuma. Adicione em Editar ficha.</p>
+				) : (
+					<ul className={styles.experiences}>
+						{character.experiences.map((experience) => (
+							<li className={styles.experience} key={experience.name}>
+								<span className={styles.experienceName}>{experience.name}</span>
+								<b className={styles.experienceBonus}>+{experience.bonus}</b>
+							</li>
+						))}
+					</ul>
+				)}
+			</section>
 
-      <section className={styles.weapons}>
-        <SectionLabel
-          detail={
-            <span className={styles.proficiency}>
-              PROFICIENCY {derived.proficiency.total}
-              <DotScale
-                label="Proficiency"
-                value={derived.proficiency.total}
-                max={MAX_PROFICIENCY}
-              />
-            </span>
-          }
-        >
-          <h3>EQUIPAMENTO</h3>
-        </SectionLabel>
+			<section className={styles.weapons}>
+				<SectionLabel
+					detail={
+						<span className={styles.proficiency}>
+							PROFICIENCY {derived.proficiency.total}
+							<DotScale
+								label="Proficiency"
+								value={derived.proficiency.total}
+								max={MAX_PROFICIENCY}
+							/>
+						</span>
+					}
+				>
+					<h3>EQUIPAMENTO</h3>
+				</SectionLabel>
 
-        <ul className={styles.weaponList}>
-          {EQUIP_SLOTS.filter((slot) => slot.id !== "armor").map((slot) => (
-            <ActiveWeapon
-              key={slot.id}
-              slotLabel={slot.label.toUpperCase()}
-              entry={equippedIn(slot.id)}
-              weapon={weaponOf(slot.id)}
-              proficiency={derived.proficiency.total}
-              tierIndex={derived.tier - 1}
-              derived={derived}
-              onPrepareRoll={setRollPreset}
-              emptyText={
-                slot.id === "secondary" && isPrimaryTwoHanded
-                  ? "A primária é de duas mãos."
-                  : "Nada empunhado — escolha no Inventário."
-              }
-            />
-          ))}
-          <EquippedArmorCard derived={derived} />
-        </ul>
-      </section>
+				<ul className={styles.weaponList}>
+					{EQUIP_SLOTS.filter((slot) => slot.id !== "armor").map((slot) => (
+						<ActiveWeapon
+							key={slot.id}
+							slotLabel={slot.label.toUpperCase()}
+							entry={equippedIn(slot.id)}
+							weapon={weaponOf(slot.id)}
+							proficiency={derived.proficiency.total}
+							tierIndex={derived.tier - 1}
+							derived={derived}
+							onPrepareRoll={setRollPreset}
+							emptyText={
+								slot.id === "secondary" && isPrimaryTwoHanded
+									? "A primária é de duas mãos."
+									: "Nada empunhado — escolha no Inventário."
+							}
+						/>
+					))}
+					<EquippedArmorCard derived={derived} />
+				</ul>
+			</section>
 
-      <IdentityFeatures
-        className={styles.features}
-        character={character}
-        renderTokens={renderTokens}
-      />
+			<IdentityFeatures
+				className={styles.features}
+				character={character}
+				renderTokens={renderTokens}
+			/>
 
-      <RollDrawer
-        isOpen={rollPreset !== undefined}
-        character={character}
-        preset={rollPreset ?? null}
-        onClose={() => setRollPreset(undefined)}
-      />
+			<RollDrawer
+				isOpen={rollPreset !== undefined}
+				character={character}
+				preset={rollPreset ?? null}
+				onClose={() => setRollPreset(undefined)}
+			/>
 
-      <RestDrawer
-        isOpen={isResting}
-        character={character}
-        derived={derived}
-        onApply={onApply}
-        onClose={() => setIsResting(false)}
-      />
-    </div>
-  )
-}
+			{/* Editável também em mesa: o botão de confirmar do modal é o Salvar
+          deste dado, então nada grava enquanto se digita. */}
+			<PortraitDrawer
+				isOpen={isPortraitOpen}
+				name={character.name}
+				avatarUrl={character.avatarUrl}
+				onChange={(avatarUrl) => onApply(ok({ ...character, avatarUrl }))}
+				onClose={() => setIsPortraitOpen(false)}
+			/>
+
+			<RestDrawer
+				isOpen={isResting}
+				character={character}
+				derived={derived}
+				onApply={onApply}
+				onClose={() => setIsResting(false)}
+			/>
+		</div>
+	);
+};

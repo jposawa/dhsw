@@ -88,7 +88,7 @@ export const LearnDrawer = ({ isOpen, character, derived, onApply, onClose }: Le
                     <Button
                       variant="outline"
                       aria-label={`Aprender ${skill.name}`}
-                      onClick={() => onApply(learnSkill(character, skill.name, compendium))}
+                      onClick={() => onApply(learnSkill(character, derived, skill.name, compendium))}
                     >
                       APRENDER
                     </Button>

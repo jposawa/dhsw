@@ -273,3 +273,40 @@
 .experiences {
   grid-column: 1 / -1;
 }
+
+/* ── imagem ───────────────────────────────────────────────────────────────── */
+
+.portraitField {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+.portraitRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+/* Quadrada e pequena: é conferência do que está posto, não a ilustração. */
+.portraitPreview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--size-touch-target);
+  height: var(--size-touch-target);
+  flex-shrink: 0;
+  object-fit: cover;
+  font-size: var(--text-lg);
+  color: var(--color-chrome-dim);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+}
+
+.portraitEdit {
+  display: flex;
+  align-items: center;
+}

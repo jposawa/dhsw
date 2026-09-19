@@ -1,0 +1,68 @@
+.body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/*
+ * Grande o quanto a gaveta deixar, sem passar de dois terços da altura da
+ * tela: é para olhar o personagem, não para o retrato empurrar o botão de
+ * trocar para fora da vista. `contain` porque o endereço é de quem colou — a
+ * imagem vem em qualquer proporção e cortar o rosto seria pior que sobrar
+ * fundo.
+ */
+.portrait {
+  width: 100%;
+  max-height: 66svh;
+  object-fit: contain;
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  padding: var(--space-6) var(--space-4);
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  text-align: center;
+  color: var(--color-text-dim);
+  background: var(--color-bg-elevated);
+  font-size: var(--text-sm);
+}
+
+/* O ícone acima do texto, no tamanho de um retrato ausente. */
+.empty > svg {
+  font-size: var(--text-xl);
+}
+
+.edit {
+  align-self: stretch;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.note {
+  margin: 0;
+  font-size: var(--text-2xs);
+  line-height: 1.5;
+  color: var(--color-text-dim);
+}
+
+/*
+ * Mais estreita que a `WideDrawer` padrão: aqui não há texto a comparar, só
+ * uma imagem. Metade da tela no desktop, e a tela toda no celular — a mesma
+ * conta repetida da classe da biblioteca, por isso `.drawer.drawer`.
+ */
+.drawer.drawer[data-side] {
+  inline-size: min(50vw, 100%);
+}

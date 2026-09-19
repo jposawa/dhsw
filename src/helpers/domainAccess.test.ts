@@ -5,6 +5,7 @@ import { DEFAULT_HOUSE_RULES } from "@/constants"
 import { createCharacter } from "@/helpers"
 import type { Advancement, Character } from "@/types"
 
+import { derive } from "./derive"
 import { canMulticlass, domainAccessFor, learnableSkills } from "./domainAccess"
 import { learnSkill } from "./loadout"
 
@@ -41,7 +42,13 @@ describe("learnableSkills", () => {
 
   it("learnSkill recusa carta que o personagem não alcança", () => {
     const tooHigh = TEST_COMPENDIUM.skills.find((skill) => skill.domain === "Aegis" && skill.level === 9)
-    const result = learnSkill(soldier(1), tooHigh?.name ?? "", TEST_COMPENDIUM)
+    const hero = soldier(1)
+    const result = learnSkill(
+      hero,
+      derive(hero, DEFAULT_HOUSE_RULES, TEST_COMPENDIUM),
+      tooHigh?.name ?? "",
+      TEST_COMPENDIUM,
+    )
 
     expect(result.ok ? null : result.code).toBe("skillNotLearnable")
   })

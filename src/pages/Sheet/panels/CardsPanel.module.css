@@ -1,14 +1,25 @@
 /*
- * Loadout e vault lado a lado no desktop, um sobre o outro no celular.
+ * A aba é o loadout. Vault e acervo abrem gaveta.
  *
- * São as duas metades da mesma pergunta — o que está na mão e o que está
- * guardado —, e empilhadas obrigam a rolar entre uma e outra para decidir a
- * troca, que é exatamente a decisão que a tela existe para apoiar.
+ * Eles dividiam a tela ao meio com o loadout, mas crescem sem teto enquanto o
+ * loadout para em cinco — meia tela para cada espremia justamente as cartas
+ * que estão em jogo.
  */
 .layout {
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
+}
+
+/* `menu` é lista de ações: sem o recuo e a margem de lista do navegador.
+   Largura cheia no celular; no desktop, do tamanho do texto. */
+.actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .loadout,
@@ -69,15 +80,9 @@
 }
 
 @media (min-width: 900px) {
-  .layout {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    align-items: start;
-  }
-
-  /* O acervo atravessa: a busca dele é uma tela inteira de resultados, e
-     espremida em meia largura o texto de carta fica ilegível. */
-  .learnButton {
-    grid-column: 1 / -1;
+  /* Botão do tamanho do rótulo: largura cheia num desktop de 1280px dava uma
+     faixa de mil pixels para duas palavras. */
+  .actions {
+    grid-template-columns: repeat(2, max-content);
   }
 }

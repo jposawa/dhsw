@@ -1,22 +1,14 @@
 import { Button, SectionLabel } from "@jposawa/ronin-ui"
 import React from "react"
 
-import { Switch } from "@/components"
+import { activeTokenPools, domainAccessFor, moveToVault, setTokenCount, tokenCount } from "@/helpers"
 import { useCompendium } from "@/hooks"
-import {
-  activeTokenPools,
-  domainAccessFor,
-  forgetSkill,
-  moveToLoadout,
-  moveToVault,
-  setTokenCount,
-  tokenCount,
-} from "@/helpers"
 import type { Character, DerivedStats, Result, Skill } from "@/types"
 
 import { LearnDrawer } from "./LearnDrawer"
 import { SkillRow } from "./SkillRow"
 import { TokenCounter } from "./TokenCounter"
+import { VaultDrawer } from "./VaultDrawer"
 
 import styles from "./CardsPanel.module.css"
 
@@ -45,6 +37,7 @@ export const CardsPanel = ({ character, derived, isEditing, onApply }: CardsPane
 
   const [isFreeSwap, setIsFreeSwap] = React.useState(false)
   const [isLearning, setIsLearning] = React.useState(false)
+  const [isVaultOpen, setIsVaultOpen] = React.useState(false)
 
   const skillsOf = (names: readonly string[]): Skill[] =>
     names
@@ -82,24 +75,6 @@ export const CardsPanel = ({ character, derived, isEditing, onApply }: CardsPane
           <h3>LOADOUT</h3>
         </SectionLabel>
 
-        {/* A troca livre é estado da mesa, não da ficha: vale enquanto durar o
-            descanso e não sobrevive ao recarregar. Guardá-la na ficha faria
-            alguém voltar no dia seguinte ainda em descanso. */}
-        <Switch
-          className={styles.freeSwap}
-          isOn={isFreeSwap}
-          onToggle={() => setIsFreeSwap(!isFreeSwap)}
-        >
-          <span className={styles.freeSwapText}>
-            Troca livre
-            <span className={styles.hint}>
-              {isFreeSwap
-                ? "Descansando: trazer carta do vault não custa Stress."
-                : "Trazer carta do vault custa Stress igual ao Recall Cost."}
-            </span>
-          </span>
-        </Switch>
-
         {loadout.length === 0 ? (
           <p className={styles.empty}>Loadout vazio. Traga uma carta do vault.</p>
         ) : (
@@ -125,73 +100,39 @@ export const CardsPanel = ({ character, derived, isEditing, onApply }: CardsPane
         )}
       </section>
 
-      <section className={styles.vault}>
-        <SectionLabel detail={String(vault.length)}>
-          <h3>VAULT</h3>
-        </SectionLabel>
+      {/* As duas listas que não são o loadout abrem gaveta: o vault cresce sem
+          teto e o acervo é uma tela inteira de resultados. Em cima da tela,
+          elas roubavam espaço das cartas que estão em jogo. */}
+      <menu className={styles.actions}>
+        <Button variant="outline" onClick={() => setIsVaultOpen(true)}>
+          VAULT &nbsp;{vault.length}
+        </Button>
 
-        {vault.length === 0 ? (
-          <p className={styles.empty}>
-            Nenhuma carta guardada.{" "}
-            {isEditing ? "Adicione abaixo." : "Entre em Editar ficha para aprender cartas."}
-          </p>
-        ) : (
-          <ul className={styles.list}>
-            {vault.map((skill) => (
-              <SkillRow
-                key={skill.name}
-                skill={skill}
-                action={
-                  <div className={styles.rowActions}>
-                    <Button
-                      variant="outline"
-                      aria-label={`Equipar ${skill.name}`}
-                      onClick={() =>
-                        onApply(
-                          moveToLoadout(character, derived, skill.name, { isFreeSwap }, compendium),
-                        )
-                      }
-                    >
-                      EQUIPAR
-                    </Button>
-                    {isEditing ? (
-                      <Button
-                        variant="text"
-                        intent="danger"
-                        aria-label={`Esquecer ${skill.name}`}
-                        onClick={() => onApply(forgetSkill(character, skill.name))}
-                      >
-                        ESQUECER
-                      </Button>
-                    ) : null}
-                  </div>
-                }
-              />
-            ))}
-          </ul>
-        )}
-      </section>
-
-      {/* Aprender só aparece editando, e abre uma gaveta: a lista de cartas é
-          consulta de um momento, não parte da tela. */}
-      {isEditing ? (
-        <>
-          <Button
-            className={styles.learnButton}
-            variant="outline"
-            disabled={!hasDomains}
-            onClick={() => setIsLearning(true)}
-          >
-            + APRENDER CARTA
+        {/* Aprender só aparece editando: é progressão, não jogada. */}
+        {isEditing ? (
+          <Button variant="outline" disabled={!hasDomains} onClick={() => setIsLearning(true)}>
+            + &nbsp;APRENDER CARTA
           </Button>
+        ) : null}
+      </menu>
 
-          {hasDomains ? null : (
-            <p className={styles.empty}>
-              As cartas vêm dos domínios da classe. Escolha a classe em Combate.
-            </p>
-          )}
-        </>
+      {isEditing && !hasDomains ? (
+        <p className={styles.empty}>
+          As cartas vêm dos domínios da classe. Escolha a classe em Geral.
+        </p>
       ) : null}
+
+      <VaultDrawer
+        isOpen={isVaultOpen}
+        character={character}
+        derived={derived}
+        vault={vault}
+        isEditing={isEditing}
+        isFreeSwap={isFreeSwap}
+        onToggleFreeSwap={() => setIsFreeSwap(!isFreeSwap)}
+        onApply={onApply}
+        onClose={() => setIsVaultOpen(false)}
+      />
 
       <LearnDrawer
         isOpen={isLearning}

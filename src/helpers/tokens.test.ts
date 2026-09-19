@@ -7,7 +7,7 @@ import type { Character, DowntimeChoice, Result } from "@/types"
 
 import { derive } from "./sheet"
 import { takeRest } from "./downtime"
-import { activeTokenPools, enterCombat, setTokenCount, tokenCount, tokenPoolKey } from "./tokens"
+import { activeTokenPools, setTokenCount, tokenCount, tokenPoolKey } from "./tokens"
 
 const unwrap = (result: Result<Character>): Character => {
   if (!result.ok) {
@@ -159,15 +159,6 @@ describe("escalas e momentos de reposição", () => {
 
     // Tech Savvy, Lightning Reflexes e Nimble são Edge; Bare Bones é Aegis.
     expect(poolOf(character, TECH_SAVVY).max).toBe(3)
-  })
-
-  it("modo combate repõe o que volta ao entrar em combate, e só isso", () => {
-    const simus = tokenPoolKey("card", "Cron of Simus", "Cron of Simus")
-    const spent = set(set(soldier(5, ["Cron of Simus"]), simus, 0), IMPLACABLE, 0)
-    const fought = unwrap(enterCombat(spent, TEST_COMPENDIUM))
-
-    expect(tokenCount(fought, poolOf(fought, simus))).toBe(3)
-    expect(tokenCount(fought, poolOf(fought, IMPLACABLE))).toBe(0)
   })
 
   it("carta com duas habilidades tem dois contadores separados", () => {

@@ -2,8 +2,8 @@ import { describe, expect, it } from "vitest"
 
 import { TEST_COMPENDIUM } from "@/compendium/testing"
 import { DEFAULT_HOUSE_RULES } from "@/constants"
-import { createCharacter, singleAncestry } from "@/helpers"
-import type { Advancement, Character, HouseRules, InventoryEntry } from "@/types"
+import { createAdvancement, createCharacter, singleAncestry } from "@/helpers"
+import type { Advancement, Character, HouseRules, InventoryEntry, Level } from "@/types"
 
 import { derive as deriveWith, tierOf } from "./sheet"
 
@@ -144,12 +144,9 @@ describe("derive — Proficiency", () => {
   })
 
   it("soma o advancement e nunca passa de 6", () => {
-    const advancements: Advancement[] = [5, 6, 7, 8, 9].map((level) => ({
-      level,
-      kind: "proficiency",
-      detail: "",
-      slotsSpent: 2,
-    }))
+    const advancements = [5, 6, 7, 8, 9].map((level) =>
+      createAdvancement(level as Level, "proficiency"),
+    )
 
     const derived = derive({ ...soldier(10), advancements }, DEFAULT_HOUSE_RULES)
 
@@ -173,8 +170,8 @@ describe("derive — cartas de dominio esperadas (p. 21, 111)", () => {
 describe("derive — HP e Stress", () => {
   it("HP da classe e 6 de Stress, mais advancements", () => {
     const advancements: Advancement[] = [
-      { level: 2, kind: "hp", detail: "", slotsSpent: 1 },
-      { level: 3, kind: "stress", detail: "", slotsSpent: 1 },
+      createAdvancement(2, "hp"),
+      createAdvancement(3, "stress"),
     ]
     const derived = derive({ ...soldier(3), advancements }, DEFAULT_HOUSE_RULES)
 
@@ -183,7 +180,7 @@ describe("derive — HP e Stress", () => {
   })
 
   it("advancement guarda o nivel em que foi comprado", () => {
-    const advancements: Advancement[] = [{ level: 2, kind: "hp", detail: "", slotsSpent: 1 }]
+    const advancements: Advancement[] = [createAdvancement(2, "hp")]
     const [modifier] = derive({ ...soldier(7), advancements }, DEFAULT_HOUSE_RULES).hitPointsMax
       .modifiers
 
@@ -304,7 +301,7 @@ describe("derive — features com efeito permanente", () => {
 
   it("Juggernaut soma Defensive Layer conforme as cartas de subclasse que tem", () => {
     const juggernaut = withArmor({ ...soldier(5), subclass: "Juggernaut" }, "Trooper Plate")
-    const upgrade: Advancement = { level: 5, kind: "subclass", detail: "", slotsSpent: 1 }
+    const upgrade: Advancement = createAdvancement(5, "subclass")
 
     // Trooper Plate 7/15 + nível 5 = 12/20, e a foundation dá +1.
     expect(derive(juggernaut, DEFAULT_HOUSE_RULES).majorThreshold.total).toBe(13)
@@ -378,5 +375,22 @@ describe("derive — atributo de Forcewielding", () => {
     expect(
       derive({ ...soldier(1), subclass: "Juggernaut" }, DEFAULT_HOUSE_RULES).spellcastTrait,
     ).toBeNull()
+  })
+})
+
+describe("expectedExperiences", () => {
+  /* Duas na criação, e uma a cada level achievement — níveis 2, 5 e 8
+     (p. 109). É o que a tela usa para mostrar as vagas em aberto. */
+  it("cresce nos níveis de achievement, e só neles", () => {
+    const esperado = (level: Level) =>
+      derive(soldier(level), DEFAULT_HOUSE_RULES).expectedExperiences
+
+    expect(esperado(1)).toBe(2)
+    expect(esperado(2)).toBe(3)
+    expect(esperado(4)).toBe(3)
+    expect(esperado(5)).toBe(4)
+    expect(esperado(7)).toBe(4)
+    expect(esperado(8)).toBe(5)
+    expect(esperado(10)).toBe(5)
   })
 })

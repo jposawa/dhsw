@@ -20,6 +20,8 @@ export type StatKey =
   | "stressMax"
   | "proficiency"
   | "loadoutMax"
+  /** Quantas cartas de domínio o personagem conhece — o acervo, não o loadout. */
+  | "domainCards"
   | "damage"
   | "attackRoll"
 

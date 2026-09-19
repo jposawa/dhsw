@@ -6,6 +6,7 @@ import {
   DEFAULT_LOADOUT_SIZE,
   DOMAIN_CARDS_PER_LEVEL,
   LEVEL_ACHIEVEMENT_LEVELS,
+  STARTING_EXPERIENCES,
   MAX_ARMOR_SCORE,
   MAX_HIT_POINTS,
   MAX_LEVEL,
@@ -49,8 +50,6 @@ export const clampLevel = (level: number): number =>
 
 const findClass = (compendium: Compendium, className: string | null): ClassDefinition | null =>
   compendium.classes.find((candidate) => candidate.name === className) ?? null
-
-const isTrait = (value: string): value is Trait => TRAIT_LIST.includes(value as Trait)
 
 /** O número de um modificador no tier do personagem. */
 export const featureModifierValue = (modifier: FeatureModifier, tier: Tier): number =>
@@ -118,6 +117,16 @@ const loadoutMaxFor = (houseRules: HouseRules, tier: Tier): number => {
  * Duas na criação e uma por nível a partir do 2 — ou duas, com a regra da
  * casa. O advancement "carta adicional" soma uma a cada vez que foi comprado.
  */
+/**
+ * Quantas Experiences a ficha deveria ter neste nível.
+ *
+ * Duas na criação, e uma a cada level achievement — níveis 2, 5 e 8 (p. 109).
+ * É expectativa e não teto: a mesa concede o que quiser, e a tela mostra a
+ * diferença em vez de impedir.
+ */
+const expectedExperiencesFor = (level: number): number =>
+  STARTING_EXPERIENCES + LEVEL_ACHIEVEMENT_LEVELS.filter((mark) => level >= mark).length
+
 const expectedCardsFor = (
   level: number,
   houseRules: HouseRules,
@@ -152,34 +161,25 @@ export const derive = (
 
   /* ── advancements: cada um com o nível em que foi comprado ───────── */
 
+  /*
+   * O avanço diz o que move; aqui só se repete. Nada de `switch` sobre o tipo
+   * dele: avanço novo — inclusive de regra da casa — passa a existir sem que a
+   * matemática precise saber que ele existe. Ver `helpers/advancement.ts`.
+   */
   let domainCardAdvancements = 0
 
   for (const advancement of character.advancements) {
     const source = { kind: "advancement", level: advancement.level } as const
 
-    switch (advancement.kind) {
-      case "trait":
-        if (isTrait(advancement.detail)) {
-          collector.add({ target: `trait.${advancement.detail}`, value: 1, source })
-        }
-        break
-      case "hp":
-        collector.add({ target: "hitPointsMax", value: 1, source })
-        break
-      case "stress":
-        collector.add({ target: "stressMax", value: 1, source })
-        break
-      case "evasion":
-        collector.add({ target: "evasion", value: 1, source })
-        break
-      case "proficiency":
-        collector.add({ target: "proficiency", value: 1, source })
-        break
-      case "domainCard":
-        domainCardAdvancements += 1
-        break
-      default:
-        break
+    for (const change of advancement.changes) {
+      // As cartas conhecidas não são característica com base e total: são uma
+      // contagem que entra no teto do acervo, e por isso saem da coleta.
+      if (change.target === "domainCards") {
+        domainCardAdvancements += change.value
+        continue
+      }
+
+      collector.add({ target: change.target, value: change.value, source })
     }
   }
 
@@ -391,6 +391,7 @@ export const derive = (
     ]),
     loadoutMax: resolveStat(loadoutMaxFor(houseRules, tier), []),
     expectedCards: expectedCardsFor(level, houseRules, domainCardAdvancements),
+    expectedExperiences: expectedExperiencesFor(level),
     equippedArmor,
     isUnarmored,
     hasBareBones,

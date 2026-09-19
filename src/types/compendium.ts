@@ -12,7 +12,14 @@ export type TokenScale = "tier" | "proficiency" | "forcewield" | "domainCards" |
  * `combat` é ao ligar o modo combate da ficha; `manual` nunca volta
  * sozinho — a carta diz quando, e a mesa ajusta na mão.
  */
-export type TokenRefill = "rest" | "longRest" | "combat" | "manual"
+/**
+ * Quando os tokens de uma fonte voltam.
+ *
+ * Não há "ao entrar em combate": a ficha nunca soube estar em combate, e não
+ * deve saber — a trilha fica à vista e a mesa marca e desmarca no dedo. Fonte
+ * que dependia disso é `manual`.
+ */
+export type TokenRefill = "rest" | "longRest" | "manual"
 
 /**
  * Contador de tokens de uma feature ou carta. O texto continua sendo a regra;
@@ -143,6 +150,26 @@ export type Ancestry = {
   features: readonly string[]
   /** Efeito numérico permanente, com o nome da feature que o dá. */
   modifiers?: readonly (FeatureModifier & { feature: string })[]
+  /** O que alguma das features pede por escrito. Ver `FeaturePrompt`. */
+  prompts?: readonly FeaturePrompt[]
+}
+
+/**
+ * Campos que uma feature pede à ficha.
+ *
+ * Algumas features não dão número nem regra: pedem que a mesa **escreva**
+ * algo. O Orderborne pede três tenets — frases que o personagem segue —, e
+ * sem lugar para elas a feature vira texto que ninguém responde.
+ *
+ * `count` é quantas linhas, `label` o que cada uma é. Quem não declara isto
+ * não pede nada, e a ficha não mostra campo nenhum.
+ */
+export type FeaturePrompt = {
+  /** O nome da feature que pede, como ele aparece em negrito no texto dela. */
+  feature: string
+  count: number
+  /** O singular, numerado na tela: "Tenet 1", "Tenet 2". */
+  label: string
 }
 
 export type Community = {
@@ -150,6 +177,8 @@ export type Community = {
   description: string
   /** Sempre uma, por padrão do SRD. A assimetria com Ancestry não é engano. */
   feature: string
+  /** O que esta feature pede por escrito. Ver `FeaturePrompt`. */
+  prompts?: readonly FeaturePrompt[]
 }
 
 export type ArmorLineName = "Flexible" | "Neutra" | "Heavy" | "Very Heavy"

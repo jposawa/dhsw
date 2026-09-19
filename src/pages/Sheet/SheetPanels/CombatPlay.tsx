@@ -1,7 +1,7 @@
 import { Button, SectionLabel } from "@jposawa/ronin-ui";
 import React from "react";
 
-import { DotScale, Switch } from "@/components";
+import { DotScale } from "@/components";
 import {
 	EQUIP_SLOTS,
 	HOPE_MAX,
@@ -14,7 +14,6 @@ import {
 	activeTokenPools,
 	describeThresholdOrigin,
 	domainColorToken,
-	enterCombat,
 	formatSigned,
 	heritageLabel,
 	ok,
@@ -89,7 +88,6 @@ export const CombatPlay = ({
 		DicePreset | null | undefined
 	>(undefined);
 	// Da mesa, não da ficha: recarregar a página sai do combate, como a troca livre.
-	const [isInCombat, setIsInCombat] = React.useState(false);
 
 	const classDefinition = compendium.classes.find(
 		(candidate) => candidate.name === character.className,
@@ -121,17 +119,7 @@ export const CombatPlay = ({
 	const needsClass = classDefinition === undefined;
 
 	const tokenPools = activeTokenPools(character, derived, compendium);
-	const hasCombatRefill = tokenPools.some(
-		(active) => active.pool.refill === "combat",
-	);
 
-	const toggleCombat = () => {
-		if (!isInCombat) {
-			onApply(enterCombat(character, compendium));
-		}
-
-		setIsInCombat(!isInCombat);
-	};
 
 	const renderTokens = (key: string) => {
 		const active = tokenPools.find((candidate) => candidate.key === key);
@@ -193,8 +181,6 @@ export const CombatPlay = ({
 				</hgroup>
 
 				<aside className={styles.identitySide}>
-					{/* Só aparece quando alguma fonte repõe ao entrar em combate: fora
-              disso, o interruptor não mudaria nada. */}
 					{/* {hasCombatRefill && (
 						<Switch
 							className={styles.combatSwitch}

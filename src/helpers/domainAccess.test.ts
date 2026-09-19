@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 
 import { TEST_COMPENDIUM } from "@/compendium/testing"
 import { DEFAULT_HOUSE_RULES } from "@/constants"
-import { createCharacter } from "@/helpers"
+import { createAdvancement, createCharacter } from "@/helpers"
 import type { Advancement, Character } from "@/types"
 
 import { derive } from "./sheet"
@@ -25,7 +25,7 @@ describe("domainAccessFor (p. 111)", () => {
   })
 
   it("domínio de multiclasse até metade do nível, arredondando para cima", () => {
-    const multiclass: Advancement = { level: 5, kind: "multiclass", detail: "Veil", slotsSpent: 2 }
+    const multiclass: Advancement = createAdvancement(5, "multiclass", "Veil")
     const access = domainAccessFor(soldier(5, [multiclass]), TEST_COMPENDIUM)
 
     expect(access).toContainEqual({ domain: "Veil", maxLevel: 3 })

@@ -1,6 +1,8 @@
 import { CHARACTER_SCHEMA_VERSION, DEFAULT_HOUSE_RULES, MIXED_ANCESTRY_OPTION } from "@/constants"
 import type { Character, Heritage, HouseRules, RosterState } from "@/types"
 
+import { changesFor } from "./advancement"
+
 /**
  * Migrações do formato salvo. Puras, e **acumulativas: nenhuma é apagada**.
  *
@@ -206,7 +208,57 @@ export const rosterV7ToV8 = (value: unknown): RosterState => {
   const characters = Object.fromEntries(
     Object.entries(roster?.characters ?? {}).map(([id, stored]) => [
       id,
-      { ...stored, avatarUrl: stored.avatarUrl ?? null, schema: CHARACTER_SCHEMA_VERSION },
+      // `as unknown`: ainda é o formato da v8, e só a última migração da
+      // corrente devolve uma ficha de hoje.
+      { ...stored, avatarUrl: stored.avatarUrl ?? null, schema: 8 } as unknown as Character,
+    ]),
+  )
+
+  return { characters, order: roster?.order ?? [] }
+}
+
+/**
+ * v8 → v9: o avanço passa a carregar os próprios modificadores.
+ *
+ * Antes, `derive` tinha um `switch` sobre o tipo do avanço decidindo o que
+ * cada um somava. Agora o avanço diz, e a conta só repete — os números da
+ * ficha não mudam, a explicação de onde eles vêm é que sai do meio da
+ * matemática e vai para o histórico.
+ *
+ * `changesFor` é a mesma função que a tela usa para criar avanço novo: se a
+ * migração e a criação divergissem, ficha velha e ficha nova somariam
+ * diferente pelo mesmo avanço.
+ */
+export const rosterV8ToV9 = (value: unknown): RosterState => {
+  const roster = value as RosterState | null
+
+  const characters = Object.fromEntries(
+    Object.entries(roster?.characters ?? {}).map(([id, stored]) => [
+      id,
+      {
+        ...stored,
+        advancements: (stored.advancements ?? []).map((advancement) => ({
+          ...advancement,
+          changes: advancement.changes ?? changesFor(advancement.kind, advancement.detail),
+        })),
+        schema: 9,
+        // `as unknown`: ainda é o formato da v9, e só a última migração da
+        // corrente devolve uma ficha de hoje.
+      } as unknown as Character,
+    ]),
+  )
+
+  return { characters, order: roster?.order ?? [] }
+}
+
+/** v9 → v10: `Character.featureNotes`. Ficha antiga entra sem resposta nenhuma. */
+export const rosterV9ToV10 = (value: unknown): RosterState => {
+  const roster = value as RosterState | null
+
+  const characters = Object.fromEntries(
+    Object.entries(roster?.characters ?? {}).map(([id, stored]) => [
+      id,
+      { ...stored, featureNotes: stored.featureNotes ?? {}, schema: CHARACTER_SCHEMA_VERSION },
     ]),
   )
 

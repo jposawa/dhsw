@@ -33,6 +33,7 @@ import { ChoiceField } from "./ChoiceField"
 import { ClassChangeConfirm } from "./ClassChangeConfirm"
 import { ClassSummary } from "./ClassSummary"
 import { ExperienceEditor } from "./ExperienceEditor"
+import { FeatureNotes } from "./FeatureNotes"
 import { PortraitLinkModal } from "./PortraitLinkModal"
 import { OriginFeatures } from "./OriginFeatures"
 import { SubclassTiers } from "./SubclassTiers"
@@ -446,9 +447,12 @@ export const CombatEdit = ({ draft, derived, onChange, onApply }: CombatEditProp
 
       {/* As Experiences se leem no modo jogo, dois blocos acima dos atributos:
           editá-las noutra aba separava a lista de onde ela serve. */}
+      <FeatureNotes className={styles.experiences} character={draft} onChange={onChange} />
+
       <ExperienceEditor
         className={styles.experiences}
         character={draft}
+        derived={derived}
         onApply={onApply}
       />
 

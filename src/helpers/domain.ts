@@ -1,6 +1,10 @@
 import type { CSSProperties } from "react"
 
-import type { Domain } from "@/types"
+import { TRAIT_LIST } from "@/constants"
+import type { Domain, Trait } from "@/types"
+
+/** O texto é o nome de um atributo? Guarda de tipo para o que vem gravado. */
+export const isTrait = (value: string): value is Trait => TRAIT_LIST.includes(value as Trait)
 
 /**
  * Token CSS da cor de um dominio.

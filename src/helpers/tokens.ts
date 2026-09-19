@@ -185,13 +185,12 @@ export const setTokenCount = (
   return ok({ ...character, tokens: [...others, next] })
 }
 
-/** O que repõe tokens: os dois descansos e o modo combate. */
-export type TokenRefillMoment = RestKind | "combat"
+/** O que repõe tokens: os dois descansos, e só eles. */
+export type TokenRefillMoment = RestKind
 
 const REFILLED_BY: Readonly<Record<TokenRefillMoment, readonly TokenRefill[]>> = {
   short: ["rest"],
   long: ["rest", "longRest"],
-  combat: ["combat"],
 }
 
 /** O `TokenPool` de uma chave, procurado no compêndio. */
@@ -221,7 +220,7 @@ const poolOfKey = (key: string, compendium: Compendium): TokenPool | undefined =
 }
 
 /**
- * Descanso e modo combate repõem: apagam a contagem das fontes que voltam agora, o que
+ * Descansar repõe: apaga a contagem das fontes que voltam agora, o que
  * as devolve ao inicial — cheias, ou zeradas se forem acumulador. Fonte que o
  * compêndio já não conhece também sai: não há o que contar.
  */
@@ -237,10 +236,3 @@ export const refillTokens = (
     return pool !== undefined && !REFILLED_BY[moment].includes(pool.refill)
   }),
 })
-
-/**
- * Ligar o modo combate: repõe o que volta "ao entrar em combate". O modo em si
- * não é gravado — é da mesa, como a troca livre do descanso.
- */
-export const enterCombat = (character: Character, compendium: Compendium): Result<Character> =>
-  ok(refillTokens(character, "combat", compendium))

@@ -36,6 +36,7 @@ export const createCharacter = (
     loadout: [],
     vault: [],
     inventory: [],
+    featureNotes: {},
     advancements: [],
     experiences: [],
     notes: "",
@@ -98,6 +99,7 @@ export const normalizeCharacter = (stored: Character): Character => {
     // `sources` entra fundo: o RTDB apaga campo nulo, e uma mista com só a
     // 1ª espécie volta de lá como `{ first }` — a mesclagem rasa deixaria
     // `second` indefinido, e `heritageFeatures` lê as duas.
+    featureNotes: { ...stored.featureNotes },
     heritage: {
       ...blank.heritage,
       ...stored.heritage,
@@ -120,6 +122,7 @@ export const normalizeCharacter = (stored: Character): Character => {
 const EDITED_FIELDS = [
   "name",
   "avatarUrl",
+  "featureNotes",
   "level",
   "className",
   "subclass",

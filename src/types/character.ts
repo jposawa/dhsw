@@ -1,6 +1,6 @@
 import type { TokenPool } from "./compendium"
 import type { Domain, Level, Tier, Trait } from "./domain"
-import type { ResolvedStat } from "./modifier"
+import type { ResolvedStat, StatKey } from "./modifier"
 
 export type InventoryEntryKind = "weapon" | "armor" | "item" | "consumable"
 export type EquipSlot = "primary" | "secondary" | "armor"
@@ -32,10 +32,35 @@ export type AdvancementKind =
   | "domainCard"
   | "experience"
 
+/**
+ * O que um avanço move, em número.
+ *
+ * É o próprio avanço que diz **qual chave** muda e **quanto** — não quem o lê.
+ * Antes, `derive` tinha um `switch` sobre o `kind` decidindo isso: cada
+ * avanço novo pedia um `case` lá, e um avanço de regra da casa era
+ * impossível sem mexer na matemática.
+ */
+export type AdvancementChange = {
+  target: StatKey
+  value: number
+}
+
+/**
+ * Um avanço comprado num nível.
+ *
+ * `kind` é o que a pessoa escolheu na lista — serve para a tela agrupar e
+ * para contar quantas vezes um avanço repetível foi comprado. `changes` é o
+ * efeito, e é o que a matemática lê.
+ */
 export type Advancement = {
   level: Level
   kind: AdvancementKind
+  /**
+   * A escolha que não é número: o domínio da multiclasse, o nome da
+   * Experience. Vazio quando o avanço só move números.
+   */
   detail: string
+  changes: readonly AdvancementChange[]
   /** Proficiency e multiclasse custam os dois advancements do nível. */
   slotsSpent: 1 | 2
 }
@@ -170,6 +195,15 @@ export type Character = {
   houseRules: HouseRules
 
   /** Histórico, não resumo: dá para mostrar a progressão e desfazer o último nível. */
+  /**
+   * O que as features pediram por escrito, por chave de campo.
+   *
+   * Mapa e não lista porque a resposta pertence à **feature**, não à posição:
+   * trocar de origem não pode empurrar os tenets do Orderborne para a feature
+   * que entrou no lugar. Ver `helpers/featurePrompt.ts`.
+   */
+  featureNotes: Readonly<Record<string, string>>
+
   advancements: readonly Advancement[]
   experiences: readonly Experience[]
   notes: string
@@ -220,6 +254,8 @@ export type DerivedStats = {
   loadoutMax: ResolvedStat
   /** Cartas esperadas no nível atual, conforme a regra da casa. */
   expectedCards: number
+  /** Quantas Experiences o nível concede. Expectativa, não teto. */
+  expectedExperiences: number
   equippedArmor: EquippedArmor | null
   /** Sem armadura vestida: Armor Score 0, Major = nível, Severe = 2 × nível. */
   isUnarmored: boolean

@@ -50,3 +50,15 @@
   font-size: var(--text-xs);
   color: var(--color-text-dim);
 }
+
+/* A vaga que o nível concede e ainda não foi preenchida: tracejada, para ler
+   como lugar vazio e não como Experience de nome estranho. */
+.slot {
+  display: flex;
+  align-items: center;
+  min-height: var(--size-touch-target);
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-xs);
+  color: var(--color-text-dim);
+  border: var(--border-width) dashed var(--color-border);
+}

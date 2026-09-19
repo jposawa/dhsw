@@ -4,12 +4,13 @@ import React from "react"
 
 import { NEW_EXPERIENCE_BONUS } from "@/constants"
 import { addExperience, removeExperience, setExperienceBonus } from "@/helpers"
-import type { BaseComponent, Character, Result } from "@/types"
+import type { BaseComponent, Character, DerivedStats, Result } from "@/types"
 
 import styles from "./ExperienceEditor.module.css"
 
 type ExperienceEditorProps = BaseComponent & {
   character: Character
+  derived: DerivedStats
   onApply: (result: Result<Character>) => void
 }
 
@@ -29,11 +30,16 @@ type ExperienceEditorProps = BaseComponent & {
  */
 export const ExperienceEditor = ({
   character,
+  derived,
   onApply,
   className,
   style,
 }: ExperienceEditorProps) => {
   const [newExperience, setNewExperience] = React.useState("")
+
+  // Quantas o nível ainda concede. Nunca negativo: a mesa pode conceder mais
+  // do que o livro, e isso não é erro a apontar.
+  const faltando = Math.max(derived.expectedExperiences - character.experiences.length, 0)
 
   const handleAdd = () => {
     onApply(addExperience(character, { name: newExperience, bonus: NEW_EXPERIENCE_BONUS }))
@@ -42,11 +48,11 @@ export const ExperienceEditor = ({
 
   return (
     <section className={clsx(styles.experiences, className)} style={style} aria-label="Experiences">
-      <SectionLabel detail={String(character.experiences.length)}>
+      <SectionLabel detail={`${character.experiences.length}/${derived.expectedExperiences}`}>
         <h3>EXPERIENCES</h3>
       </SectionLabel>
 
-      {character.experiences.length === 0 ? (
+      {character.experiences.length === 0 && faltando === 0 ? (
         <p className={styles.empty}>Nenhuma Experience. Adicione abaixo.</p>
       ) : (
         <ul className={styles.list}>
@@ -77,6 +83,14 @@ export const ExperienceEditor = ({
                   REMOVER
                 </Button>
               </div>
+            </li>
+          ))}
+
+          {/* Uma linha vazia por Experience que o nível ainda concede: o
+              número no rótulo diz quantas faltam, e a linha diz onde. */}
+          {Array.from({ length: faltando }, (_unused, index) => (
+            <li className={styles.slot} key={index}>
+              A conceder neste nível
             </li>
           ))}
         </ul>

@@ -5,15 +5,19 @@
  * Reexportar dali daria a `@/components` um endereço para código que não é
  * nosso: quem lesse `import { Button } from "@/components"` iria procurar o
  * Button nesta pasta e não o acharia, e a dependência de terceiro sumiria da
- * lista de imports de toda tela. STRUCTURE.md pede o barril por pasta — não
- * um barril que se apresenta como dono do que reexporta.
+ * lista de imports de toda tela.
+ *
+ * `export *` e não o nome: cada pasta exporta um componente e já o nomeia no
+ * barril dela. Repetir o nome aqui é escrevê-lo duas vezes, e as duas cópias
+ * divergem no dia em que uma mudar.
  */
-export { Die } from "./Die"
-export { DieShape } from "./DieShape"
-export { DomainLabel } from "./DomainLabel"
-export { DotScale } from "./DotScale"
-export { DomainSymbol } from "./DomainSymbol"
-export { NavIcon } from "./NavIcon"
-export { Pip } from "./Pip"
-export { StepRule } from "./StepRule"
-export { Switch } from "./Switch"
+export * from "./Die"
+export * from "./DieControl"
+export * from "./DieShape"
+export * from "./DomainLabel"
+export * from "./DomainSymbol"
+export * from "./DotScale"
+export * from "./Icon"
+export * from "./Pip"
+export * from "./StepRule"
+export * from "./Switch"

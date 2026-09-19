@@ -1,5 +1,5 @@
 import { fail, ok } from "@/helpers"
-import type { Character, Compendium, Result } from "@/types"
+import type { Character, ClassChangeLoss, Compendium, Result } from "@/types"
 
 /**
  * Classe, subclasse, espécie e origem.
@@ -16,12 +16,6 @@ import type { Character, Compendium, Result } from "@/types"
  */
 export const subclassUpgradesOf = (character: Character): number =>
   character.advancements.filter((advancement) => advancement.kind === "subclass").length
-
-/** O que se perde trocando de classe. Vazio quando não há o que perder. */
-export type ClassChangeLoss = {
-  subclass: string | null
-  cardCount: number
-}
 
 export const classChangeLoss = (character: Character, className: string): ClassChangeLoss => {
   if (character.className === className) {

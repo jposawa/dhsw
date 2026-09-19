@@ -1,7 +1,7 @@
 import { useAtom } from "jotai"
 import { NavLink } from "react-router-dom"
 
-import { NavIcon } from "@/components"
+import { Icon } from "@/components"
 import { useNavItems } from "@/hooks"
 import { isNavCollapsedAtom } from "@/states"
 
@@ -63,7 +63,7 @@ export const BottomNav = () => {
           aria-label={isCollapsed ? item.label : undefined}
         >
           <i className={styles.icon} aria-hidden="true">
-            <NavIcon name={item.icon} />
+            <Icon name={item.icon} />
           </i>
           <span className={styles.label}>{item.label}</span>
         </NavLink>

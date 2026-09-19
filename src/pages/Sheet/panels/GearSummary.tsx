@@ -1,8 +1,7 @@
 
 import { FeatureText, RuleText } from "@/fragments"
-import { describeNamedArmor, formatDamageType } from "@/helpers"
+import { augmentSlotsFor, describeNamedArmor, formatDamageType } from "@/helpers"
 import { useCompendium, useHouseRules } from "@/hooks"
-import { augmentSlotsFor } from "@/rules"
 import type { GearKind } from "@/types"
 
 import styles from "./GearSummary.module.css"

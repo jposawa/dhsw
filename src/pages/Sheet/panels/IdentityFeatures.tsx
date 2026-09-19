@@ -2,9 +2,8 @@ import { SectionLabel } from "@jposawa/ronin-ui"
 import clsx from "clsx"
 import type React from "react"
 
-import { domainStripeStyle, heritageFeatures, heritageLabel } from "@/helpers"
+import { domainStripeStyle, heritageFeatures, heritageLabel, subclassUpgradesOf, tokenPoolKey } from "@/helpers"
 import { useCompendium } from "@/hooks"
-import { subclassUpgradesOf, tokenPoolKey } from "@/rules"
 import type { BaseComponent, Character } from "@/types"
 
 import { ClassSummary } from "./ClassSummary"

@@ -1,12 +1,12 @@
 import clsx from "clsx"
 
-import type { BaseComponent, NavIconName } from "@/types"
+import type { BaseComponent, IconName } from "@/types"
 
-import styles from "./NavIcon.module.css"
-import { NAV_ICON_ART } from "./symbols"
+import styles from "./Icon.module.css"
+import { ICON_ART } from "./symbols"
 
-type NavIconProps = BaseComponent & {
-  name: NavIconName
+type IconProps = BaseComponent & {
+  name: IconName
   /**
    * Rótulo para leitor de tela. Sem ele o ícone é decorativo e sai da árvore
    * de acessibilidade — que é o certo na navegação, onde o nome do destino já
@@ -27,7 +27,7 @@ type NavIconProps = BaseComponent & {
  * lado usa. É o que faz o ícone crescer junto ao passar da barra inferior para
  * o trilho sem uma prop de tamanho.
  */
-export const NavIcon = ({ name, label, className, style }: NavIconProps) => (
+export const Icon = ({ name, label, className, style }: IconProps) => (
   <svg
     className={clsx(styles.icon, className)}
     style={style}
@@ -42,6 +42,6 @@ export const NavIcon = ({ name, label, className, style }: NavIconProps) => (
     aria-hidden={label ? undefined : true}
     data-testid={`nav-icon-${name}`}
   >
-    {NAV_ICON_ART[name]}
+    {ICON_ART[name]}
   </svg>
 )

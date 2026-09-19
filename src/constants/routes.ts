@@ -40,7 +40,7 @@ export const ROUTES = {
 
 /** Abas de dentro da ficha. Combate abre primeiro: 80% do tempo de sessão. */
 export const SHEET_TABS: readonly { id: SheetTabId; label: string }[] = [
-  { id: "combate", label: "Combate" },
+  { id: "combate", label: "Geral" },
   { id: "cartas", label: "Cartas" },
   { id: "inventario", label: "Inventário" },
   { id: "historia", label: "História" },

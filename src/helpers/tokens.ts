@@ -3,9 +3,10 @@ import type {
   Character,
   Compendium,
   DerivedStats,
-  Domain,
+  ActiveTokenPool,
   RestKind,
   Result,
+  TokenSource,
   TokenCount,
   TokenPool,
   TokenRefill,
@@ -22,29 +23,12 @@ import { subclassUpgradesOf } from "./identity"
  * máximo de HP.
  */
 
-export type TokenSource = "class" | "subclass" | "card"
-
 /**
  * Chave de uma fonte na ficha. A classe e a subclasse entram na chave: trocar
  * de classe não herda os tokens de uma feature de mesmo nome.
  */
 export const tokenPoolKey = (source: TokenSource, owner: string, name: string): string =>
   `${source}:${owner}:${name}`
-
-/** Uma fonte de tokens que a ficha tem agora. */
-export type ActiveTokenPool = {
-  key: string
-  source: TokenSource
-  /** A classe, a subclasse ou a carta. */
-  owner: string
-  /** A feature, ou a habilidade da carta. */
-  name: string
-  pool: TokenPool
-  /** Teto dos tokens. `null` é acumulador, sem teto. */
-  max: number | null
-  /** Cor do domínio, para o contador acompanhar a carta ou a classe. */
-  domain: Domain | null
-}
 
 const scaleValue = (
   pool: TokenPool,

@@ -1,4 +1,5 @@
 import clsx from "clsx"
+import type React from "react"
 
 import type { BaseComponent } from "@/types"
 
@@ -7,54 +8,68 @@ import { DIE_SHAPE_FACETS, DIE_SHAPE_POINTS } from "./shapes"
 
 type DieShapeProps = BaseComponent & {
   sides: number
-  /** Rótulo para leitor de tela. Sem ele a silhueta é decorativa. */
+  /**
+   * A legenda embaixo da silhueta — `D10`, `HOPE`. Fica **fora** do polígono
+   * porque dentro ela disputava espaço com as facetas e encolhia junto com o
+   * ícone; num d4, onde a ponta é estreita, chegava a não caber.
+   */
+  caption?: string
+  /** O que vai **dentro** do dado: o valor, quando ele já rolou. */
+  children?: React.ReactNode
+  /** Nome acessível. Sem ele a silhueta é decorativa e sai da árvore. */
   label?: string
 }
 
 /**
- * A silhueta de um dado, com o número de faces dentro dela.
+ * A silhueta de um dado: o contorno que se reconhece na mesa, com `Dn` embaixo.
  *
- * É o dado como objeto, não como resultado: serve para escolher o que entra na
- * rolagem e para ver o que já entrou. `components/Die` é o outro — o dado que
- * já rolou, com o valor.
+ * Serve para os dois lados da rolagem — escolher o dado que entra e ler o que
+ * saiu. Com `children`, o valor rolado vai dentro do polígono; sem eles, é só o
+ * dado como objeto.
  *
  * A cor **não** é decidida aqui: traço e texto são `currentColor`, então a
- * silhueta segue o estado de quem a contém — o botão apagado, o dado somado,
- * o subtraído. Fixar cor aqui pediria uma prop por estado.
+ * silhueta segue o estado de quem a contém — o botão apagado, o dado somado, o
+ * subtraído, o d12 de Hope. Fixar cor aqui pediria uma prop por estado.
  *
  * O tamanho vem do `font-size` do contexto, como no `NavIcon`.
  */
-export const DieShape = ({ sides, label, className, style }: DieShapeProps) => (
-  <svg
-    className={clsx(styles.shape, className)}
+export const DieShape = ({
+  sides,
+  caption,
+  children,
+  label,
+  className,
+  style,
+}: DieShapeProps) => (
+  <span
+    className={clsx(styles.die, className)}
     style={style}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.2"
-    strokeLinejoin="round"
     role={label ? "img" : undefined}
     aria-label={label}
     aria-hidden={label ? undefined : true}
   >
-    <polygon points={DIE_SHAPE_POINTS[sides] ?? DIE_SHAPE_POINTS[6]} />
+    <span className={styles.art}>
+      <svg
+        className={styles.shape}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <polygon points={DIE_SHAPE_POINTS[sides] ?? DIE_SHAPE_POINTS[6]} />
 
-    {/* As facetas são o volume do dado e não informação: some para quem lê a
-        tela por som, e some também quando o ícone fica pequeno demais. */}
-    {(DIE_SHAPE_FACETS[sides] ?? []).map((facet) => (
-      <path className={styles.facet} key={facet} d={facet} />
-    ))}
+        {/* As facetas são o volume do dado e não informação: somem para quem lê
+            a tela por som, e ficam mais apagadas que o contorno. */}
+        {(DIE_SHAPE_FACETS[sides] ?? []).map((facet) => (
+          <path className={styles.facet} key={facet} d={facet} />
+        ))}
+      </svg>
 
-    {/* O d4 é o único que não se equilibra no meio do quadro: a ponta é
-        estreita e o número cabe na base. */}
-    <text
-      className={styles.label}
-      x="12"
-      y={sides === 4 ? 15.5 : 12.5}
-      textAnchor="middle"
-      dominantBaseline="middle"
-    >
-      {sides}
-    </text>
-  </svg>
+      {children === undefined ? null : <b className={styles.value}>{children}</b>}
+    </span>
+
+    {caption ? <span className={styles.caption}>{caption}</span> : null}
+  </span>
 )

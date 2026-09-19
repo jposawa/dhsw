@@ -11,6 +11,7 @@ import {
   rosterV4ToV5,
   rosterV5ToV6,
   rosterV6ToV7,
+  rosterV7ToV8,
 } from "./migrations"
 
 /**
@@ -199,6 +200,35 @@ describe("rosterV5ToV6", () => {
   })
 })
 
+describe("rosterV7ToV8", () => {
+  const v7 = rosterV6ToV7(
+    rosterV5ToV6(
+      rosterV4ToV5(rosterV3ToV4(rosterV2ToV3(rosterV1ToV2(V1_ROSTER)), DEFAULT_HOUSE_RULES)),
+    ),
+  )
+
+  it("ficha antiga entra sem imagem, e na versão de hoje", () => {
+    const migrada = rosterV7ToV8(v7).characters["sheet-1"]
+
+    expect(migrada.avatarUrl).toBeNull()
+    expect(migrada.schema).toBe(CHARACTER_SCHEMA_VERSION)
+  })
+
+  /* Quem já tem imagem não a perde ao migrar. */
+  it("imagem existente atravessa", () => {
+    const comImagem: RosterState = {
+      ...v7,
+      characters: {
+        "sheet-1": { ...v7.characters["sheet-1"], avatarUrl: "https://exemplo.com/kar.png" },
+      },
+    }
+
+    expect(rosterV7ToV8(comImagem).characters["sheet-1"].avatarUrl).toBe(
+      "https://exemplo.com/kar.png",
+    )
+  })
+})
+
 describe("rosterV6ToV7", () => {
   const v5 = rosterV4ToV5(rosterV3ToV4(rosterV2ToV3(rosterV1ToV2(V1_ROSTER)), DEFAULT_HOUSE_RULES))
   const v6 = rosterV5ToV6(v5)
@@ -219,7 +249,7 @@ describe("rosterV6ToV7", () => {
       sources: { first: "Human", second: "Human" },
       isMixed: false,
     })
-    expect(rosterV6ToV7(v6).characters["sheet-1"].schema).toBe(CHARACTER_SCHEMA_VERSION)
+    expect(rosterV6ToV7(v6).characters["sheet-1"].schema).toBe(7)
   })
 
   /* O código `"mixed"` sai do campo do nome e vira `isMixed`; o nome passa a

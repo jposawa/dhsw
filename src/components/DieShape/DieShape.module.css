@@ -1,28 +1,49 @@
 /*
- * A silhueta acompanha o texto ao lado: `1em` de lado e `currentColor` no
- * traço. Quem usa decide o tamanho pelo `font-size`, como no `NavIcon`.
+ * O dado acompanha o texto ao redor: tudo em `em`, e `currentColor` no traço.
+ * Quem usa decide o tamanho pelo `font-size`, como no `NavIcon`.
  */
-.shape {
-  width: 2.25em;
-  height: 2.25em;
+.die {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15em;
   flex-shrink: 0;
 }
 
+/* O polígono e o valor ocupam a mesma célula: o valor cai no centro do dado. */
+.art {
+  display: grid;
+  place-items: center;
+}
+
+.art > * {
+  grid-area: 1 / 1;
+}
+
+.shape {
+  width: 2.25em;
+  height: 2.25em;
+}
+
 /* Mais apagadas que o contorno: elas dão volume, e no mesmo peso competiriam
-   com o número que está no meio. */
+   com o valor que fica no meio. */
 .facet {
   opacity: 0.45;
 }
 
-/*
- * O número dentro do dado. `fill` e não `color`: em SVG o texto se pinta pelo
- * preenchimento, e o `stroke: currentColor` herdado do contorno engrossaria
- * o algarismo até fechar os buracos do 8 e do 0.
- */
-.label {
-  fill: currentColor;
-  stroke: none;
-  font-size: 9px;
+/* O valor rolado, dentro do dado. */
+.value {
+  font-size: 0.95em;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
+  line-height: 1;
+  color: var(--color-ink);
+}
+
+/* `D10` embaixo do dado, e não dentro dele. */
+.caption {
+  font-size: 0.7em;
+  font-weight: 500;
+  letter-spacing: var(--tracking-wide);
+  line-height: 1;
 }

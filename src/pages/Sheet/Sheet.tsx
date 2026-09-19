@@ -5,9 +5,8 @@ import { Navigate, useNavigate, useParams } from "react-router-dom"
 
 import { ROUTES, RULE_ERROR_MESSAGES, SHEET_TABS } from "@/constants"
 import { SaveState } from "@/fragments"
-import { duplicateCharacter, effectiveHouseRules, hasSheetEdits, touchCharacter } from "@/helpers"
+import { derive, duplicateCharacter, effectiveHouseRules, hasSheetEdits, touchCharacter } from "@/helpers"
 import { HouseRulesContext, useCompendium, usePartyHouseRules } from "@/hooks"
-import { derive } from "@/rules"
 import { rosterAtom, sheetRolesAtom, toastAtom } from "@/states"
 import type { Character, Marks, Result, SheetTabId } from "@/types"
 
@@ -49,6 +48,7 @@ export const Sheet = () => {
   const [tab, setTab] = React.useState<SheetTabId>("combate")
   const [draft, setDraft] = React.useState<Character | null>(null)
   const [isConfirmingCancel, setIsConfirmingCancel] = React.useState(false)
+  const [isConfirmingCopy, setIsConfirmingCopy] = React.useState(false)
 
   const character = sheetId ? roster.characters[sheetId] : undefined
   // Antes do retorno antecipado: hook não pode ficar atrás de condição.
@@ -204,12 +204,7 @@ export const Sheet = () => {
     }
 
     return (
-      <HistoryPanel
-        character={shown}
-        isEditing={isEditing}
-        onApply={applyResult}
-        onChange={changeDraft}
-      />
+      <HistoryPanel character={shown} isEditing={isEditing} onChange={changeDraft} />
     )
   }
 
@@ -234,7 +229,7 @@ export const Sheet = () => {
               <Button
                 className={styles.copyButton}
                 variant="text"
-                onClick={() => handleCopy(character)}
+                onClick={() => setIsConfirmingCopy(true)}
               >
                 COPIAR FICHA
               </Button>
@@ -283,6 +278,37 @@ export const Sheet = () => {
 
         {/* `isPersistent` porque cancelar é irreversível: sair clicando no fundo
           é exatamente o acidente a evitar. */}
+      {/*
+        Copiar não destrói nada, mas leva embora: o botão está encostado no de
+        editar, na mesma cara, e o toque errado tirava a pessoa da ficha em que
+        estava e a punha noutra, com uma cópia a mais no roster para limpar.
+      */}
+      <Modal
+        isOpen={isConfirmingCopy}
+        title="Copiar esta ficha?"
+        onClose={() => setIsConfirmingCopy(false)}
+        footer={
+          <>
+            <Button variant="outline" onClick={() => setIsConfirmingCopy(false)}>
+              CANCELAR
+            </Button>
+            <Button
+              onClick={() => {
+                setIsConfirmingCopy(false)
+                handleCopy(character)
+              }}
+            >
+              COPIAR
+            </Button>
+          </>
+        }
+      >
+        <p className={styles.note}>
+          Uma cópia de "{character.name || "Sem nome"}" entra no seu roster, e esta tela passa a
+          mostrar a cópia. A ficha original fica como está.
+        </p>
+      </Modal>
+
         <Modal
           isOpen={isConfirmingCancel}
           isPersistent

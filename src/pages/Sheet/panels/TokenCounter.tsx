@@ -2,8 +2,7 @@ import { Stepper } from "@jposawa/ronin-ui"
 
 import { MarkerTrack } from "@/fragments"
 import { domainColorToken } from "@/helpers"
-import type { ActiveTokenPool } from "@/rules"
-import type { TokenRefill } from "@/types"
+import type { ActiveTokenPool, TokenRefill } from "@/types"
 
 import styles from "./TokenCounter.module.css"
 

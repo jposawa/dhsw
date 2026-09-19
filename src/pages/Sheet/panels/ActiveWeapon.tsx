@@ -2,9 +2,8 @@
 import { Button } from "@jposawa/ronin-ui"
 
 import { FeatureText, RuleText } from "@/fragments"
-import { formatSigned, formatWeaponDamage } from "@/helpers"
+import { augmentRollBonuses, augmentsOf, formatSigned, formatWeaponDamage, presetsForWeapon } from "@/helpers"
 import { useCompendium, useHouseRules } from "@/hooks"
-import { augmentRollBonuses, augmentsOf, presetsForWeapon } from "@/rules"
 import type { DerivedStats, DicePreset, InventoryEntry, Weapon } from "@/types"
 
 import styles from "./ActiveWeapon.module.css"

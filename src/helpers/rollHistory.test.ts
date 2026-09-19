@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest"
 
 import type { RollRecord, RollResult } from "@/types"
 
-import { addToHistory, createRollRecord, normalizeRollRecord, overflowingRolls } from "./rolls"
+import { addToHistory, createRollRecord, normalizeRollRecord, overflowingRolls } from "./rollHistory"
 
 const result: RollResult = {
   kind: "dice",

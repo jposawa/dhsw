@@ -4,7 +4,7 @@ import React from "react"
 import { DOWNTIME_MOVES_PER_REST } from "@/constants"
 import { RuleText } from "@/fragments"
 import { useCompendium } from "@/hooks"
-import { movesForRest, takeRest } from "@/rules"
+import { movesForRest, takeRest } from "@/helpers"
 import type { Character, DerivedStats, DowntimeChoice, RestKind, Result } from "@/types"
 
 import { RestChoice } from "./RestChoice"

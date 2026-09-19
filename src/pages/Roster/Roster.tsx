@@ -1,14 +1,16 @@
-import { Button, SectionLabel } from "@jposawa/ronin-ui"
+import { Button, Modal, SectionLabel } from "@jposawa/ronin-ui"
 import { useAtom, useAtomValue, useSetAtom } from "jotai"
+import React from "react"
 import { Link } from "react-router-dom"
 
-import { StepRule } from "@/components"
+import { Icon, StepRule } from "@/components"
 import { ROUTES } from "@/constants"
 import {
   createCharacter,
   domainColorToken,
   duplicateCharacter,
   heritageLabel,
+  toImageUrl,
 } from "@/helpers"
 import { useCompendium } from "@/hooks"
 import { deleteSheet, leaveSheet } from "@/services"
@@ -44,6 +46,13 @@ export const Roster = () => {
   const [sheetRoles, setSheetRoles] = useAtom(sheetRolesAtom)
   const setToast = useSetAtom(toastAtom)
 
+  /**
+   * A ficha que está para sair, e não um booleano: o aviso precisa dizer
+   * **qual** é, e um `isConfirming` obrigaria um segundo estado só para
+   * lembrar disso.
+   */
+  const [toRemove, setToRemove] = React.useState<Character | null>(null)
+
   const addLocally = (character: Character) => {
     setRoster({
       characters: { ...roster.characters, [character.id]: character },
@@ -52,6 +61,13 @@ export const Roster = () => {
     // A escrita remota é do `useSheetSync`: ficha que o servidor nunca viu
     // entra por `createSheet`, que é quem cria a linha de acesso junto.
     setSheetRoles({ ...sheetRoles, [character.id]: "author" })
+  }
+
+  /** O papel decide o texto do aviso e o que o botão faz. */
+  const isAuthorOf = (character: Character | null): boolean => {
+    const role = character ? sheetRoles[character.id] : undefined
+
+    return role === undefined || role === "author"
   }
 
   const handleCreate = () => {
@@ -69,6 +85,8 @@ export const Roster = () => {
    * sabendo. Apagar só do local traria a ficha de volta no próximo login.
    */
   const handleRemove = (character: Character) => {
+    setToRemove(null)
+
     const role = sheetRoles[character.id]
     const isAuthor = role === undefined || role === "author"
 
@@ -123,6 +141,20 @@ export const Roster = () => {
                 style={{ "--domain-color": color } as React.CSSProperties}
               >
                 <Link className={styles.open} to={ROUTES.sheet(character.id)}>
+                  {/* A linha continua a mesma sem imagem: o retrato entra
+                      antes do nível, e a ficha sem ele não abre buraco. */}
+                  {toImageUrl(character.avatarUrl ?? "") ? (
+                    <img
+                      className={styles.portrait}
+                      src={toImageUrl(character.avatarUrl ?? "") ?? ""}
+                      alt=""
+                      loading="lazy"
+                      onError={(event) => {
+                        event.currentTarget.hidden = true
+                      }}
+                    />
+                  ) : null}
+
                   <span className={styles.level}>{character.level}</span>
                   <span className={styles.nameBlock}>
                     <b className={styles.name}>{character.name || "Sem nome"}</b>
@@ -130,15 +162,19 @@ export const Roster = () => {
                   </span>
                 </Link>
                 <Button
-                  variant="text"
+                  variant="outline"
                   className={styles.action}
                   aria-label={`Duplicar ${character.name || "ficha sem nome"}`}
                   onClick={() => handleDuplicate(character)}
                 >
-                  ⧉
+                  <Icon name="copy" />
                 </Button>
+                {/* Lixeira e não ×: um × lê como "fechar", e o que ele faz é
+                    apagar a ficha para todo mundo. Desenhada, e não o emoji —
+                    emoji colorido ignora `color` e a lixeira nunca ficava
+                    vermelha, que é a única coisa que ela precisava fazer. */}
                 <Button
-                  variant="text"
+                  variant="outline"
                   intent={isAuthor ? "danger" : "neutral"}
                   className={styles.action}
                   aria-label={
@@ -146,9 +182,9 @@ export const Roster = () => {
                       ? `Apagar ${character.name || "ficha sem nome"}`
                       : `Sair de ${character.name || "ficha sem nome"}`
                   }
-                  onClick={() => handleRemove(character)}
+                  onClick={() => setToRemove(character)}
                 >
-                  ×
+                  {isAuthor ? <Icon name="trash" /> : "↪"}
                 </Button>
               </li>
             )
@@ -159,6 +195,37 @@ export const Roster = () => {
       <Button isFullWidth className={styles.primary} onClick={handleCreate}>
         + &nbsp;NOVA FICHA
       </Button>
+
+      {/*
+        Apagar ficha não tem desfazer: some do aparelho e do servidor, para
+        todo mundo que tinha acesso. É a única ação do app que destrói trabalho
+        de sessões inteiras, e por isso pergunta — mesmo sendo dois toques.
+      */}
+      <Modal
+        isOpen={toRemove !== null}
+        isPersistent
+        title={isAuthorOf(toRemove) ? "Apagar esta ficha?" : "Sair desta ficha?"}
+        onClose={() => setToRemove(null)}
+        footer={
+          <>
+            <Button variant="outline" onClick={() => setToRemove(null)}>
+              CANCELAR
+            </Button>
+            <Button
+              intent="danger"
+              onClick={() => toRemove && handleRemove(toRemove)}
+            >
+              {isAuthorOf(toRemove) ? "APAGAR" : "SAIR"}
+            </Button>
+          </>
+        }
+      >
+        <p className={styles.confirmText}>
+          {isAuthorOf(toRemove)
+            ? `"${toRemove?.name || "Sem nome"}" some deste aparelho e do servidor, para todo mundo que tinha acesso. Não dá para desfazer.`
+            : `Você perde o acesso a "${toRemove?.name || "Sem nome"}". A ficha continua com quem a criou, e essa pessoa não fica sabendo.`}
+        </p>
+      </Modal>
     </main>
   )
 }

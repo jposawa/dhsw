@@ -2,9 +2,8 @@ import { Button, Drawer, SectionLabel } from "@jposawa/ronin-ui"
 import React from "react"
 
 import { EQUIP_SLOTS } from "@/constants"
-import { describeNamedArmor } from "@/helpers"
+import { augmentSlotsFor, candidatesForSlot, consume, describeNamedArmor, equipInSlot, removeEntry } from "@/helpers"
 import { useCompendium, useHouseRules } from "@/hooks"
-import { augmentSlotsFor, candidatesForSlot, consume, equipInSlot, removeEntry } from "@/rules"
 import type { Character, DerivedStats, EquipSlot, InventoryEntry, Result } from "@/types"
 
 import { AugmentDrawer } from "./AugmentDrawer"

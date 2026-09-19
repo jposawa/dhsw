@@ -1,8 +1,7 @@
 import React from "react"
 
 import { Die } from "@/components"
-import { formatSigned } from "@/helpers"
-import { describeRoll } from "@/rules"
+import { describeRoll, formatSigned } from "@/helpers"
 import type { RollRecord } from "@/types"
 
 import styles from "./RollLog.module.css"

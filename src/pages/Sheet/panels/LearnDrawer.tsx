@@ -3,7 +3,7 @@ import React from "react"
 
 import { WideDrawer } from "@/fragments"
 import { useCompendium, useSkillSearch } from "@/hooks"
-import { forgetSkill, isKnown, learnableSkills, learnSkill } from "@/rules"
+import { forgetSkill, isKnown, learnableSkills, learnSkill } from "@/helpers"
 import type { Character, DerivedStats, Domain, Result } from "@/types"
 
 import { SkillRow } from "./SkillRow"

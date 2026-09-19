@@ -1,8 +1,8 @@
 import { useAtom, useSetAtom } from "jotai"
 import React from "react"
 
-import { signInWithGoogle, signOutUser, subscribeToAuth, upsertProfile } from "@/services"
-import { authAtom, sheetRolesAtom, syncStatusAtom, toastAtom } from "@/states"
+import { fetchProfile, signInWithGoogle, signOutUser, subscribeToAuth, upsertProfile } from "@/services"
+import { authAtom, profileAtom, sheetRolesAtom, syncStatusAtom, toastAtom } from "@/states"
 import type { AuthState } from "@/types"
 
 type UseAuthResult = AuthState & {
@@ -20,6 +20,7 @@ export const useAuth = (): UseAuthResult => {
   const [auth, setAuth] = useAtom(authAtom)
   const setSyncStatus = useSetAtom(syncStatusAtom)
   const setSheetRoles = useSetAtom(sheetRolesAtom)
+  const setProfile = useSetAtom(profileAtom)
   const setToast = useSetAtom(toastAtom)
 
   React.useEffect(
@@ -27,13 +28,21 @@ export const useAuth = (): UseAuthResult => {
       subscribeToAuth((user) => {
         setAuth({ status: user ? "signed-in" : "signed-out", user })
 
-        if (user) {
-          // O perfil é espelho, não requisito: falhar aqui não pode impedir
-          // ninguém de abrir a própria ficha.
-          void upsertProfile(user).catch(() => undefined)
+        if (!user) {
+          setProfile(null)
+
+          return
         }
+
+        // O perfil é espelho, não requisito: falhar aqui não pode impedir
+        // ninguém de abrir a própria ficha. Lido depois de escrito, para a
+        // conta nova já vir com o documento que o `upsert` acabou de criar.
+        void upsertProfile(user)
+          .then(() => fetchProfile(user.userId))
+          .then(setProfile)
+          .catch(() => undefined)
       }),
-    [setAuth],
+    [setAuth, setProfile],
   )
 
   const signIn = async () => {
@@ -50,6 +59,7 @@ export const useAuth = (): UseAuthResult => {
     await signOutUser()
     setSyncStatus("idle")
     setSheetRoles({})
+    setProfile(null)
     // As fichas locais ficam. Apagar seria perder o trabalho de quem só
     // queria trocar de conta — e sem login o roster nem é alcançável.
   }

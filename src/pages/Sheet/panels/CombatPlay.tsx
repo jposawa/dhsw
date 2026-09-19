@@ -5,19 +5,18 @@ import { DotScale, Switch } from "@/components"
 import { EQUIP_SLOTS, HOPE_MAX, MAX_PROFICIENCY, TRAIT_LIST, TRAIT_VERBS } from "@/constants"
 import { MarkerTrack, RuleText, StatBlock, ThresholdBar } from "@/fragments"
 import {
+  activeTokenPools,
   describeThresholdOrigin,
   domainColorToken,
+  enterCombat,
   formatSigned,
   heritageLabel,
-} from "@/helpers"
-import { useCompendium } from "@/hooks"
-import {
-  activeTokenPools,
-  enterCombat,
+  toImageUrl,
   presetForTrait,
   setTokenCount,
   tokenCount,
-} from "@/rules"
+} from "@/helpers"
+import { useCompendium } from "@/hooks"
 import type { Character, DerivedStats, DicePreset, EquipSlot, Marks, Result } from "@/types"
 
 import { ActiveWeapon } from "./ActiveWeapon"
@@ -122,9 +121,26 @@ export const CombatPlay = ({
     ) : null
   }
 
+  // Endereço inválido não vira `<img>`: ficaria o ícone de imagem quebrada.
+  const portrait = toImageUrl(character.avatarUrl ?? "")
+
   return (
     <div className={styles.layout}>
       <header className={styles.identity}>
+        {portrait ? (
+          <img
+            className={styles.portrait}
+            src={portrait}
+            alt=""
+            loading="lazy"
+            onError={(event) => {
+              // Endereço que morreu não deixa buraco na ficha: o retrato some
+              // e o resto do cabeçalho continua igual.
+              event.currentTarget.hidden = true
+            }}
+          />
+        ) : null}
+
         <hgroup className={styles.identityText}>
           <h2 className={styles.name}>{character.name || "Sem nome"}</h2>
           <p className={styles.lineage}>{lineage || "ficha em branco"}</p>
@@ -277,7 +293,7 @@ export const CombatPlay = ({
         </SectionLabel>
 
         {character.experiences.length === 0 ? (
-          <p className={styles.empty}>Nenhuma. Adicione em História.</p>
+          <p className={styles.empty}>Nenhuma. Adicione em Editar ficha.</p>
         ) : (
           <ul className={styles.experiences}>
             {character.experiences.map((experience) => (

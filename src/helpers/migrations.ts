@@ -184,8 +184,30 @@ export const rosterV6ToV7 = (value: unknown): RosterState => {
         ? { name: label, sources: { first: firstAncestry, second: secondAncestry }, isMixed: true }
         : { name: ancestry, sources: { first: ancestry, second: ancestry }, isMixed: false }
 
-      return [id, { ...rest, heritage: migrated, schema: CHARACTER_SCHEMA_VERSION } as Character]
+      // `as unknown`: ainda é o formato da v7, e só a última migração da
+      // corrente devolve uma ficha de hoje.
+      return [id, { ...rest, heritage: migrated, schema: 7 } as unknown as Character]
     }),
+  )
+
+  return { characters, order: roster?.order ?? [] }
+}
+
+/**
+ * v7 → v8: `Character.avatarUrl`. Ficha antiga entra sem imagem.
+ *
+ * Campo novo com valor padrão é o caso mais simples de migração, e é por isso
+ * que ela existe mesmo assim: sem subir a versão, a ficha ficaria declarando
+ * v7 com forma de v8, e a próxima migração leria errado sem nada acusar.
+ */
+export const rosterV7ToV8 = (value: unknown): RosterState => {
+  const roster = value as RosterState | null
+
+  const characters = Object.fromEntries(
+    Object.entries(roster?.characters ?? {}).map(([id, stored]) => [
+      id,
+      { ...stored, avatarUrl: stored.avatarUrl ?? null, schema: CHARACTER_SCHEMA_VERSION },
+    ]),
   )
 
   return { characters, order: roster?.order ?? [] }

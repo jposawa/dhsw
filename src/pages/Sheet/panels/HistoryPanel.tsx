@@ -1,147 +1,49 @@
-import { Button, Input, SectionLabel, Stepper } from "@jposawa/ronin-ui"
-import React from "react"
+import { SectionLabel } from "@jposawa/ronin-ui"
 
-import { NEW_EXPERIENCE_BONUS } from "@/constants"
-import { addExperience, removeExperience, setExperienceBonus } from "@/rules"
-import type { Character, Result } from "@/types"
+import type { Character } from "@/types"
 
 import styles from "./HistoryPanel.module.css"
 
 type HistoryPanelProps = {
   character: Character
   isEditing: boolean
-  onApply: (result: Result<Character>) => void
   onChange: (mutate: (current: Character) => Character) => void
 }
 
 /**
- * Experiences e anotações.
+ * As anotações da ficha.
  *
- * **Tudo aqui é progressão, nada é jogada** — por isso a aba inteira só é
- * editável no modo edição, e o que se escreve passa pelo Salvar. Um campo de
- * anotação que grava a cada tecla enche o histórico de versões com meia frase,
- * e é exatamente o tipo de dado que não pode sumir por um toque errado.
+ * As Experiences saíram daqui: elas se usam em mesa — gastar uma Hope para
+ * somar o bônus, no meio de um teste —, então se leem na aba principal e se
+ * editam lá. Ficar nesta aba punha a lista longe de onde ela serve.
  *
- * O bônus não tem teto no código: quantas Experiences a mesa concede, e de
- * quanto, é decisão do Narrador — ver `rules/history.ts`.
+ * **Nada aqui é jogada.** Um campo de anotação que grava a cada tecla enche o
+ * histórico de versões com meia frase, e é exatamente o tipo de dado que não
+ * pode sumir por um toque errado — por isso passa pelo Salvar.
  */
-export const HistoryPanel = ({
-  character,
-  isEditing,
-  onApply,
-  onChange,
-}: HistoryPanelProps) => {
-  const [newExperience, setNewExperience] = React.useState("")
+export const HistoryPanel = ({ character, isEditing, onChange }: HistoryPanelProps) => (
+  <div className={styles.layout}>
+    <section className={styles.notesBlock}>
+      <SectionLabel>
+        <h3>ANOTAÇÕES</h3>
+      </SectionLabel>
 
-  const handleAdd = () => {
-    onApply(
-      addExperience(character, {
-        name: newExperience,
-        bonus: NEW_EXPERIENCE_BONUS,
-      }),
-    )
-    setNewExperience("")
-  }
-
-  return (
-    <div className={styles.layout}>
-      <section className={styles.experiences}>
-        <SectionLabel detail={String(character.experiences.length)}>
-          <h3>EXPERIENCES</h3>
-        </SectionLabel>
-
-        {character.experiences.length === 0 ? (
-          <p className={styles.empty}>
-            Nenhuma Experience.{" "}
-            {isEditing ? "Adicione abaixo." : "Entre em Editar ficha para adicionar."}
-          </p>
-        ) : (
-          <ul className={styles.list}>
-            {character.experiences.map((experience) => (
-              <li className={styles.row} key={experience.name}>
-                <span className={styles.rowName}>{experience.name}</span>
-
-                {isEditing ? (
-                  <div className={styles.rowActions}>
-                    <Stepper
-                      label={`bônus de ${experience.name}`}
-                      decreaseLabel={`Diminuir bônus de ${experience.name}`}
-                      increaseLabel={`Aumentar bônus de ${experience.name}`}
-                      value={`+${experience.bonus}`}
-                      canDecrease={experience.bonus > 1}
-                      onDecrease={() =>
-                        onApply(
-                          setExperienceBonus(character, experience.name, experience.bonus - 1),
-                        )
-                      }
-                      onIncrease={() =>
-                        onApply(
-                          setExperienceBonus(character, experience.name, experience.bonus + 1),
-                        )
-                      }
-                    />
-                    <Button
-                      variant="text"
-                      intent="danger"
-                      aria-label={`Remover ${experience.name}`}
-                      onClick={() => onApply(removeExperience(character, experience.name))}
-                    >
-                      REMOVER
-                    </Button>
-                  </div>
-                ) : (
-                  <b className={styles.bonus}>+{experience.bonus}</b>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-
-        {isEditing ? (
-          <form
-            className={styles.addRow}
-            onSubmit={(event) => {
-              event.preventDefault()
-              handleAdd()
-            }}
-          >
-            <Input
-              value={newExperience}
-              placeholder="Piloto de corrida, Criado nas ruas…"
-              aria-label="Nome da Experience"
-              onValueChange={setNewExperience}
-            />
-            <Button type="submit" disabled={!newExperience.trim()}>
-              ADICIONAR
-            </Button>
-          </form>
-        ) : null}
-      </section>
-
-      <section className={styles.notesBlock}>
-        <SectionLabel>
-          <h3>ANOTAÇÕES</h3>
-        </SectionLabel>
-
-        {isEditing ? (
-          <textarea
-            className={styles.notes}
-            value={character.notes}
-            rows={12}
-            placeholder="Quem é, de onde veio, com quem tem conta a acertar."
-            aria-label="Anotações da ficha"
-            onChange={(event) =>
-              onChange((current) => ({ ...current, notes: event.target.value }))
-            }
-          />
-        ) : character.notes ? (
-          <p className={styles.notesRead}>{character.notes}</p>
-        ) : (
-          <p className={styles.empty}>
-            Sem anotações. Entre em Editar ficha para escrever.
-          </p>
-        )}
-      </section>
-    </div>
-  )
-}
+      {isEditing ? (
+        <textarea
+          className={styles.notes}
+          value={character.notes}
+          rows={12}
+          placeholder="Quem é, de onde veio, com quem tem conta a acertar."
+          aria-label="Anotações"
+          onChange={(event) =>
+            onChange((current) => ({ ...current, notes: event.target.value }))
+          }
+        />
+      ) : character.notes.trim() ? (
+        <p className={styles.notesRead}>{character.notes}</p>
+      ) : (
+        <p className={styles.empty}>Sem anotações. Entre em Editar ficha para escrever.</p>
+      )}
+    </section>
+  </div>
+)

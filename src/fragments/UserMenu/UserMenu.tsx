@@ -3,10 +3,10 @@ import { useAtom, useAtomValue } from "jotai"
 import React from "react"
 import { Link } from "react-router-dom"
 
-import { NavIcon, Switch } from "@/components"
+import { Icon, Switch } from "@/components"
 import { ROUTES } from "@/constants"
 import { useAuth } from "@/hooks"
-import { charactersAtom, syncStatusAtom, themeAtom } from "@/states"
+import { charactersAtom, profileAtom, syncStatusAtom, themeAtom } from "@/states"
 
 import styles from "./UserMenu.module.css"
 
@@ -34,6 +34,7 @@ export const UserMenu = ({ isNavCollapsed = false }: { isNavCollapsed?: boolean 
   const [theme, setTheme] = useAtom(themeAtom)
   const syncStatus = useAtomValue(syncStatusAtom)
   const characters = useAtomValue(charactersAtom)
+  const profile = useAtomValue(profileAtom)
 
   const [isOpen, setIsOpen] = React.useState(false)
   const wrapperRef = React.useRef<HTMLDivElement>(null)
@@ -77,7 +78,7 @@ export const UserMenu = ({ isNavCollapsed = false }: { isNavCollapsed?: boolean 
       <div className={styles.wrapper} data-collapsed={isNavCollapsed}>
         <span className={[styles.trigger, styles.placeholder].join(" ")}>
           <i className={[styles.triggerSlot, styles.triggerIcon].join(" ")} aria-hidden="true">
-            <NavIcon name="account" />
+            <Icon name="account" />
           </i>
           <span className={styles.triggerLabel}>PERFIL</span>
         </span>
@@ -86,6 +87,9 @@ export const UserMenu = ({ isNavCollapsed = false }: { isNavCollapsed?: boolean 
   }
 
   const signedUser = status === "signed-out" ? null : user
+  // A imagem escolhida no perfil vem antes da do Google — ver `types/access.ts`.
+  const avatarUrl = profile?.avatarUrl ?? signedUser?.photoUrl ?? undefined
+  const shownName = profile?.displayName ?? signedUser?.displayName ?? ""
   const isDark = theme === "dark"
   const triggerName = signedUser ? signedUser.displayName : "Entrar"
   // Deslogado, entrar é a única ação que destrava ficha e grupo — ela não pode
@@ -109,14 +113,14 @@ export const UserMenu = ({ isNavCollapsed = false }: { isNavCollapsed?: boolean 
           <span className={styles.triggerSlot}>
             <Avatar
               className={styles.triggerAvatar}
-              imageUrl={signedUser.photoUrl ?? undefined}
-              name={signedUser.displayName}
+              imageUrl={avatarUrl}
+              name={shownName}
               size="sm"
             />
           </span>
         ) : (
           <i className={[styles.triggerSlot, styles.triggerIcon].join(" ")} aria-hidden="true">
-            <NavIcon name="account" />
+            <Icon name="account" />
           </i>
         )}
         <span className={styles.triggerLabel}>{signedUser ? "PERFIL" : "ENTRAR"}</span>
@@ -128,8 +132,8 @@ export const UserMenu = ({ isNavCollapsed = false }: { isNavCollapsed?: boolean 
             <>
               <header className={styles.identity}>
                 <Avatar
-                  imageUrl={signedUser.photoUrl ?? undefined}
-                  name={signedUser.displayName}
+                  imageUrl={avatarUrl}
+                  name={shownName}
                   size="md"
                 />
                 <span className={styles.identityText}>

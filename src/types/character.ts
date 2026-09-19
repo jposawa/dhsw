@@ -1,4 +1,5 @@
-import type { Level, Tier, Trait } from "./domain"
+import type { TokenPool } from "./compendium"
+import type { Domain, Level, Tier, Trait } from "./domain"
 import type { ResolvedStat } from "./modifier"
 
 export type InventoryEntryKind = "weapon" | "armor" | "item" | "consumable"
@@ -59,6 +60,30 @@ export type Marks = {
  * Fonte sem entrada está no valor inicial: cheia, ou zerada se for acumulador.
  * É o que a reposição faz — apaga a entrada.
  */
+/** De onde uma pool de tokens vem: uma feature de classe, de subclasse, ou uma carta. */
+export type TokenSource = "class" | "subclass" | "card"
+
+/** O que se perde trocando de classe. Vazio quando não há o que perder. */
+export type ClassChangeLoss = {
+  subclass: string | null
+  cardCount: number
+}
+
+/** Uma fonte de tokens que a ficha tem agora. */
+export type ActiveTokenPool = {
+  key: string
+  source: TokenSource
+  /** A classe, a subclasse ou a carta. */
+  owner: string
+  /** A feature, ou a habilidade da carta. */
+  name: string
+  pool: TokenPool
+  /** Teto dos tokens. `null` é acumulador, sem teto. */
+  max: number | null
+  /** Cor do domínio, para o contador acompanhar a carta ou a classe. */
+  domain: Domain | null
+}
+
 export type TokenCount = {
   /** Chave da fonte, de `tokenPoolKey` em `rules/tokens.ts`. */
   pool: string
@@ -105,6 +130,15 @@ export type Character = {
   name: string
   createdAt: number
   updatedAt: number
+
+  /**
+   * A imagem do personagem, por endereço. `null` é ficha sem imagem.
+   *
+   * Endereço e não arquivo: a ficha sobe inteira para o banco a cada gravação
+   * e viaja no código de compartilhamento — um `data:` aqui levaria a imagem
+   * junto, em toda escrita.
+   */
+  avatarUrl: string | null
 
   heritage: Heritage
   community: string | null

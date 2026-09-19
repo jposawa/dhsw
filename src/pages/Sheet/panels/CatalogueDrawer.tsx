@@ -3,9 +3,8 @@ import React from "react"
 
 import { GEAR_KINDS, WEAPON_BURDEN_LIST } from "@/constants"
 import { WideDrawer } from "@/fragments"
-import { createInventoryEntry, filterByText } from "@/helpers"
+import { addEntry, createInventoryEntry, filterByText } from "@/helpers"
 import { useCompendium } from "@/hooks"
-import { addEntry } from "@/rules"
 import type { Character, Compendium, GearKind, InventoryEntryKind, Result } from "@/types"
 
 import { GearSummary } from "./GearSummary"

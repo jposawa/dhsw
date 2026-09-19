@@ -1,6 +1,6 @@
 /*
- * Um dado: caixa quadrada com o valor e as faces. A cor do papel entra por
- * `--die-color`; dado sem papel fica no cromo.
+ * Um dado rolado: a silhueta com o valor dentro e o papel embaixo. A cor do
+ * papel entra por `--die-color`; dado sem papel fica no cromo.
  */
 .die {
   --die-color: var(--color-chrome);
@@ -8,23 +8,19 @@
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   gap: 2px;
   min-width: 3rem;
-  min-height: 3rem;
   padding: var(--space-1);
-  background: var(--color-surface);
-  border: var(--border-width) solid var(--die-color);
-  border-radius: var(--border-radius-sm);
+  color: var(--die-color);
 }
 
-/* Hope na cor da trilha de Hope da ficha (CombatPlay usa a de Aegis). */
+/* Hope e Fear têm cor própria em `tokens.css` — nem domínio nem estado. */
 .die[data-role="hope"] {
-  --die-color: var(--color-domain-aegis);
+  --die-color: var(--color-hope);
 }
 
 .die[data-role="fear"] {
-  --die-color: var(--color-danger);
+  --die-color: var(--color-fear);
 }
 
 .die[data-role="advantage"] {
@@ -36,20 +32,15 @@
 }
 
 /* Dado subtraído sem papel próprio: traço tracejado, para não parecer somado. */
-.die[data-subtracted] {
-  border-style: dashed;
+.die[data-subtracted] .shape {
+  opacity: 0.8;
 }
 
-.value {
+.shape {
   font-size: var(--text-lg);
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
-  color: var(--color-ink);
 }
 
-.sides {
+.caption {
   font-size: var(--text-2xs);
   letter-spacing: var(--tracking-wide);
-  color: var(--die-color);
 }

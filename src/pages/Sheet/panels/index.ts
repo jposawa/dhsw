@@ -9,6 +9,7 @@
  */
 export { CardsPanel } from "./CardsPanel"
 export { CombatEdit } from "./CombatEdit"
+export { ExperienceEditor } from "./ExperienceEditor"
 export { CombatPlay } from "./CombatPlay"
 export { HistoryPanel } from "./HistoryPanel"
 export { InventoryPanel } from "./InventoryPanel"

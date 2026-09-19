@@ -1,6 +1,6 @@
 import { Button, Modal } from "@jposawa/ronin-ui"
 
-import type { ClassChangeLoss } from "@/rules"
+import type { ClassChangeLoss } from "@/types"
 
 import styles from "./Identity.module.css"
 

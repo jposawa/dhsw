@@ -11,7 +11,7 @@ import {
   moveToVault,
   setTokenCount,
   tokenCount,
-} from "@/rules"
+} from "@/helpers"
 import type { Character, DerivedStats, Result, Skill } from "@/types"
 
 import { LearnDrawer } from "./LearnDrawer"

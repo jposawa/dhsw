@@ -264,3 +264,12 @@
     flex: 1;
   }
 }
+
+/*
+ * As Experiences fecham a coluna do formulário, embaixo dos números que ele
+ * move: são progressão como o resto da aba, e não entram na grade de duas
+ * colunas porque a lista é larga e o nome de uma Experience é uma frase.
+ */
+.experiences {
+  grid-column: 1 / -1;
+}

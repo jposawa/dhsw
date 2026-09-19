@@ -1,21 +1,22 @@
-import { Button, Chip, Input, Stepper } from "@jposawa/ronin-ui"
+import { Button, Input } from "@jposawa/ronin-ui"
 import clsx from "clsx"
 import React from "react"
 
-import { DieShape } from "@/components"
+import { DieControl, DieShape } from "@/components"
 import { DIE_SIDES } from "@/constants"
-import { formatSigned } from "@/helpers"
 import {
   addDieToPool,
+  addDualityDie,
   canRollPool,
   cryptoDie,
-  type DicePool,
   EMPTY_POOL,
+  formatSigned,
   parseDicePool,
   removeDieFromPool,
+  removeDualityDie,
   rollDicePool,
-} from "@/rules"
-import type { BaseComponent, DicePreset, RollResult } from "@/types"
+} from "@/helpers"
+import type { BaseComponent, DicePool, DicePreset, DualityDie, RollResult } from "@/types"
 
 import styles from "./DiceRoller.module.css"
 
@@ -64,8 +65,18 @@ export const DiceRoller = ({
     () => (preset?.expression ? parseDicePool(preset.expression) : null) ?? EMPTY_POOL,
   )
 
+  /**
+   * O que está no campo enquanto se digita. `null` é "mostre o do pool": um
+   * campo numérico controlado pelo número não deixa apagar para redigitar, nem
+   * escrever o `-` antes do algarismo — os dois passam por estados que não são
+   * número nenhum.
+   */
+  const [modifierText, setModifierText] = React.useState<string | null>(null)
+  const modifierId = React.useId()
+
   const canRoll = !isDisabled && canRollPool(pool)
-  const isEmpty = !pool.hasDuality && pool.groups.length === 0 && pool.modifier === 0
+  const hasDice = pool.hope > 0 || pool.fear > 0 || pool.groups.length > 0
+  const isClean = !hasDice && pool.modifier === 0
 
   const handleRoll = () => {
     onRoll(rollDicePool(pool, label.trim(), cryptoDie))
@@ -80,6 +91,35 @@ export const DiceRoller = ({
   const change = (mutate: (current: DicePool) => DicePool) => {
     setPool(mutate)
   }
+
+  /** Aceita o vazio e o sinal solto; o pool só muda quando já é número. */
+  const changeModifier = (text: string) => {
+    const cleaned = text.replace(/[^\d+-]/g, "").slice(0, 4)
+
+    setModifierText(cleaned)
+
+    if (/^[+-]?\d+$/.test(cleaned)) {
+      change((current) => ({ ...current, modifier: Number(cleaned) }))
+
+      return
+    }
+
+    if (cleaned === "" || cleaned === "-" || cleaned === "+") {
+      change((current) => ({ ...current, modifier: 0 }))
+    }
+  }
+
+  /** Os d12 de dualidade preparados, um por dado. */
+  const duality: { key: string; die: DualityDie }[] = [
+    ...Array.from({ length: pool.hope }, (_unused, index) => ({
+      key: `hope-${index}`,
+      die: "hope" as const,
+    })),
+    ...Array.from({ length: pool.fear }, (_unused, index) => ({
+      key: `fear-${index}`,
+      die: "fear" as const,
+    })),
+  ]
 
   /** Os dados preparados, um ícone por dado — e não um por grupo. */
   const prepared = pool.groups.flatMap((group) =>
@@ -100,83 +140,138 @@ export const DiceRoller = ({
         onValueChange={setLabel}
       />
 
-      <p className={styles.quick}>
-        <Chip
-          label="Duality"
-          isActive={pool.hasDuality}
-          onToggle={() => change((current) => ({ ...current, hasDuality: !current.hasDuality }))}
-        />
-      </p>
+      {/* O par, num toque só: é assim que quase toda rolagem começa. O
+          símbolo são os dois d12 nas cores deles — "Duality" escrito era o
+          nome da regra, não o que entra no pool. */}
+      <button
+        type="button"
+        className={styles.duality}
+        aria-label="Somar os Duality Dice: um d12 de Hope e um de Fear"
+        onClick={() => change((current) => addDualityDie(addDualityDie(current, "hope"), "fear"))}
+      >
+        <span className={styles.dualityArt}>
+          <DieShape className={styles.hopeDie} sides={12} />
+          <DieShape className={styles.fearDie} sides={12} />
+        </span>
+        <span className={styles.dualityLabel}>DUALITY</span>
+      </button>
 
       <ul className={styles.dice} aria-label="Dados para somar ou tirar">
-        {DIE_SIDES.map((sides) => (
-          <li className={styles.dieCell} key={sides}>
-            <DieShape className={styles.dieArt} sides={sides} />
+        {/* Hope e Fear à parte do par: a mesa às vezes pede um lado só, ou um
+            Hope a mais, e isso não tem como sair de um botão de par. */}
+        <li>
+          <DieControl
+            className={styles.hopeDie}
+            dieSides={12}
+            caption="HOPE"
+            dieName="um d12 de Hope"
+            onAdd={() => change((current) => addDualityDie(current, "hope"))}
+            onSubtract={() => change((current) => removeDualityDie(current, "hope"))}
+          />
+        </li>
+        <li>
+          <DieControl
+            className={styles.fearDie}
+            dieSides={12}
+            caption="FEAR"
+            dieName="um d12 de Fear"
+            onAdd={() => change((current) => addDualityDie(current, "fear"))}
+            onSubtract={() => change((current) => removeDualityDie(current, "fear"))}
+          />
+        </li>
 
-            <span className={styles.dieButtons}>
-              <Button
-                className={styles.dieButton}
-                variant="outline"
-                aria-label={`Somar um d${sides}`}
-                onClick={() => change((current) => addDieToPool(current, sides, 1))}
-              >
-                +
-              </Button>
-              <Button
-                className={styles.dieButton}
-                variant="outline"
-                aria-label={`Tirar um d${sides}`}
-                onClick={() => change((current) => addDieToPool(current, sides, -1))}
-              >
-                −
-              </Button>
-            </span>
+        {DIE_SIDES.map((sides) => (
+          <li key={sides}>
+            <DieControl
+              dieSides={sides}
+              onAdd={() => change((current) => addDieToPool(current, sides, 1))}
+              onSubtract={() => change((current) => addDieToPool(current, sides, -1))}
+            />
           </li>
         ))}
       </ul>
 
+{/* O número se digita, além de subir pelo stepper: pôr +7 num stepper é
+          sete toques, e o modificador de dano chega pronto da carta. */}
       <div className={styles.row}>
-        <span className={styles.rowLabel}>MODIFICADOR</span>
-        <Stepper
-          label="modificador"
-          decreaseLabel="Diminuir modificador"
-          increaseLabel="Aumentar modificador"
-          value={formatSigned(pool.modifier)}
-          onDecrease={() => change((current) => ({ ...current, modifier: current.modifier - 1 }))}
-          onIncrease={() => change((current) => ({ ...current, modifier: current.modifier + 1 }))}
-        />
+        <label className={styles.rowLabel} htmlFor={modifierId}>
+          MODIFICADOR
+        </label>
+
+        <span className={styles.modifier}>
+          <Button
+            className={styles.modifierStep}
+            variant="outline"
+            aria-label="Diminuir modificador"
+            onClick={() => change((current) => ({ ...current, modifier: current.modifier - 1 }))}
+          >
+            −
+          </Button>
+
+          <input
+            className={styles.modifierInput}
+            id={modifierId}
+            type="text"
+            inputMode="numeric"
+            value={modifierText ?? formatSigned(pool.modifier)}
+            aria-label="Modificador"
+            onChange={(event) => changeModifier(event.target.value)}
+            onBlur={() => setModifierText(null)}
+          />
+
+          <Button
+            className={styles.modifierStep}
+            variant="outline"
+            aria-label="Aumentar modificador"
+            onClick={() => change((current) => ({ ...current, modifier: current.modifier + 1 }))}
+          >
+            +
+          </Button>
+        </span>
       </div>
 
       <section className={styles.prepared} aria-label="Rolagem preparada">
         <span className={styles.rowLabel}>ROLAGEM PREPARADA</span>
 
-        {isEmpty ? (
-          <p className={styles.empty}>Nenhum dado ainda.</p>
-        ) : (
+
+        {hasDice ? (
           <ul className={styles.preparedList}>
-            {pool.hasDuality ? (
-              <li className={styles.preparedItem} data-duality>
-                <span className={styles.preparedDuality}>
-                  <DieShape className={styles.preparedArt} sides={12} />
-                  <DieShape className={styles.preparedArt} sides={12} />
+{/* Um ícone por d12 de dualidade, cada um na cor dele e com o seu ×:
+                o par não é mais indivisível, e mostrá-lo como bloco único
+                esconderia o Hope extra que a mesa acabou de pedir. */}
+            {duality.map(({ key, die }) => (
+              <li className={styles.preparedItem} key={key}>
+                <span className={styles.preparedSign} aria-hidden="true">
+                  +
                 </span>
+                <DieShape
+                  className={die === "hope" ? styles.hopeDie : styles.fearDie}
+                  sides={12}
+                  caption={die === "hope" ? "HOPE" : "FEAR"}
+                  label={`um d12 de ${die === "hope" ? "Hope" : "Fear"}`}
+                />
                 <button
                   type="button"
                   className={styles.remove}
-                  aria-label="Tirar os Duality Dice da rolagem"
-                  onClick={() => change((current) => ({ ...current, hasDuality: false }))}
+                  aria-label={`Tirar um d12 de ${die === "hope" ? "Hope" : "Fear"} da rolagem`}
+                  onClick={() => change((current) => removeDualityDie(current, die))}
                 >
                   ×
                 </button>
               </li>
-            ) : null}
+            ))}
 
             {prepared.map(({ key, sides, sign }) => (
               <li className={styles.preparedItem} key={key} data-subtracted={sign < 0 || undefined}>
+                {/* O sinal é texto, não cor: somado e subtraído têm que se
+                    distinguir sem depender de enxergar a diferença de tom. */}
+                <span className={styles.preparedSign} aria-hidden="true">
+                  {sign < 0 ? "−" : "+"}
+                </span>
                 <DieShape
-                  className={styles.preparedArt}
                   sides={sides}
-                  label={`${sign < 0 ? "menos " : ""}um d${sides}`}
+                  caption={`D${sides}`}
+                  label={`${sign < 0 ? "menos " : "mais "}um d${sides}`}
                 />
                 <button
                   type="button"
@@ -188,28 +283,23 @@ export const DiceRoller = ({
                 </button>
               </li>
             ))}
-
-            {pool.modifier === 0 ? null : (
-              <li className={styles.preparedItem}>
-                <span className={styles.preparedModifier}>{formatSigned(pool.modifier)}</span>
-                <button
-                  type="button"
-                  className={styles.remove}
-                  aria-label="Zerar o modificador"
-                  onClick={() => change((current) => ({ ...current, modifier: 0 }))}
-                >
-                  ×
-                </button>
-              </li>
-            )}
           </ul>
+        ) : (
+          <p className={styles.empty}>Nenhum dado ainda.</p>
         )}
       </section>
 
       {children}
 
       <div className={styles.actions}>
-        <Button variant="outline" disabled={isEmpty} onClick={() => setPool(EMPTY_POOL)}>
+        <Button
+          variant="outline"
+          disabled={isClean}
+          onClick={() => {
+            setPool(EMPTY_POOL)
+            setModifierText(null)
+          }}
+        >
           LIMPAR
         </Button>
         <Button disabled={!canRoll} onClick={handleRoll}>

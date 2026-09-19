@@ -1,6 +1,25 @@
 import type { Character } from "./character"
 
 /** Escuro e o padrao: app de mesa, sala mal iluminada. */
+/**
+ * Os ícones desenhados em `components/Icon`. União literal porque o valor não
+ * é texto livre: cada nome precisa ter arte, e o compilador é quem garante que
+ * ninguém aponte para ícone inexistente.
+ *
+ * Eram glifos Unicode (`◈ ◐ ◎ ⚙`, `🗑`), trocados por duas razões: os
+ * geométricos ficavam indistinguíveis no trilho recolhido, e o emoji **ignora
+ * `color`** — uma lixeira que não consegue ficar vermelha não avisa de nada.
+ */
+export type IconName =
+  | "account"
+  | "compendium"
+  | "copy"
+  | "dice"
+  | "houseRules"
+  | "parties"
+  | "roster"
+  | "trash"
+
 export type Theme = "dark" | "light"
 
 export type SheetTabId = "combate" | "cartas" | "inventario" | "historia" | "regras"

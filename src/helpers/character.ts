@@ -19,6 +19,7 @@ export const createCharacter = (
     name,
     createdAt: now,
     updatedAt: now,
+    avatarUrl: null,
     heritage: NO_HERITAGE,
     community: null,
     className: null,
@@ -118,6 +119,7 @@ export const normalizeCharacter = (stored: Character): Character => {
  */
 const EDITED_FIELDS = [
   "name",
+  "avatarUrl",
   "level",
   "className",
   "subclass",

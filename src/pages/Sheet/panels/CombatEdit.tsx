@@ -11,23 +11,27 @@ import {
 } from "@/constants"
 import { ThresholdBar } from "@/fragments"
 import {
+  changeClass,
+  changeSubclass,
+  classChangeLoss,
   describeThresholdOrigin,
   featureNameOf,
   formatSigned,
   heritageFeatures,
   heritageLabel,
   mixedAncestry,
+  toImageUrl,
   mixtureName,
   singleAncestry,
 } from "@/helpers"
 import { useCompendium } from "@/hooks"
-import { changeClass, changeSubclass, classChangeLoss } from "@/rules"
 import type { Character, DerivedStats, Heritage, Result } from "@/types"
 
 import { ChoiceDrawer, type ChoiceOption } from "./ChoiceDrawer"
 import { ChoiceField } from "./ChoiceField"
 import { ClassChangeConfirm } from "./ClassChangeConfirm"
 import { ClassSummary } from "./ClassSummary"
+import { ExperienceEditor } from "./ExperienceEditor"
 import { OriginFeatures } from "./OriginFeatures"
 import { SubclassTiers } from "./SubclassTiers"
 
@@ -237,6 +241,24 @@ export const CombatEdit = ({ draft, derived, onChange, onApply }: CombatEditProp
             </div>
           </div>
 
+          {/* Endereço e não upload: a ficha sobe inteira a cada gravação, e um
+              arquivo embutido subiria junto toda vez. */}
+          <label className={styles.nameField}>
+            <span className={styles.label}>IMAGEM DO PERSONAGEM</span>
+            <input
+              className={styles.input}
+              value={draft.avatarUrl ?? ""}
+              placeholder="https://… — opcional"
+              maxLength={500}
+              onChange={(event) =>
+                onChange((current) => ({
+                  ...current,
+                  avatarUrl: toImageUrl(event.target.value) ?? (event.target.value || null),
+                }))
+              }
+            />
+          </label>
+
           {/* Classe antes de espécie: é ela que move os números. Espécie e origem
               trazem features, não a base de cálculo. */}
           <ChoiceField
@@ -407,6 +429,14 @@ export const CombatEdit = ({ draft, derived, onChange, onApply }: CombatEditProp
           })}
         </ul>
       </section>
+
+      {/* As Experiences se leem no modo jogo, dois blocos acima dos atributos:
+          editá-las noutra aba separava a lista de onde ela serve. */}
+      <ExperienceEditor
+        className={styles.experiences}
+        character={draft}
+        onApply={onApply}
+      />
 
       <ChoiceDrawer
         isOpen={picker === "class"}

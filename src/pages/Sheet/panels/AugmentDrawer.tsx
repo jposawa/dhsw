@@ -2,7 +2,7 @@ import { Button, SectionLabel } from "@jposawa/ronin-ui"
 
 import { RuleText, WideDrawer } from "@/fragments"
 import { useCompendium } from "@/hooks"
-import { augmentSlotsFor, augmentsOf, installAugment, removeAugment } from "@/rules"
+import { augmentSlotsFor, augmentsOf, installAugment, removeAugment } from "@/helpers"
 import type { Character, DerivedStats, HouseRules, Result } from "@/types"
 
 import styles from "./InventoryPanel.module.css"

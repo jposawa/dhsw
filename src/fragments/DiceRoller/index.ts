@@ -1,1 +1,1 @@
-export { DiceRoller } from "./DiceRoller"
+export * from "./DiceRoller"

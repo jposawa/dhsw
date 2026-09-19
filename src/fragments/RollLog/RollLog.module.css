@@ -26,11 +26,11 @@
 }
 
 .entry[data-outcome="hope"] {
-  --outcome-color: var(--color-domain-aegis);
+  --outcome-color: var(--color-hope);
 }
 
 .entry[data-outcome="fear"] {
-  --outcome-color: var(--color-danger);
+  --outcome-color: var(--color-fear);
 }
 
 .entry[data-outcome="critical"] {

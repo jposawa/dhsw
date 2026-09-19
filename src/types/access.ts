@@ -44,6 +44,14 @@ export type Profile = {
   /** Espelha o provedor de auth; nao editavel pelo dono. */
   email: string
   photoUrl: string | null
+  /**
+   * A imagem que o dono escolheu, por endereço. Campo à parte de `photoUrl`
+   * de propósito: aquela é espelho do Google e é reescrita a cada login, e
+   * guardar as duas no mesmo lugar faria o login apagar a escolha da pessoa.
+   *
+   * `null` é "não escolhi" — aí vale a do provedor.
+   */
+  avatarUrl: string | null
 }
 
 /**

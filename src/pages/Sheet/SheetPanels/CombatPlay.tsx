@@ -35,6 +35,7 @@ import type {
 
 import { ActiveWeapon } from "./ActiveWeapon";
 import { EquippedArmorCard } from "./EquippedArmorCard";
+import { FeatureNotes } from "./FeatureNotes";
 import { IdentityFeatures } from "./IdentityFeatures";
 import { PortraitDrawer } from "./PortraitDrawer";
 import { RestDrawer } from "./RestDrawer";
@@ -179,12 +180,22 @@ export const CombatPlay = ({
 				<hgroup className={styles.identityText}>
 					<h2 className={styles.name}>{character.name || "Sem nome"}</h2>
 					<p className={styles.lineage}>{lineage || "ficha em branco"}</p>
+          <dl className={styles.levelBadge}>
+						<div className={styles.levelCell}>
+							<dt>NÍVEL</dt>
+							<dd>{derived.level}</dd>
+						</div>
+						<div className={styles.levelCell}>
+							<dt>TIER</dt>
+							<dd>{derived.tier}</dd>
+						</div>
+					</dl>
 				</hgroup>
 
 				<aside className={styles.identitySide}>
 					{/* Só aparece quando alguma fonte repõe ao entrar em combate: fora
               disso, o interruptor não mudaria nada. */}
-					{hasCombatRefill && (
+					{/* {hasCombatRefill && (
 						<Switch
 							className={styles.combatSwitch}
 							isOn={isInCombat}
@@ -193,7 +204,7 @@ export const CombatPlay = ({
 						>
 							EM COMBATE
 						</Switch>
-					)}
+					)} */}
 					{/* Rolagem solta. A de atributo e a de arma saem do próprio bloco. */}
 					<Button
 						className={styles.restButton}
@@ -213,17 +224,6 @@ export const CombatPlay = ({
 					>
 						DESCANSAR
 					</Button>
-
-					<dl className={styles.levelBadge}>
-						<div className={styles.levelCell}>
-							<dt>NÍVEL</dt>
-							<dd>{derived.level}</dd>
-						</div>
-						<div className={styles.levelCell}>
-							<dt>TIER</dt>
-							<dd>{derived.tier}</dd>
-						</div>
-					</dl>
 				</aside>
 			</header>
 
@@ -352,6 +352,8 @@ export const CombatPlay = ({
 					</ul>
 				)}
 			</section>
+
+			<FeatureNotes className={styles.featureNotes} character={character} />
 
 			<section className={styles.weapons}>
 				<SectionLabel

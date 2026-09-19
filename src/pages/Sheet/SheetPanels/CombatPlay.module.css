@@ -12,6 +12,7 @@
 }
 
 .identity,
+.featureNotes,
 .defense,
 .traits,
 .vitals,
@@ -72,10 +73,11 @@
 /* Nome longo encolhe; nível e descanso não. */
 .identitySide {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-end;
   gap: var(--space-2);
-  flex-shrink: 0;
-  margin-left: auto;
+  /* flex-shrink: 0; */
+  /* margin-left: auto; */
 }
 
 /* Contornado e pequeno: acima de EDITAR FICHA, que é texto, e abaixo de uma
@@ -306,6 +308,7 @@
       "notice   notice   notice"
       "defense  traits   traits"
       "vitals   weapons  hope"
+      "notes    notes    notes"
       "features features features";
     align-items: start;
     column-gap: var(--space-4);
@@ -317,6 +320,12 @@
 
   .notice {
     grid-area: notice;
+  }
+
+  /* As escolhas escritas da feature — some na ficha que não pede nenhuma, e
+     a linha do grid some junto por ser de altura automática. */
+  .featureNotes {
+    grid-area: notes;
   }
 
   .defense {
@@ -345,6 +354,12 @@
 
   .features {
     grid-area: features;
+  }
+
+  .identitySide {
+    flex-direction: row;
+    align-items: center;
+    margin-left: auto;
   }
 }
 

@@ -30,11 +30,11 @@ export const PartyRolls = ({ partyId, isNarrator }: PartyRollsProps) => {
           roll(result, { visibility: isNarrator && isPrivate ? "gm" : "public" })
         }
       >
-        {isNarrator ? (
+        {isNarrator && (
           <Switch isOn={isPrivate} onToggle={() => setIsPrivate(!isPrivate)}>
             SÓ PARA MIM
           </Switch>
-        ) : null}
+        )}
       </DiceRoller>
 
       <div className={styles.column}>

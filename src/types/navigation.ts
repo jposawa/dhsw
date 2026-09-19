@@ -7,18 +7,7 @@
  * sem deploy. Ver CONFIG.md.
  */
 
-/**
- * Ícones da navegação. União literal porque o valor não é texto livre: cada
- * nome precisa ter arte desenhada em `components/NavIcon`, e o compilador é
- * quem garante que um item do catálogo não aponte para ícone inexistente.
- */
-export type NavIconName =
-  | "compendium"
-  | "dice"
-  | "roster"
-  | "parties"
-  | "houseRules"
-  | "account"
+import type { IconName } from "./ui"
 
 export type NavItem = {
   /** Chave estavel. E por ela que a config remota referencia o item. */
@@ -35,7 +24,7 @@ export type NavItem = {
    * Continua sendo **dado**, e não componente: o catálogo se mistura com a
    * config remota, que precisa ser serializável.
    */
-  icon: NavIconName
+  icon: IconName
   path: string
   /** Some para quem nao entrou. */
   needAuth: boolean

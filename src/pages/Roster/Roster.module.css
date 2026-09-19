@@ -62,12 +62,18 @@
   color: var(--color-text-dim);
 }
 
+/*
+ * Ação de linha: um ícone numa caixa quadrada.
+ *
+ * `variant="outline"` e não `text`: `text` é link dentro de frase na
+ * biblioteca — vem sublinhado e sem caixa —, e usá-lo aqui obrigava a escrever
+ * CSS desfazendo o que ele faz. A cor vem do `intent`, não daqui.
+ */
 .action {
   flex-shrink: 0;
   width: var(--size-touch-target);
   height: var(--size-touch-target);
-  color: var(--color-chrome);
-  background: var(--color-surface);
+  padding: 0;
 }
 
 .empty {
@@ -93,4 +99,22 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+}
+
+.confirmText {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  color: var(--color-text);
+}
+
+/* O retrato na linha do roster: a mesma altura das duas linhas de texto. */
+.portrait {
+  width: 2.5rem;
+  height: 2.5rem;
+  flex-shrink: 0;
+  object-fit: cover;
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-sm);
 }

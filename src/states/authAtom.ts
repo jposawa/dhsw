@@ -1,6 +1,6 @@
 import { atom } from "jotai"
 
-import type { AuthState, SheetRoleId, SyncStatus } from "@/types"
+import type { AuthState, Profile, SheetRoleId, SyncStatus } from "@/types"
 
 /**
  * Estado de autenticacao. Nao persistido: quem guarda a sessao e o proprio
@@ -9,6 +9,17 @@ import type { AuthState, SheetRoleId, SyncStatus } from "@/types"
  * Comeca em `unknown` de proposito — ver `types/auth.ts`.
  */
 export const authAtom = atom<AuthState>({ status: "unknown", user: null })
+
+/**
+ * O perfil desta conta, como está no banco.
+ *
+ * Mora aqui e não em cada tela porque duas leem: o Perfil, que o edita, e o
+ * menu da conta, que mostra a imagem escolhida. Duas buscas do mesmo documento
+ * divergiriam no instante em que uma salvasse.
+ *
+ * `null` enquanto não carregou, ou deslogado.
+ */
+export const profileAtom = atom<Profile | null>(null)
 
 export const syncStatusAtom = atom<SyncStatus>("idle")
 

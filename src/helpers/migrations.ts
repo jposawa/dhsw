@@ -1,5 +1,5 @@
-import { CHARACTER_SCHEMA_VERSION, DEFAULT_HOUSE_RULES, MIXED_ANCESTRY } from "@/constants"
-import type { Character, HouseRules, RosterState } from "@/types"
+import { CHARACTER_SCHEMA_VERSION, DEFAULT_HOUSE_RULES, MIXED_ANCESTRY_OPTION } from "@/constants"
+import type { Character, Heritage, HouseRules, RosterState } from "@/types"
 
 /**
  * Migrações do formato salvo. Puras, e **acumulativas: nenhuma é apagada**.
@@ -131,15 +131,83 @@ export const rosterV5ToV6 = (value: unknown): RosterState => {
         {
           ...rest,
           heritage: {
-            ancestry: isMixed ? MIXED_ANCESTRY : ancestry,
+            ancestry: isMixed ? MIXED_ANCESTRY_OPTION : ancestry,
             label: null,
             firstAncestry: isMixed ? ancestry : null,
             secondAncestry: mixedAncestry,
           },
-          schema: CHARACTER_SCHEMA_VERSION,
-        } as Character,
+          // `as unknown`: ainda é o formato da v6, e só a última migração da
+          // corrente devolve uma ficha de hoje.
+          schema: 6,
+        } as unknown as Character,
       ]
     }),
+  )
+
+  return { characters, order: roster?.order ?? [] }
+}
+
+/** A ascendência como a v6 a guardava: código no campo do nome. */
+type HeritageV6 = {
+  ancestry?: string | null
+  label?: string | null
+  firstAncestry?: string | null
+  secondAncestry?: string | null
+}
+
+/**
+ * v6 → v7: a ascendência ganha **uma forma só**.
+ *
+ * O campo do nome deixa de acumular dois papéis — nome de espécie e o código
+ * `"mixed"` —, e as fontes de feature passam a valer para as duas: na espécie
+ * única as duas apontam para ela mesma, e é isso que apaga o ramo "é mista?"
+ * de quem lê.
+ *
+ * A mista guardada traz as fontes como estavam, inclusive a 1ª que a versão
+ * anterior copiava da espécie escolhida antes: migração não adivinha escolha
+ * de ninguém, e apagá-la aqui tiraria uma feature de fichas em jogo. Quem não
+ * a quis troca na ficha, e a mista nova já nasce em branco.
+ */
+export const rosterV6ToV7 = (value: unknown): RosterState => {
+  const roster = value as RosterState | null
+
+  const characters = Object.fromEntries(
+    Object.entries(roster?.characters ?? {}).map(([id, stored]) => {
+      const { heritage = {}, ...rest } = stored as unknown as Omit<Character, "heritage"> & {
+        heritage?: HeritageV6
+      }
+
+      const { ancestry = null, label = null, firstAncestry = null, secondAncestry = null } = heritage
+      const isMixed = ancestry === MIXED_ANCESTRY_OPTION
+
+      const migrated: Heritage = isMixed
+        ? { name: label, sources: { first: firstAncestry, second: secondAncestry }, isMixed: true }
+        : { name: ancestry, sources: { first: ancestry, second: ancestry }, isMixed: false }
+
+      // `as unknown`: ainda é o formato da v7, e só a última migração da
+      // corrente devolve uma ficha de hoje.
+      return [id, { ...rest, heritage: migrated, schema: 7 } as unknown as Character]
+    }),
+  )
+
+  return { characters, order: roster?.order ?? [] }
+}
+
+/**
+ * v7 → v8: `Character.avatarUrl`. Ficha antiga entra sem imagem.
+ *
+ * Campo novo com valor padrão é o caso mais simples de migração, e é por isso
+ * que ela existe mesmo assim: sem subir a versão, a ficha ficaria declarando
+ * v7 com forma de v8, e a próxima migração leria errado sem nada acusar.
+ */
+export const rosterV7ToV8 = (value: unknown): RosterState => {
+  const roster = value as RosterState | null
+
+  const characters = Object.fromEntries(
+    Object.entries(roster?.characters ?? {}).map(([id, stored]) => [
+      id,
+      { ...stored, avatarUrl: stored.avatarUrl ?? null, schema: CHARACTER_SCHEMA_VERSION },
+    ]),
   )
 
   return { characters, order: roster?.order ?? [] }

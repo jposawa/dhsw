@@ -40,7 +40,7 @@ export const ROUTES = {
 
 /** Abas de dentro da ficha. Combate abre primeiro: 80% do tempo de sessão. */
 export const SHEET_TABS: readonly { id: SheetTabId; label: string }[] = [
-  { id: "combate", label: "Combate" },
+  { id: "combate", label: "Geral" },
   { id: "cartas", label: "Cartas" },
   { id: "inventario", label: "Inventário" },
   { id: "historia", label: "História" },
@@ -64,10 +64,16 @@ export const COMPENDIUM_TABS: readonly { id: CompendiumTabId; label: string }[] 
   { id: "equipamento", label: "Equipamento" },
 ]
 
-/** Os quatro chips de equipamento, na ordem em que a tela os mostra. */
-export const GEAR_KINDS: readonly { id: GearKind; label: string }[] = [
-  { id: "armas", label: "Armas" },
-  { id: "armaduras", label: "Armaduras" },
-  { id: "itens", label: "Itens" },
-  { id: "consumiveis", label: "Consumíveis" },
+/**
+ * Os quatro tipos de equipamento, na ordem em que a tela os mostra.
+ *
+ * `one` é o singular, para a linha de um item só: numa lista com os quatro
+ * tipos misturados, "Armas" ao lado de um nome de arma lê como se fossem
+ * várias.
+ */
+export const GEAR_KINDS: readonly { id: GearKind; label: string; one: string }[] = [
+  { id: "armas", label: "Armas", one: "arma" },
+  { id: "armaduras", label: "Armaduras", one: "armadura" },
+  { id: "itens", label: "Itens", one: "item" },
+  { id: "consumiveis", label: "Consumíveis", one: "consumível" },
 ]

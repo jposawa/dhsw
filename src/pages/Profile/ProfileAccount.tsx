@@ -4,9 +4,11 @@ import React from "react"
 
 import { Switch } from "@/components"
 import { databaseEnvironment } from "@/lib/firebase"
-import { fetchProfile, updateDisplayName } from "@/services"
+import { toImageUrl } from "@/helpers"
+import { updateAvatarUrl, updateDisplayName } from "@/services"
 import {
   charactersAtom,
+  profileAtom,
   syncErrorAtom,
   syncStatusAtom,
   themeAtom,
@@ -36,54 +38,47 @@ export const ProfileAccount = () => {
   const syncStatus = useAtomValue(syncStatusAtom)
   const syncError = useAtomValue(syncErrorAtom)
   const characters = useAtomValue(charactersAtom)
+  const [profile, setProfile] = useAtom(profileAtom)
   const setToast = useSetAtom(toastAtom)
 
-  const [displayName, setDisplayName] = React.useState("")
-  const [savedName, setSavedName] = React.useState("")
+  /**
+   * O que está sendo digitado, ou `null` para "o que está salvo".
+   *
+   * Assim os campos seguem o perfil enquanto ninguém os toca — inclusive
+   * quando ele termina de carregar — sem um efeito copiando um estado para o
+   * outro. Salvar devolve ao `null`, e o campo volta a espelhar o banco.
+   */
+  const [nameDraft, setNameDraft] = React.useState<string | null>(null)
+  const [avatarDraft, setAvatarDraft] = React.useState<string | null>(null)
   const [isSaving, setIsSaving] = React.useState(false)
-
-  // O nome vem do perfil no banco, não do provedor: é lá que mora o que a
-  // pessoa ajustou. O do Google só serve como valor inicial na criação.
-  React.useEffect(() => {
-    if (!user) {
-      return
-    }
-
-    let isCancelled = false
-
-    void fetchProfile(user.userId)
-      .then((profile) => {
-        if (!isCancelled) {
-          const current = profile?.displayName ?? user.displayName
-          setDisplayName(current)
-          setSavedName(current)
-        }
-      })
-      .catch(() => {
-        if (!isCancelled) {
-          setDisplayName(user.displayName)
-          setSavedName(user.displayName)
-        }
-      })
-
-    return () => {
-      isCancelled = true
-    }
-  }, [user])
+  const [isSavingAvatar, setIsSavingAvatar] = React.useState(false)
 
   if (!user) {
     return null
   }
 
+  const savedName = profile?.displayName ?? user.displayName
+  const savedAvatar = profile?.avatarUrl ?? null
+
+  const displayName = nameDraft ?? savedName
+  const avatarUrl = avatarDraft ?? savedAvatar ?? ""
+
   const trimmedName = displayName.trim()
   const canSave = trimmedName.length > 0 && trimmedName !== savedName && !isSaving
+
+  // Campo vazio é "apagar a escolha" e vale salvar; texto que não é endereço
+  // não vale, e o botão fica apagado em vez de gravar lixo.
+  const nextAvatar = toImageUrl(avatarUrl)
+  const isAvatarUsable = avatarUrl.trim() === "" || nextAvatar !== null
+  const canSaveAvatar = isAvatarUsable && nextAvatar !== savedAvatar && !isSavingAvatar
 
   const handleSave = async () => {
     setIsSaving(true)
 
     try {
       await updateDisplayName(user.userId, trimmedName)
-      setSavedName(trimmedName)
+      setProfile(profile ? { ...profile, displayName: trimmedName } : profile)
+      setNameDraft(null)
       setToast("Nome salvo")
     } catch {
       setToast("Não foi possível salvar o nome.")
@@ -92,12 +87,32 @@ export const ProfileAccount = () => {
     }
   }
 
+  const handleSaveAvatar = async () => {
+    setIsSavingAvatar(true)
+
+    try {
+      await updateAvatarUrl(user.userId, nextAvatar)
+      setProfile(profile ? { ...profile, avatarUrl: nextAvatar } : profile)
+      setAvatarDraft(null)
+      setToast(nextAvatar ? "Imagem salva" : "Imagem removida")
+    } catch {
+      setToast("Não foi possível salvar a imagem.")
+    } finally {
+      setIsSavingAvatar(false)
+    }
+  }
+
   const isDark = theme === "dark"
 
   return (
     <section className={styles.panel} aria-label="Conta">
       <div className={styles.identity}>
-        <Avatar imageUrl={user.photoUrl ?? undefined} name={savedName || user.displayName} size="md" />
+        {/* A escolhida vem primeiro; sem ela, a do Google. */}
+        <Avatar
+          imageUrl={savedAvatar ?? user.photoUrl ?? undefined}
+          name={savedName || user.displayName}
+          size="md"
+        />
         <span className={styles.identityText}>
           <strong className={styles.name}>{savedName || user.displayName}</strong>
           <span className={styles.email}>{user.email}</span>
@@ -110,10 +125,29 @@ export const ProfileAccount = () => {
           label="COMO VOCÊ APARECE PARA QUEM COMPARTILHA FICHA"
           value={displayName}
           maxLength={60}
-          onValueChange={setDisplayName}
+          onValueChange={setNameDraft}
         />
         <Button isFullWidth disabled={!canSave} onClick={() => void handleSave()}>
           {isSaving ? "SALVANDO…" : "SALVAR NOME"}
+        </Button>
+      </div>
+
+      <SectionLabel>IMAGEM</SectionLabel>
+      <div className={styles.form}>
+        <Input
+          label="ENDEREÇO DE UMA IMAGEM"
+          value={avatarUrl}
+          placeholder="https://…"
+          maxLength={500}
+          errorMessage={isAvatarUsable ? undefined : "Precisa ser um endereço http ou https."}
+          onValueChange={setAvatarDraft}
+        />
+        <p className={styles.note}>
+          Fica no lugar da foto do Google. O app guarda o endereço, não o arquivo — a imagem
+          continua onde está, e some daqui se sair de lá. Campo vazio volta para a do Google.
+        </p>
+        <Button isFullWidth disabled={!canSaveAvatar} onClick={() => void handleSaveAvatar()}>
+          {isSavingAvatar ? "SALVANDO…" : "SALVAR IMAGEM"}
         </Button>
       </div>
 
@@ -146,13 +180,13 @@ export const ProfileAccount = () => {
         </div>
       </div>
 
-      {syncError ? (
+      {!!syncError && (
         <p className={styles.diagnostic}>
           <b>Última falha</b>
           <br />
           {syncError}
         </p>
-      ) : null}
+      )}
 
       <p className={styles.note}>
         E-mail e foto vêm do Google e não são editáveis aqui — deixá-los mudáveis

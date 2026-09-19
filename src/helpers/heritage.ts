@@ -1,35 +1,50 @@
-import { MIXED_ANCESTRY, MIXED_ANCESTRY_SEPARATOR } from "@/constants"
+import { MIXED_ANCESTRY_LABEL, MIXED_ANCESTRY_SEPARATOR } from "@/constants"
 import type { Character, Compendium, Heritage } from "@/types"
 
 /**
- * Ascendência: o código guardado na ficha e o que ele rende em features.
+ * Ascendência: como ela se guarda e o que ela rende em features.
  *
- * `heritage.ancestry` é **código**: o nome de uma espécie, ou `MIXED_ANCESTRY`.
- * Na mista, a ficha guarda de qual espécie vem cada feature — a primeira de
- * uma, a segunda de outra, nunca as duas da mesma (Core Rulebook, p. 70–71) —
- * e o nome que a mesa deu à mistura.
+ * **Toda ascendência tem a mesma forma** — um nome e as duas fontes de
+ * feature. A mista não é um formato à parte nem um código especial no campo do
+ * nome: é o mesmo objeto com duas espécies diferentes nas fontes e um nome que
+ * a mesa escolhe. Quem lê (`heritageFeatures`, `derive`) não precisa saber de
+ * qual dos dois casos se trata.
  */
 
 /** Ascendência em branco: nenhuma escolha feita. */
 export const NO_HERITAGE: Heritage = {
-  ancestry: null,
-  label: null,
-  firstAncestry: null,
-  secondAncestry: null,
+  name: null,
+  sources: { first: null, second: null },
+  isMixed: false,
 }
 
-export const isMixedAncestry = (heritage: Heritage): boolean =>
-  heritage.ancestry === MIXED_ANCESTRY
+/**
+ * Espécie única: o nome dela **é** a ascendência, e as duas features saem da
+ * mesma espécie.
+ */
+export const singleAncestry = (ancestry: string): Heritage => ({
+  name: ancestry,
+  sources: { first: ancestry, second: ancestry },
+  isMixed: false,
+})
+
+/**
+ * Mista: ascendência própria, e por isso **em branco**.
+ *
+ * Nada da espécie escolhida antes é aproveitado aqui. Herdar a anterior como
+ * 1ª feature tratava a mista como uma variação dela, e não há nada na regra
+ * que ligue as duas: quem troca para mista está trocando de ascendência, não
+ * acrescentando uma metade à que tinha.
+ */
+export const mixedAncestry = (): Heritage => ({
+  name: null,
+  sources: { first: null, second: null },
+  isMixed: true,
+})
 
 /** "**High Stamina** — Ganhe um slot…" → "High Stamina". */
 export const featureNameOf = (text: string): string | null =>
   /\*\*(.+?)\*\*/.exec(text)?.[1]?.trim() ?? null
-
-/** De qual espécie vem cada feature. Na única, as duas vêm da mesma. */
-export const ancestriesOf = (heritage: Heritage): { first: string | null; second: string | null } =>
-  isMixedAncestry(heritage)
-    ? { first: heritage.firstAncestry, second: heritage.secondAncestry }
-    : { first: heritage.ancestry, second: heritage.ancestry }
 
 export type HeritageFeature = {
   /** A espécie que dá esta feature. */
@@ -40,15 +55,19 @@ export type HeritageFeature = {
   name: string | null
 }
 
-/** As features da ascendência: a primeira de uma espécie, a segunda de outra. */
+/**
+ * As features da ascendência: a primeira da fonte da primeira, a segunda da
+ * fonte da segunda. Na única as duas fontes são a mesma espécie, e é por isso
+ * que não há ramo para mista aqui.
+ */
 export const heritageFeatures = (
   character: Character,
   compendium: Compendium,
 ): HeritageFeature[] => {
-  const { first, second } = ancestriesOf(character.heritage)
+  const { sources } = character.heritage
   const slots = [
-    { name: first, index: 0 as const },
-    { name: second, index: 1 as const },
+    { name: sources.first, index: 0 as const },
+    { name: sources.second, index: 1 as const },
   ]
 
   return slots.flatMap(({ name, index }) => {
@@ -62,24 +81,29 @@ export const heritageFeatures = (
 }
 
 /**
+ * As duas espécies juntas, no estilo "goblin-orc" do livro — **só com as duas
+ * escolhidas**. Com uma só, o par ainda não existe: escrever o nome dela
+ * sozinho daria uma mistura com cara de espécie única.
+ */
+export const mixtureName = (heritage: Heritage): string | null => {
+  const { first, second } = heritage.sources
+
+  return first && second ? [first, second].join(MIXED_ANCESTRY_SEPARATOR) : null
+}
+
+/**
  * Como a ascendência se escreve na ficha.
  *
- * Espécie única é o nome dela. Mista é o nome que a mesa deu; sem nome, as
- * duas espécies juntas — o livro deixa a escolha livre ("goblin-orc", ou um
- * nome inventado). Mista sem nenhuma das duas escolhida ainda não diz nada.
+ * O nome guardado vale primeiro: na única ele é a espécie, na mista é o que a
+ * mesa deu. Sem nome, a mista cai no par de espécies e, enquanto o par está
+ * pela metade, no que ela é — mista. Ascendência nenhuma não diz nada.
  */
 export const heritageLabel = (character: Character): string | null => {
   const { heritage } = character
 
-  if (!isMixedAncestry(heritage)) {
-    return heritage.ancestry
+  if (heritage.name?.trim()) {
+    return heritage.name.trim()
   }
 
-  if (heritage.label?.trim()) {
-    return heritage.label.trim()
-  }
-
-  const names = [heritage.firstAncestry, heritage.secondAncestry].filter(Boolean)
-
-  return names.length > 0 ? names.join(MIXED_ANCESTRY_SEPARATOR) : null
+  return heritage.isMixed ? (mixtureName(heritage) ?? MIXED_ANCESTRY_LABEL) : null
 }

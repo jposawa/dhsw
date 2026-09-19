@@ -78,7 +78,18 @@
  * o alvo de toque volta aos 44px por um pseudo-elemento que transborda para
  * cima e para baixo — o dedo acerta, e a faixa não engorda.
  */
-.editButton {
+/* `menu` é lista de ações: sem o recuo e a margem de lista do navegador. */
+.toolbarActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.editButton,
+.copyButton {
   position: relative;
   min-height: 30px;
   padding: 0 var(--space-1);
@@ -87,7 +98,8 @@
   color: var(--color-text-muted);
 }
 
-.editButton::after {
+.editButton::after,
+.copyButton::after {
   content: "";
   position: absolute;
   inset: calc((var(--size-touch-target) - 30px) / -2) 0;

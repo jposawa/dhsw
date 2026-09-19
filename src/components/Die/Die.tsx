@@ -2,6 +2,8 @@ import clsx from "clsx"
 
 import type { BaseComponent, DieRole } from "@/types"
 
+import { DieShape } from "../DieShape"
+
 import styles from "./Die.module.css"
 
 type DieProps = BaseComponent & {
@@ -20,10 +22,15 @@ const ROLE_LABEL: Readonly<Record<DieRole, string>> = {
 }
 
 /**
- * Um dado rolado: o valor grande, as faces embaixo.
+ * Um dado rolado: o valor dentro da silhueta do dado que o deu.
  *
- * O papel dá a cor — Hope na cor da trilha de Hope da ficha, Fear no perigo —
- * e também vai no nome acessível: cor sozinha não diz qual d12 é qual.
+ * A silhueta é a mesma do rolador, e é ela que diz **qual** dado rolou. Numa
+ * caixa quadrada para todos, os dois d12 da dualidade liam como d6 — a forma
+ * dizia um dado e o rótulo dizia outro.
+ *
+ * O papel dá a cor — Hope e Fear nas cores deles, vantagem e desvantagem no
+ * verde e no laranja — e também vai no nome acessível: cor sozinha não diz
+ * qual d12 é qual.
  */
 export const Die = ({ sides, value, role, isSubtracted = false, className, style }: DieProps) => {
   const roleLabel = ROLE_LABEL[role]
@@ -38,12 +45,13 @@ export const Die = ({ sides, value, role, isSubtracted = false, className, style
       role="img"
       aria-label={`d${sides}${roleLabel ? ` de ${roleLabel}` : ""}: ${isSubtracted ? "menos " : ""}${value}`}
     >
-      <b className={styles.value}>
+      <DieShape className={styles.shape} sides={sides}>
         {sign}
         {value}
-      </b>
-      <span className={styles.sides} aria-hidden="true">
-        {roleLabel ? roleLabel.toUpperCase() : `d${sides}`}
+      </DieShape>
+
+      <span className={styles.caption} aria-hidden="true">
+        {roleLabel ? roleLabel.toUpperCase() : `D${sides}`}
       </span>
     </span>
   )

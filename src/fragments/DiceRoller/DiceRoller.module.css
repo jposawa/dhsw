@@ -34,3 +34,215 @@
   grid-template-columns: auto 1fr;
   gap: var(--space-2);
 }
+
+/*
+ * Os seis dados que se pode somar. Grade e não fileira: cada célula é a
+ * silhueta com o + e o − dela, e enfileirados eles perdiam a quem pertence
+ * cada botão.
+ */
+.dice {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(5.5rem, 1fr));
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* A célula é o `DieControl` inteiro; o `li` só marca o item da lista. */
+.dice > li {
+  display: flex;
+}
+
+/* ── o que está preparado ─────────────────────────────────────────────────── */
+
+.prepared {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-height: calc(var(--size-touch-target) + var(--space-4));
+}
+
+.preparedList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/*
+ * Um dado preparado: a silhueta e o × que a tira. O contorno é o que separa um
+ * dado do seguinte quando são cinco iguais em fila.
+ */
+.preparedItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-1) var(--space-1) var(--space-2);
+  color: var(--color-chrome-strong);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+}
+
+/* Subtraído: tracejado e na cor de aviso, a mesma leitura do dado já rolado. */
+.preparedItem[data-subtracted] {
+  color: var(--color-warning);
+  border-style: dashed;
+}
+
+/* Os dois Duality Dice andam juntos e saem juntos: são um dado só na regra. */
+.preparedItem[data-duality] {
+  color: var(--color-primary);
+}
+
+.preparedDuality {
+  display: flex;
+  gap: 2px;
+}
+
+.preparedArt {
+  font-size: var(--text-xs);
+}
+
+.preparedModifier {
+  font-size: var(--text-md);
+  font-variant-numeric: tabular-nums;
+}
+
+/*
+ * O × mora dentro da caixa do dado. Reset local de fundo, borda e cursor —
+ * ver `STYLING.md` sobre `@layer`.
+ */
+.remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  min-height: 1.5rem;
+  font-size: var(--text-md);
+  line-height: 1;
+  color: inherit;
+  background: none;
+  border: none;
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.remove:hover {
+  opacity: 1;
+}
+
+.empty {
+  margin: 0;
+  font-size: var(--text-xs);
+  color: var(--color-text-dim);
+}
+
+/* ── modificador ──────────────────────────────────────────────────────────── */
+
+/* Menos, campo, mais — o campo entre os dois botões, como um stepper que se
+   pode digitar. */
+.modifier {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.modifierStep {
+  --size-touch-target: 2em;
+
+  min-width: 2em;
+  padding: 0;
+  font-size: var(--text-md);
+}
+
+/* Reset local de fundo e borda — ver `STYLING.md` sobre `@layer`. */
+.modifierInput {
+  width: 3.5rem;
+  min-height: var(--size-touch-target);
+  padding: var(--space-1);
+  font-size: var(--text-md);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  color: var(--color-ink);
+  background: var(--color-bg-elevated);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+}
+
+.modifierInput:focus-visible {
+  outline: 2px solid var(--color-chrome-strong);
+  outline-offset: -2px;
+}
+
+/* ── sinal e cores da preparada ───────────────────────────────────────────── */
+
+/*
+ * O sinal fica antes do dado, no mesmo tamanho do número: é ele que diz se o
+ * dado soma ou tira. A cor acompanha, mas sozinha ela não serve — quem não
+ * distingue os dois tons ficava sem saber o que a rolagem faz.
+ */
+.preparedSign {
+  font-size: var(--text-md);
+  font-weight: 500;
+  line-height: 1;
+}
+
+/* Somado é a cor da ação; subtraído, a de aviso. */
+.preparedItem {
+  color: var(--color-primary);
+}
+
+.preparedItem[data-subtracted] {
+  color: var(--color-warning);
+  border-style: dashed;
+}
+
+/* Os dois d12 da dualidade, cada um na cor dele — as mesmas do resultado. */
+.hopeDie {
+  color: var(--color-hope);
+}
+
+.fearDie {
+  color: var(--color-fear);
+}
+
+/* ── o par ────────────────────────────────────────────────────────────────── */
+
+/*
+ * O botão do par. Reset local de fundo, borda e cursor — ver `STYLING.md`
+ * sobre `@layer`.
+ */
+.duality {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  width: 100%;
+  min-height: var(--size-touch-target);
+  padding: var(--space-2);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  cursor: pointer;
+}
+
+.duality:hover {
+  border-color: var(--color-chrome);
+}
+
+.dualityArt {
+  display: flex;
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+}
+
+.dualityLabel {
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-text-muted);
+}

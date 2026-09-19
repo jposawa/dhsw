@@ -1,0 +1,52 @@
+.experiences {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: var(--size-touch-target);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-bg-elevated);
+}
+
+.rowName {
+  font-size: var(--text-sm);
+  color: var(--color-ink);
+  overflow-wrap: break-word;
+}
+
+.rowActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+/* O campo ocupa a sobra e o botão fica do tamanho do texto dele. */
+.addRow {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.empty {
+  margin: 0;
+  font-size: var(--text-xs);
+  color: var(--color-text-dim);
+}

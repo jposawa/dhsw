@@ -53,7 +53,7 @@ export const SkillDetail = ({ skill, onClose }: SkillDetailProps) => {
       onClose={onClose}
       onClick={handleBackdropClick}
     >
-      {skill ? <SkillCard skill={skill} variant="open" onClose={onClose} /> : null}
+      {!!skill && <SkillCard skill={skill} variant="open" onClose={onClose} />}
     </dialog>
   )
 }

@@ -39,6 +39,16 @@ export const upsertProfile = async (user: AuthUser): Promise<void> => {
   })
 }
 
+/**
+ * A imagem do perfil, por endereço.
+ *
+ * Escrita sozinha, e `upsertProfile` nunca a toca: é escolha do dono, como o
+ * `displayName`, e não espelho do provedor.
+ */
+export const updateAvatarUrl = async (userId: string, avatarUrl: string | null): Promise<void> => {
+  await update(dhswRef(DB_PATHS.profile(userId)), { avatarUrl })
+}
+
 export const updateDisplayName = async (
   userId: string,
   displayName: string,

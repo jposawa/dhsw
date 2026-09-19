@@ -164,11 +164,11 @@ export const App = () => {
 
       <BottomNav />
 
-      {toast ? (
+      {!!toast && (
         <div className={styles.toast} role="status">
           {toast}
         </div>
-      ) : null}
+      )}
     </div>
   )
 }

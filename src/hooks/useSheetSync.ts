@@ -213,6 +213,13 @@ export const useSheetSync = () => {
           : saveSheet(character)
 
         void write
+          .then(() => {
+            // Sem isto, "em dia" só falava da leitura do login: uma escrita
+            // que falhava acendia "falhou" e nada nunca apagava, nem quando a
+            // seguinte subia. O rótulo passa a dizer o que promete.
+            setSyncError(null)
+            setSyncStatus("ready")
+          })
           .catch((error: unknown) => {
             // Desfaz a marca para a próxima mudança reenviar. Sem isto, uma
             // escrita perdida só voltaria a ser tentada na sessão seguinte.

@@ -45,7 +45,7 @@ export const HouseRulesForm = ({ value, onChange, className, style }: HouseRules
         onToggle={() => change({ hasEvasionFromTraits: !value.hasEvasionFromTraits })}
       />
 
-      {value.hasEvasionFromTraits ? (
+      {value.hasEvasionFromTraits && (
         <div className={styles.chips}>
           <Chip
             label="Arredondar para baixo"
@@ -60,7 +60,7 @@ export const HouseRulesForm = ({ value, onChange, className, style }: HouseRules
             onToggle={() => change({ roundsEvasionUp: true })}
           />
         </div>
-      ) : null}
+      )}
 
       <article className={styles.loadout}>
         <h3 className={styles.title}>Tamanho do loadout</h3>

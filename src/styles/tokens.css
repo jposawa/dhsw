@@ -211,6 +211,21 @@
   --color-info: #45c3de;
   --color-neutral: #8a99b5;
 
+  /*
+   * Hope e Fear têm cor própria.
+   *
+   * Os dois são o par que decide toda rolagem — a trilha da ficha, o d12, a
+   * faixa do resultado —, e até aqui Hope pegava emprestada a cor do domínio
+   * Aegis. Isso é o que a própria regra abaixo proíbe: as seis cores de domínio
+   * são informação e não se gastam em outro significado. Fear pegava
+   * `--color-danger`, que é estado destrutivo e não resultado de dado.
+   *
+   * O valor de Hope é o âmbar que já estava na tela, agora com nome próprio:
+   * o que muda é de onde ele vem, não o que se vê.
+   */
+  --color-hope: #d9a441;
+  --color-fear: #ff5f63;
+
   /* Domínios: informação, não decoração. Nenhum outro elemento usa estas seis
      cores — inclusive `--color-danger` acima, que de propósito NÃO é o Havoc. */
   --color-domain-aegis: #d9a441;
@@ -278,6 +293,9 @@
   --color-danger: #b3261e;
   --color-info: #1a5f8a;
   --color-neutral: #5a636d;
+
+  --color-hope: #976d1e;
+  --color-fear: #b3261e;
 
   --color-domain-aegis: #976d1e;
   --color-domain-allure: #be4c80;

@@ -1,6 +1,25 @@
 import type { Character } from "./character"
 
 /** Escuro e o padrao: app de mesa, sala mal iluminada. */
+/**
+ * Os ícones desenhados em `components/Icon`: a arte **deste** projeto, que
+ * desenha o que cada página é — a pilha de cartas, a ficha, o d6 e o d20.
+ *
+ * Ícone comum (lixeira, cópia, lápis) **não** entra aqui: vem do `react-icons`,
+ * importado no ponto de uso, pela mesma regra que o barril de `components/`
+ * aplica à ronin-ui — biblioteca de terceiro não ganha endereço nosso.
+ *
+ * União literal porque o valor não é texto livre: cada nome precisa ter arte, e
+ * o compilador é quem garante que ninguém aponte para ícone inexistente.
+ */
+export type IconName =
+  | "account"
+  | "compendium"
+  | "dice"
+  | "houseRules"
+  | "parties"
+  | "roster"
+
 export type Theme = "dark" | "light"
 
 export type SheetTabId = "combate" | "cartas" | "inventario" | "historia" | "regras"

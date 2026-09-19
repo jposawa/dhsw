@@ -1,13 +1,12 @@
 import { Button, Modal, Tabs } from "@jposawa/ronin-ui"
-import { useAtom, useAtomValue, useSetAtom } from "jotai"
+import { useAtom, useSetAtom } from "jotai"
 import React from "react"
-import { Navigate, useParams } from "react-router-dom"
+import { Navigate, useNavigate, useParams } from "react-router-dom"
 
 import { ROUTES, RULE_ERROR_MESSAGES, SHEET_TABS } from "@/constants"
 import { SaveState } from "@/fragments"
-import { effectiveHouseRules, hasSheetEdits, touchCharacter } from "@/helpers"
-import { HouseRulesContext, useCompendium, usePartyHouseRules } from "@/hooks"
-import { derive } from "@/rules"
+import { duplicateCharacter, hasSheetEdits, touchCharacter } from "@/helpers"
+import { HouseRulesContext, usePartyHouseRules, useSheet } from "@/hooks"
 import { rosterAtom, sheetRolesAtom, toastAtom } from "@/states"
 import type { Character, Marks, Result, SheetTabId } from "@/types"
 
@@ -18,7 +17,7 @@ import {
   HistoryPanel,
   InventoryPanel,
   RulesPanel,
-} from "./panels"
+} from "./SheetPanels"
 
 import styles from "./Sheet.module.css"
 
@@ -41,20 +40,46 @@ import styles from "./Sheet.module.css"
 export const Sheet = () => {
   const { sheetId } = useParams<{ sheetId: string }>()
   const [roster, setRoster] = useAtom(rosterAtom)
-  const sheetRoles = useAtomValue(sheetRolesAtom)
+  const [sheetRoles, setSheetRoles] = useAtom(sheetRolesAtom)
   const setToast = useSetAtom(toastAtom)
-  const { compendium } = useCompendium()
+  const navigate = useNavigate()
 
   const [tab, setTab] = React.useState<SheetTabId>("combate")
   const [draft, setDraft] = React.useState<Character | null>(null)
   const [isConfirmingCancel, setIsConfirmingCancel] = React.useState(false)
+  const [isConfirmingCopy, setIsConfirmingCopy] = React.useState(false)
 
-  const character = sheetId ? roster.characters[sheetId] : undefined
-  // Antes do retorno antecipado: hook não pode ficar atrás de condição.
+  /**
+   * Editando, tudo se calcula sobre o rascunho: é o que faz Evasion e HP
+   * mudarem enquanto se escolhe a classe, antes de confirmar. É por isso que
+   * o rascunho entra no hook em vez de a tela derivar por fora.
+   */
+  const { character, isReadOnly, houseRules, derived } = useSheet(sheetId, draft)
+  // A aba de Regras mostra as da mesa ao lado das da ficha, então precisa das
+  // duas separadas — `houseRules` já traz só a que vale.
   const partyRules = usePartyHouseRules(character?.partyId ?? null)
 
-  // Papel ausente = ficha local ainda não sincronizada, e ela é sua.
-  const isReadOnly = sheetId ? sheetRoles[sheetId] === "reader" : false
+  /**
+   * Uma cópia da ficha, e abre nela.
+   *
+   * Copiar é para variar sobre o que já existe — outro build da mesma ideia,
+   * o mesmo personagem noutra mesa —, e quem copia quer mexer na cópia. Ficar
+   * na original obrigaria a procurá-la na lista para chegar onde já se queria.
+   *
+   * Vale também para quem só lê a ficha: a cópia é sua, não dela.
+   */
+  const handleCopy = (source: Character) => {
+    const copy = duplicateCharacter(source)
+
+    setRoster({
+      characters: { ...roster.characters, [copy.id]: copy },
+      order: [copy.id, ...roster.order],
+    })
+    // A escrita remota é do `useSheetSync`, como em toda ficha nascida aqui.
+    setSheetRoles({ ...sheetRoles, [copy.id]: "author" })
+    setToast("Cópia criada")
+    navigate(ROUTES.sheet(copy.id))
+  }
 
   const commit = (next: Character) => {
     setRoster({
@@ -63,18 +88,12 @@ export const Sheet = () => {
     })
   }
 
-  if (!character) {
+  if (!character || !derived) {
     return <Navigate to={ROUTES.roster} replace />
   }
 
   const isEditing = draft !== null
-  // Editando, tudo se calcula sobre o rascunho: é o que faz Evasion e HP
-  // mudarem enquanto se escolhe a classe, antes de confirmar.
   const shown = draft ?? character
-  // Em mesa valem as regras da mesa; fora dela, as da ficha — do rascunho,
-  // editando, para os números acompanharem a regra que se está mudando.
-  const houseRules = effectiveHouseRules(shown, partyRules)
-  const derived = derive(shown, houseRules, compendium)
   const isDirty = draft !== null && hasSheetEdits(draft, character)
 
   /**
@@ -181,12 +200,7 @@ export const Sheet = () => {
     }
 
     return (
-      <HistoryPanel
-        character={shown}
-        isEditing={isEditing}
-        onApply={applyResult}
-        onChange={changeDraft}
-      />
+      <HistoryPanel character={shown} isEditing={isEditing} onChange={changeDraft} />
     )
   }
 
@@ -204,14 +218,27 @@ export const Sheet = () => {
             que se faz e se termina — com o resultado salvo ou cancelado —,
             não um lugar em que se fica. */}
           {isEditing ? null : (
-            <Button
-              className={styles.editButton}
-              variant="text"
-              disabled={isReadOnly}
-              onClick={() => setDraft(character)}
-            >
-              EDITAR FICHA
-            </Button>
+            <menu className={styles.toolbarActions}>
+              {/* Copiar some enquanto se edita: ele copia o que está salvo, e
+                  ao lado de um rascunho em aberto isso lê como se copiasse o
+                  que está na tela. */}
+              <Button
+                className={styles.copyButton}
+                variant="text"
+                onClick={() => setIsConfirmingCopy(true)}
+              >
+                COPIAR FICHA
+              </Button>
+
+              <Button
+                className={styles.editButton}
+                variant="text"
+                disabled={isReadOnly}
+                onClick={() => setDraft(character)}
+              >
+                EDITAR FICHA
+              </Button>
+            </menu>
           )}
         </header>
 
@@ -233,7 +260,7 @@ export const Sheet = () => {
         As quatro abas são mais altas que a tela, e um Salvar no fim do
         documento só aparece para quem rolar até lá.
       */}
-        {isEditing ? (
+        {isEditing && (
           <footer className={styles.saveBar}>
             <p className={styles.saveHint}>{isDirty ? "Alterações não salvas" : "Nada alterado"}</p>
             <Button variant="outline" onClick={requestCancel}>
@@ -243,10 +270,41 @@ export const Sheet = () => {
               SALVAR
             </Button>
           </footer>
-        ) : null}
+        )}
 
         {/* `isPersistent` porque cancelar é irreversível: sair clicando no fundo
           é exatamente o acidente a evitar. */}
+      {/*
+        Copiar não destrói nada, mas leva embora: o botão está encostado no de
+        editar, na mesma cara, e o toque errado tirava a pessoa da ficha em que
+        estava e a punha noutra, com uma cópia a mais no roster para limpar.
+      */}
+      <Modal
+        isOpen={isConfirmingCopy}
+        title="Copiar esta ficha?"
+        onClose={() => setIsConfirmingCopy(false)}
+        footer={
+          <>
+            <Button variant="outline" onClick={() => setIsConfirmingCopy(false)}>
+              CANCELAR
+            </Button>
+            <Button
+              onClick={() => {
+                setIsConfirmingCopy(false)
+                handleCopy(character)
+              }}
+            >
+              COPIAR
+            </Button>
+          </>
+        }
+      >
+        <p className={styles.note}>
+          Uma cópia de "{character.name || "Sem nome"}" entra no seu roster, e esta tela passa a
+          mostrar a cópia. A ficha original fica como está.
+        </p>
+      </Modal>
+
         <Modal
           isOpen={isConfirmingCancel}
           isPersistent

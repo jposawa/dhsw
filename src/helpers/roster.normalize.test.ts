@@ -42,6 +42,20 @@ describe("normalizeRoster", () => {
     expect(normalizeRoster(rosterWith(character)).order).toEqual([character.id])
   })
 
+  /* O RTDB apaga campo nulo: uma mista com só a 1ª espécie escolhida volta de
+     lá com `sources` pela metade, e `heritageFeatures` lê as duas. */
+  it("completa a fonte de feature que o banco engoliu", () => {
+    const character = createCharacter("Rey")
+    const half = {
+      ...character,
+      heritage: { name: null, sources: { first: "Human" }, isMixed: true },
+    } as unknown as Character
+
+    const normalized = normalizeRoster(rosterWith(half)).characters[character.id]
+
+    expect(normalized.heritage.sources).toEqual({ first: "Human", second: null })
+  })
+
   it("não mexe no que já está completo", () => {
     const character = createCharacter("Rey")
 

@@ -48,6 +48,37 @@ export type RollRecord = RollResult & {
   visibility: RollVisibility
 }
 
+/** Sorteia um valor de 1 a `sides`. Entra por parâmetro para a rolagem ser testável. */
+export type RandomDie = (sides: number) => number
+
+/** Um punhado de dados iguais dentro do pool. */
+export type DiceGroup = {
+  count: number
+  sides: number
+  /** `-1` é dado subtraído — a desvantagem, por exemplo. */
+  sign: 1 | -1
+}
+
+/**
+ * O que se vai rolar, montado: os Duality Dice, os grupos de dado e o
+ * modificador. É o estado do rolador, e não um passo intermediário — por isso
+ * mora aqui e não junto da função que o rola.
+ */
+export type DicePool = {
+  /**
+   * Quantos d12 de Hope e de Fear entram. A dualidade do livro é `1` e `1`
+   * (Core Rulebook, p. 90); contados, e não um `hasDuality`, porque a mesa
+   * às vezes pede um Hope a mais, ou um dos dois sozinho.
+   */
+  hope: number
+  fear: number
+  groups: readonly DiceGroup[]
+  modifier: number
+}
+
+/** Os dois d12 que decidem a rolagem. */
+export type DualityDie = "hope" | "fear"
+
 /**
  * Uma rolagem preparada, vinda da ficha: um atributo (`duality+2`), o dano
  * de uma arma (`2d8+3`). Não rola — enche o rolador, e quem rola ajusta.

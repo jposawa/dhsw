@@ -169,6 +169,14 @@
   color: var(--color-text-dim);
 }
 
+/* Enquanto a ficha do banco não chega. */
+.waiting {
+  margin: var(--space-6) auto;
+  font-size: var(--text-sm);
+  color: var(--color-text-dim);
+  text-align: center;
+}
+
 .note {
   margin: 0;
   font-size: var(--text-xs);

@@ -46,6 +46,22 @@
   background: var(--color-bg-elevated);
 }
 
+/* A linha inteira é o alvo: o nome e a classe levam à ficha, e o TIRAR ao
+   lado fica de fora do link. */
+.rowLink {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-grow: 1;
+  min-width: 0;
+  color: inherit;
+  text-decoration: none;
+}
+
+.rowLink:hover .rowName {
+  color: var(--color-chrome-strong);
+}
+
 .rowText {
   display: flex;
   flex-direction: column;

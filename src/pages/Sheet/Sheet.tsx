@@ -161,7 +161,13 @@ export const Sheet = () => {
   const panelFor = (tabId: SheetTabId): React.ReactNode => {
     if (tabId === "combate") {
       return isEditing && draft ? (
-        <CombatEdit draft={draft} derived={derived} onChange={changeDraft} onApply={applyResult} />
+        <CombatEdit
+          draft={draft}
+          derived={derived}
+          houseRules={houseRules}
+          onChange={changeDraft}
+          onApply={applyResult}
+        />
       ) : (
         <CombatPlay
           character={character}

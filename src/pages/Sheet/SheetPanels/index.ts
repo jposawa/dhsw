@@ -1,3 +1,4 @@
+export { AdvancementEditor } from "./AdvancementEditor"
 /**
  * As quatro abas da ficha, um arquivo cada — e Combate em dois, porque os
  * modos dela não compartilham nem um campo: em mesa é marcador e leitura, em
@@ -15,3 +16,4 @@ export { CombatPlay } from "./CombatPlay"
 export { HistoryPanel } from "./HistoryPanel"
 export { InventoryPanel } from "./InventoryPanel"
 export { RulesPanel } from "./RulesPanel"
+export { TraitArrayEditor } from "./TraitArrayEditor"

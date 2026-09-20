@@ -14,6 +14,7 @@ import {
   rosterV7ToV8,
   rosterV8ToV9,
   rosterV9ToV10,
+  rosterV10ToV11,
 } from "./migrations"
 
 /**
@@ -262,11 +263,47 @@ describe("rosterV9ToV10", () => {
     ),
   )
 
-  it("ficha antiga entra sem resposta nenhuma, e na versão de hoje", () => {
+  it("ficha antiga entra sem resposta nenhuma", () => {
     const migrada = rosterV9ToV10(v9).characters["sheet-1"]
 
     expect(migrada.featureNotes).toEqual({})
+    expect(migrada.schema).toBe(10)
+  })
+})
+
+describe("rosterV10ToV11", () => {
+  const v10 = rosterV9ToV10(
+    rosterV8ToV9(
+      rosterV7ToV8(
+        rosterV6ToV7(
+          rosterV5ToV6(
+            rosterV4ToV5(rosterV3ToV4(rosterV2ToV3(rosterV1ToV2(V1_ROSTER)), DEFAULT_HOUSE_RULES)),
+          ),
+        ),
+      ),
+    ),
+  )
+
+  /* `null` é o array do livro: ficha antiga não tinha array sorteado, e os
+     atributos dela continuam onde estavam. */
+  it("ficha antiga fica com o array do livro, e os atributos intactos", () => {
+    const antes = v10.characters["sheet-1"].traits
+    const migrada = rosterV10ToV11(v10).characters["sheet-1"]
+
+    expect(migrada.traitArray).toBeNull()
+    expect(migrada.traits).toEqual(antes)
     expect(migrada.schema).toBe(CHARACTER_SCHEMA_VERSION)
+  })
+
+  it("array sorteado atravessa", () => {
+    const sorteado: RosterState = {
+      ...v10,
+      characters: {
+        "sheet-1": { ...v10.characters["sheet-1"], traitArray: [2, 2, 1, 0, 0, -1] } as Character,
+      },
+    }
+
+    expect(rosterV10ToV11(sorteado).characters["sheet-1"].traitArray).toEqual([2, 2, 1, 0, 0, -1])
   })
 })
 

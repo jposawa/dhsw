@@ -258,7 +258,29 @@ export const rosterV9ToV10 = (value: unknown): RosterState => {
   const characters = Object.fromEntries(
     Object.entries(roster?.characters ?? {}).map(([id, stored]) => [
       id,
-      { ...stored, featureNotes: stored.featureNotes ?? {}, schema: CHARACTER_SCHEMA_VERSION },
+      // `as unknown`: ainda é o formato da v10, e só a última migração da
+      // corrente devolve uma ficha de hoje.
+      { ...stored, featureNotes: stored.featureNotes ?? {}, schema: 10 } as unknown as Character,
+    ]),
+  )
+
+  return { characters, order: roster?.order ?? [] }
+}
+
+/**
+ * v10 → v11: `Character.traitArray`.
+ *
+ * Ficha antiga entra com `null` — o array do livro. Os atributos dela não
+ * mudam: eles já estavam guardados em `traits`, e a distribuição é lida de
+ * volta comparando um com o outro.
+ */
+export const rosterV10ToV11 = (value: unknown): RosterState => {
+  const roster = value as RosterState | null
+
+  const characters = Object.fromEntries(
+    Object.entries(roster?.characters ?? {}).map(([id, stored]) => [
+      id,
+      { ...stored, traitArray: stored.traitArray ?? null, schema: CHARACTER_SCHEMA_VERSION },
     ]),
   )
 

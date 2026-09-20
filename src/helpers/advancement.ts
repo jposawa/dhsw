@@ -1,4 +1,12 @@
-import type { Advancement, AdvancementChange, AdvancementKind, Level, Trait } from "@/types"
+import { ADVANCEMENTS_PER_LEVEL } from "@/constants"
+import type {
+  Advancement,
+  AdvancementChange,
+  AdvancementKind,
+  Character,
+  Level,
+  Trait,
+} from "@/types"
 
 import { isTrait } from "./domain"
 
@@ -48,6 +56,29 @@ export const changesFor = (
 
   return CHANGES_BY_KIND[kind]
 }
+
+/**
+ * Quantos avanços este nível deu, quantos já foram gastos e quanto sobra.
+ *
+ * O nível 1 não dá avanço: ele é a criação. Do 2 em diante, dois por nível —
+ * e é por isso que subir o nível não muda número nenhum sozinho: o que muda a
+ * ficha é escolher o que fazer com os avanços.
+ */
+export const advancementSlots = (
+  character: Character,
+): { total: number; spent: number; remaining: number } => {
+  const total = (character.level - 1) * ADVANCEMENTS_PER_LEVEL
+  const spent = character.advancements.reduce(
+    (soma, advancement) => soma + advancement.slotsSpent,
+    0,
+  )
+
+  return { total, spent, remaining: Math.max(total - spent, 0) }
+}
+
+/** Quanto um avanço deste tipo custa. */
+export const slotsFor = (kind: AdvancementKind): 1 | 2 =>
+  DOUBLE_SLOT_KINDS.has(kind) ? 2 : 1
 
 /** Monta um avanço já com os modificadores dele. É por aqui que a tela cria. */
 export const createAdvancement = (

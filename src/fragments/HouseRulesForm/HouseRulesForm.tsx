@@ -104,6 +104,14 @@ export const HouseRulesForm = ({ value, onChange, className, style }: HouseRules
         description="Arma com Customizable (n) aceita n + 1 augments, no molde do Ikonis. Cada augment exige um Tier mínimo do personagem e, instalado, vale como feature a mais da arma."
         onToggle={() => change({ hasCustomWeapons: !value.hasCustomWeapons })}
       />
+
+      <HouseRuleToggle
+        isOn={value.hasRolledTraitArray}
+        isDisabled={isReadOnly}
+        title="Atributos sorteados"
+        description="Pelo livro, os seis atributos vêm de um array fixo: +2, +1, +1, 0, 0, −1. Ligando, cada atributo sai de 2d4 ficando o maior, menos 2 — mesmo intervalo, mas puxado para cima, e cada personagem com um array próprio. Vale na criação; a ficha guarda o array sorteado."
+        onToggle={() => change({ hasRolledTraitArray: !value.hasRolledTraitArray })}
+      />
     </section>
   )
 }

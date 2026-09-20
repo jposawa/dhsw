@@ -1,7 +1,9 @@
 import { CHARACTER_SCHEMA_VERSION, DEFAULT_HOUSE_RULES, STARTING_HOPE, TRAIT_LIST } from "@/constants"
-import type { Character, HouseRules, Marks, Trait } from "@/types"
+import type { Character, HouseRules, Marks } from "@/types"
 
+import { cryptoDie } from "./dice"
 import { NO_HERITAGE } from "./heritage"
+import { NO_TRAITS, startingTraitArray } from "./traitArray"
 
 /**
  * Fabrica de ficha em branco. Pura — o id vem de `crypto.randomUUID`.
@@ -12,6 +14,7 @@ export const createCharacter = (
   houseRules: HouseRules = DEFAULT_HOUSE_RULES,
 ): Character => {
   const now = Date.now()
+  const traitArray = startingTraitArray(houseRules, cryptoDie)
 
   return {
     id: crypto.randomUUID(),
@@ -25,10 +28,12 @@ export const createCharacter = (
     className: null,
     subclass: null,
     level: 1,
-    traits: TRAIT_LIST.reduce(
-      (traits, trait) => ({ ...traits, [trait]: 0 }),
-      {} as Record<Trait, number>,
-    ),
+    // `null` é o array do livro. A regra da casa que sorteia escreve aqui —
+    // ver `helpers/traitArray.ts`.
+    traitArray,
+    // Nenhum atributo escolhido: `null` é "por distribuir", e é o que faz a
+    // tela saber que os seis valores ainda estão no monte.
+    traits: NO_TRAITS,
     partyId: null,
     houseRules,
     marks: { hp: 0, stress: 0, armor: 0, hope: STARTING_HOPE },
@@ -100,12 +105,16 @@ export const normalizeCharacter = (stored: Character): Character => {
     // 1ª espécie volta de lá como `{ first }` — a mesclagem rasa deixaria
     // `second` indefinido, e `heritageFeatures` lê as duas.
     featureNotes: { ...stored.featureNotes },
+    traitArray: stored.traitArray ?? null,
     heritage: {
       ...blank.heritage,
       ...stored.heritage,
       sources: { ...blank.heritage.sources, ...stored.heritage?.sources },
     },
-    traits: { ...blank.traits, ...stored.traits },
+    // Atributo ausente é atributo por distribuir. O RTDB apaga a chave de
+    // valor `null` e guarda o `0`, então a volta é sem ambiguidade: o que
+    // faltou nunca foi escolhido.
+    traits: { ...NO_TRAITS, ...stored.traits },
     marks: { ...NO_MARKS, ...stored.marks },
     houseRules: { ...blank.houseRules, ...stored.houseRules },
   }
@@ -123,6 +132,7 @@ const EDITED_FIELDS = [
   "name",
   "avatarUrl",
   "featureNotes",
+  "traitArray",
   "level",
   "className",
   "subclass",

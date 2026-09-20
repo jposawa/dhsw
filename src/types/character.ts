@@ -65,6 +65,15 @@ export type Advancement = {
   slotsSpent: 1 | 2
 }
 
+/**
+ * Os seis atributos, como a ficha os guarda.
+ *
+ * `null` é **por distribuir**, e não zero: zero é um valor do array, e usar o
+ * mesmo número para as duas coisas faria uma ficha nova parecer ter dois
+ * atributos já escolhidos. `derive` lê `null` como zero.
+ */
+export type TraitValues = Readonly<Record<Trait, number | null>>
+
 export type Experience = {
   name: string
   bonus: number
@@ -171,8 +180,18 @@ export type Character = {
   subclass: string | null
   level: Level
 
-  /** Só o valor base. O final sai de `derive`. */
-  traits: Record<Trait, number>
+  /**
+   * Os seis valores a distribuir pelos atributos. `null` é o array do livro
+   * — `STARTING_TRAIT_ARRAY`.
+   *
+   * Guardado porque com a regra da casa ele é **sorteado**, e sorteio tem de
+   * acontecer uma vez: derivá-lo a cada render daria um personagem diferente
+   * a cada abertura da ficha.
+   */
+  traitArray: readonly number[] | null
+
+  /** Só o valor base — o que foi distribuído. O final sai de `derive`. */
+  traits: TraitValues
 
   marks: Marks
   tokens: readonly TokenCount[]
@@ -221,6 +240,8 @@ export type HouseRules = {
   hasGranularDamageTypes: boolean
   /** Toda arma aceita augments em Tier + 1 slots. */
   hasCustomWeapons: boolean
+  /** O array de atributos é sorteado em vez de ser o do livro. */
+  hasRolledTraitArray: boolean
 }
 
 /** Armadura equipada, já resolvida contra a linha e o tier. */

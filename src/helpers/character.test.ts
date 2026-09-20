@@ -36,13 +36,22 @@ describe("normalizeCharacter", () => {
     expect(normalized.experiences).toEqual([])
   })
 
-  it("completa os seis tracos quando o zero nao foi gravado", () => {
-    const stored = { ...createCharacter(), traits: undefined } as unknown as Character
+  /* O RTDB apaga a chave de valor `null` e guarda o `0`: o que volta sem
+     chave nunca foi distribuído, e o zero distribuído volta como zero. */
+  it("traco ausente volta como por distribuir, e o zero volta zero", () => {
+    const parcial = {
+      ...createCharacter(),
+      traits: { Agility: 2, Strength: 0 },
+    } as unknown as Character
 
-    const normalized = normalizeCharacter(stored)
+    const normalized = normalizeCharacter(parcial)
 
-    for (const trait of TRAIT_LIST) {
-      expect(normalized.traits[trait]).toBe(0)
+    expect(normalized.traits.Agility).toBe(2)
+    expect(normalized.traits.Strength).toBe(0)
+    for (const trait of TRAIT_LIST.filter(
+      (candidate) => candidate !== "Agility" && candidate !== "Strength",
+    )) {
+      expect(normalized.traits[trait]).toBeNull()
     }
   })
 

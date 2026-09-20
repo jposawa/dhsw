@@ -1,0 +1,109 @@
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.empty,
+.hint {
+  margin: 0;
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  color: var(--color-text-dim);
+}
+
+.hint {
+  color: var(--color-chrome-strong);
+}
+
+.taken,
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: var(--size-touch-target);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-bg-elevated);
+}
+
+.rowText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.rowName {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--color-ink);
+}
+
+.rowMeta {
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+}
+
+.remove {
+  width: var(--size-touch-target);
+  flex-shrink: 0;
+  padding: 0;
+}
+
+/*
+ * A opção e o que ela pede. Empilhadas no celular; lado a lado quando o nome
+ * e as escolhas couberem na mesma linha.
+ */
+.option {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface);
+  border-top: var(--border-width) solid var(--color-border);
+}
+
+.optionName {
+  font-size: var(--text-sm);
+  color: var(--color-ink);
+}
+
+/* Custa os dois avanços do nível: dito ao lado, não escondido no clique. */
+.optionCost {
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-warning);
+}
+
+/* As escolhas de um avanço que ainda pede detalhe — o atributo, o domínio. */
+.details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+
+.detail {
+  font-size: var(--text-2xs);
+}
+
+@media (min-width: 900px) {
+  .option {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}

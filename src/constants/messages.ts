@@ -28,4 +28,7 @@ export const RULE_ERROR_MESSAGES: Readonly<Record<RuleErrorCode, string>> = {
   classUnknown: "Classe desconhecida.",
   subclassNotOfClass: "Esta subclasse não pertence à classe escolhida.",
   tokenPoolUnknown: "Esta ficha não tem esse contador de tokens.",
+  tokenDieUnknown: "Esse dado já não está na ficha.",
+  tokenDieOutOfRange: "Valor fora do dado.",
+  tokenDiceFull: "Já há dados demais guardados — gaste ou role de novo.",
 }

@@ -17,6 +17,11 @@ type IdentityFeaturesProps = BaseComponent & {
   character: Character
   /** Contador de tokens pela chave da fonte. Sem ele, só o texto. */
   renderTokens?: (key: string) => React.ReactNode
+  /**
+   * Escreve nas respostas da feature. Em mesa só o campo numérico usa — ver
+   * `FeatureNotes`. Sem ele, tudo aqui é leitura.
+   */
+  onNoteChange?: (mutate: (current: Character) => Character) => void
 }
 
 /**
@@ -29,6 +34,7 @@ type IdentityFeaturesProps = BaseComponent & {
 export const IdentityFeatures = ({
   character,
   renderTokens,
+  onNoteChange,
   className,
   style,
 }: IdentityFeaturesProps) => {
@@ -45,6 +51,16 @@ export const IdentityFeatures = ({
   const { isMixed } = character.heritage
   const community = compendium.communities.find(
     (candidate) => candidate.name === character.community,
+  )
+
+  /** As respostas da feature, dentro da carta dela. Ver `FeatureNotes`. */
+  const notesOf = (featureName: string) => (
+    <FeatureNotes
+      character={character}
+      feature={featureName}
+      writable="numbers"
+      onChange={onNoteChange}
+    />
   )
 
   const hasAny = Boolean(classDefinition ?? subclass ?? community) || heritage.length > 0
@@ -75,6 +91,7 @@ export const IdentityFeatures = ({
                   renderTokens={(featureName) =>
                     renderTokens?.(tokenPoolKey("class", classDefinition.name, featureName))
                   }
+                  renderNotes={notesOf}
                 />
               </article>
             </li>
@@ -112,9 +129,7 @@ export const IdentityFeatures = ({
                 <OriginFeatures
                   features={heritage.map((feature) => feature.text)}
                   sources={isMixed ? heritage.map((feature) => feature.ancestry) : undefined}
-                  renderNotes={(featureName) => (
-                    <FeatureNotes character={character} feature={featureName} />
-                  )}
+                  renderNotes={notesOf}
                 />
               </article>
             </li>
@@ -129,9 +144,7 @@ export const IdentityFeatures = ({
                 </hgroup>
                 <OriginFeatures
                   features={[community.feature]}
-                  renderNotes={(featureName) => (
-                    <FeatureNotes character={character} feature={featureName} />
-                  )}
+                  renderNotes={notesOf}
                 />
               </article>
             </li>

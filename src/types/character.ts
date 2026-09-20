@@ -146,6 +146,8 @@ export type ActiveTokenPool = {
   pool: TokenPool
   /** Teto dos tokens. `null` é acumulador, sem teto. */
   max: number | null
+  /** Faces do dado, quando a fonte é um punhado de dados. `null` é marca. */
+  dieSides: number | null
   /** Cor do domínio, para o contador acompanhar a carta ou a classe. */
   domain: Domain | null
 }
@@ -154,6 +156,15 @@ export type TokenCount = {
   /** Chave da fonte, de `tokenPoolKey` em `rules/tokens.ts`. */
   pool: string
   count: number
+  /**
+   * As faces dos dados ainda **não gastos**, quando a fonte é um punhado de
+   * dados e não de marcas — ver `TokenPool.dieSides`. `count` acompanha o
+   * tamanho desta lista; quem lê dado lê daqui, e quem lê marca lê o `count`.
+   *
+   * Ausente na fonte de marcas. O RTDB apaga lista vazia, então "sem dados" e
+   * "campo ausente" são a mesma coisa de propósito.
+   */
+  values?: readonly number[]
 }
 
 /**

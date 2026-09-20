@@ -4,7 +4,7 @@ import React from "react"
 import { DOWNTIME_MOVES_PER_REST } from "@/constants"
 import { RuleText } from "@/fragments"
 import { useCompendium } from "@/hooks"
-import { movesForRest, takeRest } from "@/helpers"
+import { cryptoDie, movesForRest, takeRest } from "@/helpers"
 import type { Character, DerivedStats, DowntimeChoice, RestKind, Result } from "@/types"
 
 import { RestChoice } from "./RestChoice"
@@ -53,7 +53,8 @@ export const RestDrawer = ({ isOpen, character, derived, onApply, onClose }: Res
   }
 
   const handleConfirm = () => {
-    const result = takeRest(character, derived, rest, choices, compendium)
+    // O descanso rola os dados que a feature guarda — Determination Dice.
+    const result = takeRest(character, derived, rest, choices, compendium, cryptoDie)
     onApply(result)
 
     if (result.ok) {

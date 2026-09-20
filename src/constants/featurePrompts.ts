@@ -24,4 +24,8 @@ import type { FeaturePrompt } from "@/types"
 export const FALLBACK_FEATURE_PROMPTS: readonly FeaturePrompt[] = [
   /* Orderborne: "Registre três ditados ou valores da sua criação." */
   { feature: "Dedicated", count: 3, label: "Ditado" },
+  /* Adept: "escolha um número de 1 a 12" no descanso longo. O resto da
+     feature — ganhar Hope ou limpar Stress ao rolar aquele número — a mesa
+     resolve na mão; o que a ficha precisa guardar é o número. */
+  { feature: "Force Patterns", count: 1, label: "Número escolhido", min: 1, max: 12 },
 ]

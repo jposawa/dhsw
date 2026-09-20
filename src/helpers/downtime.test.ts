@@ -42,6 +42,7 @@ const rest = (character: Character, kind: "short" | "long", choices: DowntimeCho
     kind,
     choices,
     TEST_COMPENDIUM,
+    () => 1,
   )
 
 const marksOf = (result: ReturnType<typeof takeRest>) => (result.ok ? result.value.marks : null)

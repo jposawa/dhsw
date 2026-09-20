@@ -43,6 +43,23 @@ describe("featureFieldsFor", () => {
     ])
   })
 
+  /* Feature de classe também pede: o `Force Patterns` do Adept quer um número
+     de 1 a 12, e o resto dela a mesa resolve na mão. */
+  it("campo numérico de feature de classe, sem numerar o rótulo", () => {
+    const adept: Character = { ...withCommunity(null), className: "Adept" }
+    const fields = featureFieldsFor(adept, TEST_COMPENDIUM)
+
+    expect(fields).toEqual([
+      {
+        key: "Force Patterns:0",
+        feature: "Force Patterns",
+        label: "Número escolhido",
+        min: 1,
+        max: 12,
+      },
+    ])
+  })
+
   /* A chave é a feature e a linha, nunca a posição: trocar de origem não pode
      empurrar a resposta de uma feature para a que entrou no lugar. */
   it("a chave não depende de que outras features a ficha tem", () => {

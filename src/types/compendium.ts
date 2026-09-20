@@ -30,6 +30,16 @@ export type TokenRefill = "rest" | "longRest" | "manual"
  * reposição zera em vez de encher.
  */
 export type TokenPool = {
+  /**
+   * O token é um **dado guardado**, e não uma marca: o `Determination Dice`
+   * manda rolar N d4 no descanso longo e deixar os dados na ficha, porque cada
+   * um se gasta **pelo valor que saiu** — 3 de dano reduzido, +3 numa rolagem,
+   * 3 de Hope. Uma contagem não guarda isso: diz quantos sobraram e perde o
+   * que cada um vale.
+   *
+   * Com `dieSides`, a escala diz **quantos dados** a reposição rola.
+   */
+  dieSides?: number
   scale?: TokenScale
   /** O domínio contado por `domainCards`. */
   domain?: Domain
@@ -84,6 +94,12 @@ export type ClassDefinition = {
   /** As features que toda ficha da classe tem, desde o nível 1. */
   features: readonly ClassFeature[]
   hopeFeature: string
+  /**
+   * O que alguma das features da classe pede à ficha. No dono e não na
+   * feature, como em `Ancestry` e `Community` — o `feature` de cada prompt
+   * diz de qual delas é. Ver `FeaturePrompt`.
+   */
+  prompts?: readonly FeaturePrompt[]
 }
 
 /**
@@ -168,8 +184,15 @@ export type FeaturePrompt = {
   /** O nome da feature que pede, como ele aparece em negrito no texto dela. */
   feature: string
   count: number
-  /** O singular, numerado na tela: "Tenet 1", "Tenet 2". */
+  /** O singular, numerado na tela quando há mais de um: "Tenet 1", "Tenet 2". */
   label: string
+  /**
+   * Faixa de um campo **numérico**: o `Force Patterns` pede um número de 1 a
+   * 12, e o resto da feature a mesa resolve na mão. Com os dois, o campo vira
+   * um número curto em vez de uma linha de texto; sem eles, é texto.
+   */
+  min?: number
+  max?: number
 }
 
 export type Community = {

@@ -83,8 +83,11 @@ export const TEST_COMPENDIUM: Compendium = {
         {
           name: "Determination Dice",
           text: TEXT,
-          tokens: { scale: "forcewield", maxAtLeast: 1, refill: "longRest" },
+          // Dado guardado, e não marca: cada token é um d4 já rolado.
+          tokens: { scale: "forcewield", maxAtLeast: 1, refill: "longRest", dieSides: 4 },
         },
+        // Pede um número de 1 a 12, e nada mais: o efeito a mesa resolve.
+        { name: "Force Patterns", text: TEXT },
       ],
       hopeFeature: TEXT,
     },

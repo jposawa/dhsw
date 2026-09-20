@@ -52,39 +52,41 @@ export const TraitArrayEditor = ({
   style,
 }: TraitArrayEditorProps) => {
   const array = traitArrayOf(draft)
-  const restantes = remainingTraitValues(draft)
-  const completa = isTraitArrayDistributed(draft)
+  const remaining = remainingTraitValues(draft)
+  const isDistributed = isTraitArrayDistributed(draft)
 
   /**
    * As opções deste atributo: o que sobrou, sem repetir — dois zeros no monte
    * são uma linha só, porque escolher "+0" é escolher um deles — mais o que
-   * ele já tem, para a lista mostrar o valor atual, e o "—" que o devolve.
+   * ele já tem, para a lista mostrar o valor corrente, e o "—" que o devolve.
    */
-  const opcoesDe = (trait: Trait) => {
-    const atual = draft.traits[trait]
-    const livres = [...new Set(restantes)]
-    const todas = atual === null ? livres : [...new Set([atual, ...livres])]
+  const optionsFor = (trait: Trait) => {
+    const assigned = draft.traits[trait]
+    const free = [...new Set(remaining)]
+    const values = assigned === null ? free : [...new Set([assigned, ...free])]
 
     return [
-      ...todas
+      ...values
         .sort((a, b) => b - a)
         .map((value) => ({ value: String(value), label: formatSigned(value) })),
-      ...(atual === null ? [] : [{ value: CLEAR, label: "—" }]),
+      ...(assigned === null ? [] : [{ value: CLEAR, label: "—" }]),
     ]
   }
 
-  const escolher = (trait: Trait, value: string) => {
+  const pick = (trait: Trait, value: string) => {
     onChange((current) =>
-      value === CLEAR ? clearTraitValue(current, trait) : assignTraitValue(current, trait, Number(value)),
+      value === CLEAR
+        ? clearTraitValue(current, trait)
+        : assignTraitValue(current, trait, Number(value)),
     )
   }
 
-  const sortear = () => {
-    const novo = rollTraitArray(cryptoDie)
+  const rollArray = () => {
+    const rolled = rollTraitArray(cryptoDie)
 
     onChange((current) => ({
       ...current,
-      traitArray: novo,
+      traitArray: rolled,
       // A distribuição antiga não vale para o array novo: os valores mudaram,
       // e adivinhar onde cada um iria seria escolher pela mesa.
       traits: NO_TRAITS,
@@ -97,16 +99,14 @@ export const TraitArrayEditor = ({
         <h3>ATRIBUTOS</h3>
       </SectionLabel>
 
-      {!completa && (
-        <p className={styles.warning}>
-          Falta distribuir: {restantes.map(formatSigned).join(", ")}.
-        </p>
+      {!isDistributed && (
+        <p className={styles.warning}>Falta distribuir: {remaining.map(formatSigned).join(", ")}.</p>
       )}
 
       <ul className={styles.traits}>
         {TRAIT_LIST.map((trait) => {
           const stat = derived.traits[trait]
-          const atual = draft.traits[trait]
+          const assigned = draft.traits[trait]
 
           return (
             <li
@@ -121,14 +121,14 @@ export const TraitArrayEditor = ({
                   de moldura. O nome fica em cima, como na ficha do livro. */}
               <Select
                 className={styles.pick}
-                options={opcoesDe(trait)}
-                value={atual === null ? null : String(atual)}
+                options={optionsFor(trait)}
+                value={assigned === null ? null : String(assigned)}
                 placeholder="—"
                 aria-label={trait}
-                onValueChange={(value) => escolher(trait, value)}
+                onValueChange={(value) => pick(trait, value)}
               />
 
-              {atual !== null && stat.total !== atual && (
+              {assigned !== null && stat.total !== assigned && (
                 <span className={styles.total}>{formatSigned(stat.total)} com mods</span>
               )}
 
@@ -141,7 +141,7 @@ export const TraitArrayEditor = ({
       </ul>
 
       {houseRules.hasRolledTraitArray && (
-        <Button className={styles.roll} variant="outline" onClick={sortear}>
+        <Button className={styles.roll} variant="outline" onClick={rollArray}>
           <LuDices aria-hidden="true" />
           &nbsp;SORTEAR ARRAY
         </Button>

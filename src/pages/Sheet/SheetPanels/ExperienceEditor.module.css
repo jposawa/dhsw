@@ -14,27 +14,34 @@
   list-style: none;
 }
 
+/* Nome, bônus e o remover, numa linha só: o bônus não se edita mais aqui, e
+   o que sobrou cabe na altura de um toque. */
 .row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  min-height: var(--size-touch-target);
-  padding: var(--space-2) var(--space-3);
-  background: var(--color-bg-elevated);
-}
-
-.rowName {
-  font-size: var(--text-sm);
-  color: var(--color-ink);
-  overflow-wrap: break-word;
-}
-
-.rowActions {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   align-items: center;
   gap: var(--space-2);
-  flex-shrink: 0;
+  padding-left: var(--space-3);
+  background: var(--color-bg-elevated);
+
+  .rowName {
+    min-width: 0;
+    font-size: var(--text-sm);
+    color: var(--color-ink);
+    overflow-wrap: break-word;
+  }
+
+  /* Leitura, não campo: a base é o +2 de nascença e o resto veio de avanço. */
+  .bonus {
+    font-size: var(--text-sm);
+    font-variant-numeric: tabular-nums;
+    color: var(--color-chrome-strong);
+  }
+
+  .remove {
+    width: var(--size-touch-target);
+    padding: 0;
+  }
 }
 
 /* O campo ocupa a sobra e o botão fica do tamanho do texto dele. */
@@ -43,12 +50,6 @@
   grid-template-columns: 1fr auto;
   align-items: center;
   gap: var(--space-2);
-}
-
-.empty {
-  margin: 0;
-  font-size: var(--text-xs);
-  color: var(--color-text-dim);
 }
 
 /* A vaga que o nível concede e ainda não foi preenchida: tracejada, para ler

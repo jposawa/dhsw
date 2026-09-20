@@ -1,16 +1,18 @@
-import { Button, SectionLabel } from "@jposawa/ronin-ui"
+import { Button, Chip, SectionLabel } from "@jposawa/ronin-ui"
 import clsx from "clsx"
-import { LuTrash2 } from "react-icons/lu"
+import React from "react"
+import { LuPlus, LuTrash2 } from "react-icons/lu"
 
-import { ADVANCEMENT_OPTIONS, DOMAIN_LIST, TRAIT_LIST } from "@/constants"
-import { advancementSlots, canMulticlass, createAdvancement, slotsFor } from "@/helpers"
-import type {
-  AdvancementKind,
-  BaseComponent,
-  Character,
-  HouseRules,
-  Level,
-} from "@/types"
+import {
+  advancementLabel,
+  advancementSlots,
+  availableAdvancements,
+  createAdvancement,
+  picksAvailableFor,
+  picksFor,
+  slotsFor,
+} from "@/helpers"
+import type { AdvancementKind, BaseComponent, Character, HouseRules, Level } from "@/types"
 
 import styles from "./AdvancementEditor.module.css"
 
@@ -28,9 +30,12 @@ type AdvancementEditorProps = BaseComponent & {
  * não mexe em atributo, HP ou Evasion, e esta lista é o único lugar em que
  * isso acontece.
  *
- * Cada avanço guarda o que move (`changes`), então o histórico explica de onde
- * veio cada número — e um avanço de regra da casa entra aqui sem tocar na
- * matemática. Ver `helpers/advancement.ts`.
+ * Quem decide o que aparece aqui é `availableAdvancements`: tier, slots do
+ * tier e o que sobrou para escolher. A tela não repete nenhuma dessas contas.
+ *
+ * Os dois avanços que pedem escolha pedem **dois** de cada vez, e é o segundo
+ * toque que fecha a compra: um botão de confirmar depois de dois toques seria
+ * um terceiro toque para dizer o que os dois já disseram.
  */
 export const AdvancementEditor = ({
   draft,
@@ -40,42 +45,58 @@ export const AdvancementEditor = ({
   style,
 }: AdvancementEditorProps) => {
   const slots = advancementSlots(draft)
+  const available = availableAdvancements(draft, houseRules)
 
-  const podeMulticlasse = canMulticlass(draft.level, houseRules)
+  /** O avanço aberto para escolher, e o que já foi apontado nele. */
+  const [open, setOpen] = React.useState<AdvancementKind | null>(null)
+  const [picked, setPicked] = React.useState<readonly string[]>([])
 
-  const comprar = (kind: AdvancementKind, detail = "") => {
+  const take = (kind: AdvancementKind, details: readonly string[] = []) => {
     onChange((current) => ({
       ...current,
       advancements: [
         ...current.advancements,
-        createAdvancement(current.level as Level, kind, detail),
+        createAdvancement(current.level as Level, kind, details),
       ],
     }))
+
+    setOpen(null)
+    setPicked([])
   }
 
-  const devolver = (index: number) => {
+  const undo = (index: number) => {
     onChange((current) => ({
       ...current,
-      advancements: current.advancements.filter((_unused, posicao) => posicao !== index),
+      advancements: current.advancements.filter((_unused, position) => position !== index),
     }))
   }
 
-  /** As escolhas que um avanço ainda pede, quando o tipo não basta. */
-  const detalhesDe = (kind: AdvancementKind): readonly string[] => {
-    if (kind === "trait") {
-      return TRAIT_LIST
+  /** Avanço que não pede nada entra no toque; o resto abre as escolhas. */
+  const start = (kind: AdvancementKind) => {
+    if (picksFor(kind) === 0) {
+      take(kind)
+
+      return
     }
 
-    return kind === "multiclass" ? DOMAIN_LIST : []
+    setPicked([])
+    setOpen(open === kind ? null : kind)
   }
 
-  const disponiveis = ADVANCEMENT_OPTIONS.filter((option) => {
-    if (slotsFor(option.kind) > slots.remaining) {
-      return false
+  /** Apontar a última escolha que faltava já compra o avanço. */
+  const pick = (kind: AdvancementKind, detail: string) => {
+    const next = picked.includes(detail)
+      ? picked.filter((candidate) => candidate !== detail)
+      : [...picked, detail]
+
+    if (next.length === picksFor(kind)) {
+      take(kind, next)
+
+      return
     }
 
-    return option.kind === "multiclass" ? podeMulticlasse : true
-  })
+    setPicked(next)
+  }
 
   return (
     <section className={clsx(styles.editor, className)} style={style} aria-label="Avanços">
@@ -83,90 +104,81 @@ export const AdvancementEditor = ({
         <h3>AVANÇOS</h3>
       </SectionLabel>
 
-      {draft.level === 1 ? (
-        <p className={styles.empty}>
-          O nível 1 é a criação: os avanços começam no nível 2, dois por nível.
-        </p>
-      ) : (
-        <>
-          {draft.advancements.length > 0 && (
-            <ul className={styles.taken}>
-              {draft.advancements.map((advancement, index) => (
-                <li className={styles.row} key={`${advancement.level}-${advancement.kind}-${index}`}>
-                  <span className={styles.rowText}>
-                    <b className={styles.rowName}>
-                      {labelOf(advancement.kind)}
-                      {advancement.detail && ` · ${advancement.detail}`}
-                    </b>
-                    <span className={styles.rowMeta}>
-                      Nível {advancement.level} · {advancement.slotsSpent === 2 ? "dois" : "um"}
-                    </span>
+      {draft.level === 1 && <p className={styles.empty}>Começam no nível 2.</p>}
+
+      {draft.advancements.length > 0 && (
+        <ul className={styles.taken}>
+          {draft.advancements.map((advancement, index) => (
+            <li className={styles.row} key={`${advancement.level}-${advancement.kind}-${index}`}>
+              {/* O nível de onde ele veio. Número, porque a coluna é sempre
+                  a mesma — o nome por extenso repetiria "nível" em cada linha. */}
+              <span className={styles.rowLevel} title={`Nível ${advancement.level}`}>
+                {advancement.level}
+              </span>
+
+              <span className={styles.rowName}>
+                {advancementLabel(advancement.kind)}
+                {advancement.details.length > 0 && (
+                  <span className={styles.rowDetail}>{advancement.details.join(" · ")}</span>
+                )}
+              </span>
+
+              <Button
+                variant="text"
+                intent="danger"
+                className={styles.undo}
+                aria-label={`Desfazer ${advancementLabel(advancement.kind)}`}
+                onClick={() => undo(index)}
+              >
+                <LuTrash2 aria-hidden="true" />
+              </Button>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {draft.level > 1 && slots.remaining > 0 && (
+        <ul className={styles.options}>
+          {available.map(({ option, remaining }) => (
+            <li className={styles.option} key={option.kind} data-open={open === option.kind}>
+              <button
+                type="button"
+                className={styles.optionHead}
+                aria-expanded={picksFor(option.kind) === 0 ? undefined : open === option.kind}
+                onClick={() => start(option.kind)}
+              >
+                <span className={styles.optionName}>{option.label}</span>
+
+                {/* Quantos ainda cabem no tier, e o que custa os dois avanços
+                    do nível. Números, não frases: a lista tem nove linhas. */}
+                {remaining > 1 && (
+                  <span className={styles.optionSlots} title={`Cabe ${remaining}× neste tier`}>
+                    {remaining}×
                   </span>
+                )}
+                {slotsFor(option.kind) === 2 && (
+                  <span className={styles.optionCost}>custa 2</span>
+                )}
 
-                  <Button
-                    variant="outline"
-                    intent="danger"
-                    className={styles.remove}
-                    aria-label={`Desfazer ${labelOf(advancement.kind)}`}
-                    onClick={() => devolver(index)}
-                  >
-                    <LuTrash2 />
-                  </Button>
-                </li>
-              ))}
-            </ul>
-          )}
+                <LuPlus className={styles.optionIcon} aria-hidden="true" />
+              </button>
 
-          {slots.remaining === 0 ? (
-            <p className={styles.empty}>Todos os avanços deste nível estão escolhidos.</p>
-          ) : (
-            <>
-              <p className={styles.hint}>
-                {slots.remaining === 1 ? "Falta 1 avanço" : `Faltam ${slots.remaining} avanços`}.
-              </p>
-
-              <ul className={styles.options}>
-                {disponiveis.map((option) => {
-                  const detalhes = detalhesDe(option.kind)
-
-                  return (
-                    <li className={styles.option} key={option.kind}>
-                      <span className={styles.optionName}>
-                        {option.label}
-                        {slotsFor(option.kind) === 2 && (
-                          <span className={styles.optionCost}> · custa dois</span>
-                        )}
-                      </span>
-
-                      {detalhes.length === 0 ? (
-                        <Button variant="outline" onClick={() => comprar(option.kind)}>
-                          ESCOLHER
-                        </Button>
-                      ) : (
-                        <span className={styles.details}>
-                          {detalhes.map((detalhe) => (
-                            <Button
-                              className={styles.detail}
-                              variant="outline"
-                              key={detalhe}
-                              onClick={() => comprar(option.kind, detalhe)}
-                            >
-                              {detalhe}
-                            </Button>
-                          ))}
-                        </span>
-                      )}
-                    </li>
-                  )
-                })}
-              </ul>
-            </>
-          )}
-        </>
+              {open === option.kind && (
+                <span className={styles.picks}>
+                  {picksAvailableFor(draft, option.kind).map((detail) => (
+                    <Chip
+                      key={detail}
+                      label={detail}
+                      isActive={picked.includes(detail)}
+                      onToggle={() => pick(option.kind, detail)}
+                    />
+                  ))}
+                </span>
+              )}
+            </li>
+          ))}
+        </ul>
       )}
     </section>
   )
 }
-
-const labelOf = (kind: AdvancementKind): string =>
-  ADVANCEMENT_OPTIONS.find((option) => option.kind === kind)?.label ?? kind

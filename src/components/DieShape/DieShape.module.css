@@ -1,6 +1,6 @@
 /*
  * O dado acompanha o texto ao redor: tudo em `em`, e `currentColor` no traço.
- * Quem usa decide o tamanho pelo `font-size`, como no `NavIcon`.
+ * Quem usa decide o tamanho pelo `font-size`, como no `Icon`.
  */
 .die {
   display: inline-flex;
@@ -8,42 +8,42 @@
   align-items: center;
   gap: 0.15em;
   flex-shrink: 0;
-}
 
-/* O polígono e o valor ocupam a mesma célula: o valor cai no centro do dado. */
-.art {
-  display: grid;
-  place-items: center;
-}
+  /* O polígono e o valor ocupam a mesma célula: o valor cai no centro do dado. */
+  .art {
+    display: grid;
+    place-items: center;
 
-.art > * {
-  grid-area: 1 / 1;
-}
+    > * {
+      grid-area: 1 / 1;
+    }
 
-.shape {
-  width: 2.25em;
-  height: 2.25em;
-}
+    .shape {
+      width: 2.25em;
+      height: 2.25em;
+    }
 
-/* Mais apagadas que o contorno: elas dão volume, e no mesmo peso competiriam
-   com o valor que fica no meio. */
-.facet {
-  opacity: 0.45;
-}
+    /* Mais apagadas que o contorno: elas dão volume, e no mesmo peso
+       competiriam com o valor que fica no meio. */
+    .facet {
+      opacity: 0.45;
+    }
 
-/* O valor rolado, dentro do dado. */
-.value {
-  font-size: 0.95em;
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
-  color: var(--color-ink);
-}
+    /* O valor rolado, dentro do dado. */
+    .value {
+      font-size: 0.95em;
+      font-weight: 500;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+      color: var(--color-ink);
+    }
+  }
 
-/* `D10` embaixo do dado, e não dentro dele. */
-.caption {
-  font-size: 0.7em;
-  font-weight: 500;
-  letter-spacing: var(--tracking-wide);
-  line-height: 1;
+  /* `D10` embaixo do dado, e não dentro dele. */
+  .caption {
+    font-size: 0.7em;
+    font-weight: 500;
+    letter-spacing: var(--tracking-wide);
+    line-height: 1;
+  }
 }

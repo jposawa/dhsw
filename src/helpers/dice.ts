@@ -1,3 +1,4 @@
+import { DIE_SIDES, DUALITY_SIDES } from "@/constants"
 import type {
   DiceGroup,
   DicePool,
@@ -24,8 +25,9 @@ import type {
  * Uma rolagem é uma expressão só — um **pool** de termos somados ou
  * subtraídos: `duality+2-1d6`, `2d8+3`. `duality` são os Duality Dice, Hope
  * d12 + Fear d12. Com eles no pool, um d6 somado é o dado de vantagem e um
- * subtraído, o de desvantagem (Core Rulebook, p. 100); os dois d12 iguais são
- * crítico, que conta como Hope mesmo com total baixo (p. 90).
+ * subtraído, o de desvantagem (Core Rulebook, p. 100); os dois dados de
+ * dualidade empatados são crítico, que conta como Hope mesmo com total baixo
+ * (p. 90) — inclusive quando uma feature trocou o dado de um dos lados.
  *
  * Atalho de ficha não rola: prepara a expressão, e quem rola ainda pode somar
  * e tirar dados antes.
@@ -56,12 +58,25 @@ export const DUALITY_TOKEN = "duality"
 const MAX_DICE_PER_GROUP = 100
 const MAX_SIDES = 1000
 
-export const EMPTY_POOL: DicePool = { hope: 0, fear: 0, groups: [], modifier: 0 }
+export const EMPTY_POOL: DicePool = {
+  hope: 0,
+  fear: 0,
+  hopeSides: DUALITY_SIDES,
+  fearSides: DUALITY_SIDES,
+  groups: [],
+  modifier: 0,
+}
 
 /** Quantos d12 de Hope ou de Fear cabem numa rolagem. */
 const MAX_DUALITY_DICE = 9
 
-const DUALITY_TERM = "(duality|[0-9]*hope|[0-9]*fear)"
+/**
+ * `duality`, `2hope`, `d20fear`, `2d20hope`.
+ *
+ * O `d<faces>` opcional é o dado trocado por feature — o Dedicated do
+ * Orderborne rola d20 como Hope. Sem ele vale o d12 do livro.
+ */
+const DUALITY_TERM = "(duality|[0-9]*(?:d[0-9]+)?hope|[0-9]*(?:d[0-9]+)?fear)"
 const DIE_TERM = "[0-9]*d[0-9]+|[0-9]+"
 const TERM = new RegExp(`([+-]?)(${DUALITY_TERM}|${DIE_TERM})`, "g")
 const WHOLE = new RegExp(
@@ -83,6 +98,9 @@ export const parseDicePool = (text: string): DicePool | null => {
   const groups: DiceGroup[] = []
   let hope = 0
   let fear = 0
+  // `null` é "a expressão não disse": no fim vale o d12 do livro.
+  let hopeSides: number | null = null
+  let fearSides: number | null = null
   let modifier = 0
 
   for (const [, signText, term] of compact.matchAll(TERM)) {
@@ -98,20 +116,36 @@ export const parseDicePool = (text: string): DicePool | null => {
       continue
     }
 
-    // `2hope`, `fear`: o d12 avulso, para quando a mesa pede um lado só.
-    const duality = /^([0-9]*)(hope|fear)$/.exec(term)
+    // `2hope`, `fear`, `d20hope`: o lado avulso, para quando a mesa pede um
+    // só — e o dado trocado, quando uma feature troca.
+    const duality = /^([0-9]*)(?:d([0-9]+))?(hope|fear)$/.exec(term)
 
     if (duality) {
       const count = duality[1] === "" ? 1 : Number(duality[1])
+      const sides = duality[2] === undefined ? null : Number(duality[2])
+      const isHope = duality[3] === "hope"
 
       if (sign < 0 || count < 1) {
         return null
       }
 
-      if (duality[2] === "hope") {
+      if (sides !== null && (sides < 2 || sides > MAX_SIDES)) {
+        return null
+      }
+
+      // Duas medidas para o mesmo lado não são um pool: o lado tem um dado só.
+      const declared: number | null = isHope ? hopeSides : fearSides
+
+      if (sides !== null && declared !== null && declared !== sides) {
+        return null
+      }
+
+      if (isHope) {
         hope += count
+        hopeSides = sides ?? hopeSides
       } else {
         fear += count
+        fearSides = sides ?? fearSides
       }
 
       continue
@@ -147,21 +181,49 @@ export const parseDicePool = (text: string): DicePool | null => {
     return null
   }
 
-  return hope > 0 || fear > 0 || groups.length > 0 ? { hope, fear, groups, modifier } : null
+  if (hope === 0 && fear === 0 && groups.length === 0) {
+    return null
+  }
+
+  return {
+    hope,
+    fear,
+    hopeSides: hopeSides ?? DUALITY_SIDES,
+    fearSides: fearSides ?? DUALITY_SIDES,
+    groups,
+    modifier,
+  }
 }
+
+/** `1hope`, `2d20fear` — o `d<faces>` só aparece quando não é o d12 do livro. */
+const dualityTerm = (count: number, sides: number, die: DualityDie): string =>
+  `${count}${sides === DUALITY_SIDES ? "" : `d${sides}`}${die}`
 
 /**
  * Pool → texto canônico: `duality+2d6-1d6+3`. Vazio para pool vazio.
  *
- * O par de 1 e 1 sai como `duality` e não como `1hope+1fear`: é o nome que a
- * regra dá ao par, é o que o histórico já guardou, e `parseDicePool` lê os
- * dois de volta. Fora do par, cada lado se escreve sozinho.
+ * O par de 1 e 1 **nos dados do livro** sai como `duality` e não como
+ * `1hope+1fear`: é o nome que a regra dá ao par, é o que o histórico já
+ * guardou, e `parseDicePool` lê os dois de volta. Com o dado trocado o par
+ * deixa de ser o do livro, e cada lado se escreve — `1d20hope+1fear`.
  */
-export const formatDicePool = ({ hope, fear, groups, modifier }: DicePool): string => {
-  const duality =
-    hope === 1 && fear === 1
-      ? [DUALITY_TOKEN]
-      : [...(hope > 0 ? [`${hope}hope`] : []), ...(fear > 0 ? [`+${fear}fear`] : [])]
+export const formatDicePool = ({
+  hope,
+  fear,
+  hopeSides,
+  fearSides,
+  groups,
+  modifier,
+}: DicePool): string => {
+  const isBookPair =
+    hope === 1 && fear === 1 && hopeSides === DUALITY_SIDES && fearSides === DUALITY_SIDES
+
+  const duality = isBookPair
+    ? [DUALITY_TOKEN]
+    : [
+        ...(hope > 0 ? [dualityTerm(hope, hopeSides, "hope")] : []),
+        ...(fear > 0 ? [`+${dualityTerm(fear, fearSides, "fear")}`] : []),
+      ]
 
   const terms = [
     ...duality,
@@ -189,7 +251,24 @@ export const canRollPool = ({ hope, fear, groups }: DicePool): boolean =>
   hope > 0 || fear > 0 || groups.some((group) => group.sign > 0)
 
 /**
- * Soma um d12 de Hope ou de Fear. O teto mora aqui e não na tela: os dois
+ * Troca o dado de um dos lados — o d20 de Hope do Dedicated, o dado menor de
+ * Fear que outra feature imponha.
+ *
+ * O lado inteiro muda, e não um dado dele: uma dualidade com dois Hopes de
+ * medidas diferentes não é uma rolagem que o livro descreva.
+ */
+export const setDualitySides = (pool: DicePool, die: DualityDie, sides: number): DicePool =>
+  die === "hope" ? { ...pool, hopeSides: sides } : { ...pool, fearSides: sides }
+
+/** O próximo dado da escada, dando a volta no fim. Fora dela, começa do menor. */
+export const nextDieSides = (sides: number): number => {
+  const index = DIE_SIDES.findIndex((candidate) => candidate === sides)
+
+  return index < 0 ? DIE_SIDES[0] : DIE_SIDES[(index + 1) % DIE_SIDES.length]
+}
+
+/**
+ * Soma um dado de Hope ou de Fear. O teto mora aqui e não na tela: os dois
  * roladores somam pelo mesmo caminho.
  */
 export const addDualityDie = (pool: DicePool, die: DualityDie): DicePool => ({
@@ -197,7 +276,7 @@ export const addDualityDie = (pool: DicePool, die: DualityDie): DicePool => ({
   [die]: Math.min(pool[die] + 1, MAX_DUALITY_DICE),
 })
 
-/** Tira um d12 de Hope ou de Fear. Nunca abaixo de zero. */
+/** Tira um dado de Hope ou de Fear. Nunca abaixo de zero. */
 export const removeDualityDie = (pool: DicePool, die: DualityDie): DicePool => ({
   ...pool,
   [die]: Math.max(pool[die] - 1, 0),
@@ -283,14 +362,14 @@ export const rollDicePool = (pool: DicePool, label: string, random: RandomDie): 
   // Hope antes de Fear, e os dois antes do resto: é a ordem em que o resultado
   // se lê, e é a mesma da ficha.
   const hopeDice: RolledDie[] = Array.from({ length: pool.hope }, () => ({
-    sides: 12,
-    value: random(12),
+    sides: pool.hopeSides,
+    value: random(pool.hopeSides),
     role: "hope",
   }))
 
   const fearDice: RolledDie[] = Array.from({ length: pool.fear }, () => ({
-    sides: 12,
-    value: random(12),
+    sides: pool.fearSides,
+    value: random(pool.fearSides),
     role: "fear",
   }))
 

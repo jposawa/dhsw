@@ -124,7 +124,7 @@ const loadoutMaxFor = (houseRules: HouseRules, tier: Tier): number => {
  * É expectativa e não teto: a mesa concede o que quiser, e a tela mostra a
  * diferença em vez de impedir.
  */
-const expectedExperiencesFor = (level: number): number =>
+export const expectedExperiencesFor = (level: number): number =>
   STARTING_EXPERIENCES + LEVEL_ACHIEVEMENT_LEVELS.filter((mark) => level >= mark).length
 
 const expectedCardsFor = (
@@ -392,6 +392,12 @@ export const derive = (
     loadoutMax: resolveStat(loadoutMaxFor(houseRules, tier), []),
     expectedCards: expectedCardsFor(level, houseRules, domainCardAdvancements),
     expectedExperiences: expectedExperiencesFor(level),
+    experiences: character.experiences.map((experience) => ({
+      name: experience.name,
+      // O bônus guardado é a base — o +2 de nascença. O que os avanços
+      // somaram entra como modificador, com o nível de onde veio.
+      bonus: resolveStat(experience.bonus, collector.for(`experience.${experience.name}`)),
+    })),
     equippedArmor,
     isUnarmored,
     hasBareBones,

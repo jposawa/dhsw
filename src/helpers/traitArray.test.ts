@@ -22,10 +22,10 @@ const sequence = (...values: number[]): RandomDie => {
   return () => values[index++] ?? 1
 }
 
-const distribuido = (...valores: number[]): Character => ({
+const distributed = (...values: number[]): Character => ({
   ...createCharacter("Rey"),
   traits: Object.fromEntries(
-    TRAIT_LIST.map((trait, index) => [trait, valores[index]]),
+    TRAIT_LIST.map((trait, index) => [trait, values[index]]),
   ) as Character["traits"],
 })
 
@@ -65,7 +65,7 @@ describe("remainingTraitValues", () => {
   })
 
   it("distribuída, não sobra nada", () => {
-    const character = distribuido(2, 1, 1, 0, 0, -1)
+    const character = distributed(2, 1, 1, 0, 0, -1)
 
     expect(remainingTraitValues(character)).toEqual([])
     expect(isTraitArrayDistributed(character)).toBe(true)
@@ -99,7 +99,7 @@ describe("assignTraitValue", () => {
   /* Sem sobra, os dois trocam de lugar: é o que a pessoa quer dizer ao pôr o
      +2 em cima de onde está outro valor. */
   it("valor já usado troca de lugar com quem o tinha", () => {
-    const character = distribuido(2, 1, 1, 0, 0, -1)
+    const character = distributed(2, 1, 1, 0, 0, -1)
     const trocado = assignTraitValue(character, TRAIT_LIST[5], 2)
 
     expect(trocado.traits[TRAIT_LIST[5]]).toBe(2)
@@ -122,7 +122,7 @@ describe("startingTraitArray", () => {
 describe("traitArraySlots", () => {
   /* O array tem dois 1 e dois 0: marcar por valor acenderia as duas cópias. */
   it("cada atributo toma uma posição, mesmo com valor repetido", () => {
-    const slots = traitArraySlots(distribuido(2, 1, 1, 0, 0, -1))
+    const slots = traitArraySlots(distributed(2, 1, 1, 0, 0, -1))
 
     expect(Object.values(slots)).toEqual([0, 1, 2, 3, 4, 5])
   })
@@ -134,13 +134,13 @@ describe("traitArraySlots", () => {
   })
 
   it("atributo fora do array não ocupa posição", () => {
-    const fora = distribuido(9, 1, 1, 0, 0, -1)
+    const outsider = distributed(9, 1, 1, 0, 0, -1)
 
-    expect(traitArraySlots(fora)[TRAIT_LIST[0]]).toBeNull()
+    expect(traitArraySlots(outsider)[TRAIT_LIST[0]]).toBeNull()
   })
 
   it("dois atributos com o mesmo valor tomam posições diferentes", () => {
-    const slots = traitArraySlots(distribuido(1, 1, 2, 0, 0, -1))
+    const slots = traitArraySlots(distributed(1, 1, 2, 0, 0, -1))
 
     expect(slots[TRAIT_LIST[0]]).not.toBe(slots[TRAIT_LIST[1]])
   })

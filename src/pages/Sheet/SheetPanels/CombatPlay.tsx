@@ -34,11 +34,9 @@ import type {
 
 import { ActiveWeapon } from "./ActiveWeapon";
 import { EquippedArmorCard } from "./EquippedArmorCard";
-import { FeatureNotes } from "./FeatureNotes";
 import { IdentityFeatures } from "./IdentityFeatures";
 import { PortraitDrawer } from "./PortraitDrawer";
 import { RestDrawer } from "./RestDrawer";
-import { RollDrawer } from "./RollDrawer";
 import { TokenCounter } from "./TokenCounter";
 
 import styles from "./CombatPlay.module.css";
@@ -49,6 +47,8 @@ type CombatPlayProps = {
 	isReadOnly: boolean;
 	onMarksChange: (marks: Marks) => void;
 	onApply: (result: Result<Character>) => void;
+	/** Abre o rolador já preparado. O rolador é da ficha inteira, não desta aba. */
+	onPrepareRoll: (preset: DicePreset | null) => void;
 };
 
 /**
@@ -80,14 +80,10 @@ export const CombatPlay = ({
 	isReadOnly,
 	onMarksChange,
 	onApply,
+	onPrepareRoll,
 }: CombatPlayProps) => {
 	const { compendium } = useCompendium();
 	const [isResting, setIsResting] = React.useState(false);
-	// `undefined` é gaveta fechada; `null`, aberta para rolagem solta.
-	const [rollPreset, setRollPreset] = React.useState<
-		DicePreset | null | undefined
-	>(undefined);
-	// Da mesa, não da ficha: recarregar a página sai do combate, como a troca livre.
 
 	const classDefinition = compendium.classes.find(
 		(candidate) => candidate.name === character.className,
@@ -191,15 +187,9 @@ export const CombatPlay = ({
 							EM COMBATE
 						</Switch>
 					)} */}
-					{/* Rolagem solta. A de atributo e a de arma saem do próprio bloco. */}
-					<Button
-						className={styles.restButton}
-						variant="outline"
-						onClick={() => setRollPreset(null)}
-					>
-						ROLAR
-					</Button>
-
+					{/* Rolar é da ficha inteira e mora na faixa de cima, junto do
+              estado de gravação: aqui ele existia só nesta aba, e trocar de
+              aba para rolar era o caminho mais comprido do app. */}
 					{/* No cabeçalho e em texto: descanso acontece entre cenas, poucas vezes
               por sessão, e não disputa espaço com os pips que se tocam no turno. */}
 					<Button
@@ -253,7 +243,7 @@ export const CombatPlay = ({
 								type="button"
 								className={styles.traitButton}
 								aria-label={`Rolar ${trait}, ${formatSigned(derived.traits[trait].total)}`}
-								onClick={() => setRollPreset(presetForTrait(trait, derived))}
+								onClick={() => onPrepareRoll(presetForTrait(trait, derived))}
 							>
 								<span className={styles.traitName}>{trait}</span>
 								<b className={styles.traitValue}>
@@ -329,17 +319,19 @@ export const CombatPlay = ({
 					<p className={styles.empty}>Nenhuma. Adicione em Editar ficha.</p>
 				) : (
 					<ul className={styles.experiences}>
-						{character.experiences.map((experience) => (
+						{/* O bônus vem resolvido: o +2 de nascença mais o que os
+						    avanços somaram. A ficha guarda só a base. */}
+						{derived.experiences.map((experience) => (
 							<li className={styles.experience} key={experience.name}>
 								<span className={styles.experienceName}>{experience.name}</span>
-								<b className={styles.experienceBonus}>+{experience.bonus}</b>
+								<b className={styles.experienceBonus}>
+									+{experience.bonus.total}
+								</b>
 							</li>
 						))}
 					</ul>
 				)}
 			</section>
-
-			<FeatureNotes className={styles.featureNotes} character={character} />
 
 			<section className={styles.weapons}>
 				<SectionLabel
@@ -367,7 +359,7 @@ export const CombatPlay = ({
 							proficiency={derived.proficiency.total}
 							tierIndex={derived.tier - 1}
 							derived={derived}
-							onPrepareRoll={setRollPreset}
+							onPrepareRoll={onPrepareRoll}
 							emptyText={
 								slot.id === "secondary" && isPrimaryTwoHanded
 									? "A primária é de duas mãos."
@@ -383,13 +375,6 @@ export const CombatPlay = ({
 				className={styles.features}
 				character={character}
 				renderTokens={renderTokens}
-			/>
-
-			<RollDrawer
-				isOpen={rollPreset !== undefined}
-				character={character}
-				preset={rollPreset ?? null}
-				onClose={() => setRollPreset(undefined)}
 			/>
 
 			{/* Editável também em mesa: o botão de confirmar do modal é o Salvar

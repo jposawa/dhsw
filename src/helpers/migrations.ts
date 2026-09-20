@@ -1,5 +1,5 @@
 import { CHARACTER_SCHEMA_VERSION, DEFAULT_HOUSE_RULES, MIXED_ANCESTRY_OPTION } from "@/constants"
-import type { Character, Heritage, HouseRules, RosterState } from "@/types"
+import type { Advancement, Character, Heritage, HouseRules, RosterState } from "@/types"
 
 import { changesFor } from "./advancement"
 
@@ -237,9 +237,9 @@ export const rosterV8ToV9 = (value: unknown): RosterState => {
       id,
       {
         ...stored,
-        advancements: (stored.advancements ?? []).map((advancement) => ({
+        advancements: (stored.advancements ?? []).map((advancement: AdvancementV11) => ({
           ...advancement,
-          changes: advancement.changes ?? changesFor(advancement.kind, advancement.detail),
+          changes: advancement.changes ?? changesFor(advancement.kind, [advancement.detail ?? ""]),
         })),
         schema: 9,
         // `as unknown`: ainda é o formato da v9, e só a última migração da
@@ -280,7 +280,41 @@ export const rosterV10ToV11 = (value: unknown): RosterState => {
   const characters = Object.fromEntries(
     Object.entries(roster?.characters ?? {}).map(([id, stored]) => [
       id,
-      { ...stored, traitArray: stored.traitArray ?? null, schema: CHARACTER_SCHEMA_VERSION },
+      { ...stored, traitArray: stored.traitArray ?? null, schema: 11 } as unknown as Character,
+    ]),
+  )
+
+  return { characters, order: roster?.order ?? [] }
+}
+
+/** O avanço até a v11: uma escolha só, num campo de texto. */
+type AdvancementV11 = Omit<Advancement, "details"> & { detail?: string }
+
+/**
+ * v11 → v12: a escolha do avanço vira lista — `detail` → `details`.
+ *
+ * Os avanços que pedem escolha pedem **dois** de uma vez: dois atributos, duas
+ * Experiences (p. 110). Um campo só guardava metade.
+ *
+ * Os `changes` gravados ficam como estão. Eles são o que a ficha somou de
+ * verdade quando o avanço foi comprado, e recalculá-los aqui mudaria número de
+ * ficha em mesa para casar com uma regra que ela não jogou.
+ */
+export const rosterV11ToV12 = (value: unknown): RosterState => {
+  const roster = value as { characters?: Record<string, Character>; order?: string[] } | null
+
+  const characters = Object.fromEntries(
+    Object.entries(roster?.characters ?? {}).map(([id, stored]) => [
+      id,
+      {
+        ...stored,
+        advancements: (stored.advancements ?? []).map((advancement) => {
+          const { detail, ...rest } = advancement as AdvancementV11
+
+          return { ...rest, details: detail ? [detail] : [] }
+        }),
+        schema: CHARACTER_SCHEMA_VERSION,
+      },
     ]),
   )
 

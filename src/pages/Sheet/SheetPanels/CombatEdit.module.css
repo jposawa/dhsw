@@ -152,9 +152,21 @@
   border-left: var(--domain-stripe-width) solid var(--color-chrome-dim);
 }
 
+/* O que a feature pede por escrito, no grupo da escolha que a trouxe. Uma
+   coluna: cada linha é um campo de texto de largura cheia. */
+.notesGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  grid-column: 1 / -1;
+  padding: var(--space-3);
+  background: var(--color-surface);
+  border-left: var(--domain-stripe-width) solid var(--color-chrome-dim);
+}
+
 /* O `legend` nasce colado na borda de cima do grupo: o recuo dele é que
    devolve a folga que o `padding` do grupo dá aos outros três lados. */
-.mixedLegend {
+.groupLegend {
   grid-column: 1 / -1;
   padding: var(--space-3) 0 0;
   font-size: var(--text-2xs);

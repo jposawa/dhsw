@@ -7,6 +7,11 @@
  * texto, onde a medida importa. STYLING.md.
  */
 .page {
+  /* A altura da faixa de cima, que ela e a régua de abas leem para se
+     empilhar: as duas grudam, e a segunda precisa saber onde a primeira
+     acaba. Um número em dois lugares se desencontra na primeira mudança. */
+  --sheet-toolbar-height: 34px;
+
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
@@ -54,19 +59,70 @@
  */
 .tabs > :has(> [role="tablist"]) {
   position: sticky;
-  top: calc(var(--header-height) + var(--border-width));
+  /* Encostada na faixa de cima, sem o `gap` no meio: os dois se empilham
+     grudados, e o conteúdo passa por baixo dos dois. */
+  top: calc(var(--header-height) + var(--border-width) + var(--sheet-toolbar-height));
   z-index: 1;
   background: var(--color-bg);
 }
 
-/* Uma faixa de 30px: o estado de gravação é um ícone e editar é texto — os
-   dois se consultam de passagem. */
+/*
+ * A faixa de cima: rolar, o estado de gravação, copiar e editar.
+ *
+ * **Grudada, porque rolar mora aqui.** Rolar é o gesto mais repetido da mesa,
+ * e a ficha é mais alta que qualquer tela — preso no topo do documento, o
+ * botão obrigava a subir a ficha inteira para rolar um dado. Altura fixa: a
+ * régua de abas gruda logo abaixo e lê `--sheet-toolbar-height` para saber
+ * onde parar.
+ */
 .toolbar {
+  position: sticky;
+  top: calc(var(--header-height) + var(--border-width));
+  /* Acima da régua de abas, que passa por baixo dela ao rolar. */
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-3);
-  height: 30px;
+  height: var(--sheet-toolbar-height);
+  background: var(--color-bg);
+}
+
+/* Rolar e o estado de gravação andam juntos: o segundo comenta o primeiro. */
+.status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+/*
+ * O único botão desenhado da faixa — os outros dois são texto.
+ *
+ * Contornado e pequeno: é ação de mesa, frequente, e tem que se achar de
+ * relance sem virar o assunto da faixa. A caixa cabe nos 34px e o alvo de
+ * toque volta aos 44px pelo mesmo pseudo-elemento das ações de texto.
+ */
+.rollButton {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 28px;
+  padding: 0 var(--space-3);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+}
+
+.rollButton::after {
+  content: "";
+  position: absolute;
+  inset: calc((var(--size-touch-target) - 28px) / -2) 0;
+}
+
+.rollButton svg {
+  width: 1rem;
+  height: 1rem;
 }
 
 .toolbar .saveState {

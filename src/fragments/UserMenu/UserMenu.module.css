@@ -65,24 +65,24 @@
 }
 
 /*
- * A caixa do avatar tem a altura da caixa de ícone dos destinos. O avatar da
- * biblioteca vem com 2rem; aqui ele desce para 1.5rem, senão empurra o rótulo
- * CONTA para baixo dos outros quatro.
+ * A caixa do avatar é a caixa de ícone dos destinos, pelo mesmo token. O
+ * avatar da biblioteca vem com 2rem e é o token que manda aqui: fora da
+ * medida dos outros, o rótulo CONTA cai abaixo da linha dos outros quatro.
  */
 .triggerSlot {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 1.5rem;
+  height: var(--nav-icon-size);
 }
 
 .triggerAvatar {
-  width: 1.5rem;
-  height: 1.5rem;
+  width: var(--nav-icon-size);
+  height: var(--nav-icon-size);
 }
 
 .triggerIcon {
-  font-size: var(--text-md);
+  font-size: var(--nav-icon-size);
   font-style: normal;
   letter-spacing: 0;
 }

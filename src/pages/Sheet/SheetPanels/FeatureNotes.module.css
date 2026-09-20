@@ -1,10 +1,5 @@
-.notes {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  min-width: 0;
-}
-
+/* A lista é a raiz: as respostas moram dentro da feature que as pediu — na
+   carta dela em mesa, no grupo dela na edição —, e não numa seção própria. */
 .list {
   display: flex;
   flex-direction: column;
@@ -24,37 +19,43 @@
   flex-direction: column;
   gap: var(--space-1);
   min-width: 0;
+
+  .label {
+    font-size: var(--text-2xs);
+    letter-spacing: var(--tracking-wider);
+    color: var(--color-text-muted);
+  }
+
+  .input {
+    width: 100%;
+    min-height: var(--size-touch-target);
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-md);
+    color: var(--color-ink);
+    background: var(--color-bg-elevated);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--border-radius-sm);
+    transition: border-color 0.15s ease;
+
+    &:focus-visible {
+      outline: 2px solid var(--color-chrome-strong);
+      outline-offset: -2px;
+      border-color: var(--color-chrome);
+    }
+  }
 }
 
-.label {
-  font-size: var(--text-2xs);
-  letter-spacing: var(--tracking-wider);
-  color: var(--color-text-muted);
-}
-
-.input {
-  width: 100%;
-  min-height: var(--size-touch-target);
-  padding: var(--space-2) var(--space-3);
-  font-size: var(--text-md);
-  color: var(--color-ink);
-  background: var(--color-bg-elevated);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--border-radius-sm);
-  transition: border-color 0.15s ease;
-}
-
-.input:focus-visible {
-  outline: 2px solid var(--color-chrome-strong);
-  outline-offset: -2px;
-  border-color: var(--color-chrome);
-}
-
-/* Em mesa é leitura: a resposta em serifa, como as anotações. */
+/*
+ * Em mesa é leitura: a resposta em serifa, como as anotações.
+ *
+ * O fundo é `--color-surface` e não `--color-bg-elevated` porque a carta da
+ * feature já é elevada — um sobre o outro seriam a mesma cor, e a resposta
+ * deixaria de se distinguir do texto da regra logo acima.
+ */
 .read {
   padding: var(--space-2) var(--space-3);
   font-family: var(--font-serif);
   font-size: var(--text-md);
   color: var(--color-ink-reading);
-  background: var(--color-bg-elevated);
+  background: var(--color-surface);
 }

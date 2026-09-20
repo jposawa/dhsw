@@ -32,6 +32,11 @@ type SaveStateProps = BaseComponent & {
  * por sessão e nunca se lê; um símbolo estável ali é reconhecido de relance,
  * e uma frase só ocupa a linha. O texto continua existindo para quem ouve e
  * para quem passa o mouse, que é onde o ícone não chega.
+ *
+ * **Salvo não desenha nada.** Ficha salva é o estado normal, e um tique
+ * permanente ao lado do botão de rolar só disputa atenção com ele sem nunca
+ * pedir nada. O que tem o que dizer — gravando, falhou, só neste aparelho —
+ * continua aparecendo.
  */
 export const SaveState = ({ sheetId, className, style }: SaveStateProps) => {
   const { status } = useAtomValue(authAtom)
@@ -54,6 +59,10 @@ export const SaveState = ({ sheetId, className, style }: SaveStateProps) => {
 
     return unsyncedSheetIds.has(sheetId) ? "saving" : "saved"
   })()
+
+  if (kind === "saved") {
+    return null
+  }
 
   return (
     <p

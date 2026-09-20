@@ -26,6 +26,7 @@ export type RuleErrorCode =
   | "experienceNameMissing"
   | "experienceDuplicate"
   | "experienceNotFound"
+  | "experienceLimit"
   | "downtimeNeedsTwoMoves"
   | "downtimeMoveUnknown"
   | "downtimeRollMissing"

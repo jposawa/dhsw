@@ -8,11 +8,13 @@ import {
   describeRoll,
   EMPTY_POOL,
   formatDicePool,
+  nextDieSides,
   parseDicePool,
   removeDieFromPool,
   removeDualityDie,
   rollDicePool,
   rollPool,
+  setDualitySides,
 } from "./dice"
 import type { DicePool, RandomDie } from "@/types"
 
@@ -26,8 +28,7 @@ const sequence = (...values: number[]): RandomDie => {
 describe("parseDicePool", () => {
   it("lê dados e modificador, com ou sem espaço", () => {
     expect(parseDicePool("2d8+3")).toEqual({
-      hope: 0,
-      fear: 0,
+      ...EMPTY_POOL,
       groups: [{ count: 2, sides: 8, sign: 1 }],
       modifier: 3,
     })
@@ -36,6 +37,7 @@ describe("parseDicePool", () => {
 
   it("lê duality e dado subtraído", () => {
     expect(parseDicePool("Duality + 2 - 1d6")).toEqual({
+      ...EMPTY_POOL,
       hope: 1,
       fear: 1,
       groups: [{ count: 1, sides: 6, sign: -1 }],
@@ -64,10 +66,23 @@ describe("parseDicePool", () => {
   /* Hope e Fear contados, e não um par indivisível: a mesa às vezes pede um
      lado sozinho, ou um Hope a mais. */
   it("lê Hope e Fear avulsos, e o par soma um de cada", () => {
-    expect(parseDicePool("hope")).toEqual({ hope: 1, fear: 0, groups: [], modifier: 0 })
-    expect(parseDicePool("2fear")).toEqual({ hope: 0, fear: 2, groups: [], modifier: 0 })
-    expect(parseDicePool("duality+hope")).toEqual({ hope: 2, fear: 1, groups: [], modifier: 0 })
-    expect(parseDicePool("duality+duality")).toEqual({ hope: 2, fear: 2, groups: [], modifier: 0 })
+    expect(parseDicePool("hope")).toEqual({ ...EMPTY_POOL, hope: 1 })
+    expect(parseDicePool("2fear")).toEqual({ ...EMPTY_POOL, fear: 2 })
+    expect(parseDicePool("duality+hope")).toEqual({ ...EMPTY_POOL, hope: 2, fear: 1 })
+    expect(parseDicePool("duality+duality")).toEqual({ ...EMPTY_POOL, hope: 2, fear: 2 })
+  })
+
+  /* O Dedicated do Orderborne rola d20 como Hope; outra feature abaixa o de
+     Fear. O dado é do lado, não de cada dado dele. */
+  it("lê o dado trocado de um dos lados", () => {
+    expect(parseDicePool("d20hope+fear")).toEqual({ ...EMPTY_POOL, hope: 1, fear: 1, hopeSides: 20 })
+    expect(parseDicePool("2d20hope")).toEqual({ ...EMPTY_POOL, hope: 2, hopeSides: 20 })
+    expect(parseDicePool("hope+d8fear")).toEqual({ ...EMPTY_POOL, hope: 1, fear: 1, fearSides: 8 })
+  })
+
+  it("recusa duas medidas para o mesmo lado", () => {
+    expect(parseDicePool("d20hope+d8hope")).toBeNull()
+    expect(parseDicePool("d1hope")).toBeNull()
   })
 })
 
@@ -81,27 +96,42 @@ describe("addDualityDie e removeDualityDie", () => {
   })
 
   it("não passa do teto nem desce abaixo de zero", () => {
-    const cheio = Array.from({ length: 20 }).reduce(
+    const capped = Array.from({ length: 20 }).reduce(
       (pool: DicePool) => addDualityDie(pool, "hope"),
       EMPTY_POOL,
     )
 
-    expect(cheio.hope).toBe(9)
+    expect(capped.hope).toBe(9)
     expect(removeDualityDie(EMPTY_POOL, "fear").fear).toBe(0)
   })
 })
 
 describe("formatDicePool e addDieToPool", () => {
   it("escreve na forma canônica", () => {
-    expect(formatDicePool({ hope: 1, fear: 1, groups: [{ count: 1, sides: 6, sign: -1 }], modifier: 2 })).toBe(
-      "duality-1d6+2",
-    )
-    expect(formatDicePool({ hope: 0, fear: 0, groups: [{ count: 2, sides: 8, sign: 1 }], modifier: -1 })).toBe(
-      "2d8-1",
-    )
+    expect(
+      formatDicePool({
+        ...EMPTY_POOL,
+        hope: 1,
+        fear: 1,
+        groups: [{ count: 1, sides: 6, sign: -1 }],
+        modifier: 2,
+      }),
+    ).toBe("duality-1d6+2")
+    expect(
+      formatDicePool({ ...EMPTY_POOL, groups: [{ count: 2, sides: 8, sign: 1 }], modifier: -1 }),
+    ).toBe("2d8-1")
     expect(formatDicePool(EMPTY_POOL)).toBe("")
     expect(formatDicePool({ ...EMPTY_POOL, hope: 2, fear: 1 })).toBe("2hope+1fear")
     expect(formatDicePool({ ...EMPTY_POOL, fear: 1 })).toBe("1fear")
+  })
+
+  /* Com o dado trocado o par deixa de ser o do livro: `duality` diria d12 nos
+     dois, e a ida e volta perderia o d20. */
+  it("escreve o dado trocado, e lê de volta o que escreveu", () => {
+    const comD20 = { ...EMPTY_POOL, hope: 1, fear: 1, hopeSides: 20 }
+
+    expect(formatDicePool(comD20)).toBe("1d20hope+1fear")
+    expect(parseDicePool(formatDicePool(comD20))).toEqual(comD20)
   })
 
   it("somar um dado igual aumenta o grupo; de sinal diferente, abre outro", () => {
@@ -166,6 +196,46 @@ describe("rollDicePool", () => {
     expect(rollDicePool({ ...pool, modifier: 3 }, "Dano", sequence(5, 7))).toEqual(
       rollPool("2d8+3", "Dano", sequence(5, 7)),
     )
+  })
+
+  /* O Dedicated do Orderborne: "role um d20 como o seu dado de Hope". O dado
+     rolado tem que ser o d20 de verdade — não um d12 rotulado de d20. */
+  it("rola o dado trocado do lado, e não o d12 do livro", () => {
+    const pedidos: number[] = []
+    const random: RandomDie = (sides) => {
+      pedidos.push(sides)
+
+      return sides
+    }
+
+    const result = rollDicePool(
+      { ...EMPTY_POOL, hope: 1, fear: 1, hopeSides: 20 },
+      "Agility",
+      random,
+    )
+
+    expect(pedidos).toEqual([20, 12])
+    expect(result.dice).toEqual([
+      { sides: 20, value: 20, role: "hope" },
+      { sides: 12, value: 12, role: "fear" },
+    ])
+    expect(result.outcome).toBe("hope")
+    expect(result.expression).toBe("1d20hope+1fear")
+  })
+})
+
+describe("setDualitySides e nextDieSides", () => {
+  it("troca o dado de um lado só", () => {
+    const comD20 = setDualitySides({ ...EMPTY_POOL, hope: 1, fear: 1 }, "hope", 20)
+
+    expect(comD20.hopeSides).toBe(20)
+    expect(comD20.fearSides).toBe(12)
+  })
+
+  it("a escada dá a volta, e o que está fora dela começa do menor", () => {
+    expect(nextDieSides(12)).toBe(20)
+    expect(nextDieSides(20)).toBe(4)
+    expect(nextDieSides(7)).toBe(4)
   })
 })
 

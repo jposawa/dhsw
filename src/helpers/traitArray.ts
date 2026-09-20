@@ -54,29 +54,29 @@ export const rollTraitArray = (random: RandomDie): number[] =>
  */
 export const traitArraySlots = (character: Character): Readonly<Record<Trait, number | null>> => {
   const array = traitArrayOf(character)
-  const usadas = new Set<number>()
+  const taken = new Set<number>()
 
   return TRAIT_LIST.reduce((slots, trait) => {
     const value = character.traits[trait]
-    const posicao =
+    const slot =
       value === null
         ? -1
-        : array.findIndex((candidate, index) => !usadas.has(index) && candidate === value)
+        : array.findIndex((candidate, index) => !taken.has(index) && candidate === value)
 
-    if (posicao >= 0) {
-      usadas.add(posicao)
+    if (slot >= 0) {
+      taken.add(slot)
     }
 
-    return { ...slots, [trait]: posicao >= 0 ? posicao : null }
+    return { ...slots, [trait]: slot >= 0 ? slot : null }
   }, {} as Record<Trait, number | null>)
 }
 
 /** O que ainda não foi colocado em atributo nenhum. */
 export const remainingTraitValues = (character: Character): number[] => {
   const array = traitArrayOf(character)
-  const usadas = new Set(Object.values(traitArraySlots(character)).filter((slot) => slot !== null))
+  const taken = new Set(Object.values(traitArraySlots(character)).filter((slot) => slot !== null))
 
-  return array.filter((_unused, index) => !usadas.has(index))
+  return array.filter((_unused, index) => !taken.has(index))
 }
 
 /** Distribuído quando todos os seis atributos têm valor do array. */
@@ -90,20 +90,16 @@ export const isTraitArrayDistributed = (character: Character): boolean =>
  * — que é o que a pessoa quer dizer ao pôr o +2 em cima de onde está o −1. O
  * atributo que cede fica com o que o outro tinha, inclusive `null`.
  */
-export const assignTraitValue = (
-  character: Character,
-  trait: Trait,
-  value: number,
-): Character => {
+export const assignTraitValue = (character: Character, trait: Trait, value: number): Character => {
   if (remainingTraitValues(character).includes(value)) {
     return { ...character, traits: { ...character.traits, [trait]: value } }
   }
 
-  const ocupante = TRAIT_LIST.find(
+  const holder = TRAIT_LIST.find(
     (candidate) => candidate !== trait && character.traits[candidate] === value,
   )
 
-  if (!ocupante) {
+  if (!holder) {
     return character
   }
 
@@ -112,7 +108,7 @@ export const assignTraitValue = (
     traits: {
       ...character.traits,
       [trait]: value,
-      [ocupante]: character.traits[trait],
+      [holder]: character.traits[trait],
     },
   }
 }

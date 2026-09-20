@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest"
 
 import { TEST_COMPENDIUM } from "@/compendium/testing"
-import { createCharacter } from "@/helpers"
+import { createAdvancement, createCharacter } from "@/helpers"
 import type { Character, Result } from "@/types"
 
 import { changeClass, changeSubclass, classChangeLoss, subclassUpgradesOf } from "./identity"
@@ -24,7 +24,7 @@ const withCards = (): Character => ({
   subclass: subclassOf(first.name),
   loadout: ["A"],
   vault: ["B", "C"],
-  advancements: [{ level: 5, kind: "subclass", detail: "", slotsSpent: 1 }],
+  advancements: [createAdvancement(5, "subclass")],
 })
 
 describe("changeClass", () => {

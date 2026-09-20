@@ -31,4 +31,5 @@ export const DEFAULT_HOUSE_RULES: HouseRules = {
   allowsEarlyMulticlass: false,
   hasGranularDamageTypes: false,
   hasCustomWeapons: false,
+  hasRolledTraitArray: false,
 }

@@ -28,9 +28,32 @@ export const TIER_BOUNDARIES: readonly {
  */
 export const LEVEL_ACHIEVEMENT_LEVELS: readonly number[] = [2, 5, 8]
 
+/**
+ * Os seis valores que se distribuem pelos atributos na criação.
+ *
+ * Core Rulebook, "Step 2" (p. 16): um array fixo, não pontos a comprar — é o
+ * que mantém personagens do mesmo nível comparáveis entre mesas.
+ */
+export const STARTING_TRAIT_ARRAY: readonly number[] = [2, 1, 1, 0, 0, -1]
+
+/**
+ * A regra da casa que sorteia o array: por atributo, 2d4, fica o maior, menos
+ * 2. Dá o mesmo intervalo do array do livro (−1 a +2), com a distribuição
+ * puxada para cima — o maior de dois d4 raramente é 1.
+ */
+export const ROLLED_TRAIT_DICE = 2
+export const ROLLED_TRAIT_SIDES = 4
+export const ROLLED_TRAIT_OFFSET = -2
+
 /** "At Level 1, your Proficiency is 1." Nunca passa de 6. */
 export const STARTING_PROFICIENCY = 1
 export const MAX_PROFICIENCY = 6
+
+/**
+ * Dois avanços por nível, a partir do 2 (p. 109). Proficiency e multiclasse
+ * custam os dois — ver `helpers/advancement.ts`.
+ */
+export const ADVANCEMENTS_PER_LEVEL = 2
 
 /** Duas cartas de domínio na criação, e mais uma a cada nível. */
 export const STARTING_DOMAIN_CARDS = 2

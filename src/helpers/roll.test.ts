@@ -16,7 +16,9 @@ const agent = (level: number): Character => {
     ...base,
     className: "Agent",
     level,
-    traits: { ...base.traits, Finesse: 2, Agility: -1 },
+    // Explícito: a ficha nova nasce com o array espalhado, e este teste é
+    // sobre o preparo da rolagem, não sobre o padrão de criação.
+    traits: { ...base.traits, Finesse: 2, Agility: -1, Strength: 0 },
   }
 }
 

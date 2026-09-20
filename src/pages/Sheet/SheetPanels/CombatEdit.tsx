@@ -8,7 +8,6 @@ import {
   MIN_LEVEL,
   MIXED_ANCESTRY_LABEL,
   MIXED_ANCESTRY_OPTION,
-  TRAIT_LIST,
 } from "@/constants"
 import { ThresholdBar } from "@/fragments"
 import {
@@ -17,7 +16,6 @@ import {
   classChangeLoss,
   describeThresholdOrigin,
   featureNameOf,
-  formatSigned,
   heritageFeatures,
   heritageLabel,
   mixedAncestry,
@@ -26,14 +24,17 @@ import {
   singleAncestry,
 } from "@/helpers"
 import { useCompendium } from "@/hooks"
-import type { Character, DerivedStats, Heritage, Result } from "@/types"
+import type { Character, DerivedStats, Heritage, HouseRules, Result } from "@/types"
 
+import { AdvancementEditor } from "./AdvancementEditor"
 import { ChoiceDrawer, type ChoiceOption } from "./ChoiceDrawer"
 import { ChoiceField } from "./ChoiceField"
 import { ClassChangeConfirm } from "./ClassChangeConfirm"
 import { ClassSummary } from "./ClassSummary"
 import { ExperienceEditor } from "./ExperienceEditor"
+import { FeatureNotes } from "./FeatureNotes"
 import { PortraitLinkModal } from "./PortraitLinkModal"
+import { TraitArrayEditor } from "./TraitArrayEditor"
 import { OriginFeatures } from "./OriginFeatures"
 import { SubclassTiers } from "./SubclassTiers"
 
@@ -44,6 +45,8 @@ type Picker = "class" | "subclass" | "ancestry" | "firstFeature" | "secondFeatur
 type CombatEditProps = {
   draft: Character
   derived: DerivedStats
+  /** As que valem para esta ficha — a regra do array sorteado mora nelas. */
+  houseRules: HouseRules
   onChange: (mutate: (current: Character) => Character) => void
   onApply: (result: Result<Character>) => void
 }
@@ -67,7 +70,13 @@ type CombatEditProps = {
  * Marcador não aparece aqui de propósito — ele é estado de mesa, mora no modo
  * jogo e grava no toque.
  */
-export const CombatEdit = ({ draft, derived, onChange, onApply }: CombatEditProps) => {
+export const CombatEdit = ({
+  draft,
+  derived,
+  houseRules,
+  onChange,
+  onApply,
+}: CombatEditProps) => {
   const { compendium } = useCompendium()
 
   const [picker, setPicker] = React.useState<Picker | null>(null)
@@ -394,61 +403,29 @@ export const CombatEdit = ({ draft, derived, onChange, onApply }: CombatEditProp
         />
       </section>
 
-      <section className={styles.attributes} aria-label="Atributos">
-        <ul className={styles.traits}>
-          {TRAIT_LIST.map((trait) => {
-            const stat = derived.traits[trait]
-
-            return (
-              <li
-                className={styles.trait}
-                key={trait}
-                data-spellcast={derived.spellcastTrait === trait || undefined}
-              >
-                <span className={styles.traitName}>
-                  {trait}
-                  {stat.total === stat.base ? null : (
-                    <span className={styles.traitTotal}> → {formatSigned(stat.total)}</span>
-                  )}
-                </span>
-                <Stepper
-                  label={trait}
-                  decreaseLabel={`Diminuir ${trait}`}
-                  increaseLabel={`Aumentar ${trait}`}
-                  value={formatSigned(stat.base)}
-                  onDecrease={() =>
-                    onChange((current) => ({
-                      ...current,
-                      traits: {
-                        ...current.traits,
-                        [trait]: current.traits[trait] - 1,
-                      },
-                    }))
-                  }
-                  onIncrease={() =>
-                    onChange((current) => ({
-                      ...current,
-                      traits: {
-                        ...current.traits,
-                        [trait]: current.traits[trait] + 1,
-                      },
-                    }))
-                  }
-                />
-                {derived.spellcastTrait === trait && (
-                  <span className={styles.spellcast}>FORCEWIELDING</span>
-                )}
-              </li>
-            )
-          })}
-        </ul>
-      </section>
+      <TraitArrayEditor
+        className={styles.attributes}
+        draft={draft}
+        derived={derived}
+        houseRules={houseRules}
+        onChange={onChange}
+      />
 
       {/* As Experiences se leem no modo jogo, dois blocos acima dos atributos:
           editá-las noutra aba separava a lista de onde ela serve. */}
+      <AdvancementEditor
+        className={styles.experiences}
+        draft={draft}
+        houseRules={houseRules}
+        onChange={onChange}
+      />
+
+      <FeatureNotes className={styles.experiences} character={draft} onChange={onChange} />
+
       <ExperienceEditor
         className={styles.experiences}
         character={draft}
+        derived={derived}
         onApply={onApply}
       />
 

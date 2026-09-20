@@ -55,7 +55,7 @@ export const TEST_COMPENDIUM: Compendium = {
     }),
     skill("Cron of Simus", "Essence", 1, {
       category: "Holocron",
-      tokens: [{ name: "Cron of Simus", scale: "tier", refill: "combat" }],
+      tokens: [{ name: "Cron of Simus", scale: "tier", refill: "manual" }],
     }),
     skill("Cron of Surik", "Essence", 9, {
       category: "Holocron",

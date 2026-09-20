@@ -1,0 +1,102 @@
+.editor {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-2);
+	min-width: 0;
+}
+
+/* O que ainda está no monte. Some quando os seis estão colocados. */
+.warning {
+	margin: 0;
+	font-size: var(--text-2xs);
+	line-height: 1.5;
+	color: var(--color-warning);
+}
+
+/*
+ * Três e três, em duas colunas: a mesma leitura dos pares da ficha do livro
+ * (Agility, Strength e Finesse à esquerda; Instinct, Presence e Knowledge à
+ * direita). `grid-auto-flow: column` enche uma coluna antes da outra.
+ */
+.traits {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	grid-template-rows: repeat(3, auto);
+	grid-auto-flow: column;
+	gap: var(--space-1);
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+/* A caixa do atributo: nome em cima, valor embaixo — como na ficha. */
+.trait {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--space-1);
+	min-width: 0;
+	padding: var(--space-1) var(--space-2) var(--space-2);
+	background: var(--color-bg-elevated);
+	border-top: var(--border-width) solid var(--color-border);
+}
+
+.trait[data-spellcast] {
+	border-top-color: var(--color-primary);
+}
+
+.name {
+	font-size: var(--text-2xs);
+	letter-spacing: var(--tracking-wider);
+	text-transform: uppercase;
+	color: var(--color-text-muted);
+}
+
+/*
+ * Do tamanho do que mostra: duas casas e a seta.
+ *
+ * A largura vem do gatilho e não de um número fixo aqui — a `Select` da
+ * biblioteca traz `padding: 8px 12px` e `gap: 12px`, que somam mais moldura
+ * que conteúdo para um número que não passa de duas casas. Filho direto para
+ * vencer a regra dela sem depender da ordem dos CSS; ver `STYLING.md` sobre
+ * `@layer`.
+ */
+.pick {
+	/* Fixa, e não `max-content`: com o conteúdo mandando, o campo de `+2`
+     ficava três pixels mais largo que o de `—` e as seis caixas saíam
+     desalinhadas. Cabe duas casas e o sinal. */
+	width: 3.25rem;
+
+	> button {
+		min-width: 0;
+		padding: 0;
+		font-variant-numeric: tabular-nums;
+    justify-content: center;
+    
+    > span {
+      flex-grow: 0;
+      
+      &:last-child {
+        display: none;
+      }
+    }
+  }
+}
+
+/* O total com modificadores, quando ele difere do valor distribuído. */
+.total {
+	font-size: var(--text-2xs);
+	color: var(--color-text-dim);
+}
+
+.spellcast {
+	font-size: var(--text-2xs);
+	letter-spacing: var(--tracking-wider);
+	color: var(--color-primary);
+}
+
+.roll {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}

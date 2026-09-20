@@ -40,7 +40,7 @@ const MODIFIER_TARGETS: readonly string[] = [
   "proficiency",
 ]
 
-const TOKEN_REFILLS = ["rest", "longRest", "combat", "manual"]
+const TOKEN_REFILLS = ["rest", "longRest", "manual"]
 
 const isTokenScale = ({ scale, domain }: TokenPool) =>
   scale === "tier" ||

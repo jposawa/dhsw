@@ -9,14 +9,12 @@ import styles from "./TokenCounter.module.css"
 const REFILL_HINT: Readonly<Record<TokenRefill, string>> = {
   rest: "Voltam em qualquer descanso.",
   longRest: "Voltam no descanso longo.",
-  combat: "Voltam ao ligar o modo combate.",
   manual: "Voltam quando a carta diz — ajuste à mão.",
 }
 
 const ACCUMULATOR_HINT: Readonly<Record<TokenRefill, string>> = {
   rest: "Zeram em qualquer descanso.",
   longRest: "Zeram no descanso longo.",
-  combat: "Zeram ao ligar o modo combate.",
   manual: "Não zeram sozinhos.",
 }
 

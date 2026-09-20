@@ -16,6 +16,7 @@ import {
   classChangeLoss,
   describeThresholdOrigin,
   featureNameOf,
+  featurePromptNamesFor,
   heritageFeatures,
   heritageLabel,
   mixedAncestry,
@@ -324,12 +325,22 @@ export const CombatEdit = ({
             onOpen={() => setPicker("community")}
           />
 
+          {/* O que a feature pede por escrito, logo abaixo da escolha que a
+              trouxe: os tenets do Orderborne são da origem, e não campos
+              soltos no fim da aba. Em mesa eles aparecem na carta dela. */}
+          {featurePromptNamesFor(draft, compendium).map((feature) => (
+            <fieldset className={styles.notesGroup} key={feature}>
+              <legend className={styles.groupLegend}>{feature.toUpperCase()}</legend>
+              <FeatureNotes character={draft} feature={feature} onChange={onChange} />
+            </fieldset>
+          ))}
+
           {/* Mista: a espécie de cada feature, e o nome da mistura — que o livro
               deixa a cargo da mesa (p. 70–71). Num grupo próprio, porque os três
               são desdobramento da espécie acima e não campos soltos no fim. */}
           {isMixed && (
             <fieldset className={styles.mixedGroup}>
-              <legend className={styles.mixedLegend}>{MIXED_ANCESTRY_LABEL.toUpperCase()}</legend>
+              <legend className={styles.groupLegend}>{MIXED_ANCESTRY_LABEL.toUpperCase()}</legend>
 
               <ChoiceField
                 className={styles.field}
@@ -419,8 +430,6 @@ export const CombatEdit = ({
         houseRules={houseRules}
         onChange={onChange}
       />
-
-      <FeatureNotes className={styles.experiences} character={draft} onChange={onChange} />
 
       <ExperienceEditor
         className={styles.experiences}

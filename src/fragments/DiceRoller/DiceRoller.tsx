@@ -11,10 +11,12 @@ import {
   cryptoDie,
   EMPTY_POOL,
   formatSigned,
+  nextDieSides,
   parseDicePool,
   removeDieFromPool,
   removeDualityDie,
   rollDicePool,
+  setDualitySides,
 } from "@/helpers"
 import type { BaseComponent, DicePool, DicePreset, DualityDie, RollResult } from "@/types"
 
@@ -109,7 +111,17 @@ export const DiceRoller = ({
     }
   }
 
-  /** Os d12 de dualidade preparados, um por dado. */
+  /** As faces do lado, que uma feature pode ter trocado. */
+  const sidesOf = (die: DualityDie) => (die === "hope" ? pool.hopeSides : pool.fearSides)
+
+  /** Troca o dado do lado pelo próximo da escada. */
+  const cycle = (die: DualityDie) => {
+    change((current) =>
+      setDualitySides(current, die, nextDieSides(die === "hope" ? current.hopeSides : current.fearSides)),
+    )
+  }
+
+  /** Os dados de dualidade preparados, um por dado. */
   const duality: { key: string; die: DualityDie }[] = [
     ...Array.from({ length: pool.hope }, (_unused, index) => ({
       key: `hope-${index}`,
@@ -146,12 +158,12 @@ export const DiceRoller = ({
       <button
         type="button"
         className={styles.duality}
-        aria-label="Somar os Duality Dice: um d12 de Hope e um de Fear"
+        aria-label={`Somar os Duality Dice: um d${pool.hopeSides} de Hope e um d${pool.fearSides} de Fear`}
         onClick={() => change((current) => addDualityDie(addDualityDie(current, "hope"), "fear"))}
       >
         <span className={styles.dualityArt}>
-          <DieShape className={styles.hopeDie} sides={12} />
-          <DieShape className={styles.fearDie} sides={12} />
+          <DieShape className={styles.hopeDie} sides={pool.hopeSides} />
+          <DieShape className={styles.fearDie} sides={pool.fearSides} />
         </span>
         <span className={styles.dualityLabel}>DUALITY</span>
       </button>
@@ -159,24 +171,28 @@ export const DiceRoller = ({
       <ul className={styles.dice} aria-label="Dados para somar ou tirar">
         {/* Hope e Fear à parte do par: a mesa às vezes pede um lado só, ou um
             Hope a mais, e isso não tem como sair de um botão de par. */}
+        {/* A silhueta troca o dado: o Dedicated do Orderborne rola d20 como
+            Hope, e outras features mexem no de Fear. */}
         <li>
           <DieControl
             className={styles.hopeDie}
-            dieSides={12}
-            caption="HOPE"
-            dieName="um d12 de Hope"
+            dieSides={pool.hopeSides}
+            caption={`HOPE D${pool.hopeSides}`}
+            dieName={`um d${pool.hopeSides} de Hope`}
             onAdd={() => change((current) => addDualityDie(current, "hope"))}
             onSubtract={() => change((current) => removeDualityDie(current, "hope"))}
+            onCycleSides={() => cycle("hope")}
           />
         </li>
         <li>
           <DieControl
             className={styles.fearDie}
-            dieSides={12}
-            caption="FEAR"
-            dieName="um d12 de Fear"
+            dieSides={pool.fearSides}
+            caption={`FEAR D${pool.fearSides}`}
+            dieName={`um d${pool.fearSides} de Fear`}
             onAdd={() => change((current) => addDualityDie(current, "fear"))}
             onSubtract={() => change((current) => removeDualityDie(current, "fear"))}
+            onCycleSides={() => cycle("fear")}
           />
         </li>
 
@@ -246,14 +262,14 @@ export const DiceRoller = ({
                 </span>
                 <DieShape
                   className={die === "hope" ? styles.hopeDie : styles.fearDie}
-                  sides={12}
+                  sides={sidesOf(die)}
                   caption={die === "hope" ? "HOPE" : "FEAR"}
-                  label={`um d12 de ${die === "hope" ? "Hope" : "Fear"}`}
+                  label={`um d${sidesOf(die)} de ${die === "hope" ? "Hope" : "Fear"}`}
                 />
                 <button
                   type="button"
                   className={styles.remove}
-                  aria-label={`Tirar um d12 de ${die === "hope" ? "Hope" : "Fear"} da rolagem`}
+                  aria-label={`Tirar um d${sidesOf(die)} de ${die === "hope" ? "Hope" : "Fear"} da rolagem`}
                   onClick={() => change((current) => removeDualityDie(current, die))}
                 >
                   ×

@@ -34,7 +34,6 @@ import type {
 
 import { ActiveWeapon } from "./ActiveWeapon";
 import { EquippedArmorCard } from "./EquippedArmorCard";
-import { FeatureNotes } from "./FeatureNotes";
 import { IdentityFeatures } from "./IdentityFeatures";
 import { PortraitDrawer } from "./PortraitDrawer";
 import { RestDrawer } from "./RestDrawer";
@@ -333,8 +332,6 @@ export const CombatPlay = ({
 					</ul>
 				)}
 			</section>
-
-			<FeatureNotes className={styles.featureNotes} character={character} />
 
 			<section className={styles.weapons}>
 				<SectionLabel

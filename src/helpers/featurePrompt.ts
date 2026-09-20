@@ -72,5 +72,13 @@ export const featureFieldsFor = (
   )
 }
 
+/** Os nomes das features que pedem algo por escrito, sem repetir e na ordem da tela. */
+export const featurePromptNamesFor = (
+  character: Character,
+  compendium: Compendium,
+): readonly string[] => [
+  ...new Set(featureFieldsFor(character, compendium).map((field) => field.feature)),
+]
+
 /** "**Tenets** — Escolha três…" → "Tenets". O mesmo recorte de `heritage.ts`. */
 const featureNameOf = (text: string): string => /\*\*(.+?)\*\*/.exec(text)?.[1]?.trim() ?? ""

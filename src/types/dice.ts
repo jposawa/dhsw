@@ -66,12 +66,20 @@ export type DiceGroup = {
  */
 export type DicePool = {
   /**
-   * Quantos d12 de Hope e de Fear entram. A dualidade do livro é `1` e `1`
+   * Quantos dados de Hope e de Fear entram. A dualidade do livro é `1` e `1`
    * (Core Rulebook, p. 90); contados, e não um `hasDuality`, porque a mesa
    * às vezes pede um Hope a mais, ou um dos dois sozinho.
    */
   hope: number
   fear: number
+  /**
+   * De quantas faces é cada lado. O livro rola d12 nos dois, e **feature
+   * troca o dado**: o Dedicated do Orderborne rola d20 como Hope, e outras
+   * abaixam o dado de Fear. Por lado e não por dado: dois Hopes de medidas
+   * diferentes não são uma dualidade, são duas rolagens.
+   */
+  hopeSides: number
+  fearSides: number
   groups: readonly DiceGroup[]
   modifier: number
 }

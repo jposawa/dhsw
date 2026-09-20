@@ -7,6 +7,7 @@ import { useCompendium } from "@/hooks"
 import type { BaseComponent, Character } from "@/types"
 
 import { ClassSummary } from "./ClassSummary"
+import { FeatureNotes } from "./FeatureNotes"
 import { OriginFeatures } from "./OriginFeatures"
 import { SubclassTiers } from "./SubclassTiers"
 
@@ -111,6 +112,9 @@ export const IdentityFeatures = ({
                 <OriginFeatures
                   features={heritage.map((feature) => feature.text)}
                   sources={isMixed ? heritage.map((feature) => feature.ancestry) : undefined}
+                  renderNotes={(featureName) => (
+                    <FeatureNotes character={character} feature={featureName} />
+                  )}
                 />
               </article>
             </li>
@@ -123,7 +127,12 @@ export const IdentityFeatures = ({
                   <h4 className={styles.optionName}>{community.name}</h4>
                   <p className={styles.optionMeta}>ORIGEM</p>
                 </hgroup>
-                <OriginFeatures features={[community.feature]} />
+                <OriginFeatures
+                  features={[community.feature]}
+                  renderNotes={(featureName) => (
+                    <FeatureNotes character={character} feature={featureName} />
+                  )}
+                />
               </article>
             </li>
           )}

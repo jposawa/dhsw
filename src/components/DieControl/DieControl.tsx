@@ -14,6 +14,11 @@ type DieControlProps = BaseComponent & {
   dieName?: string
   onAdd: () => void
   onSubtract: () => void
+  /**
+   * Troca o dado por outro. Só onde a medida é escolha — o de Hope e o de
+   * Fear, que uma feature pode trocar. Sem isto a silhueta é só desenho.
+   */
+  onCycleSides?: () => void
 }
 
 /**
@@ -27,6 +32,10 @@ type DieControlProps = BaseComponent & {
  * Os dois botões ficam à vista, e não um botão com um modo de "tirar": somar e
  * tirar são a mesma escolha, e esconder metade dela num estado que não está na
  * tela obrigava a lembrar em que modo se estava.
+ *
+ * Quando o dado pode ser trocado, **a silhueta é o botão de troca**: a medida
+ * corrente já está desenhada ali e escrita na legenda, e um terceiro controle
+ * ao lado dos dois gestos frequentes cobraria espaço de quem nunca troca.
  */
 export const DieControl = ({
   dieSides,
@@ -34,14 +43,28 @@ export const DieControl = ({
   dieName,
   onAdd,
   onSubtract,
+  onCycleSides,
   className,
   style,
 }: DieControlProps) => {
   const name = dieName ?? `um d${dieSides}`
 
+  const art = <DieShape className={styles.art} sides={dieSides} caption={caption ?? `D${dieSides}`} />
+
   return (
     <div className={clsx(styles.dieControl, className)} style={style}>
-      <DieShape className={styles.art} sides={dieSides} caption={caption ?? `D${dieSides}`} />
+      {onCycleSides ? (
+        <button
+          type="button"
+          className={styles.swap}
+          aria-label={`Trocar o dado: ${name}`}
+          onClick={onCycleSides}
+        >
+          {art}
+        </button>
+      ) : (
+        art
+      )}
 
       <span className={styles.buttons}>
         <Button

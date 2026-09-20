@@ -14,6 +14,20 @@
     color: var(--color-chrome-strong);
   }
 
+  /*
+   * A silhueta como botão de troca. `min-height: 0` porque o alvo de 44px do
+   * `tokens.css` vale para todo `button` e aqui inflaria a caixa do dado —
+   * o alvo real é a silhueta, que já é grande, com os dois gestos embaixo.
+   */
+  .swap {
+    display: flex;
+    min-height: 0;
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
   /* `row-reverse`: o `+` é o gesto comum e fica à direita, onde o polegar cai. */
   .buttons {
     display: flex;

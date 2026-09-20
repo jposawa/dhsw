@@ -12,7 +12,6 @@
 }
 
 .identity,
-.featureNotes,
 .defense,
 .traits,
 .vitals,
@@ -299,7 +298,6 @@
       "notice   notice   notice"
       "defense  traits   traits"
       "vitals   weapons  hope"
-      "notes    notes    notes"
       "features features features";
     align-items: start;
     column-gap: var(--space-4);
@@ -311,12 +309,6 @@
 
   .notice {
     grid-area: notice;
-  }
-
-  /* As escolhas escritas da feature — some na ficha que não pede nenhuma, e
-     a linha do grid some junto por ser de altura automática. */
-  .featureNotes {
-    grid-area: notes;
   }
 
   .defense {

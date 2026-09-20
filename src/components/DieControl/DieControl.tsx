@@ -37,7 +37,7 @@ export const DieControl = ({
   className,
   style,
 }: DieControlProps) => {
-  const nome = dieName ?? `um d${dieSides}`
+  const name = dieName ?? `um d${dieSides}`
 
   return (
     <div className={clsx(styles.dieControl, className)} style={style}>
@@ -47,7 +47,7 @@ export const DieControl = ({
         <Button
           className={styles.button}
           variant="outline"
-          aria-label={`Somar ${nome}`}
+          aria-label={`Somar ${name}`}
           onClick={onAdd}
         >
           +
@@ -55,7 +55,7 @@ export const DieControl = ({
         <Button
           className={styles.button}
           variant="outline"
-          aria-label={`Tirar ${nome}`}
+          aria-label={`Tirar ${name}`}
           onClick={onSubtract}
         >
           −

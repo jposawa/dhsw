@@ -45,10 +45,10 @@ describe("learnSkill", () => {
   })
 
   it("não cobra Stress por aprender", () => {
-    const antes = soldier()
-    const depois = learn(antes, reachable(antes)[0].name)
+    const before = soldier()
+    const after = learn(before, reachable(before)[0].name)
 
-    expect(depois.marks.stress).toBe(antes.marks.stress)
+    expect(after.marks.stress).toBe(before.marks.stress)
   })
 
   /* O teto do loadout é regra, e o atalho não pode furá-lo.
@@ -57,18 +57,18 @@ describe("learnSkill", () => {
      de o compêndio de teste ter cartas suficientes no nível, o que não é o que
      este teste está verificando. */
   it("com o loadout cheio, a carta cai no vault", () => {
-    const cartas = reachable(soldier(5))
-    const teto = statsOf(soldier(5)).loadoutMax.total
-    const cheio: Character = {
+    const cards = reachable(soldier(5))
+    const max = statsOf(soldier(5)).loadoutMax.total
+    const full: Character = {
       ...soldier(5),
-      loadout: cartas.slice(0, teto).map((carta) => carta.name),
+      loadout: cards.slice(0, max).map((card) => card.name),
     }
 
-    const nova = cartas[teto].name
-    const depois = learn(cheio, nova)
+    const learned = cards[max].name
+    const after = learn(full, learned)
 
-    expect(depois.loadout).toHaveLength(teto)
-    expect(depois.vault).toEqual([nova])
+    expect(after.loadout).toHaveLength(max)
+    expect(after.vault).toEqual([learned])
   })
 
   it("aprender o que já se sabe não duplica nem move", () => {

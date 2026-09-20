@@ -33,12 +33,11 @@
   text-align: center;
   color: var(--color-text-dim);
   background: var(--color-bg-elevated);
-  font-size: var(--text-sm);
-}
 
-/* O ícone acima do texto, no tamanho de um retrato ausente. */
-.empty > svg {
-  font-size: var(--text-xl);
+  /* O ícone acima do texto, no tamanho de um retrato ausente. */
+  > svg {
+    font-size: var(--text-xl);
+  }
 }
 
 .edit {

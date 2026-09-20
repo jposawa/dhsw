@@ -81,12 +81,12 @@ describe("addDualityDie e removeDualityDie", () => {
   })
 
   it("não passa do teto nem desce abaixo de zero", () => {
-    const cheio = Array.from({ length: 20 }).reduce(
+    const capped = Array.from({ length: 20 }).reduce(
       (pool: DicePool) => addDualityDie(pool, "hope"),
       EMPTY_POOL,
     )
 
-    expect(cheio.hope).toBe(9)
+    expect(capped.hope).toBe(9)
     expect(removeDualityDie(EMPTY_POOL, "fear").fear).toBe(0)
   })
 })

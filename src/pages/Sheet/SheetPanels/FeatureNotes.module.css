@@ -24,30 +24,30 @@
   flex-direction: column;
   gap: var(--space-1);
   min-width: 0;
-}
 
-.label {
-  font-size: var(--text-2xs);
-  letter-spacing: var(--tracking-wider);
-  color: var(--color-text-muted);
-}
+  .label {
+    font-size: var(--text-2xs);
+    letter-spacing: var(--tracking-wider);
+    color: var(--color-text-muted);
+  }
 
-.input {
-  width: 100%;
-  min-height: var(--size-touch-target);
-  padding: var(--space-2) var(--space-3);
-  font-size: var(--text-md);
-  color: var(--color-ink);
-  background: var(--color-bg-elevated);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--border-radius-sm);
-  transition: border-color 0.15s ease;
-}
+  .input {
+    width: 100%;
+    min-height: var(--size-touch-target);
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--text-md);
+    color: var(--color-ink);
+    background: var(--color-bg-elevated);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--border-radius-sm);
+    transition: border-color 0.15s ease;
 
-.input:focus-visible {
-  outline: 2px solid var(--color-chrome-strong);
-  outline-offset: -2px;
-  border-color: var(--color-chrome);
+    &:focus-visible {
+      outline: 2px solid var(--color-chrome-strong);
+      outline-offset: -2px;
+      border-color: var(--color-chrome);
+    }
+  }
 }
 
 /* Em mesa é leitura: a resposta em serifa, como as anotações. */

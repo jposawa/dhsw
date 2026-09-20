@@ -44,13 +44,14 @@
 }
 
 /* Caixa de altura fixa, a mesma do avatar da conta: é o que põe os cinco
-   rótulos na mesma linha. */
+   rótulos na mesma linha. O glifo ocupa a caixa inteira — o ícone é o que se
+   reconhece de longe na barra, e o rótulo abaixo é a confirmação. */
 .icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 1.5rem;
-  font-size: var(--text-md);
+  height: var(--nav-icon-size);
+  font-size: var(--nav-icon-size);
   font-style: normal;
   letter-spacing: 0;
 }
@@ -152,12 +153,14 @@
   }
 
   .icon {
-    /* Maior que no rodapé: recolhido, o ícone é a única coisa que resta, e
-       precisa ser reconhecível sozinho. `line-height: 1` porque a entrelinha
-       do glifo é o que inflava o item — o respiro é o padding, que se enxerga
-       e se ajusta. */
+    /* `line-height: 1` porque a entrelinha do glifo é o que inflava o item —
+       o respiro é o padding, que se enxerga e se ajusta.
+
+       A **largura** fica em 1.5rem mesmo com o glifo maior: recolhido, é ela
+       que centra o ícone no trilho (16px de recuo + metade de 24px = 28px, o
+       meio dos 56px). Mexer aqui desloca a coluna inteira ao recolher. */
     height: auto;
-    font-size: var(--text-lg);
+    font-size: 1.5rem;
     line-height: 1;
     width: 1.5rem;
     text-align: center;

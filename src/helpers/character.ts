@@ -148,15 +148,26 @@ const EDITED_FIELDS = [
 ] as const
 
 /** As listas que o modo edição altera. Comparadas por conteúdo, não por referência. */
-const EDITED_LISTS = ["loadout", "vault", "inventory", "experiences"] as const
+const EDITED_LISTS = [
+  "loadout",
+  "vault",
+  "inventory",
+  "experiences",
+  /**
+   * Escolher avanço é a alteração de nível inteira: sem ela aqui, trocar
+   * Stress por dois atributos dizia "nada alterado" e o Salvar ficava apagado
+   * — a escolha só ia junto de carona na próxima mudança que acendesse.
+   */
+  "advancements",
+] as const
 
 /**
  * O rascunho difere do que está salvo? É o que acende o botão de salvar.
  *
  * As listas entram por serialização e não campo a campo: `loadout` e `vault`
- * são de string, `inventory` e `experiences` de objeto raso, e comparar por
- * referência diria que mudou sempre — `rules/` devolve arrays novos a cada
- * operação, inclusive quando o conteúdo é o mesmo.
+ * são de string, e `inventory`, `experiences` e `advancements` de objeto, e
+ * comparar por referência diria que mudou sempre — os helpers devolvem arrays
+ * novos a cada operação, inclusive quando o conteúdo é o mesmo.
  */
 export const hasSheetEdits = (draft: Character, saved: Character): boolean => {
   const hasFieldChange = EDITED_FIELDS.some((field) => draft[field] !== saved[field])

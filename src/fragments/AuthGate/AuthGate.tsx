@@ -45,11 +45,11 @@ export const AuthGate = () => {
             ENTRAR COM GOOGLE
           </Button>
           <p className={styles.note}>
-            O compêndio não exige conta: as 126 cartas, classes, espécies e
+            O Codex não exige conta: as 126 cartas, classes, espécies e
             equipamento estão abertos e funcionam sem internet.
           </p>
           <Link className={styles.link} to={ROUTES.compendium}>
-            ‹ &nbsp;IR PARA O COMPÊNDIO
+            ‹ &nbsp;IR PARA O CODEX
           </Link>
         </div>
       </main>

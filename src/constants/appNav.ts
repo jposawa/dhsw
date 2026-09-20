@@ -21,7 +21,7 @@ import { ROUTES } from "./routes"
 export const NAV_ITEMS: readonly NavItem[] = [
   {
     key: "compendium",
-    label: "COMPÊNDIO",
+    label: "CODEX",
     icon: "compendium",
     path: ROUTES.compendium,
     needAuth: false,
@@ -30,7 +30,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
   },
   {
     key: "dice",
-    label: "ROLAGEM",
+    label: "DADOS",
     icon: "dice",
     path: ROUTES.dice,
     needAuth: false,

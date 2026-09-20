@@ -1,4 +1,5 @@
 import { Button, Modal, Tabs } from "@jposawa/ronin-ui"
+import { LuDices } from "react-icons/lu"
 import { useAtom, useSetAtom } from "jotai"
 import React from "react"
 import { Navigate, useNavigate, useParams } from "react-router-dom"
@@ -8,7 +9,7 @@ import { SaveState } from "@/fragments"
 import { duplicateCharacter, hasSheetEdits, touchCharacter } from "@/helpers"
 import { HouseRulesContext, usePartyHouseRules, useSheet } from "@/hooks"
 import { rosterAtom, sheetRolesAtom, toastAtom } from "@/states"
-import type { Character, Marks, Result, SheetTabId } from "@/types"
+import type { Character, DicePreset, Marks, Result, SheetTabId } from "@/types"
 
 import {
   CardsPanel,
@@ -16,6 +17,7 @@ import {
   CombatPlay,
   HistoryPanel,
   InventoryPanel,
+  RollDrawer,
   RulesPanel,
 } from "./SheetPanels"
 
@@ -48,6 +50,17 @@ export const Sheet = () => {
   const [draft, setDraft] = React.useState<Character | null>(null)
   const [isConfirmingCancel, setIsConfirmingCancel] = React.useState(false)
   const [isConfirmingCopy, setIsConfirmingCopy] = React.useState(false)
+
+  /**
+   * O rolador é da ficha, não de uma aba dela.
+   *
+   * Ele morava em Combate, e rolar estando em Cartas ou no Inventário pedia
+   * uma volta pela aba de mesa. Aqui o botão acompanha a ficha inteira, e o
+   * toque num atributo ou numa arma continua entrando por `onPrepareRoll`.
+   *
+   * `undefined` é gaveta fechada; `null`, aberta para rolagem solta.
+   */
+  const [rollPreset, setRollPreset] = React.useState<DicePreset | null | undefined>(undefined)
 
   /**
    * Editando, tudo se calcula sobre o rascunho: é o que faz Evasion e HP
@@ -175,6 +188,7 @@ export const Sheet = () => {
           isReadOnly={isReadOnly}
           onMarksChange={handleMarksChange}
           onApply={applyResult}
+          onPrepareRoll={setRollPreset}
         />
       )
     }
@@ -214,11 +228,22 @@ export const Sheet = () => {
     <HouseRulesContext.Provider value={houseRules}>
       <main className={styles.page}>
         <header className={styles.toolbar}>
-          {isReadOnly ? (
-            <p className={styles.note}>Você é leitor: dá para ver tudo, nada é salvo.</p>
-          ) : (
-            <SaveState className={styles.saveState} sheetId={character.id} />
-          )}
+          <div className={styles.status}>
+            {/* Rolar é o gesto mais repetido da mesa, e não é de uma aba: aqui
+                ele acompanha a ficha inteira, inclusive enquanto se edita. */}
+            <Button
+              className={styles.rollButton}
+              variant="outline"
+              onClick={() => setRollPreset(null)}
+            >
+              <LuDices aria-hidden="true" />
+              ROLAR
+            </Button>
+
+            {/* Ao lado do botão, e só enquanto tem o que dizer: parado, o
+                estado de gravação é um tique que ninguém lê. */}
+            {!isReadOnly && <SaveState className={styles.saveState} sheetId={character.id} />}
+          </div>
 
           {/* Um botão, e não um alternador de dois estados: editar é uma coisa
             que se faz e se termina — com o resultado salvo ou cancelado —,
@@ -247,6 +272,12 @@ export const Sheet = () => {
             </menu>
           )}
         </header>
+
+        {/* Fora da faixa grudada: ela tem altura fixa, e este aviso é de duas
+            linhas no celular. */}
+        {isReadOnly && (
+          <p className={styles.note}>Você é leitor: dá para ver tudo, nada é salvo.</p>
+        )}
 
         <Tabs
           className={styles.tabs}
@@ -277,6 +308,13 @@ export const Sheet = () => {
             </Button>
           </footer>
         )}
+
+        <RollDrawer
+          isOpen={rollPreset !== undefined}
+          character={shown}
+          preset={rollPreset ?? null}
+          onClose={() => setRollPreset(undefined)}
+        />
 
         {/* `isPersistent` porque cancelar é irreversível: sair clicando no fundo
           é exatamente o acidente a evitar. */}

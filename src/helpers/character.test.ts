@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest"
 import { DEFAULT_HOUSE_RULES, TRAIT_LIST } from "@/constants"
 import type { Character } from "@/types"
 
+import { createAdvancement } from "./advancement"
 import {
   createCharacter,
   effectiveHouseRules,
@@ -96,6 +97,19 @@ describe("hasSheetEdits", () => {
     const draft = { ...saved, marks: { ...saved.marks, stress: 3 } }
 
     expect(hasSheetEdits(draft, saved)).toBe(false)
+  })
+
+  /* Escolher avanço é a alteração de nível inteira: sem isto, trocar um
+     avanço por outro dizia "nada alterado" e o Salvar ficava apagado. */
+  it("acende ao escolher um avanço", () => {
+    const saved = createCharacter("Rey")
+    const draft = {
+      ...saved,
+      advancements: [createAdvancement(2, "trait", ["Agility", "Instinct"])],
+    }
+
+    expect(hasSheetEdits(draft, saved)).toBe(true)
+    expect(hasSheetEdits({ ...draft, advancements: [] }, draft)).toBe(true)
   })
 
   it("ignora updatedAt, que muda em toda gravacao", () => {

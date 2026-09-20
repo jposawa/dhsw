@@ -115,7 +115,21 @@
   --z-header: 20;
   --z-nav: 30;
 
-  --bottom-bar-height: calc(58px + env(safe-area-inset-bottom));
+  /*
+   * A caixa de ícone da navegação.
+   *
+   * Destino e conta leem a mesma: a barra inferior põe ícone e rótulo em
+   * coluna, e uma caixa de altura diferente derruba o rótulo daquele item da
+   * linha dos outros quatro. Mudar aqui muda `--bottom-bar-height` junto.
+   */
+  --nav-icon-size: 1.75rem;
+
+  /*
+   * Altura da barra inferior, medida: ícone (`--nav-icon-size`), rótulo e o
+   * respiro dos dois. É o que a barra de salvar lê para parar em cima dela, e
+   * o que sai da altura útil da página. Mexer no ícone mexe aqui.
+   */
+  --bottom-bar-height: calc(69px + env(safe-area-inset-bottom));
 
   /*
    * Duas larguras, porque são dois trabalhos.

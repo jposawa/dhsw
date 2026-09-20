@@ -1,7 +1,7 @@
 import { Avatar, Button, Modal, SectionLabel, Tabs } from "@jposawa/ronin-ui"
 import { useAtom, useAtomValue, useSetAtom } from "jotai"
 import React from "react"
-import { Navigate, useNavigate, useParams, useSearchParams } from "react-router-dom"
+import { Link, Navigate, useNavigate, useParams, useSearchParams } from "react-router-dom"
 
 import { StepRule } from "@/components"
 import { DEFAULT_HOUSE_RULES, PARTY_ROLES, ROUTES } from "@/constants"
@@ -41,6 +41,10 @@ import styles from "./PartyDetail.module.css"
 const PARTY_TAB_IDS = ["mesa", "rolagens", "regras"] as const
 
 type PartyTabId = (typeof PARTY_TAB_IDS)[number]
+
+/** A linha de baixo da ficha na lista: espécie e classe, ou o aviso de vazia. */
+const describeSheet = (sheet: Character): string =>
+  [heritageLabel(sheet), sheet.className].filter(Boolean).join(" · ") || "ficha em branco"
 
 const isPartyTab = (value: string | null): value is PartyTabId =>
   PARTY_TAB_IDS.some((id) => id === value)
@@ -159,6 +163,17 @@ export const PartyDetail = () => {
   // O que uma ficha leva ao sair da mesa: as regras que valiam para ela aqui.
   const keptRules = { ...DEFAULT_HOUSE_RULES, ...partyRules }
   const isNarrator = myRole?.roleId === "gm"
+
+  /**
+   * Dá para abrir esta ficha?
+   *
+   * A sua, sempre — ela está no roster. Qualquer uma da mesa, se você narra: é
+   * o Narrador conferindo a ficha de quem senta com ele, e a regra do banco já
+   * o deixa ler. Fora esses dois, a linha não leva a lugar nenhum: abrir daria
+   * erro de permissão numa tela em branco.
+   */
+  const canOpenSheet = (sheet: Character): boolean =>
+    Boolean(roster.characters[sheet.id]) || isNarrator
 
   const sheetsInParty = new Set(sheets.map((sheet) => sheet.id))
   const addableSheets = myCharacters.filter((character) => !sheetsInParty.has(character.id))
@@ -401,14 +416,29 @@ export const PartyDetail = () => {
                                 } as React.CSSProperties
                               }
                             >
-                              <span className={styles.level}>{sheet.level}</span>
-                              <span className={styles.rowText}>
-                                <b className={styles.rowName}>{sheet.name || "Sem nome"}</b>
-                                <span className={styles.rowMeta}>
-                                  {[heritageLabel(sheet), sheet.className].filter(Boolean).join(" · ") ||
-                                    "ficha em branco"}
-                                </span>
-                              </span>
+                              {/* A linha abre a ficha para quem alcança: a
+                                  sua, sempre; qualquer uma da mesa, se você
+                                  narra. Ficha de terceiro abre só de leitura —
+                                  `useSheet` a busca no banco e não a guarda no
+                                  roster. Para quem não alcança, a linha
+                                  continua sendo só a linha. */}
+                              {canOpenSheet(sheet) ? (
+                                <Link className={styles.rowLink} to={ROUTES.sheet(sheet.id)}>
+                                  <span className={styles.level}>{sheet.level}</span>
+                                  <span className={styles.rowText}>
+                                    <b className={styles.rowName}>{sheet.name || "Sem nome"}</b>
+                                    <span className={styles.rowMeta}>{describeSheet(sheet)}</span>
+                                  </span>
+                                </Link>
+                              ) : (
+                                <>
+                                  <span className={styles.level}>{sheet.level}</span>
+                                  <span className={styles.rowText}>
+                                    <b className={styles.rowName}>{sheet.name || "Sem nome"}</b>
+                                    <span className={styles.rowMeta}>{describeSheet(sheet)}</span>
+                                  </span>
+                                </>
+                              )}
 
                               {/* A porta de saída na própria linha, ao lado da ficha que ela
                             tira. Pôr uma ficha era um botão e tirá-la não era nada —

@@ -4,6 +4,7 @@ import type {
   Compendium,
   DerivedStats,
   ActiveTokenPool,
+  RandomDie,
   RestKind,
   Result,
   TokenSource,
@@ -95,6 +96,7 @@ export const activeTokenPools = (
         name: feature.name,
         pool: feature.tokens,
         max: tokenMax(feature.tokens, character, derived, compendium),
+        dieSides: feature.tokens.dieSides ?? null,
         domain: classDomain,
       })
     }
@@ -122,6 +124,7 @@ export const activeTokenPools = (
           name: feature.name,
           pool: feature.tokens,
           max: tokenMax(feature.tokens, character, derived, compendium),
+          dieSides: feature.tokens.dieSides ?? null,
           domain: classDomain,
         })
       }
@@ -139,6 +142,7 @@ export const activeTokenPools = (
         name: pool.name,
         pool,
         max: tokenMax(pool, character, derived, compendium),
+        dieSides: pool.dieSides ?? null,
         domain: skill?.domain ?? null,
       })
     }
@@ -156,10 +160,139 @@ export const tokenCount = (character: Character, active: ActiveTokenPool): numbe
   const stored = character.tokens.find((entry) => entry.pool === active.key)
 
   if (!stored) {
-    return active.max ?? 0
+    // Fonte de dado nasce **vazia**: o dado só existe depois de rolado. Fonte
+    // de marca nasce cheia — é o "place N tokens" do descanso.
+    return active.dieSides === null ? active.max ?? 0 : 0
+  }
+
+  if (active.dieSides !== null) {
+    return tokenDice(character, active).length
   }
 
   return active.max === null ? stored.count : Math.min(stored.count, active.max)
+}
+
+/**
+ * Os dados ainda não gastos desta fonte, do jeito que caíram.
+ *
+ * Vazio na fonte de marcas, e na de dados que ainda não foi rolada — que é
+ * como ela passa o tempo entre o gasto do último dado e o próximo descanso.
+ */
+export const tokenDice = (character: Character, active: ActiveTokenPool): readonly number[] => {
+  if (active.dieSides === null) {
+    return []
+  }
+
+  return character.tokens.find((entry) => entry.pool === active.key)?.values ?? []
+}
+
+/** Grava a mão de dados de uma fonte. `count` acompanha, para quem só conta. */
+const withDice = (character: Character, key: string, values: readonly number[]): Character => ({
+  ...character,
+  tokens: [
+    ...character.tokens.filter((entry) => entry.pool !== key),
+    { pool: key, count: values.length, values },
+  ],
+})
+
+/** A fonte de dados desta chave, ou falha — o mesmo cuidado de `setTokenCount`. */
+const dicePoolOf = (
+  character: Character,
+  key: string,
+  derived: DerivedStats,
+  compendium: Compendium,
+): ActiveTokenPool | null =>
+  activeTokenPools(character, derived, compendium).find(
+    (candidate) => candidate.key === key && candidate.dieSides !== null,
+  ) ?? null
+
+/**
+ * Rola a mão inteira: tantos dados quanto o teto manda, **jogando fora o que
+ * não foi gasto** — "Clear any unspent dice before rolling" (Determination
+ * Dice). Rolar de novo não acumula.
+ *
+ * O sorteio entra por parâmetro, como no rolador: é o que deixa o teste
+ * verificar a quantidade sem depender de sorte.
+ */
+export const rollTokenDice = (
+  character: Character,
+  key: string,
+  derived: DerivedStats,
+  compendium: Compendium,
+  random: RandomDie,
+): Result<Character> => {
+  const active = dicePoolOf(character, key, derived, compendium)
+
+  if (!active || active.dieSides === null) {
+    return fail("tokenPoolUnknown", key)
+  }
+
+  const count = active.max ?? 0
+  const values = Array.from({ length: count }, () => random(active.dieSides as number))
+
+  return ok(withDice(character, key, values))
+}
+
+/**
+ * Gasta **um** dado, pela posição.
+ *
+ * Pela posição e não pelo valor: dois dados podem ter caído no mesmo número, e
+ * gastar "o 3" apagaria um 3 qualquer — o da esquerda, sempre, que não é o que
+ * o dedo apontou.
+ */
+export const spendTokenDie = (
+  character: Character,
+  key: string,
+  index: number,
+  derived: DerivedStats,
+  compendium: Compendium,
+): Result<Character> => {
+  const active = dicePoolOf(character, key, derived, compendium)
+
+  if (!active) {
+    return fail("tokenPoolUnknown", key)
+  }
+
+  const values = tokenDice(character, active)
+
+  if (index < 0 || index >= values.length) {
+    return fail("tokenDieUnknown", key)
+  }
+
+  return ok(withDice(character, key, values.filter((_unused, position) => position !== index)))
+}
+
+/**
+ * Põe um dado com o valor que a mesa rolou na mão.
+ *
+ * Existe porque muita mesa rola dado de verdade: o app precisa receber o
+ * número que caiu na mesa, e não obrigar a usar o sorteio dele. O teto é o
+ * mesmo da rolagem automática — a feature diz quantos dados cabem.
+ */
+export const addTokenDie = (
+  character: Character,
+  key: string,
+  value: number,
+  derived: DerivedStats,
+  compendium: Compendium,
+): Result<Character> => {
+  const active = dicePoolOf(character, key, derived, compendium)
+
+  if (!active || active.dieSides === null) {
+    return fail("tokenPoolUnknown", key)
+  }
+
+  if (!Number.isInteger(value) || value < 1 || value > active.dieSides) {
+    return fail("tokenDieOutOfRange", `d${active.dieSides}`)
+  }
+
+  const values = tokenDice(character, active)
+
+  if (active.max !== null && values.length >= active.max) {
+    return fail("tokenDiceFull", String(active.max))
+  }
+
+  return ok(withDice(character, key, [...values, value]))
 }
 
 /** Grava quantos tokens restam numa fonte que a ficha tem. É jogada: grava no toque. */
@@ -223,16 +356,35 @@ const poolOfKey = (key: string, compendium: Compendium): TokenPool | undefined =
  * Descansar repõe: apaga a contagem das fontes que voltam agora, o que
  * as devolve ao inicial — cheias, ou zeradas se forem acumulador. Fonte que o
  * compêndio já não conhece também sai: não há o que contar.
+ *
+ * **Fonte de dado não volta: ela se rola de novo.** O descanso joga fora o que
+ * não foi gasto e rola a mão inteira ali mesmo — é o que o Determination Dice
+ * manda ("Clear any unspent dice before rolling"), e é o que evita a ficha
+ * passar o descanso com um botão de rolar esperando um toque que ninguém dá.
+ * Quem rola na mesa com dado de verdade corrige os valores na ficha depois.
  */
 export const refillTokens = (
   character: Character,
   moment: TokenRefillMoment,
+  derived: DerivedStats,
   compendium: Compendium,
-): Character => ({
-  ...character,
-  tokens: character.tokens.filter((entry) => {
+  random: RandomDie,
+): Character => {
+  const kept = character.tokens.filter((entry) => {
     const pool = poolOfKey(entry.pool, compendium)
 
     return pool !== undefined && !REFILLED_BY[moment].includes(pool.refill)
-  }),
-})
+  })
+
+  const emptied: Character = { ...character, tokens: kept }
+
+  return activeTokenPools(emptied, derived, compendium)
+    .filter(
+      (active) => active.dieSides !== null && REFILLED_BY[moment].includes(active.pool.refill),
+    )
+    .reduce((current, active) => {
+      const rolled = rollTokenDice(current, active.key, derived, compendium, random)
+
+      return rolled.ok ? rolled.value : current
+    }, emptied)
+}

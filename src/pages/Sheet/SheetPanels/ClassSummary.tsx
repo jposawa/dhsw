@@ -14,12 +14,15 @@ type ClassSummaryProps = {
   isPreview?: boolean
   /** Contador de tokens de uma feature, na ficha em mesa. */
   renderTokens?: (featureName: string) => React.ReactNode
+  /** O que a feature pede por escrito — o número do `Force Patterns`. */
+  renderNotes?: (featureName: string) => React.ReactNode
 }
 
 export const ClassSummary = ({
   classDefinition,
   isPreview = false,
   renderTokens,
+  renderNotes,
 }: ClassSummaryProps) => (
   <section className={styles.summary}>
     {isPreview && (
@@ -40,6 +43,7 @@ export const ClassSummary = ({
       {classDefinition.features.map((feature) => (
         <li key={feature.name}>
           <RuleText className={styles.featureText} text={`**${feature.name}** — ${feature.text}`} />
+          {renderNotes?.(feature.name)}
           {renderTokens?.(feature.name)}
         </li>
       ))}

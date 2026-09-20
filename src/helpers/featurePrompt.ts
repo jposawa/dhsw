@@ -17,8 +17,11 @@ export type FeatureField = {
   /** Chave de gravação. A feature mais o índice — ver `Character.featureNotes`. */
   key: string
   feature: string
-  /** "Tenet 1". */
+  /** "Tenet 1" — sem o número quando a feature pede um campo só. */
   label: string
+  /** Faixa do campo numérico. Ausente é campo de texto. Ver `FeaturePrompt`. */
+  min?: number
+  max?: number
 }
 
 const promptsOf = (
@@ -47,6 +50,18 @@ export const featureFieldsFor = (
   character: Character,
   compendium: Compendium,
 ): readonly FeatureField[] => {
+  // Na ordem das cartas da ficha: classe, espécie, origem.
+  const classDefinition = compendium.classes.find(
+    (candidate) => candidate.name === character.className,
+  )
+
+  const fromClass = classDefinition
+    ? promptsOf(
+        classDefinition.prompts,
+        classDefinition.features.map((feature) => feature.name),
+      )
+    : []
+
   const ancestryFeatures = heritageFeatures(character, compendium)
 
   const fromAncestries = ancestryFeatures.flatMap((feature) => {
@@ -63,11 +78,14 @@ export const featureFieldsFor = (
     ? promptsOf(community.prompts, [featureNameOf(community.feature)])
     : []
 
-  return [...fromAncestries, ...fromCommunity].flatMap((prompt) =>
+  return [...fromClass, ...fromAncestries, ...fromCommunity].flatMap((prompt) =>
     Array.from({ length: prompt.count }, (_unused, index) => ({
       key: featureFieldKey(prompt.feature, index),
       feature: prompt.feature,
-      label: `${prompt.label} ${index + 1}`,
+      // Numerar um campo só seria "Número 1" sem existir o 2.
+      label: prompt.count === 1 ? prompt.label : `${prompt.label} ${index + 1}`,
+      min: prompt.min,
+      max: prompt.max,
     })),
   )
 }

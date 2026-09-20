@@ -67,7 +67,7 @@ export const Sheet = () => {
    * mudarem enquanto se escolhe a classe, antes de confirmar. É por isso que
    * o rascunho entra no hook em vez de a tela derivar por fora.
    */
-  const { character, isReadOnly, houseRules, derived } = useSheet(sheetId, draft)
+  const { character, isReadOnly, isLoading, houseRules, derived } = useSheet(sheetId, draft)
   // A aba de Regras mostra as da mesa ao lado das da ficha, então precisa das
   // duas separadas — `houseRules` já traz só a que vale.
   const partyRules = usePartyHouseRules(character?.partyId ?? null)
@@ -99,6 +99,12 @@ export const Sheet = () => {
       ...roster,
       characters: { ...roster.characters, [next.id]: touchCharacter(next) },
     })
+  }
+
+  // Ficha de outra pessoa vem do banco, e a leitura demora um instante: sair
+  // para o roster antes de ela chegar seria devolver quem acabou de abrir.
+  if (isLoading) {
+    return <p className={styles.waiting}>Abrindo a ficha…</p>
   }
 
   if (!character || !derived) {

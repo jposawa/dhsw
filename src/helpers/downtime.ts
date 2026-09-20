@@ -6,6 +6,7 @@ import type {
   DerivedStats,
   DowntimeChoice,
   Marks,
+  RandomDie,
   Result,
   RestKind,
 } from "@/types"
@@ -34,6 +35,8 @@ export const takeRest = (
   rest: RestKind,
   choices: readonly DowntimeChoice[],
   compendium: Compendium,
+  /** Sorteio dos dados que o descanso rola — ver `refillTokens`. */
+  random: RandomDie,
 ): Result<Character> => {
   if (choices.length !== DOWNTIME_MOVES_PER_REST) {
     return fail("downtimeNeedsTwoMoves")
@@ -89,5 +92,5 @@ export const takeRest = (
 
   // Tokens voltam em todo descanso que os repõe, independente das ações
   // escolhidas: é o que "After a Rest, place tokens…" diz.
-  return ok(refillTokens({ ...character, marks }, rest, compendium))
+  return ok(refillTokens({ ...character, marks }, rest, derived, compendium, random))
 }

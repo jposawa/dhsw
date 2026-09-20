@@ -12,15 +12,20 @@ import {
 import { MarkerTrack, RuleText, StatBlock, ThresholdBar } from "@/fragments";
 import {
 	activeTokenPools,
+	addTokenDie,
+	cryptoDie,
 	describeThresholdOrigin,
 	domainColorToken,
 	formatSigned,
 	heritageLabel,
 	ok,
 	presetForTrait,
+	rollTokenDice,
 	setTokenCount,
+	spendTokenDie,
 	toImageUrl,
 	tokenCount,
+	tokenDice,
 } from "@/helpers";
 import { useCompendium } from "@/hooks";
 import type {
@@ -124,9 +129,17 @@ export const CombatPlay = ({
 			<TokenCounter
 				active={active}
 				count={tokenCount(character, active)}
+				dice={tokenDice(character, active)}
 				onChange={(next) =>
 					onApply(setTokenCount(character, key, next, derived, compendium))
 				}
+				onRoll={() =>
+					onApply(rollTokenDice(character, key, derived, compendium, cryptoDie))
+				}
+				onSpend={(index) =>
+					onApply(spendTokenDie(character, key, index, derived, compendium))
+				}
+				onAdd={(value) => onApply(addTokenDie(character, key, value, derived, compendium))}
 			/>
 		) : null;
 	};
@@ -371,10 +384,15 @@ export const CombatPlay = ({
 				</ul>
 			</section>
 
+			{/* `onNoteChange`: o número do Force Patterns se escolhe no descanso
+			    longo, em mesa. Grava no toque, como marcador — mandar entrar em
+			    Editar ficha por causa de um dígito era o caminho mais comprido
+			    do app. Campo de texto continua passando pelo Salvar. */}
 			<IdentityFeatures
 				className={styles.features}
 				character={character}
 				renderTokens={renderTokens}
+				onNoteChange={(mutate) => onApply(ok(mutate(character)))}
 			/>
 
 			{/* Editável também em mesa: o botão de confirmar do modal é o Salvar

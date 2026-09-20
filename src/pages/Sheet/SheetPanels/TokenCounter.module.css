@@ -29,3 +29,76 @@
   font-size: var(--text-2xs);
   color: var(--color-text-dim);
 }
+
+/*
+ * A mão de dados guardados — o `Determination Dice`.
+ *
+ * Cada dado é um botão, porque gastar é o gesto: o valor está desenhado dentro
+ * da silhueta e some junto com ela. Um contador aqui diria quantos sobraram e
+ * esconderia quanto cada um vale, que é o que se lê na hora de gastar.
+ */
+.diceHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.roll {
+  min-height: 28px;
+  padding: 0 var(--space-3);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wider);
+}
+
+.diceList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.die {
+  display: flex;
+  min-height: 0;
+  padding: 0;
+  font-size: var(--text-xl);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+/* O campo ocupa a sobra e o botão fica do tamanho do texto dele. */
+.addRow {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.addInput {
+  width: 100%;
+  min-height: var(--size-touch-target);
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-sm);
+  color: var(--color-ink);
+  background: var(--color-bg-elevated);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+}
+
+.addInput:focus-visible {
+  outline: 2px solid var(--color-chrome-strong);
+  outline-offset: -2px;
+}
+
+/* O `+` e o ROLAR, juntos na ponta da faixa. */
+.diceActions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}

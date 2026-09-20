@@ -143,7 +143,7 @@ export const TraitArrayEditor = ({
       {houseRules.hasRolledTraitArray && (
         <Button className={styles.roll} variant="outline" onClick={sortear}>
           <LuDices aria-hidden="true" />
-          &nbsp;SORTEAR OUTRO ARRAY
+          &nbsp;SORTEAR ARRAY
         </Button>
       )}
     </section>

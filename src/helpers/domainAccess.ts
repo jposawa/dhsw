@@ -10,7 +10,7 @@ import { clampLevel, tierOf } from "./sheet"
  * que veio de multiclasse, até metade do nível, arredondando para cima. Core
  * Rulebook, "Taking Domain Cards" e "Multiclassing" (p. 111).
  *
- * O domínio da multiclasse é o `detail` do advancement `multiclass`. Sem
+ * O domínio da multiclasse é o `details` do advancement `multiclass`. Sem
  * classe escolhida, os seis domínios ficam abertos no nível do personagem —
  * é a ficha em montagem, e esconder tudo seria uma tela vazia sem explicação.
  */
@@ -25,7 +25,7 @@ export const domainAccessFor = (
   const access = classDomains.map((domain) => ({ domain, maxLevel: level }))
 
   for (const advancement of character.advancements) {
-    const domain = DOMAIN_LIST.find((candidate) => candidate === advancement.detail)
+    const domain = DOMAIN_LIST.find((candidate) => advancement.details.includes(candidate))
 
     if (advancement.kind === "multiclass" && domain && !classDomains.includes(domain)) {
       access.push({ domain, maxLevel: Math.ceil(level / 2) })

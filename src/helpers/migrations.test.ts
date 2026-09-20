@@ -15,6 +15,7 @@ import {
   rosterV8ToV9,
   rosterV9ToV10,
   rosterV10ToV11,
+  rosterV11ToV12,
 } from "./migrations"
 
 /**
@@ -212,7 +213,7 @@ describe("rosterV8ToV9", () => {
     ),
   )
 
-  const comAvanco = (advancement: Record<string, unknown>): RosterState => ({
+  const withAdvancement = (advancement: Record<string, unknown>): RosterState => ({
     ...v8,
     characters: {
       "sheet-1": { ...v8.characters["sheet-1"], advancements: [advancement] } as unknown as Character,
@@ -222,14 +223,14 @@ describe("rosterV8ToV9", () => {
   /* O avanço guardado só dizia o tipo; quem sabia o que ele somava era a
      matemática. Agora ele diz, e o número tem que sair igual. */
   it("o avanço passa a carregar o que move", () => {
-    const roster = comAvanco({ level: 2, kind: "hp", detail: "", slotsSpent: 1 })
+    const roster = withAdvancement({ level: 2, kind: "hp", detail: "", slotsSpent: 1 })
     const [avanco] = rosterV8ToV9(roster).characters["sheet-1"].advancements
 
     expect(avanco.changes).toEqual([{ target: "hitPointsMax", value: 1 }])
   })
 
   it("o de atributo lê a escolha que estava no detalhe", () => {
-    const roster = comAvanco({ level: 3, kind: "trait", detail: "Agility", slotsSpent: 1 })
+    const roster = withAdvancement({ level: 3, kind: "trait", detail: "Agility", slotsSpent: 1 })
     const [avanco] = rosterV8ToV9(roster).characters["sheet-1"].advancements
 
     expect(avanco.changes).toEqual([{ target: "trait.Agility", value: 1 }])
@@ -237,18 +238,18 @@ describe("rosterV8ToV9", () => {
 
   /* Multiclasse não move número: o que ela muda é o que a ficha alcança. */
   it("avanço sem número atravessa com lista vazia", () => {
-    const roster = comAvanco({ level: 5, kind: "multiclass", detail: "Veil", slotsSpent: 2 })
+    const roster = withAdvancement({ level: 5, kind: "multiclass", detail: "Veil", slotsSpent: 2 })
     const [avanco] = rosterV8ToV9(roster).characters["sheet-1"].advancements
 
     expect(avanco.changes).toEqual([])
-    expect(avanco.detail).toBe("Veil")
+    expect((avanco as { detail?: string }).detail).toBe("Veil")
   })
 
   it("ficha sem avanço nenhum atravessa", () => {
-    const migrada = rosterV8ToV9(v8).characters["sheet-1"]
+    const migrated = rosterV8ToV9(v8).characters["sheet-1"]
 
-    expect(migrada.advancements).toEqual([])
-    expect(migrada.schema).toBe(9)
+    expect(migrated.advancements).toEqual([])
+    expect(migrated.schema).toBe(9)
   })
 })
 
@@ -264,10 +265,10 @@ describe("rosterV9ToV10", () => {
   )
 
   it("ficha antiga entra sem resposta nenhuma", () => {
-    const migrada = rosterV9ToV10(v9).characters["sheet-1"]
+    const migrated = rosterV9ToV10(v9).characters["sheet-1"]
 
-    expect(migrada.featureNotes).toEqual({})
-    expect(migrada.schema).toBe(10)
+    expect(migrated.featureNotes).toEqual({})
+    expect(migrated.schema).toBe(10)
   })
 })
 
@@ -287,23 +288,96 @@ describe("rosterV10ToV11", () => {
   /* `null` é o array do livro: ficha antiga não tinha array sorteado, e os
      atributos dela continuam onde estavam. */
   it("ficha antiga fica com o array do livro, e os atributos intactos", () => {
-    const antes = v10.characters["sheet-1"].traits
-    const migrada = rosterV10ToV11(v10).characters["sheet-1"]
+    const before = v10.characters["sheet-1"].traits
+    const migrated = rosterV10ToV11(v10).characters["sheet-1"]
 
-    expect(migrada.traitArray).toBeNull()
-    expect(migrada.traits).toEqual(antes)
-    expect(migrada.schema).toBe(CHARACTER_SCHEMA_VERSION)
+    expect(migrated.traitArray).toBeNull()
+    expect(migrated.traits).toEqual(before)
+    expect(migrated.schema).toBe(11)
   })
 
   it("array sorteado atravessa", () => {
-    const sorteado: RosterState = {
+    const rolled: RosterState = {
       ...v10,
       characters: {
         "sheet-1": { ...v10.characters["sheet-1"], traitArray: [2, 2, 1, 0, 0, -1] } as Character,
       },
     }
 
-    expect(rosterV10ToV11(sorteado).characters["sheet-1"].traitArray).toEqual([2, 2, 1, 0, 0, -1])
+    expect(rosterV10ToV11(rolled).characters["sheet-1"].traitArray).toEqual([2, 2, 1, 0, 0, -1])
+  })
+})
+
+describe("rosterV11ToV12", () => {
+  const v11 = rosterV10ToV11(
+    rosterV9ToV10(
+      rosterV8ToV9(
+        rosterV7ToV8(
+          rosterV6ToV7(
+            rosterV5ToV6(
+              rosterV4ToV5(
+                rosterV3ToV4(rosterV2ToV3(rosterV1ToV2(V1_ROSTER)), DEFAULT_HOUSE_RULES),
+              ),
+            ),
+          ),
+        ),
+      ),
+    ),
+  )
+
+  const withAdvancement = (advancement: Record<string, unknown>): RosterState => ({
+    ...v11,
+    characters: {
+      "sheet-1": {
+        ...v11.characters["sheet-1"],
+        advancements: [advancement],
+      } as unknown as Character,
+    },
+  })
+
+  /* A escolha era um campo de texto; agora é lista, porque o avanço levanta
+     dois atributos ou duas Experiences de uma vez. */
+  it("a escolha guardada vira o primeiro item da lista", () => {
+    const roster = withAdvancement({
+      level: 5,
+      kind: "multiclass",
+      detail: "Veil",
+      changes: [],
+      slotsSpent: 2,
+    })
+    const [avanco] = rosterV11ToV12(roster).characters["sheet-1"].advancements
+
+    expect(avanco.details).toEqual(["Veil"])
+    expect((avanco as { detail?: string }).detail).toBeUndefined()
+  })
+
+  it("avanço sem escolha entra com a lista vazia", () => {
+    const roster = withAdvancement({
+      level: 2,
+      kind: "hp",
+      detail: "",
+      changes: [{ target: "hitPointsMax", value: 1 }],
+      slotsSpent: 1,
+    })
+    const [avanco] = rosterV11ToV12(roster).characters["sheet-1"].advancements
+
+    expect(avanco.details).toEqual([])
+  })
+
+  /* Os `changes` gravados são o que a ficha somou de verdade: recalculá-los
+     mudaria número de ficha em mesa para casar com regra que ela não jogou. */
+  it("o que o avanço já somava fica como está", () => {
+    const roster = withAdvancement({
+      level: 3,
+      kind: "trait",
+      detail: "Agility",
+      changes: [{ target: "trait.Agility", value: 1 }],
+      slotsSpent: 1,
+    })
+    const [avanco] = rosterV11ToV12(roster).characters["sheet-1"].advancements
+
+    expect(avanco.changes).toEqual([{ target: "trait.Agility", value: 1 }])
+    expect(rosterV11ToV12(roster).characters["sheet-1"].schema).toBe(CHARACTER_SCHEMA_VERSION)
   })
 })
 
@@ -315,10 +389,10 @@ describe("rosterV7ToV8", () => {
   )
 
   it("ficha antiga entra sem imagem, e na versão de hoje", () => {
-    const migrada = rosterV7ToV8(v7).characters["sheet-1"]
+    const migrated = rosterV7ToV8(v7).characters["sheet-1"]
 
-    expect(migrada.avatarUrl).toBeNull()
-    expect(migrada.schema).toBe(8)
+    expect(migrated.avatarUrl).toBeNull()
+    expect(migrated.schema).toBe(8)
   })
 
   /* Quem já tem imagem não a perde ao migrar. */

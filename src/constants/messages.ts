@@ -15,6 +15,7 @@ export const RULE_ERROR_MESSAGES: Readonly<Record<RuleErrorCode, string>> = {
   experienceNameMissing: "Dê um nome à Experience.",
   experienceDuplicate: "Já existe uma Experience com esse nome.",
   experienceNotFound: "Experience não encontrada.",
+  experienceLimit: "Sem Experience a conceder neste nível. A próxima vem no nível 5.",
   downtimeNeedsTwoMoves: "Escolha duas ações de descanso — pode ser a mesma duas vezes.",
   downtimeMoveUnknown: "Essa ação não pertence a este descanso.",
   downtimeRollMissing: "Falta o resultado do dado de uma das ações.",

@@ -5,105 +5,131 @@
   min-width: 0;
 }
 
-.empty,
-.hint {
+.empty {
   margin: 0;
   font-size: var(--text-xs);
-  line-height: 1.5;
   color: var(--color-text-dim);
-}
-
-.hint {
-  color: var(--color-chrome-strong);
 }
 
 .taken,
 .options {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
+/* O que já foi comprado: uma linha por avanço — o nível, o que é, o desfazer. */
+.taken {
+  gap: var(--space-1);
+}
+
 .row {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  min-height: var(--size-touch-target);
-  padding: var(--space-2) var(--space-3);
+  gap: var(--space-2);
+  padding-left: var(--space-2);
   background: var(--color-bg-elevated);
-}
 
-.rowText {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
+  /* O nível de onde o avanço veio. Número solto: a coluna já diz o que é. */
+  .rowLevel {
+    font-size: var(--text-2xs);
+    letter-spacing: var(--tracking-wide);
+    color: var(--color-text-dim);
+  }
 
-.rowName {
-  font-size: var(--text-sm);
-  font-weight: 500;
-  color: var(--color-ink);
-}
+  .rowName {
+    min-width: 0;
+    font-size: var(--text-xs);
+    color: var(--color-ink);
+    overflow-wrap: break-word;
 
-.rowMeta {
-  font-size: var(--text-2xs);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
-  color: var(--color-text-dim);
-}
+    /* As escolhas do avanço, na mesma linha: são o que distingue dois avanços
+       do mesmo tipo, e numa linha à parte dobrariam a altura do histórico. */
+    .rowDetail {
+      color: var(--color-text-dim);
 
-.remove {
-  width: var(--size-touch-target);
-  flex-shrink: 0;
-  padding: 0;
+      &::before {
+        content: ' · ';
+      }
+    }
+  }
+
+  .undo {
+    width: var(--size-touch-target);
+    padding: 0;
+  }
 }
 
 /*
- * A opção e o que ela pede. Empilhadas no celular; lado a lado quando o nome
- * e as escolhas couberem na mesma linha.
+ * O que ainda cabe: uma linha por opção, e o toque é a linha inteira.
+ *
+ * Antes, cada opção era um rótulo em cima de um botão de largura cheia escrito
+ * ESCOLHER — duas alturas e duas leituras para dizer a mesma coisa, numa lista
+ * de nove. A linha diz o nome, e tocar nela é escolher.
  */
-.option {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  padding: var(--space-2) var(--space-3);
-  background: var(--color-surface);
+.options {
   border-top: var(--border-width) solid var(--color-border);
 }
 
-.optionName {
-  font-size: var(--text-sm);
-  color: var(--color-ink);
-}
+.option {
+  border-bottom: var(--border-width) solid var(--color-border);
 
-/* Custa os dois avanços do nível: dito ao lado, não escondido no clique. */
-.optionCost {
-  font-size: var(--text-2xs);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
-  color: var(--color-warning);
-}
-
-/* As escolhas de um avanço que ainda pede detalhe — o atributo, o domínio. */
-.details {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1);
-}
-
-.detail {
-  font-size: var(--text-2xs);
-}
-
-@media (min-width: 900px) {
-  .option {
-    flex-direction: row;
+  .optionHead {
+    display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: var(--space-2);
+    width: 100%;
+    padding: 0 var(--space-2);
+    font: inherit;
+    text-align: start;
+    color: var(--color-ink);
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    .optionName {
+      flex: 1;
+      min-width: 0;
+      font-size: var(--text-sm);
+    }
+
+    /* Quantas vezes ainda cabe no tier. */
+    .optionSlots {
+      font-size: var(--text-2xs);
+      color: var(--color-text-dim);
+    }
+
+    /* Custa os dois avanços do nível: dito ao lado, não escondido no clique. */
+    .optionCost {
+      font-size: var(--text-2xs);
+      letter-spacing: var(--tracking-wide);
+      text-transform: uppercase;
+      color: var(--color-warning);
+    }
+
+    .optionIcon {
+      flex-shrink: 0;
+      color: var(--color-text-dim);
+      transition: transform var(--duration-fast) var(--easing-standard);
+    }
+  }
+
+  /* Aberta para escolher: o `+` vira um `×`, que é o que ele faz agora. */
+  &[data-open='true'] {
+    background: var(--color-bg-elevated);
+
+    .optionIcon {
+      transform: rotate(45deg);
+    }
+  }
+
+  .picks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    padding: 0 var(--space-2) var(--space-2);
   }
 }

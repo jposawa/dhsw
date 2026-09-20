@@ -22,6 +22,13 @@ export type StatKey =
   | "loadoutMax"
   /** Quantas cartas de domínio o personagem conhece — o acervo, não o loadout. */
   | "domainCards"
+  /**
+   * O bônus de uma Experience, pela chave dela. Toda Experience nasce a +2 e
+   * **só cresce por avanço**: o que a ficha guarda é a base, e o +1 do avanço
+   * "+1 em duas Experiences" entra aqui como modificador, com o nível de onde
+   * veio — como todo o resto da ficha.
+   */
+  | `experience.${string}`
   | "damage"
   | "attackRoll"
 

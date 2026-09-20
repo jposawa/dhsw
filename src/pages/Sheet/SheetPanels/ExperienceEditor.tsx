@@ -1,9 +1,9 @@
-import { Button, Input, SectionLabel, Stepper } from "@jposawa/ronin-ui"
+import { Button, Input, SectionLabel } from "@jposawa/ronin-ui"
 import clsx from "clsx"
 import React from "react"
+import { LuX } from "react-icons/lu"
 
-import { NEW_EXPERIENCE_BONUS } from "@/constants"
-import { addExperience, removeExperience, setExperienceBonus } from "@/helpers"
+import { addExperience, removeExperience } from "@/helpers"
 import type { BaseComponent, Character, DerivedStats, Result } from "@/types"
 
 import styles from "./ExperienceEditor.module.css"
@@ -22,11 +22,10 @@ type ExperienceEditorProps = BaseComponent & {
  * lado dos atributos no modo jogo. Editar do outro lado da ficha separava a
  * lista de onde ela é lida.
  *
- * Nada aqui é jogada: acrescentar Experience e mexer no bônus são progressão,
- * e passam pelo Salvar como o resto da edição.
- *
- * O bônus não tem teto no código: quantas a mesa concede, e de quanto, é
- * decisão do Narrador — ver `rules/history.ts`.
+ * **Nome é a única coisa que se digita aqui.** Quantas Experiences a ficha tem
+ * e de quanto é o bônus de cada uma são regra, não campo: o nível concede as
+ * vagas (p. 109), toda Experience nasce a +2, e o que a levanta é o avanço
+ * "+1 em duas Experiences" — que entra como modificador, ao lado do resto.
  */
 export const ExperienceEditor = ({
   character,
@@ -37,12 +36,12 @@ export const ExperienceEditor = ({
 }: ExperienceEditorProps) => {
   const [newExperience, setNewExperience] = React.useState("")
 
-  // Quantas o nível ainda concede. Nunca negativo: a mesa pode conceder mais
-  // do que o livro, e isso não é erro a apontar.
+  // Quantas vagas o nível ainda tem abertas. Zero fecha o campo de adicionar:
+  // a próxima vem num level achievement, não num toque.
   const faltando = Math.max(derived.expectedExperiences - character.experiences.length, 0)
 
   const handleAdd = () => {
-    onApply(addExperience(character, { name: newExperience, bonus: NEW_EXPERIENCE_BONUS }))
+    onApply(addExperience(character, newExperience))
     setNewExperience("")
   }
 
@@ -52,67 +51,63 @@ export const ExperienceEditor = ({
         <h3>EXPERIENCES</h3>
       </SectionLabel>
 
-      {character.experiences.length === 0 && faltando === 0 ? (
-        <p className={styles.empty}>Nenhuma Experience. Adicione abaixo.</p>
-      ) : (
-        <ul className={styles.list}>
-          {character.experiences.map((experience) => (
-            <li className={styles.row} key={experience.name}>
-              <span className={styles.rowName}>{experience.name}</span>
+      <ul className={styles.list}>
+        {derived.experiences.map((experience) => (
+          <li className={styles.row} key={experience.name}>
+            <span className={styles.rowName}>{experience.name}</span>
 
-              <div className={styles.rowActions}>
-                <Stepper
-                  label={`bônus de ${experience.name}`}
-                  decreaseLabel={`Diminuir bônus de ${experience.name}`}
-                  increaseLabel={`Aumentar bônus de ${experience.name}`}
-                  value={`+${experience.bonus}`}
-                  canDecrease={experience.bonus > 1}
-                  onDecrease={() =>
-                    onApply(setExperienceBonus(character, experience.name, experience.bonus - 1))
-                  }
-                  onIncrease={() =>
-                    onApply(setExperienceBonus(character, experience.name, experience.bonus + 1))
-                  }
-                />
-                <Button
-                  variant="text"
-                  intent="danger"
-                  aria-label={`Remover ${experience.name}`}
-                  onClick={() => onApply(removeExperience(character, experience.name))}
-                >
-                  REMOVER
-                </Button>
-              </div>
-            </li>
-          ))}
+            {/* O bônus é leitura: a base é o +2 de nascença, e o resto veio de
+                avanço. Não há o que ajustar aqui. */}
+            <b
+              className={styles.bonus}
+              title={
+                experience.bonus.modifiers.length > 0
+                  ? `Base +${experience.bonus.base}, e ${experience.bonus.modifiers.length} de avanço`
+                  : undefined
+              }
+            >
+              +{experience.bonus.total}
+            </b>
 
-          {/* Uma linha vazia por Experience que o nível ainda concede: o
-              número no rótulo diz quantas faltam, e a linha diz onde. */}
-          {Array.from({ length: faltando }, (_unused, index) => (
-            <li className={styles.slot} key={index}>
-              A conceder neste nível
-            </li>
-          ))}
-        </ul>
+            <Button
+              variant="text"
+              intent="danger"
+              className={styles.remove}
+              aria-label={`Remover ${experience.name}`}
+              onClick={() => onApply(removeExperience(character, experience.name))}
+            >
+              <LuX aria-hidden="true" />
+            </Button>
+          </li>
+        ))}
+
+        {/* Uma linha vazia por vaga que o nível concede e ainda não foi usada. */}
+        {Array.from({ length: faltando }, (_unused, index) => (
+          <li className={styles.slot} key={index}>
+            A conceder neste nível
+          </li>
+        ))}
+      </ul>
+
+      {faltando > 0 && (
+        <form
+          className={styles.addRow}
+          onSubmit={(event) => {
+            event.preventDefault()
+            handleAdd()
+          }}
+        >
+          <Input
+            value={newExperience}
+            placeholder="Piloto de corrida, Criado nas ruas…"
+            aria-label="Nome da Experience"
+            onValueChange={setNewExperience}
+          />
+          <Button type="submit" disabled={!newExperience.trim()}>
+            ADICIONAR
+          </Button>
+        </form>
       )}
-
-      <form
-        className={styles.addRow}
-        onSubmit={(event) => {
-          event.preventDefault()
-          handleAdd()
-        }}
-      >
-        <Input
-          value={newExperience}
-          placeholder="Piloto de corrida, Criado nas ruas…"
-          aria-label="Nome da Experience"
-          onValueChange={setNewExperience}
-        />
-        <Button type="submit" disabled={!newExperience.trim()}>
-          ADICIONAR
-        </Button>
-      </form>
     </section>
   )
 }

@@ -25,7 +25,7 @@ describe("domainAccessFor (p. 111)", () => {
   })
 
   it("domínio de multiclasse até metade do nível, arredondando para cima", () => {
-    const multiclass: Advancement = createAdvancement(5, "multiclass", "Veil")
+    const multiclass: Advancement = createAdvancement(5, "multiclass", ["Veil"])
     const access = domainAccessFor(soldier(5, [multiclass]), TEST_COMPENDIUM)
 
     expect(access).toContainEqual({ domain: "Veil", maxLevel: 3 })

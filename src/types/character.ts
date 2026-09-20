@@ -56,13 +56,32 @@ export type Advancement = {
   level: Level
   kind: AdvancementKind
   /**
-   * A escolha que não é número: o domínio da multiclasse, o nome da
-   * Experience. Vazio quando o avanço só move números.
+   * As escolhas que o avanço pediu: os **dois** atributos, as **duas**
+   * Experiences, o domínio da multiclasse. Vazio quando o avanço não pede
+   * nada — ele só move um número.
+   *
+   * Lista e não campo único porque o livro pede dois de cada vez nos dois
+   * avanços que pedem escolha (p. 110): um só deixaria metade do avanço
+   * comprado sem aparecer na ficha.
    */
-  detail: string
+  details: readonly string[]
   changes: readonly AdvancementChange[]
   /** Proficiency e multiclasse custam os dois advancements do nível. */
   slotsSpent: 1 | 2
+}
+
+/**
+ * Um avanço na lista da folha de level up: como se chama e quantas vezes cada
+ * tier o oferece.
+ *
+ * `slotsByTier` é indexado por `tier - 1`, como `FeatureModifier.valueByTier`.
+ * Zero é **o tier não oferece**, e é o que mantém subclasse e Proficiency fora
+ * do Tier 2 sem um `if` por opção espalhado pela tela.
+ */
+export type AdvancementOption = {
+  kind: AdvancementKind
+  label: string
+  slotsByTier: readonly [number, number, number, number]
 }
 
 /**
@@ -74,9 +93,22 @@ export type Advancement = {
  */
 export type TraitValues = Readonly<Record<Trait, number | null>>
 
+/**
+ * Uma Experience: o nome e o bônus **base**.
+ *
+ * O base é sempre o +2 com que ela nasce (p. 109). O que cresce vem de avanço
+ * e entra como modificador, em `experience.<nome>` — ver `derive`. Por isso
+ * não há como editar este número na tela: ele não é escolha, é regra.
+ */
 export type Experience = {
   name: string
   bonus: number
+}
+
+/** Uma Experience com o bônus resolvido: a base e o que os avanços somaram. */
+export type ResolvedExperience = {
+  name: string
+  bonus: ResolvedStat
 }
 
 /** Marcadores de mesa. Contagem, não array de booleanos — o máximo é derivado. */
@@ -275,8 +307,10 @@ export type DerivedStats = {
   loadoutMax: ResolvedStat
   /** Cartas esperadas no nível atual, conforme a regra da casa. */
   expectedCards: number
-  /** Quantas Experiences o nível concede. Expectativa, não teto. */
+  /** Quantas Experiences o nível concede — e quantas cabem na ficha. */
   expectedExperiences: number
+  /** As Experiences da ficha, cada uma com o bônus já resolvido. */
+  experiences: readonly ResolvedExperience[]
   equippedArmor: EquippedArmor | null
   /** Sem armadura vestida: Armor Score 0, Major = nível, Severe = 2 × nível. */
   isUnarmored: boolean

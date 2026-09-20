@@ -329,10 +329,14 @@ export const CombatPlay = ({
 					<p className={styles.empty}>Nenhuma. Adicione em Editar ficha.</p>
 				) : (
 					<ul className={styles.experiences}>
-						{character.experiences.map((experience) => (
+						{/* O bônus vem resolvido: o +2 de nascença mais o que os
+						    avanços somaram. A ficha guarda só a base. */}
+						{derived.experiences.map((experience) => (
 							<li className={styles.experience} key={experience.name}>
 								<span className={styles.experienceName}>{experience.name}</span>
-								<b className={styles.experienceBonus}>+{experience.bonus}</b>
+								<b className={styles.experienceBonus}>
+									+{experience.bonus.total}
+								</b>
 							</li>
 						))}
 					</ul>

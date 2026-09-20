@@ -15,6 +15,7 @@ import {
   rosterV8ToV9,
   rosterV9ToV10,
   rosterV10ToV11,
+  rosterV11ToV12,
 } from "@/helpers"
 import { createVersionedStorage } from "@/services"
 import type { Character, RosterState } from "@/types"
@@ -39,6 +40,7 @@ const versionedStorage = createVersionedStorage<RosterState>({
     8: rosterV8ToV9,
     9: rosterV9ToV10,
     10: rosterV10ToV11,
+    11: rosterV11ToV12,
   },
 })
 

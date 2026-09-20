@@ -114,6 +114,13 @@ export const normalizeCharacter = (stored: Character): Character => {
     // Atributo ausente é atributo por distribuir. O RTDB apaga a chave de
     // valor `null` e guarda o `0`, então a volta é sem ambiguidade: o que
     // faltou nunca foi escolhido.
+    // O RTDB apaga lista vazia: avanço sem escolha volta de lá sem `details`,
+    // e quem lê as escolhas quebraria na primeira linha.
+    advancements: (stored.advancements ?? []).map((advancement) => ({
+      ...advancement,
+      details: advancement.details ?? [],
+      changes: advancement.changes ?? [],
+    })),
     traits: { ...NO_TRAITS, ...stored.traits },
     marks: { ...NO_MARKS, ...stored.marks },
     houseRules: { ...blank.houseRules, ...stored.houseRules },

@@ -56,6 +56,27 @@ describe("normalizeCharacter", () => {
     }
   })
 
+  /* Arma sem augment sobe com `installedModules: []` e volta sem a chave; com
+     "Armas customizáveis" ligada (a da mesa, por exemplo), `derive` itera
+     sobre ela e a ficha não abre. */
+  it("devolve as listas e os nulos que o RTDB engoliu dentro do item", () => {
+    const stored = {
+      ...createCharacter(),
+      inventory: [{ id: "a", kind: "weapon", name: "Blaster", isEquipped: true, quantity: 1 }],
+    } as unknown as Character
+
+    expect(normalizeCharacter(stored).inventory[0]).toEqual({
+      id: "a",
+      kind: "weapon",
+      name: "Blaster",
+      isEquipped: true,
+      quantity: 1,
+      slot: null,
+      installedModules: [],
+      nickname: null,
+    })
+  })
+
   it("completa os marcadores sem inventar valor", () => {
     const stored = { ...createCharacter(), marks: { hp: 3 } } as unknown as Character
 

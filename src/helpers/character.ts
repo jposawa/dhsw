@@ -121,6 +121,15 @@ export const normalizeCharacter = (stored: Character): Character => {
       details: advancement.details ?? [],
       changes: advancement.changes ?? [],
     })),
+    // Mesma coisa dentro de cada item: arma sem augment volta sem
+    // `installedModules`, e item sem apelido ou fora de slot volta sem a chave
+    // — o `null` também é apagado.
+    inventory: (stored.inventory ?? []).map((entry) => ({
+      ...entry,
+      slot: entry.slot ?? null,
+      installedModules: entry.installedModules ?? [],
+      nickname: entry.nickname ?? null,
+    })),
     traits: { ...NO_TRAITS, ...stored.traits },
     marks: { ...NO_MARKS, ...stored.marks },
     houseRules: { ...blank.houseRules, ...stored.houseRules },
